@@ -1,5 +1,6 @@
 import { Card, Button, Text } from "react-native-paper"
 import LanguagePicker from "../language-picker/LanguagePicker"
+import UnitPicker from "../unit-picker/UnitPicker"
 
 
 export default function SettingsCard() {
@@ -9,9 +10,13 @@ export default function SettingsCard() {
         <Card mode="elevated" elevation={1} style={{ margin: 10, padding: 0 }}>
             <Card.Title title="Settings"
             />
-            <Card.Content>
-                <Text variant="bodyMedium">General</Text>
-                <LanguagePicker />
+            <Card.Content style={{ margin: 10, padding: 0 }}>
+                <Text style={{ marginBottom: 10 }} variant="bodyMedium">General</Text>
+                <LanguagePicker style={{ flex: 1, marginBottom: 10 }}  />
+
+                <Text style={{ marginBottom: 10 }}  variant="bodyMedium">Units of</Text>
+                <UnitPicker style={{ flex: 1,  marginBottom: 10 }} zIndex={1000} label="Distance"/>
+
             </Card.Content>
         </Card>
     )
