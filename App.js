@@ -1,37 +1,45 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, SafeAreaView, Alert } from 'react-native';
-import { PaperProvider, Button } from 'react-native-paper';
+import { StyleSheet, View, ScrollView, Dimensions } from 'react-native';
+import { PaperProvider, MD3DarkTheme } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import TopAppBar from './components/TopAppBar';
+import TopAppBar from './components/top-app-bar/TopAppBar';
+import SettingsPage from './pages/settings-page/SettingsPage';
+import BotAppBar from './components/bot-app-bar/BotAppBar';
 
 export default function App() {
-
-  const handleTextPress = () => console.log("Hello")
-  const handleBtnPress = () => Alert.alert("Btn", "Message",
-    { text: "OK", onPress: () => console.log("OK") },
-    { text: "Cancel", onPress: () => console.log("Cancel") },
-  )
-
   return (
     <SafeAreaProvider style={styles.container}>
-      <PaperProvider>
+      <PaperProvider theme={MD3DarkTheme}>
         <TopAppBar />
-        <Text onPress={handleTextPress}>Hello!</Text>
-        <Button icon="camera" mode="elevated" onPress={() => console.log('Pressed')}>
-          Press me
-        </Button>
+
+            <ScrollView style={styles.scrollViewContainer}
+              keyboardShouldPersistTaps="always"
+              alwaysBounceVertical={false}
+              showsVerticalScrollIndicator={true}
+            >
+              <SettingsPage />
+            </ScrollView>
+
+        {/* <SettingsPage /> */}
+        <BotAppBar />
         <StatusBar style="auto" />
       </PaperProvider>
     </SafeAreaProvider>
   );
 }
 
+const windowHeight = Dimensions.get('window').height;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: MD3DarkTheme.colors.background,
     // alignItems: 'center',
     // justifyContent: 'center',
+  },
+  scrollViewContainer: {
+    height: windowHeight * 0.8, // Set the height as a percentage of the screen height
+    marginBottom: 72
   },
 });
