@@ -12,10 +12,11 @@ export default function SettingsCard() {
             />
             <Card.Content style={{ margin: 10, padding: 0 }}>
                 <Text style={{ marginBottom: 10 }} variant="bodyMedium">General</Text>
-                <LanguagePicker style={{ flex: 1, marginBottom: 10 }}  />
+                <LanguagePicker style={{ flex: 1, marginBottom: 10 }} />
 
-                <Text style={{ marginBottom: 10 }}  variant="bodyMedium">Units of</Text>
-                <UnitPicker style={{ flex: 1,  marginBottom: 10 }} zIndex={1000} label="Distance"/>
+                <Text style={{ marginBottom: 10 }} variant="bodyMedium">Units of</Text>
+                <UnitPicker style={{ flex: 1, marginBottom: 10 }} zIndex={1000} label="Distance" />
+                <UnitPicker style={{ flex: 1, marginBottom: 10 }} zIndex={1000} label="Velocity" list={[{ label: "Meter per second", value: "mps", },]} />
 
             </Card.Content>
         </Card>

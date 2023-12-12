@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import DropDown from "react-native-paper-dropdown"
+import CustomDropDown from "../custom-drop-down/CustomDropDown";
 
 export default function LanguagePicker() {
     const [showDropDown, setShowDropDown] = useState(false);
@@ -17,7 +17,7 @@ export default function LanguagePicker() {
 
 
     return(
-        <DropDown 
+        <CustomDropDown 
         label={"Language"}
         mode={"outlined"}
         visible={showDropDown}
@@ -26,6 +26,9 @@ export default function LanguagePicker() {
         value={language}
         setValue={setLanguage}
         list={languageList}
+        inputStyle={{
+          marginVertical: 10
+        }}
         />
     );
 
