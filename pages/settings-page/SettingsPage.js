@@ -11,18 +11,17 @@ export default function SettingsPage() {
     // )
 
     return (
-            <View
-                // contentContainerStyle={contentContainerStyle}
-                keyboardShouldPersistTaps="always"
-                alwaysBounceVertical={false}
-                showsVerticalScrollIndicator={false}
-                // style={[containerStyle, style]}
-            >
+        <View
+            // contentContainerStyle={contentContainerStyle}
+            keyboardShouldPersistTaps="always"
+            alwaysBounceVertical={false}
+            showsVerticalScrollIndicator={false}
+        // style={[containerStyle, style]}
+        >
 
-                <SettingsCard  />
-                <ContentCard />
-                <ContentCard />
+            <SettingsCard />
+            <ContentCard />
 
-            </View>
+        </View>
     );
 }

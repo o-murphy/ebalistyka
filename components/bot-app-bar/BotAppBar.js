@@ -22,10 +22,10 @@ const BotAppBar = () => {
             ]}
             safeAreaInsets={{ bottom }}
         >
-            <Appbar.Action icon="archive" onPress={() => { }} />
-            <Appbar.Action icon="email" onPress={() => { }} />
+            <Appbar.Action icon="arrow-left" onPress={() => { }} />
+            {/* <Appbar.Action icon="email" onPress={() => { }} />
             <Appbar.Action icon="label" onPress={() => { }} />
-            <Appbar.Action icon="delete" onPress={() => { }} />
+            <Appbar.Action icon="delete" onPress={() => { }} /> */}
             <FAB
                 mode="flat"
                 size="medium"
