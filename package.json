@@ -13,7 +13,7 @@
     "@types/react": "~18.2.14",
     "expo": "~49.0.15",
     "expo-status-bar": "~1.6.0",
-    "js-ballistics": "^1.0.0-post1",
+    "js-ballistics": "^1.0.3-alpha.1",
     "react": "18.2.0",
     "react-native": "0.72.6",
     "react-native-paper": "^5.11.4",
