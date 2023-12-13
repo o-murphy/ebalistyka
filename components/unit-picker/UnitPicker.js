@@ -1,22 +1,10 @@
 import React, { useState } from "react";
 import CustomDropDown from "../custom-drop-down/CustomDropDown";
 
-export default function UnitPicker({ label, list }) {
+export default function UnitPicker({ props }) {
+    const {label, list, def} = props
     const [showDropDown, setShowDropDown] = useState(false);
-    
-    const unitList = list ? list : [
-        {
-            label: "Meter",
-            value: "m",
-        },  
-        {
-          label: "Inch",
-          value: "in",
-        },
-      ];
-
-    const [unit, setUnit] = useState(unitList[0].value);  // FIXME: temp placeholder
-
+    const [unit, setUnit] = useState(def ? def : "");
 
     return(
         <CustomDropDown
@@ -27,11 +15,10 @@ export default function UnitPicker({ label, list }) {
         onDismiss={() => setShowDropDown(false)}
         value={unit}
         setValue={setUnit}
-        list={unitList}
+        list={list ? list : []}
         inputStyle={{
           marginVertical: 10
         }}
         />
     );
-
 }

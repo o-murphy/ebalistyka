@@ -9,16 +9,6 @@ import SettingsPage from './pages/settings-page/SettingsPage';
 import BotAppBar from './components/bot-app-bar/BotAppBar';
 
 
-const windowHeight = Dimensions.get('window').height;
-
-const styles = StyleSheet.create({
-  scrollViewContainer: {
-    height: windowHeight * 0.8, // Set the height as a percentage of the screen height
-    marginBottom: 80
-  },
-});
-
-
 export default function App() {
 
   const [nightMode, setNightmode] = useState(true);
@@ -29,24 +19,33 @@ export default function App() {
     setNightmode((prevNightMode) => !prevNightMode);
   };
 
-  const containerStyle = {
-    flex: 1,
-    backgroundColor: theme.colors.background /* Your Light Theme Background Color */
-    // alignItems: 'center',
-    // justifyContent: 'center',
-  };
+  const styles = {
+    provider: {
+      flex: 1,
+      backgroundColor: theme.colors.background  // Theme Background Color
+      // alignItems: 'center',
+      // justifyContent: 'center',
+    },
+    scrollViewContainer: {
+      height: Dimensions.get('window').height * 0.8, // Set the height as a percentage of the screen height
+      marginBottom: 80
+    },
+  }
 
   return (
-    <SafeAreaProvider style={containerStyle}>
+    <SafeAreaProvider style={styles.provider}>
       <PaperProvider theme={theme}>
         <TopAppBar props={{nightMode: nightMode, toggleNightMode: toggleNightMode}} />
 
-            <ScrollView style={styles.scrollViewContainer}
+            <ScrollView 
+              style={styles.scrollViewContainer}
               keyboardShouldPersistTaps="always"
               alwaysBounceVertical={false}
               showsVerticalScrollIndicator={true}
             >
+
               <SettingsPage />
+            
             </ScrollView>
 
         {/* <SettingsPage /> */}

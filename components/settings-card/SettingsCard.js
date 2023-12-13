@@ -1,6 +1,55 @@
-import { Card, Button, Text } from "react-native-paper"
+import { Card, Text } from "react-native-paper"
 import LanguagePicker from "../language-picker/LanguagePicker"
 import UnitPicker from "../unit-picker/UnitPicker"
+
+import { Angular, Distance, Energy, Pressure, Temperature, Unit, UnitPropsDict, Velocity, Weight } from "js-ballistics"
+
+// console.log(Distance)
+// console.log(Object.keys(Distance).forEach(element => {
+//     console.log(Distance[element])
+// }));
+
+
+const get_unit_list = (unit) => Object.keys(unit).map((key) => { return { label: UnitPropsDict[unit[key]].name, value: unit[key] } })
+
+
+const init_unit_list = [
+    {
+        label: "Distance",
+        list: get_unit_list(Distance),
+        def: Distance.Meter
+    },
+    {
+        label: "Velocity",
+        list: get_unit_list(Velocity),
+        def: Velocity.MPS
+    },
+    {
+        label: "Angular",
+        list: get_unit_list(Angular),
+        def: Angular.Mil
+    },
+    {
+        label: "Weight",
+        list: get_unit_list(Weight),
+        def: Weight.Grain
+    },
+    {
+        label: "Temperature",
+        list: get_unit_list(Temperature),
+        def: Temperature.Celsius
+    },
+    {
+        label: "Pressure",
+        list: get_unit_list(Pressure),
+        def: Pressure.PSI
+    },
+    {
+        label: "Energy",
+        list: get_unit_list(Energy),
+        def: Energy.Joule
+    },
+]
 
 
 export default function SettingsCard() {
@@ -15,13 +64,8 @@ export default function SettingsCard() {
                 <LanguagePicker style={{ flex: 1, marginBottom: 10 }} />
 
                 <Text style={{ marginVertical: 10 }} variant="bodyMedium">Units of measurement</Text>
-                <UnitPicker label="Distance" list={[{ label: "Meter", value: "m", },]} />
-                <UnitPicker label="Velocity" list={[{ label: "MPS", value: "mps", },]} />
-                <UnitPicker label="Angular" list={[{ label: "MIL", value: "MIL", },]} />
-                <UnitPicker label="Weight" list={[{ label: "Grain", value: "grain", },]} />
-                <UnitPicker label="Temperature" list={[{ label: "Celsius", value: "C", },]} />
-                <UnitPicker label="Pressure" list={[{ label: "PSI", value: "psi", },]} />
-                <UnitPicker label="Energy" list={[{ label: "Joule", value: "J", },]} />
+
+                {init_unit_list.map((element) => <UnitPicker props={element} />)}
 
             </Card.Content>
         </Card>
