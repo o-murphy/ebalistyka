@@ -57,13 +57,17 @@ export default function SettingsCard() {
 
     return (
         <Card mode="elevated" elevation={1} style={{ margin: 10, padding: 0 }}>
-            <Card.Title title="Settings"
-            />
-            <Card.Content style={{ margin: 10, padding: 10 }}>
-                <Text style={{ marginVertical: 10 }} variant="bodyMedium">General</Text>
+            <Card.Title title="Settings" />
+
+            <Card.Content style={{ marginHorizontal: 10, paddingHorizontal: 10 }}>
+
+                <Text variant="titleMedium" style={{ marginBottom: 10 }}>General</Text>
+
                 <LanguagePicker style={{ flex: 1, marginBottom: 10 }} />
 
-                <Text style={{ marginVertical: 10 }} variant="bodyMedium">Units of measurement</Text>
+                {/* <Text style={{ marginVertical: 10 }} variant="bodyMedium">Units of measurement</Text> */}
+
+                <Text variant="titleMedium" style={{ marginVertical: 10 }}>Units of measurement</Text>
 
                 {init_unit_list.map((element) => <UnitPicker props={element} />)}
 

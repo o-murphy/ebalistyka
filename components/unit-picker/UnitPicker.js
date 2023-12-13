@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import CustomDropDown from "../custom-drop-down/CustomDropDown";
+import { TextInput } from "react-native-paper";
+import DropDown from "react-native-paper-dropdown";
 
 export default function UnitPicker({ props }) {
     const {label, list, def} = props
@@ -7,7 +8,7 @@ export default function UnitPicker({ props }) {
     const [unit, setUnit] = useState(def ? def : "");
 
     return(
-        <CustomDropDown
+      <DropDown
         label={label}
         mode={"outlined"}
         visible={showDropDown}
@@ -16,9 +17,13 @@ export default function UnitPicker({ props }) {
         value={unit}
         setValue={setUnit}
         list={list ? list : []}
-        inputStyle={{
-          marginVertical: 10
+
+        inputProps = {{
+          style: {marginVertical: 8},
+          dense: true,
+          right: <TextInput.Icon icon="chevron-down" onPress={() => setShowDropDown(true)}/>
         }}
-        />
+
+      />
     );
 }

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import CustomDropDown from "../custom-drop-down/CustomDropDown";
+import { TextInput } from "react-native-paper";
+import DropDown from "react-native-paper-dropdown";
 
 export default function LanguagePicker() {
     const [showDropDown, setShowDropDown] = useState(false);
@@ -17,7 +18,7 @@ export default function LanguagePicker() {
 
 
     return(
-        <CustomDropDown 
+      <DropDown 
         label={"Language"}
         mode={"outlined"}
         visible={showDropDown}
@@ -26,10 +27,14 @@ export default function LanguagePicker() {
         value={language}
         setValue={setLanguage}
         list={languageList}
-        inputStyle={{
-          marginVertical: 10
+
+        inputProps = {{
+          style: {marginVertical: 8},
+          dense: true,
+          right: <TextInput.Icon icon="chevron-down" onPress={() => setShowDropDown(true)}/>
         }}
-        />
+
+      />
     );
 
 }

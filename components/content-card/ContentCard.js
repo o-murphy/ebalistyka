@@ -12,6 +12,9 @@ export default function ContentCard() {
                 <Text variant="bodyMedium">Card content</Text>
             </Card.Content>
             <Card.Cover mode="elevated" elevation={1} source={{ uri: 'https://picsum.photos/700' }} />
+
+            <Card.Title subtitle="Units of measurement" />
+
             <Card.Actions>
                 <Button>Cancel</Button>
                 <Button>Ok</Button>
