@@ -12,7 +12,7 @@ const init_unit_list = [
     {
         label: "Distance",
         list: get_unit_list(Measure.Distance),
-        def: Distance.Meter
+        def: Unit.Meter
     },
     {
         label: "Velocity",
