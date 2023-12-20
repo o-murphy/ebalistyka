@@ -2,52 +2,47 @@ import { Card, Text } from "react-native-paper"
 import LanguagePicker from "../language-picker/LanguagePicker"
 import UnitPicker from "../unit-picker/UnitPicker"
 
-import { Angular, Distance, Energy, Pressure, Temperature, Unit, UnitPropsDict, Velocity, Weight } from "js-ballistics"
-
-// console.log(Distance)
-// console.log(Object.keys(Distance).forEach(element => {
-//     console.log(Distance[element])
-// }));
+import { Unit, UnitProps, Measure } from "ts-ballistics"
 
 
-const get_unit_list = (unit) => Object.keys(unit).map((key) => { return { label: UnitPropsDict[unit[key]].name, value: unit[key] } })
+const get_unit_list = (unit) => Object.keys(unit).map((key) => { return { label: UnitProps[unit[key]].name, value: unit[key] } })
 
 
 const init_unit_list = [
     {
         label: "Distance",
-        list: get_unit_list(Distance),
+        list: get_unit_list(Measure.Distance),
         def: Distance.Meter
     },
     {
         label: "Velocity",
-        list: get_unit_list(Velocity),
-        def: Velocity.MPS
+        list: get_unit_list(Measure.Velocity),
+        def: Unit.MPS
     },
     {
         label: "Angular",
-        list: get_unit_list(Angular),
-        def: Angular.Mil
+        list: get_unit_list(Measure.Angular),
+        def: Unit.Mil
     },
     {
         label: "Weight",
-        list: get_unit_list(Weight),
-        def: Weight.Grain
+        list: get_unit_list(Measure.Weight),
+        def: Unit.Grain
     },
     {
         label: "Temperature",
-        list: get_unit_list(Temperature),
-        def: Temperature.Celsius
+        list: get_unit_list(Measure.Temperature),
+        def: Unit.Celsius
     },
     {
         label: "Pressure",
-        list: get_unit_list(Pressure),
-        def: Pressure.PSI
+        list: get_unit_list(Measure.Pressure),
+        def: Unit.PSI
     },
     {
         label: "Energy",
-        list: get_unit_list(Energy),
-        def: Energy.Joule
+        list: get_unit_list(Measure.Energy),
+        def: Unit.Joule
     },
 ]
 
