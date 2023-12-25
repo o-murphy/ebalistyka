@@ -38,30 +38,21 @@ export default function App() {
         },
     }
 
-    const props = {nightMode: nightMode, toggleNightMode: toggleNightMode}
-
     return (
         <SafeAreaProvider style={styles.provider}>
             <PaperProvider theme={theme}>
-
-                {/*<TopAppBar props={{nightMode: nightMode, toggleNightMode: toggleNightMode}}/>*/}
-
 
                 <NavigationContainer>
                     <Stack.Navigator
                         initialRouteName="Home"
                         screenOptions={{
-                            header: (props) => <TopAppBar
-                                {...props}
-                                toggleTheme={{
-                                    nightMode: nightMode,
-                                    toggleNightMode: toggleNightMode
-                                }}
+                            header: (props) => <TopAppBar {...props}
+                                params={{nightMode, toggleNightMode}}
                             />,
                         }}
                     >
 
-                        <Stack.Screen name="Home" component={HomeScreen}></Stack.Screen>
+                        <Stack.Screen name="Home" component={HomeScreen} />
 
                         <Stack.Screen name="Settings" component={SettingsScreen} />
 

@@ -5,8 +5,9 @@ import { getHeaderTitle } from '@react-navigation/elements';
 const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
 
 
-export default function TopAppBar({navigation, route, options, back, toggleTheme}) {
-    const { nightMode, toggleNightMode } = toggleTheme;
+export default function TopAppBar({navigation, route, options, back, params}) {
+
+    const { nightMode, toggleNightMode } = params;
     const title = getHeaderTitle(options, route.name);
 
     return (
