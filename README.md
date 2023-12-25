@@ -1,0 +1,1 @@
+### The project that created to replace the older projects as [eballistica_app](https://github.com/o-murphy/eballistica_app) and [py-balcalc](https://github.com/o-murphy/py-balcalc) with a new web based GUI
