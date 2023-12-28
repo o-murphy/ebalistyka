@@ -1,4 +1,4 @@
-import {Dimensions, ScrollView} from 'react-native';
+import {ScrollView} from 'react-native';
 import {useTheme} from 'react-native-paper';
 import ContentCard from '../../components/content-card/ContentCard';
 import SettingsUnitCard from '../../components/settings-unit-card/SettingsUnitCard';
@@ -11,8 +11,8 @@ export default function SettingsScreen({props}) {
     const styles = {
         scrollViewContainer: {
             backgroundColor: theme.colors.background,
-            height: Dimensions.get('window').height * 0.8, // Set the height as a percentage of the screen height
-            marginBottom: 80
+            // height: Dimensions.get('window').height * 0.8, // Set the height as a percentage of the screen height
+            // marginBottom: 80
         },
     }
 

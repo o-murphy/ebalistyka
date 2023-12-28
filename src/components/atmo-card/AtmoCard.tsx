@@ -1,16 +1,12 @@
-import {Card, Text, TextInput, useTheme} from "react-native-paper";
-import LanguagePicker from "../language-picker/LanguagePicker";
-import UnitPicker from "../unit-picker/UnitPicker";
+import {Text} from "react-native-paper";
 import {Col, Grid, Row} from "react-native-paper-grid";
 import MeasurePicker from "../measure-picker/MeasurePicker";
-import React, {useState} from "react";
-import {Dimensions, StyleSheet} from "react-native";
-import DropDown from "react-native-paper-dropdown";
+import React from "react";
+import InputCard from "../input-card/InputCard";
+import styleSheet from "../../styles/stylesheet";
 
 
 export default function AtmoCard() {
-
-    const theme = useTheme();
 
     const fields = [
         {
@@ -63,51 +59,27 @@ export default function AtmoCard() {
         },
     ]
 
-    const styles = StyleSheet.create({
-        grid: {
-            flex: 1,
-        },
-        row: {
-            flex: 1,
-            alignItems: "center",
-        },
-        col: {
-            flex: 1,
-        },
-        scrollViewContainer: {
-            backgroundColor: theme.colors.background,
-            height: Dimensions.get('window').height * 0.8, // Set the height as a percentage of the screen height
-            marginBottom: 80
-        },
-    });
-
     return (
-        <Card mode="elevated" elevation={1} style={{margin: 10, padding: 5}}>
-            <Card.Title title="Current atmosphere"/>
 
-            <Card.Content style={{marginHorizontal: 0, paddingHorizontal: 10}}>
-
-                <Grid style={styles.grid}>
-                    {
-                        fields.map(field => {
-                            return (
-                                <Row style={styles.row} key={field.key}>
-                                    <Col size={5}>
-                                        <Text>{field.label}</Text>
-                                    </Col>
-                                    <Col size={4}>
-                                        <MeasurePicker {...field.inputProps} />
-                                    </Col>
-                                    <Col size={1}>
-                                        <Text>{field.suffix}</Text>
-                                    </Col>
-                                </Row>)
-                        })
-                    }
-
-                </Grid>
-
-            </Card.Content>
-        </Card>
+        <InputCard title={"Current atmosphere"}>
+            <Grid style={styleSheet.grid.grid}>
+                {
+                    fields.map(field => {
+                        return (
+                            <Row style={styleSheet.grid.row} key={field.key}>
+                                <Col size={5}>
+                                    <Text>{field.label}</Text>
+                                </Col>
+                                <Col size={4}>
+                                    <MeasurePicker {...field.inputProps} />
+                                </Col>
+                                <Col size={1}>
+                                    <Text>{field.suffix}</Text>
+                                </Col>
+                            </Row>)
+                    })
+                }
+            </Grid>
+        </InputCard>
     )
 }

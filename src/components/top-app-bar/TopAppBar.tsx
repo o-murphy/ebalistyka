@@ -9,7 +9,7 @@ export default function TopAppBar({...props}) {
     const {navigation, route, options, back, params} = props;
     const { nightMode, toggleNightMode } = params;
     const title = getHeaderTitle(options, route.name);
-    console.log(route.name)
+
     return (
         <Appbar.Header elevated={true} >
             {back ? <Appbar.BackAction onPress={navigation.goBack} /> : null}

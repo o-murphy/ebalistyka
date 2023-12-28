@@ -1,12 +1,10 @@
-import {Card, Text, TextInput, useTheme} from "react-native-paper";
-import LanguagePicker from "../language-picker/LanguagePicker";
-import UnitPicker from "../unit-picker/UnitPicker";
+import {Text, TextInput, useTheme} from "react-native-paper";
 import {Col, Grid, Row} from "react-native-paper-grid";
 import MeasurePicker from "../measure-picker/MeasurePicker";
 import React, {useState} from "react";
-import {Dimensions, StyleSheet} from "react-native";
 import DropDown from "react-native-paper-dropdown";
-
+import InputCard from "../input-card/InputCard";
+import styleSheet from "../../styles/stylesheet";
 
 export default function WeaponCard() {
 
@@ -37,35 +35,7 @@ export default function WeaponCard() {
                 maxDecimals: 2,
             }
         },
-        // twistDir: {
-        //     label: "Twist",
-        //     inputProps: {
-        //         initialValue: 11,
-        //         maxValue: 20,
-        //         minValue: -20,
-        //         maxLength: 8,
-        //         maxDecimals: 2
-        //     }
-        // }
     ]
-
-    const styles = StyleSheet.create({
-        grid: {
-            flex: 1,
-        },
-        row: {
-            flex: 1,
-            alignItems: "center",
-        },
-        col: {
-            flex: 1,
-        },
-        scrollViewContainer: {
-            backgroundColor: theme.colors.background,
-            height: Dimensions.get('window').height * 0.8, // Set the height as a percentage of the screen height
-            marginBottom: 80
-        },
-    });
 
     const [showDropDown, setShowDropDown] = useState(false);
     const [twistDir, setTwistDir] = useState("Right");
@@ -81,61 +51,55 @@ export default function WeaponCard() {
     ];
 
     return (
-        <Card mode="elevated" elevation={1} style={{margin: 10, padding: 5}}>
-            <Card.Title title="Weapon"/>
 
-            <Card.Content style={{marginHorizontal: 0, paddingHorizontal: 10}}>
+        <InputCard title={"Weapon"}>
+            <Grid style={styleSheet.grid.grid}>
+                {
+                    fields.map(field => {
+                        return (
+                            <Row style={styleSheet.grid.row} key={field.key}>
+                                <Col size={5}>
+                                    <Text>{field.label}</Text>
+                                </Col>
+                                <Col size={4}>
+                                    <MeasurePicker {...field.inputProps} />
+                                </Col>
+                                <Col size={1}>
+                                    <Text>{field.suffix}</Text>
+                                </Col>
+                            </Row>)
+                    })
+                }
 
-                {/*<Text variant="titleMedium" style={{marginVertical: 10}}>Weapon</Text>*/}
+                <Row style={styleSheet.grid.row}>
+                    <Col size={5}>
+                        <Text>Twist direction</Text>
+                    </Col>
+                    <Col size={4}>
+                        <DropDown
+                            // label={" "}
+                            mode={"flat"}
+                            visible={showDropDown}
+                            showDropDown={() => setShowDropDown(true)}
+                            onDismiss={() => setShowDropDown(false)}
+                            value={twistDir}
+                            setValue={setTwistDir}
+                            list={twistDirs}
 
-                <Grid style={styles.grid}>
-                    {
-                        fields.map(field => {
-                            return (
-                                <Row style={styles.row} key={field.key}>
-                                    <Col size={5}>
-                                        <Text>{field.label}</Text>
-                                    </Col>
-                                    <Col size={4}>
-                                        <MeasurePicker {...field.inputProps} />
-                                    </Col>
-                                    <Col size={1}>
-                                        <Text>{field.suffix}</Text>
-                                    </Col>
-                                </Row>)
-                        })
-                    }
+                            inputProps={{
+                                style: {marginVertical: 8},
+                                dense: true,
+                                right: <TextInput.Icon icon="chevron-down" onPress={() => setShowDropDown(true)}/>
+                            }}
 
-                    <Row style={styles.row}>
-                        <Col size={5}>
-                            <Text>Twist direction</Text>
-                        </Col>
-                        <Col size={4}>
-                            <DropDown
-                                // label={" "}
-                                mode={"flat"}
-                                visible={showDropDown}
-                                showDropDown={() => setShowDropDown(true)}
-                                onDismiss={() => setShowDropDown(false)}
-                                value={twistDir}
-                                setValue={setTwistDir}
-                                list={twistDirs}
-
-                                inputProps={{
-                                    style: {marginVertical: 8},
-                                    dense: true,
-                                    right: <TextInput.Icon icon="chevron-down" onPress={() => setShowDropDown(true)}/>
-                                }}
-
-                            />
-                        </Col>
-                        <Col size={1}></Col>
-                    </Row>
+                        />
+                    </Col>
+                    <Col size={1}></Col>
+                </Row>
 
 
-                </Grid>
+            </Grid>
+        </InputCard>
 
-            </Card.Content>
-        </Card>
     )
 }

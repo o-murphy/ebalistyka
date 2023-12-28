@@ -1,13 +1,14 @@
-import {Card, Text, useTheme} from "react-native-paper"
+import {Text} from "react-native-paper"
 import UnitPicker from "../unit-picker/UnitPicker"
 import {Col, Grid, Row} from "react-native-paper-grid";
+import InputCard from "../input-card/InputCard";
+import styleSheet from "../../styles/stylesheet";
 
 import {
     Unit,
     UnitProps,
     Measure,
 } from "js-ballistics"
-import {Dimensions, StyleSheet, View} from "react-native";
 
 
 const get_unit_list = (measure: Object) =>
@@ -15,7 +16,7 @@ const get_unit_list = (measure: Object) =>
         return {label: UnitProps[measure[key]].name, value: measure[key]}
     })
 
-const init_unit_list = [
+const fields = [
     {
         key: "distance",
         label: "Distance",
@@ -87,51 +88,23 @@ const init_unit_list = [
 
 export default function SettingsUnitCard() {
 
-    const theme = useTheme();
-
-    const styles = StyleSheet.create({
-        grid: {
-            flex: 1,
-        },
-        row: {
-            flex: 1,
-            alignItems: "center",
-        },
-        col: {
-            flex: 1,
-        },
-    });
-
     return (
+        <InputCard title="Units of measurement">
+            <Grid style={styleSheet.grid.grid}>
 
-        <Card mode="elevated" elevation={1} style={{margin: 10, padding: 5}}>
-            <Card.Title title="Units of measurement"/>
+                {fields.map((field) =>
+                    <Row style={styleSheet.grid.row} key={field.key}>
+                        <Col>
+                            <Text>{field.label}</Text>
+                        </Col>
+                        <Col>
+                            <UnitPicker props={field}/>
+                        </Col>
+                    </Row>
+                )}
 
-            <Card.Content style={{marginHorizontal: 0, paddingHorizontal: 10}}>
-
-
-                <Grid style={styles.grid}>
-
-                    {/*<Text variant="titleMedium" style={{marginVertical: 10, fontWeight: "bold"}}>Units of measurement</Text>*/}
-
-                    {init_unit_list.map((field) =>
-                        <Row style={styles.row} key={field.key}>
-                            <Col>
-                                <Text>{field.label}</Text>
-                            </Col>
-                            <Col>
-                                <UnitPicker props={field}/>
-                            </Col>
-                        </Row>
-                    )}
-
-                </Grid>
-
-
-            </Card.Content>
-        </Card>
-
-
+            </Grid>
+        </InputCard>
     )
 
 }
