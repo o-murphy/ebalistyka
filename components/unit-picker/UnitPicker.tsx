@@ -10,7 +10,7 @@ export default function UnitPicker({ props }) {
     return(
       <DropDown
         label={label}
-        mode={"outlined"}
+        mode={"flat"}
         visible={showDropDown}
         showDropDown={() => setShowDropDown(true)}
         onDismiss={() => setShowDropDown(false)}

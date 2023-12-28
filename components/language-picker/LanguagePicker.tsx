@@ -20,7 +20,7 @@ export default function LanguagePicker() {
     return(
       <DropDown 
         label={"Language"}
-        mode={"outlined"}
+        mode={"flat"}
         visible={showDropDown}
         showDropDown={() => setShowDropDown(true)}
         onDismiss={() => setShowDropDown(false)}
