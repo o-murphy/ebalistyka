@@ -5,8 +5,8 @@ import { getHeaderTitle } from '@react-navigation/elements';
 const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
 
 
-export default function TopAppBar({navigation, route, options, back, params}) {
-
+export default function TopAppBar({...props}) {
+    const {navigation, route, options, back, params} = props;
     const { nightMode, toggleNightMode } = params;
     const title = getHeaderTitle(options, route.name);
     console.log(route.name)
@@ -18,7 +18,7 @@ export default function TopAppBar({navigation, route, options, back, params}) {
                 icon={nightMode ? "brightness-7" : "brightness-3"}
                 onPress={() => toggleNightMode(!nightMode)}
             />
-            {route.name === "Home" ? <Appbar.Action icon='cog' onPress={() => navigation.navigate('Settings')} /> : null}
+            {/*{route.name === "Home" ? <Appbar.Action icon='cog' onPress={() => navigation.navigate('Settings')} /> : null}*/}
             <Appbar.Action icon={MORE_ICON} onPress={() => { }} />
 
 

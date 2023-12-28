@@ -1,7 +1,8 @@
 import {Dimensions, ScrollView} from 'react-native';
 import {useTheme} from 'react-native-paper';
 import ContentCard from '../../components/content-card/ContentCard';
-import SettingsCard from '../../components/settings-card/SettingsCard';
+import SettingsUnitCard from '../../components/settings-unit-card/SettingsUnitCard';
+import SettingsGeneralCard from "../../components/settings-general-card/SettingsGeneralCard";
 
 export default function SettingsScreen({props}) {
 
@@ -22,8 +23,8 @@ export default function SettingsScreen({props}) {
             alwaysBounceVertical={false}
             showsVerticalScrollIndicator={true}
         >
-            <SettingsCard />
-            <ContentCard />
+            <SettingsGeneralCard />
+            <SettingsUnitCard />
         </ScrollView>
     );
 }

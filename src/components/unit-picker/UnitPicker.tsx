@@ -2,31 +2,21 @@ import React, { useState } from "react";
 import { TextInput } from "react-native-paper";
 import DropDown from "react-native-paper-dropdown";
 
-export default function LanguagePicker() {
+export default function UnitPicker({ props }) {
+    const {label, list, def} = props
     const [showDropDown, setShowDropDown] = useState(false);
-    const [language, setLanguage] = useState("EN");
-    const languageList = [
-        {
-            label: "English",
-            value: "EN",
-        },  
-        {
-          label: "Ukrainian",
-          value: "UA",
-        },
-      ];
-
+    const [unit, setUnit] = useState(def ? def : "");
 
     return(
-      <DropDown 
-        label={"Language"}
+      <DropDown
+        // label={label}
         mode={"flat"}
         visible={showDropDown}
         showDropDown={() => setShowDropDown(true)}
         onDismiss={() => setShowDropDown(false)}
-        value={language}
-        setValue={setLanguage}
-        list={languageList}
+        value={unit}
+        setValue={setUnit}
+        list={list ? list : []}
 
         inputProps = {{
           style: {marginVertical: 8},
@@ -36,5 +26,4 @@ export default function LanguagePicker() {
 
       />
     );
-
 }

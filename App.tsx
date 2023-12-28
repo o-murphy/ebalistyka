@@ -9,11 +9,14 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 
-import TopAppBar from './components/top-app-bar/TopAppBar';
-import SettingsScreen from './pages/settings-screen/SettingsScreen';
-import HomeScreen from './pages/home-screen/HomeScreen';
-import BotAppBar from './components/bot-app-bar/BotAppBar';
-// import { createStackNavigator } from '@react-navigation/native-stack';
+import TopAppBar from './src/components/top-app-bar/TopAppBar';
+import SettingsScreen from './src/screens/settings/SettingsScreen';
+import HomeScreen from './src/screens/home/HomeScreen';
+import CurrentAtmo from "./src/screens/atmo/CurrentAtmo";
+import BotAppBar from './src/components/bot-app-bar/BotAppBar';
+
+
+import {navigationRef} from "./src/RootNavigation";
 
 
 const Stack = createNativeStackNavigator();
@@ -42,25 +45,25 @@ export default function App() {
         <SafeAreaProvider style={styles.provider}>
             <PaperProvider theme={theme}>
 
-                <NavigationContainer>
+                <NavigationContainer ref={navigationRef}>
                     <Stack.Navigator
                         initialRouteName="Home"
                         screenOptions={{
                             header: (props) => <TopAppBar {...props}
-                                params={{nightMode, toggleNightMode}}
+                                                          params={{nightMode, toggleNightMode}}
                             />,
                         }}
                     >
 
-                        <Stack.Screen name="Home" component={HomeScreen} />
+                        <Stack.Screen name="Home" component={HomeScreen}/>
+                        <Stack.Screen name="Atmosphere" component={CurrentAtmo}/>
+                        <Stack.Screen name="Settings" component={SettingsScreen}/>
 
-                        <Stack.Screen name="Settings" component={SettingsScreen} />
 
                     </Stack.Navigator>
+                    <BotAppBar/>
 
                 </NavigationContainer>
-
-                <BotAppBar/>
 
 
                 <StatusBar style="auto"/>

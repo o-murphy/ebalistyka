@@ -2,12 +2,10 @@ import React from "react";
 import {View, ScrollView, Dimensions} from 'react-native';
 import {Button, Text, useTheme} from 'react-native-paper';
 import {StyleSheet} from "react-native";
-import MeasurePicker from "../../components/measure-picker/measurePicker";
-import { Col, Row, Grid } from "react-native-paper-grid";
-import RifleCard from "../../components/rifle-card/rifleCard";
+import AtmoCard from "../../components/atmo-card/AtmoCard";
 
 
-export default function HomeScreen({ navigation }) {
+export default function CurrentAtmo({ navigation }) {
 
     const theme = useTheme();
 
@@ -39,11 +37,7 @@ export default function HomeScreen({ navigation }) {
             alwaysBounceVertical={false}
             showsVerticalScrollIndicator={true}
         >
-        {/*<Button mode="elevated" onPress={() => navigation.navigate('Settings')}>*/}
-        {/*    Go to settings*/}
-        {/*</Button>*/}
-        <RifleCard />
-
+        <AtmoCard />
         </ScrollView>
     );
 }
