@@ -58,7 +58,7 @@ export default function SettingsCard() {
 
 
     return (
-        <Card mode="elevated" elevation={1} style={{margin: 10, padding: 0}}>
+        <Card mode="elevated" elevation={1} style={{margin: 10, padding: 10}}>
             <Card.Title title="Settings"/>
 
             <Card.Content style={{marginHorizontal: 10, paddingHorizontal: 10}}>
