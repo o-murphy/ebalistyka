@@ -9,6 +9,8 @@ import {
     UnitProps,
     Measure,
 } from "js-ballistics"
+import SimpleModal from "../simple-modal/SimpleModal";
+import {useState} from "react";
 
 
 const get_unit_list = (measure: Object) =>
@@ -21,7 +23,7 @@ const fields = [
         key: "distance",
         label: "Distance",
         list: get_unit_list(Measure.Distance),
-        def: Unit.Meter
+        def: Unit.Meter,
     },
     {
         key: "velocity",
@@ -86,19 +88,36 @@ const fields = [
 ]
 
 
+const setUnit = (label: string, unit: Unit): void => {
+    const filtered = fields.filter(item => item.label === label)[0]
+    console.log(filtered)
+    fields[fields.indexOf(filtered)].def = unit
+}
+
 export default function SettingsUnitCard() {
 
+    const [u, sU] = useState(0)
+
+    const setUnit = (label: string, unit: Unit): void => {
+        const filtered = fields.filter(item => item.label === label)[0]
+        console.log(filtered)
+        fields[fields.indexOf(filtered)].def = unit
+        sU(u+1)
+    }
+
     return (
-        <InputCard title="Units of measurement">
+        <InputCard title="Units of measurement" >
             <Grid style={styleSheet.grid.grid}>
 
                 {fields.map((field) =>
                     <Row style={styleSheet.grid.row} key={field.key}>
-                        <Col>
+                        <Col size={9}>
                             <Text>{field.label}</Text>
                         </Col>
-                        <Col>
-                            <UnitPicker props={field}/>
+                        <Col size={7}>
+                            <SimpleModal title={"Language"} text={UnitProps[field.def].name}>
+                                <UnitPicker field={field} setUnit={setUnit} />
+                            </SimpleModal>
                         </Col>
                     </Row>
                 )}

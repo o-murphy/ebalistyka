@@ -1,29 +1,16 @@
 import React, { useState } from "react";
-import { TextInput } from "react-native-paper";
+import {Checkbox, List, TextInput} from "react-native-paper";
 import DropDown from "react-native-paper-dropdown";
 
-export default function UnitPicker({ props }) {
-    const {label, list, def} = props
-    const [showDropDown, setShowDropDown] = useState(false);
-    const [unit, setUnit] = useState(def ? def : "");
+export default function UnitPicker({ field, setUnit }) {
 
-    return(
-      <DropDown
-        // label={label}
-        mode={"flat"}
-        visible={showDropDown}
-        showDropDown={() => setShowDropDown(true)}
-        onDismiss={() => setShowDropDown(false)}
-        value={unit}
-        setValue={setUnit}
-        list={list ? list : []}
-
-        inputProps = {{
-          style: {marginVertical: 8},
-          dense: true,
-          right: <TextInput.Icon icon="chevron-down" onPress={() => setShowDropDown(true)}/>
-        }}
-
-      />
+    return (
+        <List.Section>
+            {field.list.map(item => <Checkbox.Item key={field.key}
+                label={item.label}
+                status={item.value === field.def ? "checked" : null}
+                onPress={() => setUnit(field.label, item.value)}
+            />)}
+        </List.Section>
     );
 }

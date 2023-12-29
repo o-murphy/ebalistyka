@@ -1,8 +1,3 @@
-import {Dimensions} from "react-native";
-import {useTheme} from "react-native-paper";
-
-// const theme = useTheme()
-
 const styleSheet = {
     grid: {
         grid: {
@@ -10,6 +5,7 @@ const styleSheet = {
         },
         row: {
             flex: 1,
+            flexDirection: "row",
             alignItems: "center",
         },
         col: {
@@ -17,7 +13,7 @@ const styleSheet = {
         },
     },
     card: {
-        card: {margin: 10, padding: 5},
+        card: {margin: 15, padding: 10},
         content: {marginHorizontal: 0, paddingHorizontal: 10},
     },
     bottomBar: {
@@ -30,6 +26,32 @@ const styleSheet = {
     fab: {
         position: 'absolute',
         right: 16
+    },
+    chip: {
+        measure: {
+            display: "flex",
+            // marginLeft: "auto",
+        },
+        measure_text: {
+            textAlign: "right"
+        }
+    },
+    modal: {
+        simple: {
+            container: {
+                display: "flex",
+                padding: 20,
+                alignSelf: "center",
+            },
+            title: {
+                textAlign: "center",
+                marginBottom: 10
+            },
+            closeButton: {
+                marginTop: 10
+            }
+        },
+
     }
 }
 

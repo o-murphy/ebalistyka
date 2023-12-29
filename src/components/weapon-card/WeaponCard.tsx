@@ -1,14 +1,13 @@
-import {Text, TextInput, useTheme} from "react-native-paper";
+import {Text, SegmentedButtons} from "react-native-paper";
 import {Col, Grid, Row} from "react-native-paper-grid";
-import MeasurePicker from "../measure-picker/MeasurePicker";
 import React, {useState} from "react";
-import DropDown from "react-native-paper-dropdown";
 import InputCard from "../input-card/InputCard";
 import styleSheet from "../../styles/stylesheet";
+import SimpleModal from "../simple-modal/SimpleModal";
+import MeasurePicker from "../measure-picker/MeasurePicker";
+
 
 export default function WeaponCard() {
-
-    const theme = useTheme();
 
     const fields = [
         {
@@ -37,18 +36,9 @@ export default function WeaponCard() {
         },
     ]
 
-    const [showDropDown, setShowDropDown] = useState(false);
+    const twistStates = [{value: 'Right', label: 'Right'}, {value: 'Left', label: 'Left'}]
+
     const [twistDir, setTwistDir] = useState("Right");
-    const twistDirs = [
-        {
-            label: "Right",
-            value: "Right",
-        },
-        {
-            label: "Left",
-            value: "Left",
-        },
-    ];
 
     return (
 
@@ -58,43 +48,29 @@ export default function WeaponCard() {
                     fields.map(field => {
                         return (
                             <Row style={styleSheet.grid.row} key={field.key}>
-                                <Col size={5}>
+                                <Col size={6}>
                                     <Text>{field.label}</Text>
                                 </Col>
                                 <Col size={4}>
-                                    <MeasurePicker {...field.inputProps} />
-                                </Col>
-                                <Col size={1}>
-                                    <Text>{field.suffix}</Text>
+                                    <SimpleModal title={`${field.label}, ${field.suffix}`}
+                                                  text={`${field.inputProps.initialValue} ${field.suffix}`}
+                                    >
+                                        <MeasurePicker {...field.inputProps} />
+                                    </SimpleModal>
                                 </Col>
                             </Row>)
                     })
                 }
 
                 <Row style={styleSheet.grid.row}>
-                    <Col size={5}>
+                    <Col size={6}>
                         <Text>Twist direction</Text>
                     </Col>
                     <Col size={4}>
-                        <DropDown
-                            // label={" "}
-                            mode={"flat"}
-                            visible={showDropDown}
-                            showDropDown={() => setShowDropDown(true)}
-                            onDismiss={() => setShowDropDown(false)}
-                            value={twistDir}
-                            setValue={setTwistDir}
-                            list={twistDirs}
-
-                            inputProps={{
-                                style: {marginVertical: 8},
-                                dense: true,
-                                right: <TextInput.Icon icon="chevron-down" onPress={() => setShowDropDown(true)}/>
-                            }}
-
-                        />
+                        <SimpleModal title={"Twist"} text={twistDir}>
+                            <SegmentedButtons buttons={twistStates} value={twistDir} onValueChange={setTwistDir}/>
+                        </SimpleModal>
                     </Col>
-                    <Col size={1}></Col>
                 </Row>
 
 

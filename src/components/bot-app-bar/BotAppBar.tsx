@@ -41,7 +41,7 @@ const BotAppBar = () => {
             safeAreaInsets={{bottom}}
         >
 
-            <Appbar.Action icon="hydraulic-oil-temperature" onPress={() => navigation.navigate("Atmosphere")}/>
+            <Appbar.Action icon="weather-partly-cloudy" onPress={() => navigation.navigate("Atmosphere")}/>
             <Appbar.Action icon="cog-outline" onPress={() => navigation.navigate("Settings")}/>
 
             <FAB

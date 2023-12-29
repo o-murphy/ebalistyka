@@ -4,6 +4,7 @@ import MeasurePicker from "../measure-picker/MeasurePicker";
 import React from "react";
 import InputCard from "../input-card/InputCard";
 import styleSheet from "../../styles/stylesheet";
+import SimpleModal from "../simple-modal/SimpleModal";
 
 
 export default function AtmoCard() {
@@ -13,6 +14,7 @@ export default function AtmoCard() {
             key: "temp",
             label: "Temperature",
             suffix: "C",
+            icon: "thermometer",
             inputProps: {
                 initialValue: 15,
                 maxValue: 50,
@@ -25,6 +27,7 @@ export default function AtmoCard() {
             key: "pressure",
             label: "Pressure",
             suffix: "mmHg",
+            icon: "speedometer",
             inputProps: {
                 initialValue: 760,
                 maxValue: 1000,
@@ -37,6 +40,7 @@ export default function AtmoCard() {
             key: "humidity",
             label: "Humidity",
             suffix: "%",
+            icon: "water",
             inputProps: {
                 initialValue: 78,
                 maxValue: 100,
@@ -67,14 +71,15 @@ export default function AtmoCard() {
                     fields.map(field => {
                         return (
                             <Row style={styleSheet.grid.row} key={field.key}>
-                                <Col size={5}>
+                                <Col size={6}>
                                     <Text>{field.label}</Text>
                                 </Col>
                                 <Col size={4}>
-                                    <MeasurePicker {...field.inputProps} />
-                                </Col>
-                                <Col size={1}>
-                                    <Text>{field.suffix}</Text>
+                                    <SimpleModal icon={field.icon} title={`${field.label}, ${field.suffix}`}
+                                                  text={`${field.inputProps.initialValue} ${field.suffix}`}
+                                    >
+                                        <MeasurePicker {...field.inputProps} />
+                                    </SimpleModal>
                                 </Col>
                             </Row>)
                     })

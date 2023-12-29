@@ -1,40 +1,16 @@
-import React, { useState } from "react";
-import { TextInput } from "react-native-paper";
-import DropDown from "react-native-paper-dropdown";
+import React from "react";
+import {List, Checkbox} from "react-native-paper";
 
-export default function LanguagePicker() {
-    const [showDropDown, setShowDropDown] = useState(false);
-    const [language, setLanguage] = useState("EN");
-    const languageList = [
-        {
-            label: "English",
-            value: "EN",
-        },  
-        {
-          label: "Ukrainian",
-          value: "UA",
-        },
-      ];
+export default function LanguagePicker({language, setLanguage, languageList}) {
 
-
-    return(
-      <DropDown 
-        // label={"Language"}
-        mode={"flat"}
-        visible={showDropDown}
-        showDropDown={() => setShowDropDown(true)}
-        onDismiss={() => setShowDropDown(false)}
-        value={language}
-        setValue={setLanguage}
-        list={languageList}
-
-        inputProps = {{
-          style: {marginVertical: 8, flex: 1, marginBottom: 10},
-          dense: true,
-          right: <TextInput.Icon icon="chevron-down" onPress={() => setShowDropDown(true)}/>
-        }}
-
-      />
+    return (
+        <List.Section>
+            {languageList.map(item => <Checkbox.Item
+                label={item.label}
+                status={item.value === language ? "checked" : null}
+                onPress={() => setLanguage(item.value)}
+            />)}
+        </List.Section>
     );
 
 }

@@ -3,6 +3,7 @@ import {ScrollView} from 'react-native';
 import {useTheme} from 'react-native-paper';
 import {StyleSheet} from "react-native";
 import WeaponCard from "../../components/weapon-card/WeaponCard";
+import MeasureModal from "../../components/simple-modal/SimpleModal";
 
 
 export default function HomeScreen({navigation}) {
