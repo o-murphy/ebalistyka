@@ -88,19 +88,12 @@ const fields = [
 ]
 
 
-const setUnit = (label: string, unit: Unit): void => {
-    const filtered = fields.filter(item => item.label === label)[0]
-    console.log(filtered)
-    fields[fields.indexOf(filtered)].def = unit
-}
-
 export default function SettingsUnitCard() {
 
     const [u, sU] = useState(0)
 
     const setUnit = (label: string, unit: Unit): void => {
         const filtered = fields.filter(item => item.label === label)[0]
-        console.log(filtered)
         fields[fields.indexOf(filtered)].def = unit
         sU(u+1)
     }

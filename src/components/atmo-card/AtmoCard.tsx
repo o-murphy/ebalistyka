@@ -53,6 +53,7 @@ export default function AtmoCard() {
             key: "altitude",
             label: "Altitude",
             suffix: "m",
+            icon: "ruler",
             inputProps: {
                 initialValue: 150,
                 maxValue: 3000,
