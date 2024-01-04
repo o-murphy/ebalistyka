@@ -13,8 +13,14 @@ const styleSheet = {
         },
     },
     card: {
-        card: {margin: 15, padding: 10},
-        content: {marginHorizontal: 0, paddingHorizontal: 10},
+        card: {
+            margin: 15,
+            padding: 10
+        },
+        content: {
+            marginHorizontal: 0,
+            paddingHorizontal: 10
+        },
     },
     bottomBar: {
         backgroundColor: 'aquamarine',
@@ -40,8 +46,10 @@ const styleSheet = {
         simple: {
             container: {
                 display: "flex",
-                padding: 20,
                 alignSelf: "center",
+                minWidth: 280,
+                margin: 20,
+                padding: 20
             },
             title: {
                 textAlign: "center",

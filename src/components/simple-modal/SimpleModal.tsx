@@ -1,44 +1,53 @@
 import * as React from 'react';
-import {Modal, Portal, Text, Chip, useTheme, Button} from 'react-native-paper';
-import {View, StyleSheet} from "react-native";
+import {Portal, Chip, useTheme, Button, Dialog} from 'react-native-paper';
+import {ScrollView, View} from "react-native";
 import styleSheet from "../../styles/stylesheet";
 
 
-const SimpleModal = ({children, title, text, icon = null, visible = false}) => {
+const SimpleModal = ({
+                         children,
+                         title,
+                         text,
+                         icon = null,
+                         onAccept = null,
+                     }) => {
 
-    const theme = useTheme()
+    const [visible, setVisible] = React.useState(false);
 
-    const [is_visible, setVisible] = React.useState(visible);
+    const showDialog = () => setVisible(true);
+    const hideDialog = () => {
+        setVisible(false);
+    };
 
-    const showModal = () => setVisible(true);
-    const hideModal = () => setVisible(false);
-
-    const modalSimpleStyle = StyleSheet.create(styleSheet.modal.simple)
-    const textStyle = StyleSheet.compose(modalSimpleStyle.title, null)
-    const containerStyle = StyleSheet.compose(modalSimpleStyle.container, {backgroundColor: theme.colors.background})
+    const onAcceptBtn = () => {
+        if (onAccept) onAccept();
+        setVisible(false);
+    }
 
     return (
         <View style={{display: "flex", justifyContent: "center"}}>
             <Chip icon={icon} closeIcon="square-edit-outline"
-                // style={styleSheet.chip.measure}
-                // textStyle={styleSheet.chip.measure_text}
-                  onPress={showModal}
-                  onClose={showModal}
+                  onPress={showDialog}
+                  onClose={showDialog}
             >
                 {text}
             </Chip>
             <Portal>
-                <Modal visible={is_visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
-                    <Text variant="titleLarge" style={textStyle}>
-                        {title}
-                    </Text>
-                    {children}
-                    <Button style={styleSheet.modal.simple.closeButton}
-                            icon={"check"} mode={"elevated"} onPress={hideModal}>Ok</Button>
-                </Modal>
+                <Dialog visible={visible} onDismiss={hideDialog}>
+                    <Dialog.Title>{title}</Dialog.Title>
+                    <Dialog.Content>
+                        {children}
+                        {onAccept ? <Button
+                            style={styleSheet.modal.simple.closeButton}
+                            icon={"check"}
+                            mode={"elevated"}
+                            onPress={onAcceptBtn}>
+                            {"Ok"}
+                        </Button> : null}
+                    </Dialog.Content>
+                </Dialog>
             </Portal>
         </View>
-        // {/*</PaperProvider>*/}
     );
 };
 

@@ -38,7 +38,14 @@ export default function WeaponCard() {
 
     const twistStates = [{value: 'Right', label: 'Right'}, {value: 'Left', label: 'Left'}]
 
-    const [twistDir, setTwistDir] = useState("Right");
+    const [curTwistDir, setCurTwistDir] = useState("Right");
+    const [twistDir, setTwistDir] = useState(curTwistDir);
+
+
+
+    const acceptTwistDir = (): void => {
+        setCurTwistDir(twistDir)
+    }
 
     return (
 
@@ -53,7 +60,8 @@ export default function WeaponCard() {
                                 </Col>
                                 <Col size={4}>
                                     <SimpleModal title={`${field.label}, ${field.suffix}`}
-                                                  text={`${field.inputProps.initialValue} ${field.suffix}`}
+                                                 text={`${field.inputProps.initialValue} ${field.suffix}`}
+                                                 onAccept={() => console.log(`${field.label} accepted`)}
                                     >
                                         <MeasurePicker {...field.inputProps} />
                                     </SimpleModal>
@@ -67,7 +75,7 @@ export default function WeaponCard() {
                         <Text>Twist direction</Text>
                     </Col>
                     <Col size={4}>
-                        <SimpleModal title={"Twist"} text={twistDir}>
+                        <SimpleModal title={"Twist"} text={curTwistDir} onAccept={acceptTwistDir}>
                             <SegmentedButtons buttons={twistStates} value={twistDir} onValueChange={setTwistDir}/>
                         </SimpleModal>
                     </Col>

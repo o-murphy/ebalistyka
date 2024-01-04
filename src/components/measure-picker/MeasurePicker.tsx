@@ -3,15 +3,25 @@ import {NumberFormatBase} from 'react-number-format';
 import {TextInput} from "react-native-paper";
 
 
+type MeasurePickerProps = {
+    initialValue: number,
+    maxValue: number,
+    minValue: number,
+    maxLength: number,
+    maxDecimals: number,
+}
+
+
 const MeasurePicker = ({
                            initialValue = 0,
                            maxValue = 3000,
                            minValue = 1,
                            maxLength = 8,
                            maxDecimals = 2,
-                       }) => {
 
-    const _initialValue = initialValue.toFixed(maxDecimals)
+                       }: MeasurePickerProps) => {
+
+    let _initialValue = initialValue.toFixed(maxDecimals)
     const [rawValue, setRawValue] = useState(initialValue)
 
     const rightToLeftFormatter = (value: string) => {
@@ -36,6 +46,7 @@ const MeasurePicker = ({
 
 
     const onValueChange = (value): void => {
+        _initialValue = rawValue.toFixed(maxDecimals)
         setRawValue(parseFloat(value.formattedValue))
     }
 
