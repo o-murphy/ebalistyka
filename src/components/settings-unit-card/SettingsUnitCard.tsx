@@ -1,5 +1,4 @@
 import {Text} from "react-native-paper"
-import UnitPicker from "../unit-picker/UnitPicker"
 import {Col, Grid, Row} from "react-native-paper-grid";
 import InputCard from "../input-card/InputCard";
 import styleSheet from "../../styles/stylesheet";
@@ -10,7 +9,8 @@ import {
     Measure,
 } from "js-ballistics"
 import SimpleModal from "../simple-modal/SimpleModal";
-import {useState} from "react";
+import {useReducer, useState} from "react";
+import RadioGroup from "../radio-group/RadioGroup";
 
 
 const get_unit_list = (measure: Object) =>
@@ -90,31 +90,39 @@ const fields = [
 
 export default function SettingsUnitCard() {
 
-    const [u, sU] = useState(0)
 
-    const setUnit = (label: string, unit: Unit): void => {
-        const filtered = fields.filter(item => item.label === label)[0]
-        fields[fields.indexOf(filtered)].def = unit
-        sU(u+1)
+    const setUnit = (field, unit: Unit): void => {
+        fields[fields.indexOf(field)].def = unit;
     }
 
+    const createRow = field => {
+        const [upd, forceUpdate] = useState(false);
+        const [curUnit, setCurUnit] = useState(field.def);
+
+        const acceptUnit = () => {
+            setUnit(field, curUnit);
+            forceUpdate(!upd);
+        }
+
+        return (
+            <Row style={styleSheet.grid.row} key={field.key}>
+                <Col size={9}>
+                    <Text>{field.label}</Text>
+                </Col>
+                <Col size={7}>
+                    <SimpleModal title={field.label} text={UnitProps[field.def].name} onAccept={acceptUnit}>
+                        <RadioGroup value={curUnit} setValue={setCurUnit} items={field.list} />
+                    </SimpleModal>
+                </Col>
+            </Row>
+        )
+    }
+
+
     return (
-        <InputCard title="Units of measurement" >
+        <InputCard title="Units of measurement">
             <Grid style={styleSheet.grid.grid}>
-
-                {fields.map((field) =>
-                    <Row style={styleSheet.grid.row} key={field.key}>
-                        <Col size={9}>
-                            <Text>{field.label}</Text>
-                        </Col>
-                        <Col size={7}>
-                            <SimpleModal title={"Language"} text={UnitProps[field.def].name}>
-                                <UnitPicker field={field} setUnit={setUnit} />
-                            </SimpleModal>
-                        </Col>
-                    </Row>
-                )}
-
+                {fields.map(field => createRow(field))}
             </Grid>
         </InputCard>
     )
