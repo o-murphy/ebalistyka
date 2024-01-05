@@ -8,7 +8,7 @@ interface ItemProps {
   option: string | null;
   height: number;
   index: number;
-  currentScrollIndex: Animated.AnimatedAddition;
+  currentScrollIndex: Animated.AnimatedAddition<any>;
   visibleRest: number;
   rotationFunction: (x: number) => number;
   opacityFunction: (x: number) => number;
