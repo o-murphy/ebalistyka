@@ -3,7 +3,7 @@ import {NumberFormatBase} from 'react-number-format';
 import {TextInput} from "react-native-paper";
 
 
-type MeasurePickerProps = {
+export type MeasurePickerProps = {
     initialValue: number,
     maxValue: number,
     minValue: number,

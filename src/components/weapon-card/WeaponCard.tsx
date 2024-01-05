@@ -5,6 +5,7 @@ import InputCard from "../input-card/InputCard";
 import styleSheet from "../../styles/stylesheet";
 import SimpleModal from "../simple-modal/SimpleModal";
 import MeasurePicker from "../measure-picker/MeasurePicker";
+import IntPicker from "../int-picker/IntPicker";
 
 
 export default function WeaponCard() {
@@ -15,6 +16,7 @@ export default function WeaponCard() {
             label: "Diameter",
             "suffix": "in",
             inputProps: {
+                mode: "float",
                 initialValue: 0.308,
                 maxValue: 22,
                 minValue: 0.001,
@@ -27,6 +29,7 @@ export default function WeaponCard() {
             label: "Twist",
             "suffix": "in",
             inputProps: {
+                mode: "int",
                 initialValue: 11,
                 maxValue: 20,
                 minValue: -20,
@@ -64,6 +67,8 @@ export default function WeaponCard() {
                                                  onAccept={() => console.log(`${field.label} accepted`)}
                                     >
                                         <MeasurePicker {...field.inputProps} />
+                                        {field.inputProps.mode === "int" ?
+                                            <IntPicker  {...field.inputProps} /> : null}
                                     </SimpleModal>
                                 </Col>
                             </Row>)

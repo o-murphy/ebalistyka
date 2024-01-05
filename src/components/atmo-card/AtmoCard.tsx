@@ -77,7 +77,8 @@ export default function AtmoCard() {
                                 </Col>
                                 <Col size={4}>
                                     <SimpleModal icon={field.icon} title={`${field.label}, ${field.suffix}`}
-                                                  text={`${field.inputProps.initialValue} ${field.suffix}`}
+                                                 text={`${field.inputProps.initialValue} ${field.suffix}`}
+                                                 onAccept={() => console.log(`${field.label} accepted`)}
                                     >
                                         <MeasurePicker {...field.inputProps} />
                                     </SimpleModal>

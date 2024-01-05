@@ -28,6 +28,7 @@
     "react-native-text-input-mask": "^3.2.0",
     "react-native-vector-icons": "^10.0.2",
     "react-native-web": "~0.19.6",
+    "react-native-wheely": "^0.6.0",
     "react-number-format": "^5.3.1"
   },
   "devDependencies": {
