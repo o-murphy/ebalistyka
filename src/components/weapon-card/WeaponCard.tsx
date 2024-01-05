@@ -51,31 +51,40 @@ export default function WeaponCard() {
         setCurTwistDir(twistDir)
     }
 
+    const createField = field => {
+
+        const [curValue, setCurValue] = useState(field.inputProps.initialValue);
+        const [value, setValue] = useState(curValue)
+
+        const onAccept = () => {
+            // console.log(value)
+            setCurValue(value)
+        }
+
+        return (
+            <Row style={styleSheet.grid.row} key={field.key}>
+                <Col size={6}>
+                    <Text>{field.label}</Text>
+                </Col>
+                <Col size={4}>
+                    <SimpleModal title={`${field.label}, ${field.suffix}`}
+                                 text={`${curValue} ${field.suffix}`}
+                                 onAccept={onAccept}
+                    >
+                        {field.inputProps.mode === "int"
+                            ? <IntPicker  {...field.inputProps} initialValue={curValue} onChange={setValue}/>
+                            : <FloatPicker  {...field.inputProps} initialValue={curValue} onChange={setValue}/>}
+                    </SimpleModal>
+                </Col>
+            </Row>)
+    }
+
     return (
 
         <InputCard title={"Weapon"}>
             <Grid style={styleSheet.grid.grid}>
-                {
-                    fields.map(field => {
-                        return (
-                            <Row style={styleSheet.grid.row} key={field.key}>
-                                <Col size={6}>
-                                    <Text>{field.label}</Text>
-                                </Col>
-                                <Col size={4}>
-                                    <SimpleModal title={`${field.label}, ${field.suffix}`}
-                                                 text={`${field.inputProps.initialValue} ${field.suffix}`}
-                                                 onAccept={() => console.log(`${field.label} accepted`)}
-                                    >
-                                        <MeasurePicker {...field.inputProps} />
-                                        {field.inputProps.mode === "int"
-                                            ? <IntPicker  {...field.inputProps} />
-                                            : <FloatPicker  {...field.inputProps} />}
-                                    </SimpleModal>
-                                </Col>
-                            </Row>)
-                    })
-                }
+
+                {fields.map(createField)}
 
                 <Row style={styleSheet.grid.row}>
                     <Col size={6}>

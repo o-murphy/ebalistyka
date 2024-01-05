@@ -1,7 +1,6 @@
 import * as React from 'react';
-import {Portal, Chip, useTheme, Button, Dialog} from 'react-native-paper';
+import {Portal, Chip, useTheme, Button, Dialog, Text, FAB} from 'react-native-paper';
 import {ScrollView, View} from "react-native";
-import styleSheet from "../../styles/stylesheet";
 
 
 const SimpleModal = ({
@@ -33,18 +32,14 @@ const SimpleModal = ({
                 {text}
             </Chip>
             <Portal>
-                <Dialog visible={visible} onDismiss={hideDialog}>
+                <Dialog visible={visible} onDismiss={hideDialog} >
                     <Dialog.Title>{title}</Dialog.Title>
-                    <Dialog.Content>
-                        {children}
-                        {onAccept ? <Button
-                            style={styleSheet.modal.simple.closeButton}
-                            icon={"check"}
-                            mode={"elevated"}
-                            onPress={onAcceptBtn}>
-                            {"Ok"}
-                        </Button> : null}
-                    </Dialog.Content>
+                    <Dialog.Content>{children}</Dialog.Content>
+                    <Dialog.Actions>
+                        <FAB icon="close" size={'small'} onPress={hideDialog}
+                             variant={'tertiary'} color={useTheme().colors.error} />
+                        <FAB icon="check" size={'small'} onPress={onAcceptBtn} />
+                    </Dialog.Actions>
                 </Dialog>
             </Portal>
         </View>

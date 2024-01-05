@@ -3,6 +3,7 @@ import WheelPicker from '../wheely';
 import styleSheet from "../../styles/stylesheet";
 import {useTheme} from "react-native-paper";
 import type {MeasurePickerProps} from "../measure-picker/MeasurePicker";
+import {View} from "react-native";
 
 
 interface IntPickerProps extends MeasurePickerProps {
@@ -40,7 +41,6 @@ export default function IntPicker({
             {
                 backgroundColor: theme.colors.secondaryContainer,
                 borderRadius: 24,
-                // maxWidth: 100,
                 marginTop: 10
             }
         ],
@@ -49,11 +49,14 @@ export default function IntPicker({
     }
 
     return (
-        <WheelPicker
-            selectedIndex={range.indexOf(value)}
-            options={range}
-            onChange={onValueChange}
-            {...style}
-        />
+        <View style={{display: "flex", flexDirection: "row", flex: 1, justifyContent: 'center'}}>
+            <WheelPicker
+                selectedIndex={range.indexOf(value)}
+                options={range}
+                onChange={onValueChange}
+                {...style}
+            />
+
+        </View>
     );
 }

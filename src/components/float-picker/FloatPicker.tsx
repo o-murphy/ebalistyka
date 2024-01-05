@@ -26,8 +26,8 @@ export default function FloatPicker({
             {borderRadius: 0, backgroundColor: theme.colors.onSecondary}
         ],
 
-        itemTextStyle: [{color: theme.colors.secondary, fontWeight: "bold"}],
-        itemStyle: [{}]
+        itemTextStyle: [{color: theme.colors.secondary, fontWeight: "bold", float: "right"}],
+
     }
 
     const containerStyle = [
@@ -40,6 +40,8 @@ export default function FloatPicker({
 
     const containerStyleInt = [containerStyle, {borderTopLeftRadius: 24, borderBottomLeftRadius: 24}]
     const containerStyleFloat = [containerStyle, {borderTopRightRadius: 24, borderBottomRightRadius: 24}]
+    const itemStyleInt = [{marginLeft: "auto", marginRight: 0, paddingRight: 5}]
+    const itemStyleFloat = [{marginLeft: 0, marginRight: "auto", paddingLeft: 5}]
 
     const floatDivider = 10 ** maxDecimals
     const floatFormat = (value: number): string => `.${value}`;
@@ -73,18 +75,19 @@ export default function FloatPicker({
     }
 
     return (
-        <View style={styleSheet.grid.row}>
+        <View style={{display: "flex", flexDirection: "row", flex: 1, justifyContent: 'center'}}>
             <WheelPicker
                 {...style}
                 containerStyle={containerStyleInt}
+                itemStyle={itemStyleInt}
                 selectedIndex={intRange.indexOf(int)}
                 options={intRange.map(item => `${item}`)}
                 onChange={onIntChange}
             />
-
             <WheelPicker
                 {...style}
                 containerStyle={containerStyleFloat}
+                itemStyle={itemStyleFloat}
                 selectedIndex={floatRange.indexOf(float)}
                 options={floatRangeStrings}
                 onChange={onFloatChange}
