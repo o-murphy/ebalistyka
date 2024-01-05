@@ -38,7 +38,10 @@ export default function WeaponCard() {
         },
     ]
 
-    const twistStates = [{value: 'Right', label: 'Right'}, {value: 'Left', label: 'Left'}]
+    const twistStates = [
+        {value: 'Right', label: 'Right', icon: "rotate-right"},
+        {value: 'Left', label: 'Left', icon: "rotate-left"}
+    ]
 
     const [curTwistDir, setCurTwistDir] = useState("Right");
     const [twistDir, setTwistDir] = useState(curTwistDir);
