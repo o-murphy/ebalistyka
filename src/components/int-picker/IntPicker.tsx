@@ -5,13 +5,17 @@ import {useTheme} from "react-native-paper";
 import type {MeasurePickerProps} from "../measure-picker/MeasurePicker";
 
 
+interface IntPickerProps extends MeasurePickerProps {
+    onChange: (value: number) => void
+}
+
+
 export default function IntPicker({
                                       initialValue = 0,
                                       maxValue = 50,
                                       minValue = -50,
-                                      maxLength = 8,
-                                      maxDecimals = 0,
-                                  }: MeasurePickerProps) {
+                                      onChange = null
+                                  }: IntPickerProps) {
     const theme = useTheme()
     const range = []
     for (let i = minValue; i <= maxValue; i++) {
@@ -20,6 +24,11 @@ export default function IntPicker({
 
     // const [selectedIndex, setSelectedIndex] = useState(0);
     const [value, setValue] = useState(initialValue);
+
+    const onValueChange = (index: number) => {
+        setValue(range[index]);
+        if (onChange) onChange(value);
+    }
 
     const style = {
         selectedIndicatorStyle: [
@@ -39,16 +48,11 @@ export default function IntPicker({
         itemStyle: [{}]
     }
 
-    const onChange = (index: number): void => {
-        console.log(index)
-        setValue(range[index])
-    }
-
     return (
         <WheelPicker
             selectedIndex={range.indexOf(value)}
             options={range}
-            onChange={onChange}
+            onChange={onValueChange}
             {...style}
         />
     );

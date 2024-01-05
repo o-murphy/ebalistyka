@@ -3,12 +3,12 @@ import {NumberFormatBase} from 'react-number-format';
 import {TextInput} from "react-native-paper";
 
 
-export type MeasurePickerProps = {
-    initialValue: number,
-    maxValue: number,
-    minValue: number,
-    maxLength: number,
-    maxDecimals: number,
+interface MeasurePickerProps {
+    initialValue: number
+    maxValue: number
+    minValue: number
+    maxLength: number
+    maxDecimals: number
 }
 
 
@@ -64,5 +64,5 @@ const MeasurePicker = ({
     );
 };
 
+export type {MeasurePickerProps};
 export default MeasurePicker;
-

@@ -1,18 +1,23 @@
 import React, {useState} from 'react';
 import WheelPicker from '../wheely';
 import styleSheet from "../../styles/stylesheet";
-import {Text, useTheme} from "react-native-paper";
+import {useTheme} from "react-native-paper";
 import type {MeasurePickerProps} from "../measure-picker/MeasurePicker";
 import {View} from "react-native";
+
+
+interface FloatPickerProps extends MeasurePickerProps {
+    onChange: (value: number) => void
+}
 
 
 export default function FloatPicker({
                                         initialValue = 0,
                                         maxValue = 50,
                                         minValue = -50,
-                                        maxLength = 8,
                                         maxDecimals = 0,
-                                    }: MeasurePickerProps) {
+                                        onChange = null
+                                    }: FloatPickerProps) {
     const theme = useTheme()
 
     const style = {
@@ -29,7 +34,6 @@ export default function FloatPicker({
         styleSheet.numberPicker.container,
         {
             backgroundColor: theme.colors.secondaryContainer,
-            // maxWidth: 100,
             marginTop: 10
         }
     ]
@@ -52,14 +56,20 @@ export default function FloatPicker({
     const [int, setInt] = useState(Math.floor(value))
     const [float, setFloat] = useState(Math.floor((value - int) * floatDivider))
 
+
+    const onValueChange = (value: number) => {
+        setValue(value);
+        if (onChange) onChange(value);
+    }
+
     const onIntChange = (index: number): void => {
-        setInt(intRange[index])
-        setValue(float / floatDivider + int)
+        setInt(intRange[index]);
+        onValueChange(float / floatDivider + int);
     }
 
     const onFloatChange = (index: number): void => {
-        setFloat(floatRange[index])
-        setValue(float / floatDivider + int)
+        setFloat(floatRange[index]);
+        onValueChange(float / floatDivider + int);
     }
 
     return (
@@ -71,6 +81,7 @@ export default function FloatPicker({
                 options={intRange.map(item => `${item}`)}
                 onChange={onIntChange}
             />
+
             <WheelPicker
                 {...style}
                 containerStyle={containerStyleFloat}
