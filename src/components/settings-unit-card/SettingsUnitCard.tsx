@@ -90,18 +90,13 @@ const fields = [
 
 export default function SettingsUnitCard() {
 
-
-    const setUnit = (field, unit: Unit): void => {
-        fields[fields.indexOf(field)].def = unit;
-    }
-
     const createRow = field => {
-        const [upd, forceUpdate] = useState(false);
-        const [curUnit, setCurUnit] = useState(field.def);
 
-        const acceptUnit = () => {
-            setUnit(field, curUnit);
-            forceUpdate(!upd);
+        const [curValue, setCurValue] = useState(field.def);
+        const [value, setValue] = useState(curValue)
+
+        const onAccept = () => {
+            setCurValue(value)
         }
 
         return (
@@ -110,8 +105,8 @@ export default function SettingsUnitCard() {
                     <Text>{field.label}</Text>
                 </Col>
                 <Col size={7}>
-                    <SimpleModal title={field.label} text={UnitProps[field.def].name} onAccept={acceptUnit}>
-                        <RadioGroup value={curUnit} setValue={setCurUnit} items={field.list} />
+                    <SimpleModal title={field.label} text={UnitProps[curValue].name} onAccept={onAccept}>
+                        <RadioGroup initialValue={curValue} onChange={setValue} items={field.list} />
                     </SimpleModal>
                 </Col>
             </Row>
