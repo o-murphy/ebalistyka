@@ -2,22 +2,16 @@ import React, {useState} from 'react';
 import WheelPicker from '../wheely';
 import styleSheet from "../../styles/stylesheet";
 import {useTheme} from "react-native-paper";
-import type {MeasurePickerProps} from "../measure-picker/MeasurePicker";
 import {View} from "react-native";
 
 
-interface FloatPickerProps extends MeasurePickerProps {
-    onChange: (value: number) => void
-}
-
-
 export default function FloatPicker({
-                                        initialValue = 0,
+                                        curValue = 0,
                                         maxValue = 50,
                                         minValue = -50,
                                         maxDecimals = 0,
                                         onChange = null
-                                    }: FloatPickerProps) {
+                                    }) {
     const theme = useTheme()
 
     const style = {
@@ -53,14 +47,13 @@ export default function FloatPicker({
     }
     const floatRangeStrings: string[] = floatRange.map(floatFormat)
 
-    const [value, setValue] = useState(initialValue);
+    // const [value, setValue] = useState(initialValue);
 
-    const [int, setInt] = useState(Math.floor(value))
-    const [float, setFloat] = useState(Math.floor((value - int) * floatDivider))
-
+    const [int, setInt] = useState(Math.floor(curValue))
+    const [float, setFloat] = useState(Math.floor((curValue - int) * floatDivider))
+    console.log(curValue, int, float)
 
     const onValueChange = (value: number) => {
-        setValue(value);
         if (onChange) onChange(value);
     }
 

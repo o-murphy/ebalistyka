@@ -1,34 +1,24 @@
-import React, {useState} from 'react';
+import React from 'react';
 import WheelPicker from '../wheely';
 import styleSheet from "../../styles/stylesheet";
 import {useTheme} from "react-native-paper";
-import type {MeasurePickerProps} from "../measure-picker/MeasurePicker";
 import {View} from "react-native";
 
 
-interface IntPickerProps extends MeasurePickerProps {
-    onChange: (value: number) => void
-}
-
-
 export default function IntPicker({
-                                      initialValue = 0,
                                       maxValue = 50,
                                       minValue = -50,
-                                      onChange = null
-                                  }: IntPickerProps) {
+                                      onChange = null,
+                                      curValue = null
+                                  }) {
     const theme = useTheme()
     const range = []
     for (let i = minValue; i <= maxValue; i++) {
         range.push(i)
     }
 
-    // const [selectedIndex, setSelectedIndex] = useState(0);
-    const [value, setValue] = useState(initialValue);
-
     const onValueChange = (index: number) => {
-        setValue(range[index]);
-        if (onChange) onChange(value);
+        if (onChange) onChange(range[index]);
     }
 
     const style = {
@@ -51,7 +41,7 @@ export default function IntPicker({
     return (
         <View style={{display: "flex", flexDirection: "row", flex: 1, justifyContent: 'center'}}>
             <WheelPicker
-                selectedIndex={range.indexOf(value)}
+                selectedIndex={range.indexOf(curValue)}
                 options={range}
                 onChange={onValueChange}
                 {...style}

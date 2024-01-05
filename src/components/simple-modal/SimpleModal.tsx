@@ -9,6 +9,7 @@ const SimpleModal = ({
                          text,
                          icon = null,
                          onAccept = null,
+                         onDecline = null
                      }) => {
 
     const [visible, setVisible] = React.useState(false);
@@ -20,6 +21,11 @@ const SimpleModal = ({
 
     const onAcceptBtn = () => {
         if (onAccept) onAccept();
+        setVisible(false);
+    }
+
+    const onDeclineBtn = () => {
+        if (onDecline) onDecline();
         setVisible(false);
     }
 
@@ -36,7 +42,7 @@ const SimpleModal = ({
                     <Dialog.Title>{title}</Dialog.Title>
                     <Dialog.Content>{children}</Dialog.Content>
                     <Dialog.Actions>
-                        <FAB icon="close" size={'small'} onPress={hideDialog}
+                        <FAB icon="close" size={'small'} onPress={onDeclineBtn}
                              variant={'tertiary'} color={useTheme().colors.error} />
                         <FAB icon="check" size={'small'} onPress={onAcceptBtn} />
                     </Dialog.Actions>
