@@ -3,6 +3,7 @@ import {ScrollView} from 'react-native';
 import {useTheme} from 'react-native-paper';
 import {StyleSheet} from "react-native";
 import AtmoCard from "../../components/atmo-card/AtmoCard";
+import WindCard from "../../components/wind-card/WindCard";
 
 
 export default function CurrentAtmo({ navigation }) {
@@ -12,8 +13,6 @@ export default function CurrentAtmo({ navigation }) {
     const styles = StyleSheet.create({
         scrollViewContainer: {
             backgroundColor: theme.colors.background,
-            // height: Dimensions.get('window').height * 0.8, // Set the height as a percentage of the screen height
-            // marginBottom: 80
         },
     });
 
@@ -24,7 +23,8 @@ export default function CurrentAtmo({ navigation }) {
             alwaysBounceVertical={false}
             showsVerticalScrollIndicator={true}
         >
-        <AtmoCard />
+            <AtmoCard />
+            <WindCard />
         </ScrollView>
     );
 }

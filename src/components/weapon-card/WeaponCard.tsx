@@ -4,7 +4,6 @@ import React, {useState} from "react";
 import InputCard from "../input-card/InputCard";
 import styleSheet from "../../styles/stylesheet";
 import SimpleModal from "../simple-modal/SimpleModal";
-import MeasurePicker from "../measure-picker/MeasurePicker";
 import IntPicker from "../int-picker/IntPicker";
 import FloatPicker from "../float-picker/FloatPicker";
 
