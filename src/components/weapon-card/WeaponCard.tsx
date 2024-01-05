@@ -55,10 +55,10 @@ export default function WeaponCard() {
                 {fields.map(field => <MeasureSliderModal key={field.key} field={field}/>)}
 
                 <Row style={styleSheet.grid.row}>
-                    <Col size={6}>
+                    <Col size={8}>
                         <Text>Twist direction</Text>
                     </Col>
-                    <Col size={4}>
+                    <Col size={8}>
                         <SimpleModal title={"Twist"} icon={curTwistDir === "Right" ? "rotate-left" : "rotate-right"}
                                      text={curTwistDir} onAccept={acceptTwistDir}>
                             <SegmentedButtons buttons={twistStates} value={twistDir} onValueChange={setTwistDir}/>
