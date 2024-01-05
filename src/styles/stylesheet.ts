@@ -6,8 +6,7 @@ const styleSheet = {
         row: {
             flex: 1,
             flexDirection: "row",
-            // alignItems: "center",
-            // selfAlign: "center"
+            alignItems: "center",
         },
         col: {
             flex: 1,

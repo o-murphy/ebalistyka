@@ -1,6 +1,5 @@
 import {Text} from "react-native-paper";
 import {Col, Grid, Row} from "react-native-paper-grid";
-import MeasurePicker from "../measure-picker/MeasurePicker";
 import React, {useState} from "react";
 import InputCard from "../input-card/InputCard";
 import styleSheet from "../../styles/stylesheet";
