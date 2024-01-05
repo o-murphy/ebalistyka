@@ -34,6 +34,7 @@ const SimpleModal = ({
             <Chip icon={icon} closeIcon="square-edit-outline"
                   onPress={showDialog}
                   onClose={showDialog}
+                  // textStyle={{fontSize: 18}}
             >
                 {text}
             </Chip>

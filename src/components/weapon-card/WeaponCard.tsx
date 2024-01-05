@@ -59,7 +59,8 @@ export default function WeaponCard() {
                         <Text>Twist direction</Text>
                     </Col>
                     <Col size={4}>
-                        <SimpleModal title={"Twist"} text={curTwistDir} onAccept={acceptTwistDir}>
+                        <SimpleModal title={"Twist"} icon={curTwistDir === "Right" ? "rotate-left" : "rotate-right"}
+                                     text={curTwistDir} onAccept={acceptTwistDir}>
                             <SegmentedButtons buttons={twistStates} value={twistDir} onValueChange={setTwistDir}/>
                         </SimpleModal>
                     </Col>
