@@ -6,6 +6,7 @@ import styleSheet from "../../styles/stylesheet";
 import SimpleModal from "../simple-modal/SimpleModal";
 import MeasurePicker from "../measure-picker/MeasurePicker";
 import IntPicker from "../int-picker/IntPicker";
+import FloatPicker from "../float-picker/FloatPicker";
 
 
 export default function WeaponCard() {
@@ -67,8 +68,9 @@ export default function WeaponCard() {
                                                  onAccept={() => console.log(`${field.label} accepted`)}
                                     >
                                         <MeasurePicker {...field.inputProps} />
-                                        {field.inputProps.mode === "int" ?
-                                            <IntPicker  {...field.inputProps} /> : null}
+                                        {field.inputProps.mode === "int"
+                                            ? <IntPicker  {...field.inputProps} />
+                                            : <FloatPicker  {...field.inputProps} />}
                                     </SimpleModal>
                                 </Col>
                             </Row>)
