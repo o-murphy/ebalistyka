@@ -20,7 +20,7 @@ export default function AtmoCard() {
                 maxValue: 50,
                 minValue: -50,
                 maxLength: 4,
-                maxDecimals: 1
+                decimals: 1
             }
         },
         {
@@ -34,7 +34,7 @@ export default function AtmoCard() {
                 maxValue: 1000,
                 minValue: 700,
                 maxLength: 6,
-                maxDecimals: 0
+                decimals: 0
             }
         },
         {
@@ -48,7 +48,7 @@ export default function AtmoCard() {
                 maxValue: 100,
                 minValue: 0,
                 maxLength: 3,
-                maxDecimals: 0
+                decimals: 0
             }
         },
         {
@@ -62,7 +62,7 @@ export default function AtmoCard() {
                 maxValue: 3000,
                 minValue: 0,
                 maxLength: 8,
-                maxDecimals: 0,
+                decimals: 0,
             }
         },
     ]

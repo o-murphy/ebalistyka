@@ -20,7 +20,7 @@ export default function WeaponCard() {
                 maxValue: 22,
                 minValue: 0.001,
                 maxLength: 8,
-                maxDecimals: 3,
+                decimals: 3,
             }
         },
         {
@@ -33,7 +33,7 @@ export default function WeaponCard() {
                 maxValue: 20,
                 minValue: -20,
                 maxLength: 8,
-                maxDecimals: 2,
+                decimals: 2,
             }
         },
     ]
