@@ -19,7 +19,6 @@ export default function AtmoCard() {
                 initialValue: 15,
                 maxValue: 50,
                 minValue: -50,
-                maxLength: 4,
                 decimals: 1
             }
         },
@@ -33,7 +32,6 @@ export default function AtmoCard() {
                 initialValue: 760,
                 maxValue: 1000,
                 minValue: 700,
-                maxLength: 6,
                 decimals: 0
             }
         },
@@ -47,7 +45,6 @@ export default function AtmoCard() {
                 initialValue: 78,
                 maxValue: 100,
                 minValue: 0,
-                maxLength: 3,
                 decimals: 0
             }
         },
@@ -61,7 +58,6 @@ export default function AtmoCard() {
                 initialValue: 150,
                 maxValue: 3000,
                 minValue: 0,
-                maxLength: 8,
                 decimals: 0,
             }
         },
