@@ -90,7 +90,7 @@ const fields = [
 
 export default function SettingsUnitCard() {
 
-    const createRow = field => {
+    const UnitSelector = ({field}) => {
 
         const [curValue, setCurValue] = useState(field.def);
         const [value, setValue] = useState(curValue)
@@ -117,7 +117,7 @@ export default function SettingsUnitCard() {
     return (
         <InputCard title="Units of measurement">
             <Grid style={styleSheet.grid.grid}>
-                {fields.map(field => createRow(field))}
+                {fields.map(field => <UnitSelector key={field.key} field={field}/>)}
             </Grid>
         </InputCard>
     )

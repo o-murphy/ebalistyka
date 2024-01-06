@@ -2,22 +2,16 @@ import React, {useState} from 'react';
 import WheelPicker from '../wheely';
 import styleSheet from "../../styles/stylesheet";
 import {useTheme} from "react-native-paper";
-import type {MeasurePickerProps} from "../measure-picker/MeasurePicker";
 import {View} from "react-native";
 
 
-interface FloatPickerProps extends MeasurePickerProps {
-    onChange: (value: number) => void
-}
-
-
 export default function FloatPicker({
-                                        initialValue = 0,
+                                        curValue = 0,
                                         maxValue = 50,
                                         minValue = -50,
-                                        maxDecimals = 0,
+                                        decimals = 0,
                                         onChange = null
-                                    }: FloatPickerProps) {
+                                    }) {
     const theme = useTheme()
 
     const style = {
@@ -26,7 +20,7 @@ export default function FloatPicker({
             {borderRadius: 0, backgroundColor: theme.colors.onSecondary}
         ],
 
-        itemTextStyle: [{color: theme.colors.secondary, fontWeight: "bold", float: "right"}],
+        itemTextStyle: [{color: theme.colors.secondary, fontWeight: "bold"}],
 
     }
 
@@ -43,7 +37,7 @@ export default function FloatPicker({
     const itemStyleInt = [{marginLeft: "auto", marginRight: 0, paddingRight: 5}]
     const itemStyleFloat = [{marginLeft: 0, marginRight: "auto", paddingLeft: 5}]
 
-    const floatDivider = 10 ** maxDecimals
+    const floatDivider = 10 ** decimals
     const floatFormat = (value: number): string => `.${value}`;
 
     const floatRange: number[] = [...Array(floatDivider).keys()]
@@ -53,14 +47,12 @@ export default function FloatPicker({
     }
     const floatRangeStrings: string[] = floatRange.map(floatFormat)
 
-    const [value, setValue] = useState(initialValue);
+    // const [value, setValue] = useState(initialValue);
 
-    const [int, setInt] = useState(Math.floor(value))
-    const [float, setFloat] = useState(Math.floor((value - int) * floatDivider))
-
+    const [int, setInt] = useState(Math.floor(curValue))
+    const [float, setFloat] = useState(Math.floor((curValue - int) * floatDivider))
 
     const onValueChange = (value: number) => {
-        setValue(value);
         if (onChange) onChange(value);
     }
 
@@ -75,7 +67,7 @@ export default function FloatPicker({
     }
 
     return (
-        <View style={{display: "flex", flexDirection: "row", flex: 1, justifyContent: 'center'}}>
+        <View style={{display: "flex", flexDirection: "row", justifyContent: 'center'}}>
             <WheelPicker
                 {...style}
                 containerStyle={containerStyleInt}

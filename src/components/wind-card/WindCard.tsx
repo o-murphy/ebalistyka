@@ -1,18 +1,15 @@
-import {Text, useTheme} from "react-native-paper";
+import {Text} from "react-native-paper";
 import {Col, Grid, Row} from "react-native-paper-grid";
 import React, {useState} from "react";
 import InputCard from "../input-card/InputCard";
 import styleSheet from "../../styles/stylesheet";
 import SimpleModal from "../simple-modal/SimpleModal";
-import IntPicker from "../int-picker/IntPicker";
-import FloatPicker from "../float-picker/FloatPicker";
 import {Unit, UnitProps} from "js-ballistics";
-// import CircularSlider from "react-circular-slider-svg";
-import CircularSlider from "../circular-slider";
+import WindDirectionPicker from "../wind-dir-picker/WindDirPicker";
+import MeasureSliderModal from "../measure-slider-modal/MeasureSliderModal";
+
 
 export default function WindCard() {
-
-    const theme = useTheme()
 
     const fields = [
         {
@@ -21,79 +18,83 @@ export default function WindCard() {
             suffix: UnitProps[Unit.MPS].symbol,
             icon: "windsock",
             inputProps: {
-                mode: "int",
+                mode: "float",
                 initialValue: 0,
                 maxValue: 100,
                 minValue: 0,
+                decimals: 1,
             }
         }
     ]
 
-    const [windDir, setWindDir] = useState(0)
+    const [curWindDir, setCurWindDir] = useState(0)
+    const [windDir, setWindDir] = useState(curWindDir / 30)
 
     const onWindDirChange = (value) => {
         setWindDir(value === 12 ? 0 : value)
     }
 
-    const createField = (field) => {
+    const onWindAccept = () => {
+        setCurWindDir(windDir * 30)
+    }
 
-        const [curValue, setCurValue] = useState(field.inputProps.initialValue);
-        const [value, setValue] = useState(curValue)
+    const onWindDecline = () => {
+        setWindDir(curWindDir / 30)
+    }
 
-        const onAccept = () => {
-            setCurValue(value)
+    const getWindIcon = () => {
+        switch (curWindDir / 30) {
+            case 12:
+                return "clock-time-twelve-outline";
+            case 11:
+                return "clock-time-eleven-outline";
+            case 10:
+                return "clock-time-ten-outline";
+            case 9:
+                return "clock-time-nine-outline";
+            case 8:
+                return "clock-time-eight-outline";
+            case 7:
+                return "clock-time-seven-outline";
+            case 6:
+                return "clock-time-six-outline";
+            case 5:
+                return "clock-time-five-outline";
+            case 4:
+                return "clock-time-four-outline";
+            case 3:
+                return "clock-time-three-outline";
+            case 2:
+                return "clock-time-two-outline";
+            case 1:
+                return "clock-time-one-outline";
+            case 0:
+                return "clock-time-twelve-outline";
+
         }
-
-        return (
-            <Row style={styleSheet.grid.row} key={field.key}>
-                <Col size={8}>
-                    <Text>{field.label}</Text>
-                </Col>
-                <Col size={8}>
-                    <SimpleModal icon={field.icon} title={`${field.label}, ${field.suffix}`}
-                                 text={`${curValue} ${field.suffix}`}
-                                 onAccept={onAccept}>
-                        {
-                            field.inputProps.mode === "int"
-                                ? <IntPicker  {...field.inputProps} initialValue={curValue} onChange={setValue}/>
-                                : <FloatPicker  {...field.inputProps} initialValue={curValue} onChange={setValue}/>
-                        }
-                    </SimpleModal>
-                </Col>
-            </Row>)
     }
 
     return (
 
         <InputCard title={"Current wind"}>
             <Grid style={styleSheet.grid.grid}>
-                {fields.map(createField)}
+                {fields.map(field => <MeasureSliderModal key={field.key} field={field}/>)}
+
 
                 <Row style={styleSheet.grid.row}>
                     <Col>
                         <Text>{"Wind direction"}</Text>
                     </Col>
                     <Col>
-                        <CircularSlider
-                            size={150}
-                            trackWidth={10}
-                            minValue={0}
-                            maxValue={12}
-                            startAngle={0}
-                            endAngle={360}
-                            angleType={{
-                                direction: "cw",
-                                axis: "+y"
-                            }}
-                            handle1={{
-                                value: windDir,
-                                onChange: v => onWindDirChange(v)
-                            }}
-                            coerceToInt={true}
-                            // arcColor={theme.colors.onSecondaryContainer}
-                            arcColor={theme.colors.secondaryContainer}
-                            arcBackgroundColor={theme.colors.secondaryContainer}
-                        />
+                        <SimpleModal title={`WindDirection, degree`}
+                                     text={`${curWindDir}° (${curWindDir / 30}h)`}
+                                     icon={getWindIcon()}
+                                     onAccept={onWindAccept}
+                                     onDecline={onWindDecline}>
+                            <WindDirectionPicker
+                                curValue={windDir}
+                                onChange={onWindDirChange}/>
+                        </SimpleModal>
                     </Col>
                 </Row>
 

@@ -4,8 +4,7 @@ import React, {useState} from "react";
 import InputCard from "../input-card/InputCard";
 import styleSheet from "../../styles/stylesheet";
 import SimpleModal from "../simple-modal/SimpleModal";
-import IntPicker from "../int-picker/IntPicker";
-import FloatPicker from "../float-picker/FloatPicker";
+import MeasureSliderModal from "../measure-slider-modal/MeasureSliderModal";
 
 
 export default function WeaponCard() {
@@ -21,7 +20,7 @@ export default function WeaponCard() {
                 maxValue: 22,
                 minValue: 0.001,
                 maxLength: 8,
-                maxDecimals: 3,
+                decimals: 3,
             }
         },
         {
@@ -34,48 +33,21 @@ export default function WeaponCard() {
                 maxValue: 20,
                 minValue: -20,
                 maxLength: 8,
-                maxDecimals: 2,
+                decimals: 2,
             }
         },
     ]
 
-    const twistStates = [{value: 'Right', label: 'Right'}, {value: 'Left', label: 'Left'}]
+    const twistStates = [
+        {value: 'Right', label: 'Right', icon: "rotate-right"},
+        {value: 'Left', label: 'Left', icon: "rotate-left"}
+    ]
 
     const [curTwistDir, setCurTwistDir] = useState("Right");
     const [twistDir, setTwistDir] = useState(curTwistDir);
 
-
-
     const acceptTwistDir = (): void => {
         setCurTwistDir(twistDir)
-    }
-
-    const createField = field => {
-
-        const [curValue, setCurValue] = useState(field.inputProps.initialValue);
-        const [value, setValue] = useState(curValue)
-
-        const onAccept = () => {
-            // console.log(value)
-            setCurValue(value)
-        }
-
-        return (
-            <Row style={styleSheet.grid.row} key={field.key}>
-                <Col size={6}>
-                    <Text>{field.label}</Text>
-                </Col>
-                <Col size={4}>
-                    <SimpleModal title={`${field.label}, ${field.suffix}`}
-                                 text={`${curValue} ${field.suffix}`}
-                                 onAccept={onAccept}
-                    >
-                        {field.inputProps.mode === "int"
-                            ? <IntPicker  {...field.inputProps} initialValue={curValue} onChange={setValue}/>
-                            : <FloatPicker  {...field.inputProps} initialValue={curValue} onChange={setValue}/>}
-                    </SimpleModal>
-                </Col>
-            </Row>)
     }
 
     return (
@@ -83,19 +55,19 @@ export default function WeaponCard() {
         <InputCard title={"Weapon"}>
             <Grid style={styleSheet.grid.grid}>
 
-                {fields.map(createField)}
+                {fields.map(field => <MeasureSliderModal key={field.key} field={field}/>)}
 
                 <Row style={styleSheet.grid.row}>
-                    <Col size={6}>
+                    <Col size={8}>
                         <Text>Twist direction</Text>
                     </Col>
-                    <Col size={4}>
-                        <SimpleModal title={"Twist"} text={curTwistDir} onAccept={acceptTwistDir}>
+                    <Col size={8}>
+                        <SimpleModal title={"Twist"} icon={curTwistDir === "Right" ? "rotate-left" : "rotate-right"}
+                                     text={curTwistDir} onAccept={acceptTwistDir}>
                             <SegmentedButtons buttons={twistStates} value={twistDir} onValueChange={setTwistDir}/>
                         </SimpleModal>
                     </Col>
                 </Row>
-
 
             </Grid>
         </InputCard>
