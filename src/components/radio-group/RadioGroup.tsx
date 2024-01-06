@@ -27,7 +27,7 @@ export default function RadioGroup({initialValue, onChange, items}: RadioProps) 
     return (
             <RadioButton.Group onValueChange={onValueChange} value={value}>
                 {items.map(item =>
-                        <RadioButton.Item key={item.key} label={item.label} value={item.value}/>
+                        <RadioButton.Item key={item.value} label={item.label} value={item.value}/>
                 )}
             </RadioButton.Group>
     );

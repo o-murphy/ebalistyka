@@ -51,7 +51,6 @@ export default function FloatPicker({
 
     const [int, setInt] = useState(Math.floor(curValue))
     const [float, setFloat] = useState(Math.floor((curValue - int) * floatDivider))
-    console.log(curValue, int, float)
 
     const onValueChange = (value: number) => {
         if (onChange) onChange(value);
