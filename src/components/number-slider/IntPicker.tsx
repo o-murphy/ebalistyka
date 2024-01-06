@@ -39,7 +39,7 @@ export default function IntPicker({
     }
 
     return (
-        <View style={{display: "flex", flexDirection: "row", flex: 1, justifyContent: 'center'}}>
+        <View style={{display: "flex", flexDirection: "row", justifyContent: 'center'}}>
             <WheelPicker
                 selectedIndex={range.indexOf(curValue)}
                 options={range}

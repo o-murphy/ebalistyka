@@ -3,8 +3,7 @@ import {Col, Row} from "react-native-paper-grid";
 import styleSheet from "../../styles/stylesheet";
 import {Text} from "react-native-paper";
 import SimpleModal from "../simple-modal/SimpleModal";
-import IntPicker from "../int-picker/IntPicker";
-import FloatPicker from "../float-picker/FloatPicker";
+import {IntPicker, FloatPicker} from "../number-slider";
 
 
 export interface MeasureField {

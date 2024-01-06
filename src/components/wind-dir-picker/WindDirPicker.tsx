@@ -9,13 +9,14 @@ export default function WindDirection({curValue, onChange}) {
 
     const styles = {
         container: {
-            flex: 1,
+            // flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
             paddingBottom: 40,
         },
         text: {
-            marginTop: -110
+            marginTop: -110,
+            fontWeight: "bold"
         },
         slider: {
         },
@@ -47,7 +48,7 @@ export default function WindDirection({curValue, onChange}) {
                     arcBackgroundColor={theme.colors.secondaryContainer}
                 />
 
-            <Text style={styles.text}>{`${curValue * 30}° (${curValue}h)`}</Text>
+            <Text variant={"titleMedium"} style={styles.text}>{`${curValue * 30}° (${curValue}h)`}</Text>
 
         </View>
     )

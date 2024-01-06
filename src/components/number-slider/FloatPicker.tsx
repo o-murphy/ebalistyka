@@ -9,7 +9,7 @@ export default function FloatPicker({
                                         curValue = 0,
                                         maxValue = 50,
                                         minValue = -50,
-                                        maxDecimals = 0,
+                                        decimals = 0,
                                         onChange = null
                                     }) {
     const theme = useTheme()
@@ -20,7 +20,7 @@ export default function FloatPicker({
             {borderRadius: 0, backgroundColor: theme.colors.onSecondary}
         ],
 
-        itemTextStyle: [{color: theme.colors.secondary, fontWeight: "bold", float: "right"}],
+        itemTextStyle: [{color: theme.colors.secondary, fontWeight: "bold"}],
 
     }
 
@@ -37,7 +37,7 @@ export default function FloatPicker({
     const itemStyleInt = [{marginLeft: "auto", marginRight: 0, paddingRight: 5}]
     const itemStyleFloat = [{marginLeft: 0, marginRight: "auto", paddingLeft: 5}]
 
-    const floatDivider = 10 ** maxDecimals
+    const floatDivider = 10 ** decimals
     const floatFormat = (value: number): string => `.${value}`;
 
     const floatRange: number[] = [...Array(floatDivider).keys()]
@@ -68,7 +68,7 @@ export default function FloatPicker({
     }
 
     return (
-        <View style={{display: "flex", flexDirection: "row", flex: 1, justifyContent: 'center'}}>
+        <View style={{display: "flex", flexDirection: "row", justifyContent: 'center'}}>
             <WheelPicker
                 {...style}
                 containerStyle={containerStyleInt}

@@ -18,11 +18,11 @@ export default function WindCard() {
             suffix: UnitProps[Unit.MPS].symbol,
             icon: "windsock",
             inputProps: {
-                mode: "int",
+                mode: "float",
                 initialValue: 0,
                 maxValue: 100,
                 minValue: 0,
-                decimals: 0,
+                decimals: 1,
             }
         }
     ]

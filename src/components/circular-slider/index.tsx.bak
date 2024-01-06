@@ -118,7 +118,7 @@ export class CircularSlider extends React.Component<
         // console.log(ev.nativeEvent)
 
         if (ev.touches) {
-
+            console.log(ev.touches)
             if (
                 ev.touches.length > 1 ||
                 (ev.type === "touchend" && ev.touches.length > 0)
@@ -273,20 +273,20 @@ export class CircularSlider extends React.Component<
             } else {
                 return(
                     <Circle
-                        r={handleSize}
-                        cx={handle1Position.x}
-                        cy={handle1Position.y}
-                        // fill="#ffffff"
-                        fill="#ffffff"
-                        filter="url(#handleShadow)"
-                    />
+                    r={handleSize}
+                    cx={handle1Position.x}
+                    cy={handle1Position.y}
+                    // fill="#ffffff"
+                    fill="#ffffff"
+                    filter="url(#handleShadow)"
+                />
                 )
             }
         }
 
 
         return (
-            <svg
+            <Svg
                 width={size}
                 height={size}
                 ref={this.svgRef}
@@ -412,19 +412,19 @@ export class CircularSlider extends React.Component<
                             {/*    width="16"*/}
                             {/*    height="16"*/}
                             {/*>*/}
-                            {/*<feOffset result="offOut" in="SourceGraphic" dx="0" dy="0"/>*/}
-                            {/*<feColorMatrix*/}
-                            {/*    result="matrixOut"*/}
-                            {/*    in="offOut"*/}
-                            {/*    type="matrix"*/}
-                            {/*    values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"*/}
-                            {/*/>*/}
-                            {/*<feGaussianBlur*/}
-                            {/*    result="blurOut"*/}
-                            {/*    in="matrixOut"*/}
-                            {/*    stdDeviation="5"*/}
-                            {/*/>*/}
-                            {/*<feBlend in="SourceGraphic" in2="blurOut" mode="normal"/>*/}
+                                {/*<feOffset result="offOut" in="SourceGraphic" dx="0" dy="0"/>*/}
+                                {/*<feColorMatrix*/}
+                                {/*    result="matrixOut"*/}
+                                {/*    in="offOut"*/}
+                                {/*    type="matrix"*/}
+                                {/*    values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"*/}
+                                {/*/>*/}
+                                {/*<feGaussianBlur*/}
+                                {/*    result="blurOut"*/}
+                                {/*    in="matrixOut"*/}
+                                {/*    stdDeviation="5"*/}
+                                {/*/>*/}
+                                {/*<feBlend in="SourceGraphic" in2="blurOut" mode="normal"/>*/}
                             {/*</filter>*/}
                             {createCap()}
                         </React.Fragment>
@@ -445,7 +445,7 @@ export class CircularSlider extends React.Component<
                         </React.Fragment>
                     )
                 }
-            </svg>
+            </Svg>
         );
     }
 }

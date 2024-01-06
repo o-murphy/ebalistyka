@@ -39,7 +39,7 @@ const SimpleModal = ({
                 {text}
             </Chip>
             <Portal>
-                <Dialog visible={visible} onDismiss={hideDialog} >
+                <Dialog visible={visible} onDismiss={hideDialog} style={{justifyContent: "center"}}>
                     <Dialog.Title>{title}</Dialog.Title>
                     <Dialog.Content>{children}</Dialog.Content>
                     <Dialog.Actions>
