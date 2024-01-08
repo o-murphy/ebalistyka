@@ -1,9 +1,9 @@
 import {Text} from "react-native-paper";
 import {Col, Grid, Row} from "react-native-paper-grid";
 import React, {useState} from "react";
-import InputCard from "../input-card/InputCard";
-import styleSheet from "../../styles/stylesheet";
-import SimpleModal from "../simple-modal/SimpleModal";
+import InputCard from "./InputCard";
+import styleSheet from "../../styles";
+import SimpleDialog from "../simple-modal/SimpleDialog";
 import {Unit, UnitProps} from "js-ballistics";
 import WindDirectionPicker from "../wind-dir-picker/WindDirPicker";
 import MeasureSliderModal from "../measure-slider-modal/MeasureSliderModal";
@@ -84,18 +84,18 @@ export default function WindCard() {
 
                 <Row style={styleSheet.grid.row}>
                     <Col>
-                        <Text>{"Wind direction"}</Text>
+                        <Text style={{fontSize: 16}}>{"Wind direction"}</Text>
                     </Col>
                     <Col>
-                        <SimpleModal title={`WindDirection, degree`}
-                                     text={`${curWindDir}° (${curWindDir / 30}h)`}
-                                     icon={getWindIcon()}
-                                     onAccept={onWindAccept}
-                                     onDecline={onWindDecline}>
+                        <SimpleDialog title={`WindDirection, degree`}
+                                      text={`${curWindDir}° (${curWindDir / 30}h)`}
+                                      icon={getWindIcon()}
+                                      onAccept={onWindAccept}
+                                      onDecline={onWindDecline}>
                             <WindDirectionPicker
                                 curValue={windDir}
                                 onChange={onWindDirChange}/>
-                        </SimpleModal>
+                        </SimpleDialog>
                     </Col>
                 </Row>
 

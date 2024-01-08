@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Appbar, FAB, useTheme} from 'react-native-paper';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import { useNavigation } from "@react-navigation/native";
-import styleSheet from "../../styles/stylesheet";
+import styleSheet from "../../styles";
 
 
 const BOTTOM_APPBAR_HEIGHT = 80;

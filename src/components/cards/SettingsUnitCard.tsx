@@ -1,15 +1,16 @@
 import {Text} from "react-native-paper"
 import {Col, Grid, Row} from "react-native-paper-grid";
-import InputCard from "../input-card/InputCard";
-import styleSheet from "../../styles/stylesheet";
+import InputCard from "./InputCard";
+import styleSheet from "../../styles";
+
 
 import {
     Unit,
     UnitProps,
     Measure,
 } from "js-ballistics"
-import SimpleModal from "../simple-modal/SimpleModal";
-import {useReducer, useState} from "react";
+import SimpleDialog from "../simple-modal/SimpleDialog";
+import {useState} from "react";
 import RadioGroup from "../radio-group/RadioGroup";
 
 
@@ -105,12 +106,12 @@ export default function SettingsUnitCard() {
         return (
             <Row style={styleSheet.grid.row} key={field.key}>
                 <Col size={9}>
-                    <Text>{field.label}</Text>
+                    <Text style={{fontSize: 16}}>{field.label}</Text>
                 </Col>
                 <Col size={7}>
-                    <SimpleModal title={field.label} text={UnitProps[curValue].name} onAccept={onAccept}>
+                    <SimpleDialog title={field.label} text={UnitProps[curValue].name} onAccept={onAccept}>
                         <RadioGroup initialValue={curValue} onChange={setValue} items={field.list} />
-                    </SimpleModal>
+                    </SimpleDialog>
                 </Col>
             </Row>
         )

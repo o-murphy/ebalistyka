@@ -1,8 +1,9 @@
 import {Text} from "react-native-paper"
 import {Col, Grid, Row} from "react-native-paper-grid";
-import InputCard from "../input-card/InputCard";
-import styleSheet from "../../styles/stylesheet";
-import SimpleModal from "../simple-modal/SimpleModal";
+import InputCard from "./InputCard";
+import styleSheet from "../../styles";
+
+import SimpleDialog from "../simple-modal/SimpleDialog";
 import {useState} from "react";
 import RadioGroup from "../radio-group/RadioGroup";
 
@@ -38,14 +39,14 @@ export default function SettingsGeneralCard() {
 
                 <Row style={styleSheet.grid.row}>
                     <Col size={9}>
-                        <Text>{"Language"}</Text>
+                        <Text style={{fontSize: 16}}>{"Language"}</Text>
                     </Col>
                     <Col size={7}>
-                        <SimpleModal title={"Language"} text={curLanguage} icon={"translate"}
-                                     onAccept={onAccept}
-                                     onDecline={onDecline}>
+                        <SimpleDialog title={"Language"} text={curLanguage} icon={"translate"}
+                                      onAccept={onAccept}
+                                      onDecline={onDecline}>
                             <RadioGroup initialValue={language} onChange={setLanguage} items={languageList} />
-                        </SimpleModal>
+                        </SimpleDialog>
                     </Col>
                 </Row>
 

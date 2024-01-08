@@ -2,8 +2,7 @@ import React from "react";
 import {ScrollView} from 'react-native';
 import {useTheme} from 'react-native-paper';
 import {StyleSheet} from "react-native";
-import WeaponCard from "../../components/weapon-card/WeaponCard";
-import MeasureModal from "../../components/simple-modal/SimpleModal";
+import {WeaponCard} from "../../components/cards";
 
 
 export default function HomeScreen({navigation}) {

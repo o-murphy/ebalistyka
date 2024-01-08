@@ -1,7 +1,7 @@
 import {Grid} from "react-native-paper-grid";
 import React from "react";
-import InputCard from "../input-card/InputCard";
-import styleSheet from "../../styles/stylesheet";
+import InputCard from "./InputCard";
+import styleSheet from "../../styles";
 import {Unit, UnitProps} from "js-ballistics";
 import MeasureSliderModal from "../measure-slider-modal/MeasureSliderModal";
 

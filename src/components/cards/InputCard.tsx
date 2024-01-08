@@ -1,6 +1,7 @@
 import {Card, Icon, useTheme} from "react-native-paper";
 import React from "react";
-import styleSheet from "../../styles/stylesheet";
+import styleSheet from "../../styles";
+
 
 
 const InputCard = ({children, title}) => {

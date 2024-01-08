@@ -17,9 +17,12 @@ export default function WindDirection({curValue, onChange}) {
         },
         text: {
             marginTop: -110,
-            fontWeight: "bold"
+            fontWeight: "bold",
+            fontSize: 16
         },
-        slider: {},
+        slider: {
+            padding: 5
+        },
     }
 
     return (
@@ -27,7 +30,7 @@ export default function WindDirection({curValue, onChange}) {
         <View style={styles.container}>
 
             <CircleSlider value={curValue}
-                          dialRadius={100}
+                          dialRadius={80}
                           btnRadius={15}
                           btnColor={theme.colors.outline}
                           min={0}
@@ -41,10 +44,10 @@ export default function WindDirection({curValue, onChange}) {
                           strokeWidth={20}
                           textSize={0}
                           onValueChange={value => onChange(Math.round(value / 30))}
-                          style={[styles.slider, {padding: 5}]}/>
+                          style={styles.slider}/>
 
 
-            <Text variant={"titleMedium"} style={styles.text}>{`${curValue * 30}° (${curValue}h)`}</Text>
+            <Text style={styles.text}>{`${curValue * 30}° (${curValue}h)`}</Text>
 
 
         </View>

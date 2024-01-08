@@ -1,8 +1,6 @@
 import {ScrollView} from 'react-native';
 import {useTheme} from 'react-native-paper';
-import ContentCard from '../../components/content-card/ContentCard';
-import SettingsUnitCard from '../../components/settings-unit-card/SettingsUnitCard';
-import SettingsGeneralCard from "../../components/settings-general-card/SettingsGeneralCard";
+import {SettingsUnitCard, SettingsGeneralCard} from "../../components/cards";
 
 export default function SettingsScreen({props}) {
 

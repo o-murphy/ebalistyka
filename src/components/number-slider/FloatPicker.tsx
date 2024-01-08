@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import WheelPicker from '../wheely';
-import styleSheet from "../../styles/stylesheet";
+import styleSheet from "../../styles";
 import {useTheme} from "react-native-paper";
 import {View} from "react-native";
 
@@ -20,7 +20,7 @@ export default function FloatPicker({
             {borderRadius: 0, backgroundColor: theme.colors.onSecondary}
         ],
 
-        itemTextStyle: [{color: theme.colors.secondary, fontWeight: "bold"}],
+        itemTextStyle: [{color: theme.colors.secondary, fontWeight: "bold", fontSize: 24}],
 
     }
 

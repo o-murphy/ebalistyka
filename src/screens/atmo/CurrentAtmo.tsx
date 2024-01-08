@@ -2,8 +2,7 @@ import React from "react";
 import {ScrollView} from 'react-native';
 import {useTheme} from 'react-native-paper';
 import {StyleSheet} from "react-native";
-import AtmoCard from "../../components/atmo-card/AtmoCard";
-import WindCard from "../../components/wind-card/WindCard";
+import {AtmoCard, WindCard} from "../../components/cards";
 
 
 export default function CurrentAtmo({ navigation }) {
