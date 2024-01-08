@@ -19,7 +19,7 @@ export default function AtmoCard() {
                 initialValue: 15,
                 maxValue: 50,
                 minValue: -50,
-                decimals: 1
+                decimals: 0
             }
         },
         {

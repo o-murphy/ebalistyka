@@ -1,4 +1,4 @@
-import {Card, Icon, useTheme} from "react-native-paper";
+import {Card} from "react-native-paper";
 import React from "react";
 import styleSheet from "../../styles";
 

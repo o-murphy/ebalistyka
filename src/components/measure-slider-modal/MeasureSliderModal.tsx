@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {Col, Row} from "react-native-paper-grid";
 import styleSheet from "../../styles";
 import {Text} from "react-native-paper";
-import SimpleDialog from "../simple-modal/SimpleDialog";
+import SimpleDialog from "../dialogs/SimpleDialog";
 import {IntPicker, FloatPicker} from "../number-slider";
 
 
@@ -42,7 +42,7 @@ export default function MeasureSliderModal({field}: MeasureField) {
             </Col>
             <Col size={8}>
                 <SimpleDialog icon={field.icon} title={`${field.label}, ${field.suffix}`}
-                              text={`${curValue} ${field.suffix}`}
+                              text={`${curValue.toFixed(field.inputProps.decimals)} ${field.suffix}`}
                               onAccept={onAccept}
                               onDecline={onDecline}>
                     {

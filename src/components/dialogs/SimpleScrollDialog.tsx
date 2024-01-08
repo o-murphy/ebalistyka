@@ -3,7 +3,7 @@ import {Portal, Chip, useTheme, Button, Dialog, Text, FAB} from 'react-native-pa
 import {ScrollView, View} from "react-native";
 
 
-const SimpleDialog = ({
+const SimpleScrollDialog = ({
                          children,
                          title,
                          text,
@@ -50,9 +50,9 @@ const SimpleDialog = ({
                     </Dialog.ScrollArea>
 
                     <Dialog.Actions>
-                        <FAB icon="close" size={'small'} onPress={onDeclineBtn}
-                             variant={'tertiary'} color={useTheme().colors.error}/>
-                        <FAB icon="check" size={'small'} onPress={onAcceptBtn}/>
+                        <FAB icon="close" mode={"flat"} size={'small'} onPress={onDeclineBtn}
+                             variant={'tertiary'} color={useTheme().colors.tertiary}/>
+                        <FAB icon="check" mode={"flat"} size={'small'} onPress={onAcceptBtn}/>
                     </Dialog.Actions>
                 </Dialog>
 
@@ -61,4 +61,4 @@ const SimpleDialog = ({
     );
 };
 
-export default SimpleDialog;
+export default SimpleScrollDialog;

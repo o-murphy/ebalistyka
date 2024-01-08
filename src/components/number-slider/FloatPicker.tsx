@@ -47,8 +47,6 @@ export default function FloatPicker({
     }
     const floatRangeStrings: string[] = floatRange.map(floatFormat)
 
-    // const [value, setValue] = useState(initialValue);
-
     const [int, setInt] = useState(Math.floor(curValue))
     const [float, setFloat] = useState(Math.floor((curValue - int) * floatDivider))
 
@@ -58,12 +56,12 @@ export default function FloatPicker({
 
     const onIntChange = (index: number): void => {
         setInt(intRange[index]);
-        onValueChange(float / floatDivider + int);
+        onValueChange(float / floatDivider + intRange[index]);
     }
 
     const onFloatChange = (index: number): void => {
         setFloat(floatRange[index]);
-        onValueChange(float / floatDivider + int);
+        onValueChange(floatRange[index] / floatDivider + int);
     }
 
     return (

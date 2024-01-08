@@ -136,7 +136,7 @@ const CircleSlider: FC<Props> = ({
 
                 <Polygon
                     points={`
-                     ${bR},${bR + width / 2 - btnRadius}
+                     ${bR},${bR + width / 4}
                      ${bR + 1.5 * btnRadius},${bR} 
                      ${bR - 1.5 * btnRadius},${bR} 
                     `}

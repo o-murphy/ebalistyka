@@ -3,11 +3,10 @@ import {Col, Grid, Row} from "react-native-paper-grid";
 import React, {useState} from "react";
 import InputCard from "./InputCard";
 import styleSheet from "../../styles";
-import SimpleDialog from "../simple-modal/SimpleDialog";
+import {SimpleDialog} from "../dialogs";
 import {Unit, UnitProps} from "js-ballistics";
 import WindDirectionPicker from "../wind-dir-picker/WindDirPicker";
 import MeasureSliderModal from "../measure-slider-modal/MeasureSliderModal";
-// import CircularSlider from "../circular-slider/CircularSlider";
 
 
 export default function WindCard() {

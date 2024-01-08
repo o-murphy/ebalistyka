@@ -3,7 +3,7 @@ import {Col, Grid, Row} from "react-native-paper-grid";
 import React, {useState} from "react";
 import InputCard from "./InputCard";
 import styleSheet from "../../styles";
-import SimpleDialog from "../simple-modal/SimpleDialog";
+import {SimpleDialog} from "../dialogs";
 import MeasureSliderModal from "../measure-slider-modal/MeasureSliderModal";
 
 
@@ -15,7 +15,8 @@ export default function WeaponCard() {
         {
             key: "diameter",
             label: "Diameter",
-            "suffix": "in",
+            suffix: "in",
+            icon: "diameter-variant",
             inputProps: {
                 mode: "float",
                 initialValue: 0.308,
@@ -28,7 +29,8 @@ export default function WeaponCard() {
         {
             key: "twist",
             label: "Twist",
-            "suffix": "in",
+            suffix: "in",
+            icon: "screw-flat-top",
             inputProps: {
                 mode: "int",
                 initialValue: 11,

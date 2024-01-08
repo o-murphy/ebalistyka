@@ -9,7 +9,7 @@ import {
     UnitProps,
     Measure,
 } from "js-ballistics"
-import SimpleDialog from "../simple-modal/SimpleDialog";
+import {SimpleScrollDialog} from "../dialogs";
 import {useState} from "react";
 import RadioGroup from "../radio-group/RadioGroup";
 
@@ -109,9 +109,9 @@ export default function SettingsUnitCard() {
                     <Text style={{fontSize: 16}}>{field.label}</Text>
                 </Col>
                 <Col size={7}>
-                    <SimpleDialog title={field.label} text={UnitProps[curValue].name} onAccept={onAccept}>
+                    <SimpleScrollDialog title={field.label} text={UnitProps[curValue].name} onAccept={onAccept}>
                         <RadioGroup initialValue={curValue} onChange={setValue} items={field.list} />
-                    </SimpleDialog>
+                    </SimpleScrollDialog>
                 </Col>
             </Row>
         )
