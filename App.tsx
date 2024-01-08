@@ -8,7 +8,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {TopAppBar, BotAppBar} from "./src/components/app-bars";
-import {HomeScreen, CurrentAtmo, SettingsScreen} from "./src/screens";
+import {HomeScreen, CurrentAtmo, SettingsScreen, Calculate, Trajectory} from "./src/screens";
 
 
 import {navigationRef} from "./src/RootNavigation";
@@ -52,6 +52,8 @@ export default function App() {
 
                         <Stack.Screen name="Home" component={HomeScreen}/>
                         <Stack.Screen name="Atmosphere" component={CurrentAtmo}/>
+                        <Stack.Screen name="Calculate" component={Calculate}/>
+                        <Stack.Screen name="Trajectory" component={Trajectory}/>
                         <Stack.Screen name="Settings" component={SettingsScreen}/>
 
 

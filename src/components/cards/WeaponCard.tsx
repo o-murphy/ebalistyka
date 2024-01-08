@@ -32,7 +32,7 @@ export default function WeaponCard() {
             suffix: "in",
             icon: "screw-flat-top",
             inputProps: {
-                mode: "int",
+                mode: "float",
                 initialValue: 11,
                 maxValue: 20,
                 minValue: -20,
