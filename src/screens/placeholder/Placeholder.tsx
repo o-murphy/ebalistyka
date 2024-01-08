@@ -1,11 +1,10 @@
 import React from "react";
 import {ScrollView} from 'react-native';
-import {useTheme} from 'react-native-paper';
+import {useTheme, Text} from 'react-native-paper';
 import {StyleSheet} from "react-native";
-import {AtmoCard, WindCard} from "../../components/cards";
 
 
-export default function CurrentAtmo({ navigation }) {
+export default function Placeholder({text}: { text?: string }) {
 
     const theme = useTheme();
 
@@ -21,9 +20,13 @@ export default function CurrentAtmo({ navigation }) {
             keyboardShouldPersistTaps="always"
             alwaysBounceVertical={false}
             showsVerticalScrollIndicator={true}
+
+            contentContainerStyle={{
+                flex: 1,
+                justifyContent: 'center',
+            }}
         >
-            <AtmoCard />
-            <WindCard />
+            <Text style={{textAlign: "center"}}>{text ? text : "Not implemented yet"}</Text>
         </ScrollView>
     );
 }

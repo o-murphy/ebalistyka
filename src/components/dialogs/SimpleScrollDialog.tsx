@@ -3,7 +3,7 @@ import {Portal, Chip, useTheme, Button, Dialog, Text, FAB} from 'react-native-pa
 import {ScrollView, View} from "react-native";
 
 
-const SimpleModal = ({
+const SimpleScrollDialog = ({
                          children,
                          title,
                          text,
@@ -31,26 +31,34 @@ const SimpleModal = ({
 
     return (
         <View style={{display: "flex", justifyContent: "center"}}>
-            <Chip icon={icon} closeIcon="square-edit-outline"
+            <Chip icon={icon} closeIcon="square-edit-outline" style={{margin: 0}} textStyle={{fontSize: 16}}
                   onPress={showDialog}
                   onClose={showDialog}
-                  // textStyle={{fontSize: 18}}
+                // textStyle={{fontSize: 18}}
             >
                 {text}
             </Chip>
             <Portal>
+
                 <Dialog visible={visible} onDismiss={hideDialog} style={{justifyContent: "center"}}>
                     <Dialog.Title>{title}</Dialog.Title>
-                    <Dialog.Content>{children}</Dialog.Content>
+
+                    <Dialog.ScrollArea>
+                        <ScrollView contentContainerStyle={{padding: 24}}>
+                            {children}
+                        </ScrollView>
+                    </Dialog.ScrollArea>
+
                     <Dialog.Actions>
-                        <FAB icon="close" size={'small'} onPress={onDeclineBtn}
-                             variant={'tertiary'} color={useTheme().colors.error} />
-                        <FAB icon="check" size={'small'} onPress={onAcceptBtn} />
+                        <FAB icon="close" mode={"flat"} size={'small'} onPress={onDeclineBtn}
+                             variant={'tertiary'} color={useTheme().colors.tertiary}/>
+                        <FAB icon="check" mode={"flat"} size={'small'} onPress={onAcceptBtn}/>
                     </Dialog.Actions>
                 </Dialog>
+
             </Portal>
         </View>
     );
 };
 
-export default SimpleModal;
+export default SimpleScrollDialog;

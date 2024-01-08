@@ -1,4 +1,3 @@
-// import 'react-native-gesture-handler';
 import React from 'react';
 import {useState} from 'react';
 import {StatusBar} from 'expo-status-bar';
@@ -8,12 +7,8 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-
-import TopAppBar from './src/components/top-app-bar/TopAppBar';
-import SettingsScreen from './src/screens/settings/SettingsScreen';
-import HomeScreen from './src/screens/home/HomeScreen';
-import CurrentAtmo from "./src/screens/atmo/CurrentAtmo";
-import BotAppBar from './src/components/bot-app-bar/BotAppBar';
+import {TopAppBar, BotAppBar} from "./src/components/app-bars";
+import {HomeScreen, CurrentAtmo, SettingsScreen, Calculate, Trajectory} from "./src/screens";
 
 
 import {navigationRef} from "./src/RootNavigation";
@@ -57,6 +52,8 @@ export default function App() {
 
                         <Stack.Screen name="Home" component={HomeScreen}/>
                         <Stack.Screen name="Atmosphere" component={CurrentAtmo}/>
+                        <Stack.Screen name="Calculate" component={Calculate}/>
+                        <Stack.Screen name="Trajectory" component={Trajectory}/>
                         <Stack.Screen name="Settings" component={SettingsScreen}/>
 
 

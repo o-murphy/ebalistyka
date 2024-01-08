@@ -1,15 +1,16 @@
 import {Text} from "react-native-paper"
 import {Col, Grid, Row} from "react-native-paper-grid";
-import InputCard from "../input-card/InputCard";
-import styleSheet from "../../styles/stylesheet";
+import InputCard from "./InputCard";
+import styleSheet from "../../styles";
+
 
 import {
     Unit,
     UnitProps,
     Measure,
 } from "js-ballistics"
-import SimpleModal from "../simple-modal/SimpleModal";
-import {useReducer, useState} from "react";
+import {SimpleScrollDialog} from "../dialogs";
+import {useState} from "react";
 import RadioGroup from "../radio-group/RadioGroup";
 
 
@@ -22,13 +23,20 @@ const fields = [
     {
         key: "distance",
         label: "Distance",
-        list: get_unit_list(Measure.Distance),
+        list: [
+            {label: UnitProps[Unit.Meter].name, value: Unit.Meter},
+            {label: UnitProps[Unit.Foot].name, value: Unit.Foot},
+            {label: UnitProps[Unit.Yard].name, value: Unit.Yard},
+        ],
         def: Unit.Meter,
     },
     {
         key: "velocity",
         label: "Velocity",
-        list: get_unit_list(Measure.Velocity),
+        list: [
+            {label: UnitProps[Unit.MPS].name, value: Unit.MPS},
+            {label: UnitProps[Unit.FPS].name, value: Unit.FPS},
+        ],
         def: Unit.MPS
     },
     {
@@ -38,22 +46,15 @@ const fields = [
         def: Unit.Degree
     },
     {
-        key: "sight_height",
-        label: "Sight height",
-        list: get_unit_list(Measure.Distance),
-        def: Unit.Inch
-    },
-    {
-        key: "length",
-        label: "Length",
-        list: get_unit_list(Measure.Distance),
-        def: Unit.Inch
-    },
-    {
-        key: "diameter",
-        label: "Diameter",
-        list: get_unit_list(Measure.Distance),
-        def: Unit.Inch
+      key: "sizes",
+      label: "Sizes",
+    list: [
+        {label: UnitProps[Unit.Inch].name, value: Unit.Inch},
+        {label: UnitProps[Unit.Millimeter].name, value: Unit.Millimeter},
+        {label: UnitProps[Unit.Centimeter].name, value: Unit.Centimeter},
+        {label: UnitProps[Unit.Centimeter].name, value: Unit.Line},
+    ],
+      def: Unit.Inch
     },
     {
         key: "weight",
@@ -64,7 +65,10 @@ const fields = [
     {
         key: "temperature",
         label: "Temperature",
-        list: get_unit_list(Measure.Temperature),
+        list: [
+            {label: UnitProps[Unit.Celsius].name, value: Unit.Celsius},
+            {label: UnitProps[Unit.Fahrenheit].name, value: Unit.Fahrenheit},
+        ],
         def: Unit.Celsius
     },
     {
@@ -102,12 +106,12 @@ export default function SettingsUnitCard() {
         return (
             <Row style={styleSheet.grid.row} key={field.key}>
                 <Col size={9}>
-                    <Text>{field.label}</Text>
+                    <Text style={{fontSize: 16}}>{field.label}</Text>
                 </Col>
                 <Col size={7}>
-                    <SimpleModal title={field.label} text={UnitProps[curValue].name} onAccept={onAccept}>
+                    <SimpleScrollDialog title={field.label} text={UnitProps[curValue].name} onAccept={onAccept}>
                         <RadioGroup initialValue={curValue} onChange={setValue} items={field.list} />
-                    </SimpleModal>
+                    </SimpleScrollDialog>
                 </Col>
             </Row>
         )

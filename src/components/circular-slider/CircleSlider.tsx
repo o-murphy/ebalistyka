@@ -1,5 +1,5 @@
-import React, { FC, useState, useRef, useCallback } from "react";
-import { PanResponder, Dimensions } from "react-native";
+import React, {FC, useState, useRef, useCallback} from "react";
+import {PanResponder, Dimensions} from "react-native";
 import Svg, {Path, Circle, G, Text, Polygon} from "react-native-svg";
 
 interface Props {
@@ -41,6 +41,11 @@ const CircleSlider: FC<Props> = ({
                                  }) => {
     const [angle, setAngle] = useState(value);
 
+    const onChange = (value) => {
+        onValueChange(value)
+        return value
+    }
+
     const panResponder = useRef(
         PanResponder.create({
             onStartShouldSetPanResponder: (e, gs) => true,
@@ -71,7 +76,7 @@ const CircleSlider: FC<Props> = ({
 
             let x = hC + r * Math.cos(a);
             let y = hC + r * Math.sin(a);
-            return { x, y };
+            return {x, y};
         },
         [dialRadius, btnRadius]
     );
@@ -99,11 +104,6 @@ const CircleSlider: FC<Props> = ({
     const dR = dialRadius;
     const startCoord = polarToCartesian(0);
     let endCoord = polarToCartesian(angle);
-
-    const onChange = (value) => {
-        onValueChange(value)
-        return value
-    }
 
     return (
         <Svg width={width} height={width}>
@@ -135,14 +135,45 @@ const CircleSlider: FC<Props> = ({
                 {/*/>*/}
 
                 <Polygon
-                    points={`${bR},${bR+btnRadius} 
-                     ${bR + btnRadius},${bR - btnRadius} 
-                     ${bR - btnRadius},${bR - btnRadius} `}
+                    points={`
+                     ${bR},${bR + width / 4}
+                     ${bR + 1.5 * btnRadius},${bR} 
+                     ${bR - 1.5 * btnRadius},${bR} 
+                    `}
                     fill={btnColor}
                     transform={`rotate(${angle} ${bR} ${bR})`}
                     {...panResponder.panHandlers}
+                >
+                    {onChange(angle) + ""}
+                </Polygon>
 
-                >{onChange(angle) + ""}</Polygon>
+                {/*<Polygon*/}
+                {/*    points={`*/}
+                {/*     ${bR - btnRadius},${bR+width/2 - 5*btnRadius} */}
+                {/*     ${bR},${bR+width/2 - btnRadius}*/}
+                {/*     ${bR + btnRadius},${bR+width/2 - 5*btnRadius} */}
+                {/*     ${bR + btnRadius},${bR} */}
+                {/*     ${bR - btnRadius},${bR} */}
+                {/*    `}*/}
+                {/*    fill={btnColor}*/}
+                {/*    transform={`rotate(${angle} ${bR} ${bR})`}*/}
+                {/*    {...panResponder.panHandlers}*/}
+                {/*>*/}
+                {/*    {onChange(angle) + ""}*/}
+                {/*</Polygon>*/}
+
+                {/*<Polygon*/}
+                {/*    points={`${bR},${bR+btnRadius} */}
+                {/*     ${bR + btnRadius},${bR - btnRadius} */}
+                {/*     ${bR - btnRadius},${bR - btnRadius} `}*/}
+                {/*    fill={btnColor}*/}
+                {/*    transform={`rotate(${angle} ${bR} ${bR})`}*/}
+                {/*    {...panResponder.panHandlers}*/}
+
+                {/*>*/}
+                {/*{onChange(angle) + ""}*/}
+                {/*</Polygon>*/}
+
 
                 {/*<Text*/}
                 {/*    x={bR - btnRadius}*/}

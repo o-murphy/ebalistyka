@@ -17,41 +17,22 @@ export default function WindDirection({curValue, onChange}) {
         },
         text: {
             marginTop: -110,
-            fontWeight: "bold"
+            fontWeight: "bold",
+            fontSize: 16
         },
-        slider: {},
+        slider: {
+            padding: 5
+        },
     }
 
     return (
 
         <View style={styles.container}>
-            {/*<CircularSlider*/}
-            {/*    // style={styles.slider}*/}
-
-            {/*    size={200}*/}
-            {/*    trackWidth={15}*/}
-            {/*    minValue={0}*/}
-            {/*    maxValue={12}*/}
-            {/*    startAngle={0}*/}
-            {/*    endAngle={360}*/}
-            {/*    angleType={{*/}
-            {/*        direction: "cw",*/}
-            {/*        axis: "+y"*/}
-            {/*    }}*/}
-            {/*    handle1={{*/}
-            {/*        value: curValue,*/}
-            {/*        onChange: onChange*/}
-            {/*    }}*/}
-            {/*    coerceToInt={true}*/}
-            {/*    // arcColor={theme.colors.onSecondaryContainer}*/}
-            {/*    arcColor={theme.colors.secondaryContainer}*/}
-            {/*    arcBackgroundColor={theme.colors.secondaryContainer}*/}
-            {/*/>*/}
-
 
             <CircleSlider value={curValue}
-                          dialRadius={100}
-                          btnRadius={18}
+                          dialRadius={80}
+                          btnRadius={15}
+                          btnColor={theme.colors.outline}
                           min={0}
                           max={359}
                           dialWidth={15}
@@ -63,10 +44,10 @@ export default function WindDirection({curValue, onChange}) {
                           strokeWidth={20}
                           textSize={0}
                           onValueChange={value => onChange(Math.round(value / 30))}
-                          style={[styles.slider, {padding: 5}]}/>
+                          style={styles.slider}/>
 
 
-            <Text variant={"titleMedium"} style={styles.text}>{`${curValue * 30}° (${curValue}h)`}</Text>
+            <Text style={styles.text}>{`${curValue * 30}° (${curValue}h)`}</Text>
 
 
         </View>

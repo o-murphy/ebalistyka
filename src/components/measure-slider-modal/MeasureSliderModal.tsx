@@ -1,8 +1,8 @@
 import React, {useState} from "react";
 import {Col, Row} from "react-native-paper-grid";
-import styleSheet from "../../styles/stylesheet";
+import styleSheet from "../../styles";
 import {Text} from "react-native-paper";
-import SimpleModal from "../simple-modal/SimpleModal";
+import SimpleDialog from "../dialogs/SimpleDialog";
 import {IntPicker, FloatPicker} from "../number-slider";
 
 
@@ -38,19 +38,19 @@ export default function MeasureSliderModal({field}: MeasureField) {
     return (
         <Row style={styleSheet.grid.row}>
             <Col size={8}>
-                <Text>{field.label}</Text>
+                <Text style={{fontSize: 16}}>{field.label}</Text>
             </Col>
             <Col size={8}>
-                <SimpleModal icon={field.icon} title={`${field.label}, ${field.suffix}`}
-                             text={`${curValue} ${field.suffix}`}
-                             onAccept={onAccept}
-                             onDecline={onDecline}>
+                <SimpleDialog icon={field.icon} title={`${field.label}, ${field.suffix}`}
+                              text={`${curValue.toFixed(field.inputProps.decimals)} ${field.suffix}`}
+                              onAccept={onAccept}
+                              onDecline={onDecline}>
                     {
                         field.inputProps.mode === "int"
                             ? <IntPicker  {...field.inputProps} curValue={curValue} onChange={setValue}/>
                             : <FloatPicker  {...field.inputProps} curValue={curValue} onChange={setValue}/>
                     }
-                </SimpleModal>
+                </SimpleDialog>
             </Col>
         </Row>)
 }

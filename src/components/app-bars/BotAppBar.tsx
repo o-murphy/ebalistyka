@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Appbar, FAB, useTheme} from 'react-native-paper';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import { useNavigation } from "@react-navigation/native";
-import styleSheet from "../../styles/stylesheet";
+import styleSheet from "../../styles";
 
 
 const BOTTOM_APPBAR_HEIGHT = 80;
@@ -42,6 +42,8 @@ const BotAppBar = () => {
         >
 
             <Appbar.Action icon="weather-partly-cloudy" onPress={() => navigation.navigate("Atmosphere")}/>
+            <Appbar.Action icon="calculator" onPress={() => navigation.navigate("Calculate")}/>
+            <Appbar.Action icon="table-large" onPress={() => navigation.navigate("Trajectory")}/>
             <Appbar.Action icon="cog-outline" onPress={() => navigation.navigate("Settings")}/>
 
             <FAB

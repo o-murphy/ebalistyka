@@ -405,27 +405,6 @@ export class CircularSlider extends React.Component<
                     /* Handle 1 */
                     controllable && (
                         <React.Fragment>
-                            {/*<filter*/}
-                            {/*    id="handleShadow"*/}
-                            {/*    x="-50%"*/}
-                            {/*    y="-50%"*/}
-                            {/*    width="16"*/}
-                            {/*    height="16"*/}
-                            {/*>*/}
-                            {/*<feOffset result="offOut" in="SourceGraphic" dx="0" dy="0"/>*/}
-                            {/*<feColorMatrix*/}
-                            {/*    result="matrixOut"*/}
-                            {/*    in="offOut"*/}
-                            {/*    type="matrix"*/}
-                            {/*    values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"*/}
-                            {/*/>*/}
-                            {/*<feGaussianBlur*/}
-                            {/*    result="blurOut"*/}
-                            {/*    in="matrixOut"*/}
-                            {/*    stdDeviation="5"*/}
-                            {/*/>*/}
-                            {/*<feBlend in="SourceGraphic" in2="blurOut" mode="normal"/>*/}
-                            {/*</filter>*/}
                             {createCap()}
                         </React.Fragment>
                     )
@@ -440,7 +419,6 @@ export class CircularSlider extends React.Component<
                                 cx={handle2Position.x}
                                 cy={handle2Position.y}
                                 fill="#ffffff"
-                                filter="url(#handleShadow)"
                             />
                         </React.Fragment>
                     )

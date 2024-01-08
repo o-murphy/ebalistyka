@@ -1,9 +1,10 @@
 import React from "react";
 import {ScrollView} from 'react-native';
-import {useTheme} from 'react-native-paper';
+import {FAB, useTheme} from 'react-native-paper';
 import {StyleSheet} from "react-native";
-import WeaponCard from "../../components/weapon-card/WeaponCard";
-import MeasureModal from "../../components/simple-modal/SimpleModal";
+import {WeaponCard} from "../../components/cards";
+import styleSheet from "../../styles";
+import TabsCard from "../../components/cards/TabsCard";
 
 
 export default function HomeScreen({navigation}) {
@@ -19,13 +20,28 @@ export default function HomeScreen({navigation}) {
     });
 
     return (
-        <ScrollView
-            style={styles.scrollViewContainer}
-            keyboardShouldPersistTaps="always"
-            alwaysBounceVertical={false}
-            showsVerticalScrollIndicator={true}
-        >
-            <WeaponCard/>
-        </ScrollView>
+       <>
+            <ScrollView
+                style={styles.scrollViewContainer}
+                keyboardShouldPersistTaps="always"
+                alwaysBounceVertical={false}
+                showsVerticalScrollIndicator={true}
+            >
+                <WeaponCard/>
+
+                <TabsCard />
+            </ScrollView>
+            {/*TODO: move fab to screen*/}
+            {/*<FAB*/}
+            {/*    mode="flat"*/}
+            {/*    size="medium"*/}
+            {/*    icon={"plus"}*/}
+            {/*    onPress={() => console.log("BigFabPressed")}*/}
+            {/*    style={[*/}
+            {/*        styleSheet.fab,*/}
+            {/*        {bottom: (BOTTOM_APPBAR_HEIGHT - MEDIUM_FAB_HEIGHT) / 2},*/}
+            {/*    ]}*/}
+            {/*/>*/}
+        </>
     );
 }
