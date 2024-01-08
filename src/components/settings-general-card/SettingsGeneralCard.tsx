@@ -24,8 +24,12 @@ export default function SettingsGeneralCard() {
     const [curLanguage, setCurLanguage] = useState("EN");
     const [language, setLanguage] = useState(curLanguage);
 
-    const acceptLanguage = () => {
+    const onAccept = () => {
         setCurLanguage(language)
+    }
+
+    const onDecline = () => {
+        setLanguage(curLanguage)
     }
 
     return (
@@ -37,8 +41,10 @@ export default function SettingsGeneralCard() {
                         <Text>{"Language"}</Text>
                     </Col>
                     <Col size={7}>
-                        <SimpleModal title={"Language"} text={curLanguage} icon={"translate"} onAccept={acceptLanguage}>
-                            <RadioGroup value={language} setValue={setLanguage} items={languageList} />
+                        <SimpleModal title={"Language"} text={curLanguage} icon={"translate"}
+                                     onAccept={onAccept}
+                                     onDecline={onDecline}>
+                            <RadioGroup initialValue={language} onChange={setLanguage} items={languageList} />
                         </SimpleModal>
                     </Col>
                 </Row>

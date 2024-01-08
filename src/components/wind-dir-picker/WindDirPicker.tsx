@@ -25,33 +25,11 @@ export default function WindDirection({curValue, onChange}) {
     return (
 
         <View style={styles.container}>
-            {/*<CircularSlider*/}
-            {/*    // style={styles.slider}*/}
-
-            {/*    size={200}*/}
-            {/*    trackWidth={15}*/}
-            {/*    minValue={0}*/}
-            {/*    maxValue={12}*/}
-            {/*    startAngle={0}*/}
-            {/*    endAngle={360}*/}
-            {/*    angleType={{*/}
-            {/*        direction: "cw",*/}
-            {/*        axis: "+y"*/}
-            {/*    }}*/}
-            {/*    handle1={{*/}
-            {/*        value: curValue,*/}
-            {/*        onChange: onChange*/}
-            {/*    }}*/}
-            {/*    coerceToInt={true}*/}
-            {/*    // arcColor={theme.colors.onSecondaryContainer}*/}
-            {/*    arcColor={theme.colors.secondaryContainer}*/}
-            {/*    arcBackgroundColor={theme.colors.secondaryContainer}*/}
-            {/*/>*/}
-
 
             <CircleSlider value={curValue}
                           dialRadius={100}
-                          btnRadius={18}
+                          btnRadius={15}
+                          btnColor={theme.colors.outline}
                           min={0}
                           max={359}
                           dialWidth={15}

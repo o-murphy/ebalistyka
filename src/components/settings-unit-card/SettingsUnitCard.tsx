@@ -22,13 +22,20 @@ const fields = [
     {
         key: "distance",
         label: "Distance",
-        list: get_unit_list(Measure.Distance),
+        list: [
+            {label: UnitProps[Unit.Meter].name, value: Unit.Meter},
+            {label: UnitProps[Unit.Foot].name, value: Unit.Foot},
+            {label: UnitProps[Unit.Yard].name, value: Unit.Yard},
+        ],
         def: Unit.Meter,
     },
     {
         key: "velocity",
         label: "Velocity",
-        list: get_unit_list(Measure.Velocity),
+        list: [
+            {label: UnitProps[Unit.MPS].name, value: Unit.MPS},
+            {label: UnitProps[Unit.FPS].name, value: Unit.FPS},
+        ],
         def: Unit.MPS
     },
     {
@@ -38,22 +45,15 @@ const fields = [
         def: Unit.Degree
     },
     {
-        key: "sight_height",
-        label: "Sight height",
-        list: get_unit_list(Measure.Distance),
-        def: Unit.Inch
-    },
-    {
-        key: "length",
-        label: "Length",
-        list: get_unit_list(Measure.Distance),
-        def: Unit.Inch
-    },
-    {
-        key: "diameter",
-        label: "Diameter",
-        list: get_unit_list(Measure.Distance),
-        def: Unit.Inch
+      key: "sizes",
+      label: "Sizes",
+    list: [
+        {label: UnitProps[Unit.Inch].name, value: Unit.Inch},
+        {label: UnitProps[Unit.Millimeter].name, value: Unit.Millimeter},
+        {label: UnitProps[Unit.Centimeter].name, value: Unit.Centimeter},
+        {label: UnitProps[Unit.Centimeter].name, value: Unit.Line},
+    ],
+      def: Unit.Inch
     },
     {
         key: "weight",
@@ -64,7 +64,10 @@ const fields = [
     {
         key: "temperature",
         label: "Temperature",
-        list: get_unit_list(Measure.Temperature),
+        list: [
+            {label: UnitProps[Unit.Celsius].name, value: Unit.Celsius},
+            {label: UnitProps[Unit.Fahrenheit].name, value: Unit.Fahrenheit},
+        ],
         def: Unit.Celsius
     },
     {

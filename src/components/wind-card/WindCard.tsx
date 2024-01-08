@@ -7,6 +7,7 @@ import SimpleModal from "../simple-modal/SimpleModal";
 import {Unit, UnitProps} from "js-ballistics";
 import WindDirectionPicker from "../wind-dir-picker/WindDirPicker";
 import MeasureSliderModal from "../measure-slider-modal/MeasureSliderModal";
+// import CircularSlider from "../circular-slider/CircularSlider";
 
 
 export default function WindCard() {
@@ -97,6 +98,33 @@ export default function WindCard() {
                         </SimpleModal>
                     </Col>
                 </Row>
+
+                {/*<Row>*/}
+                {/*    <Col>*/}
+                {/*        <Text>{"Wind direction"}</Text>*/}
+                {/*    </Col>*/}
+
+                {/*    <Col>*/}
+                {/*        <CircularSlider*/}
+                {/*            size={200}*/}
+                {/*            trackWidth={8}*/}
+                {/*            minValue={0}*/}
+                {/*            maxValue={12}*/}
+                {/*            startAngle={0}*/}
+                {/*            endAngle={360}*/}
+                {/*            angleType={{direction: "cw", axis: "+y"}}*/}
+                {/*            handleSize={10}*/}
+                {/*            handle1={{*/}
+                {/*                value: 50,*/}
+                {/*                onChange: () => {},*/}
+                {/*            }}*/}
+                {/*            arcBackgroundColor={"white"}*/}
+                {/*            arcColor={"black"}*/}
+                {/*            capMode={"triangle"}*/}
+                {/*        />*/}
+
+                {/*    </Col>*/}
+                {/*</Row>*/}
 
             </Grid>
         </InputCard>
