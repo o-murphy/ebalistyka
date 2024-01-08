@@ -4,6 +4,7 @@ import {FAB, useTheme} from 'react-native-paper';
 import {StyleSheet} from "react-native";
 import {WeaponCard} from "../../components/cards";
 import styleSheet from "../../styles";
+import TabsCard from "../../components/cards/TabsCard";
 
 
 export default function HomeScreen({navigation}) {
@@ -18,9 +19,6 @@ export default function HomeScreen({navigation}) {
         },
     });
 
-    const BOTTOM_APPBAR_HEIGHT = 80;
-    const MEDIUM_FAB_HEIGHT = 56;
-
     return (
        <>
             <ScrollView
@@ -30,6 +28,8 @@ export default function HomeScreen({navigation}) {
                 showsVerticalScrollIndicator={true}
             >
                 <WeaponCard/>
+
+                <TabsCard />
             </ScrollView>
             {/*TODO: move fab to screen*/}
             {/*<FAB*/}
