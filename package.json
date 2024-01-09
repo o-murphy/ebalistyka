@@ -2,11 +2,14 @@
   "name": "ebalistyka",
   "version": "0.1.1-alpha.1",
   "main": "node_modules/expo/AppEntry.js",
+  "homepage": "https://o-murphy.github.io/ebalistyka",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "deploy": "gh-pages -d web-build",
+    "predeploy": "expo export:web"
   },
   "dependencies": {
     "@expo/webpack-config": "^19.0.0",
@@ -21,6 +24,7 @@
     "js-ballistics": "^1.1.1",
     "lodash.range": "^3.2.0",
     "react": "18.2.0",
+    "react-dom": "18.2.0",
     "react-input-mask": "^2.0.4",
     "react-native": "0.72.6",
     "react-native-paper": "^5.11.4",
@@ -36,7 +40,8 @@
     "react-number-format": "^5.3.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "gh-pages": "^6.1.1"
   },
   "private": true
 }
