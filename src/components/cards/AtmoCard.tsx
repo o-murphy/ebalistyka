@@ -14,52 +14,44 @@ export default function AtmoCard() {
             label: "Temperature",
             suffix: UnitProps[Unit.Celsius].symbol,
             icon: "thermometer",
-            inputProps: {
-                mode: "int",
-                initialValue: 15,
-                maxValue: 50,
-                minValue: -50,
-                decimals: 0
-            }
+            mode: "int" as const,
+            initialValue: 15,
+            maxValue: 50,
+            minValue: -50,
+            decimals: 0
         },
         {
             key: "pressure",
             label: "Pressure",
             suffix: UnitProps[Unit.MmHg].symbol,
             icon: "speedometer",
-            inputProps: {
-                mode: "int",
-                initialValue: 760,
-                maxValue: 1000,
-                minValue: 700,
-                decimals: 0
-            }
+            mode: "int" as const,
+            initialValue: 760,
+            maxValue: 1000,
+            minValue: 700,
+            decimals: 0
         },
         {
             key: "humidity",
             label: "Humidity",
             suffix: "%",
             icon: "water",
-            inputProps: {
-                mode: "int",
-                initialValue: 78,
-                maxValue: 100,
-                minValue: 0,
-                decimals: 0
-            }
+            mode: "int" as const,
+            initialValue: 78,
+            maxValue: 100,
+            minValue: 0,
+            decimals: 0
         },
         {
             key: "altitude",
             label: "Altitude",
             suffix: UnitProps[Unit.Meter].symbol,
             icon: "ruler",
-            inputProps: {
-                mode: "int",
-                initialValue: 150,
-                maxValue: 3000,
-                minValue: 0,
-                decimals: 0,
-            }
+            mode: "int" as const,
+            initialValue: 150,
+            maxValue: 3000,
+            minValue: 0,
+            decimals: 0,
         },
     ]
 

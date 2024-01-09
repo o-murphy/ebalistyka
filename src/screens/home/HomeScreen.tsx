@@ -1,9 +1,8 @@
 import React from "react";
 import {ScrollView} from 'react-native';
-import {FAB, useTheme} from 'react-native-paper';
+import {useTheme} from 'react-native-paper';
 import {StyleSheet} from "react-native";
 import {WeaponCard} from "../../components/cards";
-import styleSheet from "../../styles";
 import TabsCard from "../../components/cards/TabsCard";
 
 
@@ -29,7 +28,7 @@ export default function HomeScreen({navigation}) {
             >
                 <WeaponCard/>
 
-                <TabsCard />
+                {/*<TabsCard />*/}
             </ScrollView>
             {/*TODO: move fab to screen*/}
             {/*<FAB*/}

@@ -7,9 +7,6 @@ import {
     angleToValue,
 } from "./circularGeometry";
 import { arcPathWithRoundedEnds } from "./svgPaths";
-import Svg, { Circle, Polygon, Path } from 'react-native-svg';
-import {View} from "react-native";
-
 
 type Props = {
     size: number;
@@ -35,6 +32,8 @@ type Props = {
     coerceToInt?: boolean;
     outerShadow?: boolean;
     capMode?: "circle" | "triangle"
+    btnRadius?: number;
+    btnColor?: string;
 };
 
 export class CircularSlider extends React.Component<
@@ -52,6 +51,7 @@ export class CircularSlider extends React.Component<
         | "arcBackgroundColor"
         | "handleSize"
         | "capMode"
+        | "btnColor"
     > = {
         size: 200,
         trackWidth: 4,
@@ -65,7 +65,8 @@ export class CircularSlider extends React.Component<
         },
         handleSize: 8,
         arcBackgroundColor: "#aaa",
-        capMode: "triangle"
+        capMode: "triangle",
+        btnColor: "#0cd",
     };
     svgRef = React.createRef<SVGSVGElement>();
 
@@ -115,24 +116,11 @@ export class CircularSlider extends React.Component<
         // This simple touch handler can't handle multiple touches. Therefore, bail if there are either:
         // - more than 1 touches currently active
         // - a touchEnd event, but there is still another touch active
-        // console.log(ev.nativeEvent)
-
-        if (ev.touches) {
-
-            if (
-                ev.touches.length > 1 ||
-                (ev.type === "touchend" && ev.touches.length > 0)
-            ) {
-                return;
-            }
-
-        } else if (ev.nativeEvent) {
-            if (
-                ev.nativeEvent.touches.length > 1 ||
-                (ev.nativeEvent.type === "touchend" && ev.nativeEvent.touches.length > 0)
-            ) {
-                return;
-            }
+        if (
+            ev.touches.length > 1 ||
+            (ev.type === "touchend" && ev.touches.length > 0)
+        ) {
+            return;
         }
 
         // Process the new position
@@ -221,6 +209,7 @@ export class CircularSlider extends React.Component<
             arcBackgroundColor,
             outerShadow,
             capMode,
+            btnColor
         } = this.props;
         const shadowWidth = 20;
         const trackInnerRadius = size / 2 - trackWidth - shadowWidth;
@@ -261,18 +250,18 @@ export class CircularSlider extends React.Component<
 
             if (capMode === "triangle") {
                 return (
-                    <Polygon
+                    <polygon
                         points={`${handle1Position.x},${handle1Position.y - handleSize} 
              ${handle1Position.x - handleSize},${handle1Position.y + handleSize} 
              ${handle1Position.x + handleSize},${handle1Position.y + handleSize}`}
-                        fill="#ffffff"
+                        fill={btnColor}
                         filter="url(#handleShadow)"
                         transform={`rotate(${triangleRotation} ${handle1Position.x} ${handle1Position.y})`}
                     />
                 )
             } else {
                 return(
-                    <Circle
+                    <circle
                         r={handleSize}
                         cx={handle1Position.x}
                         cy={handle1Position.y}
@@ -313,7 +302,7 @@ export class CircularSlider extends React.Component<
                                 <stop offset="100%" stopColor="white" />
                             </radialGradient>
 
-                            <Circle
+                            <circle
                                 fill="none"
                                 stroke="url(#outerShadow)"
                                 cx={size / 2}
@@ -330,7 +319,7 @@ export class CircularSlider extends React.Component<
                     /* One-handle mode */
                     <React.Fragment>
                         {/* Arc Background  */}
-                        <Path
+                        <path
                             d={arcPathWithRoundedEnds({
                                 startAngle: handle1Angle,
                                 endAngle,
@@ -343,7 +332,7 @@ export class CircularSlider extends React.Component<
                             fill={arcBackgroundColor}
                         />
                         {/* Arc (render after background so it overlays it) */}
-                        <Path
+                        <path
                             d={arcPathWithRoundedEnds({
                                 startAngle,
                                 endAngle: handle1Angle,
@@ -360,7 +349,7 @@ export class CircularSlider extends React.Component<
                     /* Two-handle mode */
                     <React.Fragment>
                         {/* Arc Background Part 1  */}
-                        <Path
+                        <path
                             d={arcPathWithRoundedEnds({
                                 startAngle,
                                 endAngle: handle1Angle,
@@ -373,7 +362,7 @@ export class CircularSlider extends React.Component<
                             fill={arcBackgroundColor}
                         />
                         {/* Arc Background Part 2  */}
-                        <Path
+                        <path
                             d={arcPathWithRoundedEnds({
                                 startAngle: handle2Angle,
                                 endAngle,
@@ -386,7 +375,7 @@ export class CircularSlider extends React.Component<
                             fill={arcBackgroundColor}
                         />
                         {/* Arc (render after background so it overlays it) */}
-                        <Path
+                        <path
                             d={arcPathWithRoundedEnds({
                                 startAngle: handle1Angle,
                                 endAngle: handle2Angle,
@@ -405,6 +394,27 @@ export class CircularSlider extends React.Component<
                     /* Handle 1 */
                     controllable && (
                         <React.Fragment>
+                            <filter
+                                id="handleShadow"
+                                x="-50%"
+                                y="-50%"
+                                width="16"
+                                height="16"
+                            >
+                                <feOffset result="offOut" in="SourceGraphic" dx="0" dy="0"/>
+                                <feColorMatrix
+                                    result="matrixOut"
+                                    in="offOut"
+                                    type="matrix"
+                                    values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"
+                                />
+                                <feGaussianBlur
+                                    result="blurOut"
+                                    in="matrixOut"
+                                    stdDeviation="5"
+                                />
+                                <feBlend in="SourceGraphic" in2="blurOut" mode="normal"/>
+                            </filter>
                             {createCap()}
                         </React.Fragment>
                     )
@@ -414,11 +424,12 @@ export class CircularSlider extends React.Component<
                     /* Handle 2 */
                     handle2Position && (
                         <React.Fragment>
-                            <Circle
+                            <circle
                                 r={handleSize}
                                 cx={handle2Position.x}
                                 cy={handle2Position.y}
                                 fill="#ffffff"
+                                filter="url(#handleShadow)"
                             />
                         </React.Fragment>
                     )
@@ -435,7 +446,7 @@ export class CircularSliderWithChildren extends React.Component<
     render() {
         const { size } = this.props;
         return (
-            <View
+            <div
                 style={{
                     width: size,
                     height: size,
@@ -443,7 +454,7 @@ export class CircularSliderWithChildren extends React.Component<
                 }}
             >
                 <CircularSlider {...this.props} />
-                <View
+                <div
                     style={{
                         position: "absolute",
                         top: "25%",
@@ -456,8 +467,8 @@ export class CircularSliderWithChildren extends React.Component<
                     }}
                 >
                     {this.props.children}
-                </View>
-            </View>
+                </div>
+            </div>
         );
     }
 }

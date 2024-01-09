@@ -5,7 +5,7 @@ import {View} from "react-native";
 
 const SimpleDialog = ({
                          children,
-                         title,
+                         label,
                          text,
                          icon = null,
                          onAccept = null,
@@ -40,7 +40,7 @@ const SimpleDialog = ({
             <Portal>
 
                 <Dialog visible={visible} onDismiss={hideDialog} style={{justifyContent: "center"}}>
-                    <Dialog.Title>{title}</Dialog.Title>
+                    <Dialog.Title>{label}</Dialog.Title>
 
                     <Dialog.Content>{children}</Dialog.Content>
 
