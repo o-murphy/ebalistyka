@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.js": "/ebalistyka/gh-pages/static/js/main.3893d05d.js",
-    "static/js/329.bb159fff.js": "/ebalistyka/gh-pages/static/js/329.bb159fff.js",
-    "static/media/MaterialCommunityIcons.ttf": "/ebalistyka/gh-pages/static/media/MaterialCommunityIcons.5d42b4e60858731e7b65.ttf",
-    "favicon.ico": "/ebalistyka/gh-pages/favicon.ico",
-    "index.html": "/ebalistyka/gh-pages/index.html",
-    "favicon-32.png": "/ebalistyka/gh-pages/favicon-32.png",
-    "favicon-16.png": "/ebalistyka/gh-pages/favicon-16.png",
-    "manifest.json": "/ebalistyka/gh-pages/manifest.json",
-    "serve.json": "/ebalistyka/gh-pages/serve.json",
-    "main.3893d05d.js.map": "/ebalistyka/gh-pages/static/js/main.3893d05d.js.map",
-    "329.bb159fff.js.map": "/ebalistyka/gh-pages/static/js/329.bb159fff.js.map"
+    "main.js": "/ebalistyka/static/js/main.a6465767.js",
+    "static/js/329.bb159fff.js": "/ebalistyka/static/js/329.bb159fff.js",
+    "static/media/MaterialCommunityIcons.ttf": "/ebalistyka/static/media/MaterialCommunityIcons.5d42b4e60858731e7b65.ttf",
+    "favicon.ico": "/ebalistyka/favicon.ico",
+    "index.html": "/ebalistyka/index.html",
+    "favicon-32.png": "/ebalistyka/favicon-32.png",
+    "favicon-16.png": "/ebalistyka/favicon-16.png",
+    "manifest.json": "/ebalistyka/manifest.json",
+    "serve.json": "/ebalistyka/serve.json",
+    "main.a6465767.js.map": "/ebalistyka/static/js/main.a6465767.js.map",
+    "329.bb159fff.js.map": "/ebalistyka/static/js/329.bb159fff.js.map"
   },
   "entrypoints": [
     "static/js/329.bb159fff.js",
-    "static/js/main.3893d05d.js"
+    "static/js/main.a6465767.js"
   ]
 }
