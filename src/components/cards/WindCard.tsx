@@ -17,7 +17,7 @@ export default function WindCard() {
             label: "Wind speed",
             suffix: UnitProps[Unit.MPS].symbol,
             icon: "windsock",
-            mode: "float",
+            mode: "float" as const,
             initialValue: 0,
             maxValue: 100,
             minValue: 0,

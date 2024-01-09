@@ -12,7 +12,7 @@ export interface MeasureField {
         label: string
         suffix: string
         icon: string
-        mode: "int" | "float"
+        mode: ("int" | "float")
         initialValue: number
         maxValue: number
         minValue: number

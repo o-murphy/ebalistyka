@@ -1,7 +1,6 @@
 import {Text, useTheme} from "react-native-paper";
 import React from "react";
 import {View} from "react-native";
-import CircularSlider from "../circular-slider";
 import CircleSlider from "../circular-slider/CircleSlider";
 
 

@@ -1,10 +1,10 @@
 import React, {FC, useState, useRef, useCallback} from "react";
-import {PanResponder, Dimensions} from "react-native";
+import {PanResponder, Dimensions, type ColorValue} from "react-native";
 import Svg, {Path, Circle, G, Text, Polygon} from "react-native-svg";
 
 interface Props {
     btnRadius?: number;
-    btnColor?: number;
+    btnColor?: string;
     dialRadius?: number;
     dialWidth?: number;
     meterColor?: string;
