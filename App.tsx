@@ -1,4 +1,5 @@
 import React from 'react';
+import {Platform} from "react-native";
 import {useState} from 'react';
 import {StatusBar} from 'expo-status-bar';
 import {PaperProvider, MD3LightTheme, MD3DarkTheme} from 'react-native-paper';
@@ -16,7 +17,7 @@ import {navigationRef} from "./src/RootNavigation";
 
 const Stack = createNativeStackNavigator();
 
-
+console.log(Platform)
 export default function App() {
 
     const [nightMode, setNightmode] = useState(true);

@@ -17,28 +17,22 @@ export default function WeaponCard() {
             label: "Diameter",
             suffix: "in",
             icon: "diameter-variant",
-            inputProps: {
-                mode: "float",
-                initialValue: 0.308,
-                maxValue: 22,
-                minValue: 0.001,
-                maxLength: 8,
-                decimals: 3,
-            }
+            mode: "float",
+            initialValue: 0.308,
+            maxValue: 22,
+            minValue: 0.001,
+            decimals: 3,
         },
         {
             key: "twist",
             label: "Twist",
             suffix: "in",
             icon: "screw-flat-top",
-            inputProps: {
-                mode: "float",
-                initialValue: 11,
-                maxValue: 20,
-                minValue: -20,
-                maxLength: 8,
-                decimals: 2,
-            }
+            mode: "float",
+            initialValue: 11,
+            maxValue: 20,
+            minValue: -20,
+            decimals: 2,
         },
     ]
 
@@ -75,7 +69,7 @@ export default function WeaponCard() {
 
         <InputCard title={"Weapon"}>
 
-            <SimpleDialog title={"Name"} icon={"card-bulleted-outline"}
+            <SimpleDialog label={"Name"} icon={"card-bulleted-outline"}
                           text={curName}
                           onAccept={acceptName}
                           onDecline={declineName}
@@ -92,7 +86,7 @@ export default function WeaponCard() {
                         <Text style={{fontSize: 16}}>Twist direction</Text>
                     </Col>
                     <Col size={8}>
-                        <SimpleDialog title={"Twist"} icon={curTwistDir === "Right" ? "rotate-right" : "rotate-left"}
+                        <SimpleDialog label={"Twist"} icon={curTwistDir === "Right" ? "rotate-right" : "rotate-left"}
                                       text={curTwistDir} onAccept={acceptTwistDir}>
                             <SegmentedButtons
                                 buttons={twistStates} value={twistDir} onValueChange={setTwistDir}/>
