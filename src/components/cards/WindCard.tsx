@@ -84,7 +84,7 @@ export default function WindCard() {
                         <Text style={{fontSize: 16}}>{"Wind direction"}</Text>
                     </Col>
                     <Col>
-                        <SimpleDialog label={`WindDirection, degree`}
+                        <SimpleDialog label={`Wind direction, degree`}
                                       text={`${curWindDir}° (${curWindDir / 30}h)`}
                                       icon={getWindIcon()}
                                       onAccept={onWindAccept}
@@ -102,7 +102,7 @@ export default function WindCard() {
                 {/*    </Col>*/}
 
                 {/*    <Col>*/}
-                {/*        <CircularSlider*/}
+                {/*        <CircularSlider.tsx*/}
                 {/*            size={200}*/}
                 {/*            trackWidth={8}*/}
                 {/*            minValue={0}*/}

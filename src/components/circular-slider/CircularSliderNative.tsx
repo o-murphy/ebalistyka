@@ -14,14 +14,17 @@ interface Props {
     strokeWidth?: number;
     textSize?: number;
     value?: number;
-    min?: number;
-    max?: number;
+    minAngle?: number;
+    maxAngle?: number;
+    minValue?: number;
+    maxValue?: number;
     xCenter?: number;
     yCenter?: number;
     onValueChange?: (x: number) => number;
+    coerceToInt?: boolean;
 }
 
-const CircleSlider: FC<Props> = ({
+const CircularSliderNative: FC<Props> = ({
                                      btnRadius = 15,
                                      btnColor = "#0cd",
                                      dialRadius = 130,
@@ -33,15 +36,22 @@ const CircleSlider: FC<Props> = ({
                                      strokeWidth = 0.5,
                                      textSize = 10,
                                      value = 0,
-                                     min = 0,
-                                     max = 359,
+                                     minAngle = 0,
+                                     maxAngle = 360,
+                                     minValue=0,
+                                     maxValue=360,
                                      xCenter = Dimensions.get("window").width / 2,
                                      yCenter = Dimensions.get("window").height / 2,
                                      onValueChange = (x) => x,
+                                     coerceToInt = false
                                  }) => {
-    const [angle, setAngle] = useState(value);
+    const step = (maxAngle-minAngle) / (maxValue-minValue)
 
+    const [angle, setAngle] = useState(value * step);
+
+    console.log(step)
     const onChange = (value) => {
+        value = value / step
         onValueChange(value)
         return value
     }
@@ -57,11 +67,15 @@ const CircleSlider: FC<Props> = ({
                 let yOrigin = yCenter - (dialRadius + btnRadius);
                 let a = cartesianToPolar(gs.moveX - xOrigin, gs.moveY - yOrigin);
 
-                if (a <= min) {
-                    setAngle(min);
-                } else if (a >= max) {
-                    setAngle(max);
+                if (a <= minAngle) {
+                    setAngle(minAngle);
+                } else if (a >= maxAngle) {
+                    setAngle(maxAngle);
                 } else {
+
+                    if (coerceToInt) {
+                        a = Math.round(a / step) * step
+                    }
                     setAngle(a);
                 }
             },
@@ -189,4 +203,4 @@ const CircleSlider: FC<Props> = ({
     );
 };
 
-export default React.memo(CircleSlider);
+export default React.memo(CircularSliderNative);

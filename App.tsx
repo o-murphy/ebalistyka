@@ -40,7 +40,7 @@ export default function App() {
     }
 
     // TODO: make a design for browsers
-    if ((Platform.OS == "web") && (!isMobile)) {
+    if ((Platform.OS === "web") && (!isMobile)) {
         return <Placeholder text={"Oops! The app supports only mobile view"}></Placeholder>
     }
 

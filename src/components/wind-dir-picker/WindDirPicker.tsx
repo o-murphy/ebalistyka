@@ -1,7 +1,10 @@
 import {Text, useTheme} from "react-native-paper";
 import React from "react";
 import {View} from "react-native";
-import CircleSlider from "../circular-slider/CircleSlider";
+import CircularSliderNative from "../circular-slider/CircularSliderNative";
+import CircularSlider from "../circular-slider/web";
+
+import {Platform} from "react-native";
 
 
 export default function WindDirection({curValue, onChange}) {
@@ -17,7 +20,8 @@ export default function WindDirection({curValue, onChange}) {
         text: {
             marginTop: -110,
             fontWeight: "bold",
-            fontSize: 16
+            fontSize: 16,
+            textAlign: "center"
         },
         slider: {
             padding: 5
@@ -28,25 +32,54 @@ export default function WindDirection({curValue, onChange}) {
 
         <View style={styles.container}>
 
-            <CircleSlider value={curValue}
-                          dialRadius={80}
-                          btnRadius={15}
-                          btnColor={theme.colors.outline}
-                          min={0}
-                          max={359}
-                          dialWidth={15}
-                          meterColor={theme.colors.secondaryContainer}
-                          textColor={theme.colors.onSecondaryContainer}
-                //           fillColor={theme.colors.secondaryContainer}
-                //           btnColor={theme.colors.secondaryContainer}
-                          strokeColor={theme.colors.secondaryContainer}
-                          strokeWidth={20}
-                          textSize={0}
-                          onValueChange={value => onChange(Math.round(value / 30))}
-                          style={styles.slider}/>
+            {Platform.OS === "web"
+                ?
+                <CircularSlider
+                    size={240}
+                    trackWidth={20}
+                    minValue={0}
+                    maxValue={12}
+                    startAngle={0}
+                    endAngle={360}
+                    angleType={{
+                        direction: "cw",
+                        axis: "+y"
+                    }}
+                    handle1={{
+                        value: curValue,
+                        onChange: onChange
+                    }}
+                    coerceToInt={true}
+                    // arcColor={theme.colors.onSecondaryContainer}
+                    arcColor={theme.colors.secondaryContainer}
+                    arcBackgroundColor={theme.colors.secondaryContainer}
+                    btnColor={theme.colors.outline}
+                />
+                :
+                <CircularSliderNative
+                    value={curValue}
+                    dialRadius={80}
+                    btnRadius={15}
+                    btnColor={theme.colors.outline}
+                    minAngle={0}
+                    maxAngle={360}
+                    minValue={0}
+                    maxValue={12}
+                    dialWidth={15}
+                    meterColor={theme.colors.secondaryContainer}
+                    textColor={theme.colors.onSecondaryContainer}
+                    // fillColor={theme.colors.secondaryContainer}
+                    strokeColor={theme.colors.secondaryContainer}
+                    strokeWidth={20}
+                    textSize={0}
+                    onValueChange={onChange}
+                    style={styles.slider}
+                    coerceToInt={true}
+                />
+            }
 
 
-            <Text style={styles.text}>{`${curValue * 30}° (${curValue}h)`}</Text>
+            <Text style={styles.text}>{`${curValue * 30}°\n(${curValue}h)`}</Text>
 
 
         </View>
