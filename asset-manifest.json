@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.js": "/ebalistyka/static/js/main.a6465767.js",
-    "static/js/329.bb159fff.js": "/ebalistyka/static/js/329.bb159fff.js",
+    "main.js": "/ebalistyka/static/js/main.e165cc24.js",
+    "static/js/36.8bbd52ca.js": "/ebalistyka/static/js/36.8bbd52ca.js",
     "static/media/MaterialCommunityIcons.ttf": "/ebalistyka/static/media/MaterialCommunityIcons.5d42b4e60858731e7b65.ttf",
     "favicon.ico": "/ebalistyka/favicon.ico",
     "index.html": "/ebalistyka/index.html",
@@ -9,11 +9,11 @@
     "favicon-16.png": "/ebalistyka/favicon-16.png",
     "manifest.json": "/ebalistyka/manifest.json",
     "serve.json": "/ebalistyka/serve.json",
-    "main.a6465767.js.map": "/ebalistyka/static/js/main.a6465767.js.map",
-    "329.bb159fff.js.map": "/ebalistyka/static/js/329.bb159fff.js.map"
+    "main.e165cc24.js.map": "/ebalistyka/static/js/main.e165cc24.js.map",
+    "36.8bbd52ca.js.map": "/ebalistyka/static/js/36.8bbd52ca.js.map"
   },
   "entrypoints": [
-    "static/js/329.bb159fff.js",
-    "static/js/main.a6465767.js"
+    "static/js/36.8bbd52ca.js",
+    "static/js/main.e165cc24.js"
   ]
 }
