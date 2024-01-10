@@ -28,12 +28,9 @@ export default function WindDirection({curValue, onChange}) {
         },
     }
 
-    return (
-
-        <View style={styles.container}>
-
-            {Platform.OS === "web"
-                ?
+    if (Platform.OS === "web") {
+        return (
+            <>
                 <CircularSlider
                     size={240}
                     trackWidth={20}
@@ -55,11 +52,19 @@ export default function WindDirection({curValue, onChange}) {
                     arcBackgroundColor={theme.colors.secondaryContainer}
                     btnColor={theme.colors.outline}
                 />
-                :
+                <Text style={styles.text}>{`${curValue * 30}°\n(${curValue}h)`}</Text>
+            </>
+        )
+    }
+
+    return (
+
+        <View style={styles.container}>
                 <CircularSliderNative
                     value={curValue}
+                    measureText={`${curValue * 30}°(${curValue}h)`}
                     dialRadius={80}
-                    btnRadius={15}
+                    btnRadius={10}
                     btnColor={theme.colors.outline}
                     minAngle={0}
                     maxAngle={360}
@@ -76,12 +81,6 @@ export default function WindDirection({curValue, onChange}) {
                     style={styles.slider}
                     coerceToInt={true}
                 />
-            }
-
-
-            <Text style={styles.text}>{`${curValue * 30}°\n(${curValue}h)`}</Text>
-
-
         </View>
     )
 }
