@@ -25,15 +25,15 @@ type Props = {
     arcWidth?: number,
     strokeColor?: string;
     coerceToInt?: boolean;
-    capMode?: "circle" | "triangle"
     btnRadius?: number;
     handleColor?: string;
     meterText?: string;
     meterTextColor?: string;
     meterTextSize?: number;
+    capMode?: "circle" | "triangle"
 };
 
-export default function CircularSliderFunc({...props}: Props) {
+export default function CircularSlider({...props}: Props) {
 
     const {
         dialDiameter = 200,
@@ -53,7 +53,7 @@ export default function CircularSliderFunc({...props}: Props) {
         disabled,
         arcColor = "#0cd",
         strokeColor = "#aaa",
-        capMode = "triangle",
+        capMode = 'triangle',
         handleColor = "#0cd",
         arcWidth = 10,
         meterText = "None",
@@ -150,7 +150,11 @@ export default function CircularSliderFunc({...props}: Props) {
             curSvgRef.getScreenCTM()?.inverse()
         );
 
+        console.log(svgPoint, coordsInSvg)
+
         const angle = positionToAngle(coordsInSvg, dialDiameter, angleType);
+        console.log(angle)
+
         let _value = angleToValue({
             angle,
             minValue,
@@ -229,7 +233,7 @@ export default function CircularSliderFunc({...props}: Props) {
                     r={handleSize}
                     cx={handlePosition.x}
                     cy={handlePosition.y}
-                    fill="#ffffff"
+                    fill={handleColor}
                 />
             )
         }

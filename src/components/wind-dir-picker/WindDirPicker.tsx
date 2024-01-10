@@ -1,10 +1,8 @@
 import {useTheme} from "react-native-paper";
-import React, {useState} from "react";
+import React from "react";
 import {View} from "react-native";
-import CircularSliderNative from "../circular-slider/CircularSliderNative";
-
 import {Platform} from "react-native";
-import CircularSlider from "../circular-slider/web/CircularSlider";
+import CircularSliderNative from "../circular-slider/CircularSliderNative";
 
 
 export default function WindDirection({value, onChange}) {
@@ -30,6 +28,7 @@ export default function WindDirection({value, onChange}) {
 
     const sliderProps = {
         coerceToInt: true,
+        capMode: "triangle",
 
         handleSize: 10,
         arcWidth: 20,
@@ -55,28 +54,17 @@ export default function WindDirection({value, onChange}) {
 
     return (
         <View style={styles.container}>
-
-            {Platform.OS === "web"
-                ?
-                <CircularSlider
-                    {...sliderValueHandler}
-                    {...sliderProps}
-                    {...sliderValues}
-                    style={styles.slider}
-                    dialDiameter={240}
-                    angleType={{
-                        direction: "cw",
-                        axis: "+y"
-                    }}
-                />
-                :
-                <CircularSliderNative
-                    {...sliderValueHandler}
-                    {...sliderProps}
-                    {...sliderValues}
-                    style={styles.slider}
-                    dialRadius={80}
-                />}
+            <CircularSliderNative
+                {...sliderValueHandler}
+                {...sliderProps}
+                {...sliderValues}
+                style={styles.slider}
+                dialDiameter={240}
+                angleType={{
+                    direction: "cw",
+                    axis: "+y"
+                }}
+            />
         </View>
     )
 }
