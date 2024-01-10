@@ -1,12 +1,19 @@
-import {useRef, useState} from "react";
 import * as React from "react";
 import {AngleDescription, angleToPosition, angleToValue, positionToAngle, valueToAngle} from "./circularGeometry";
 import {arcPathWithRoundedEnds} from "./svgPaths";
 import Svg, {Circle, Line, Path, Polygon, Text} from "react-native-svg";
-import {Platform, TouchableOpacity, View} from "react-native";
+import {Platform} from "react-native";
 
 
-type Props = {
+type HandleProps = {
+    value: number;
+    onChange: (value: number) => void;
+    handleSize?: number;
+    handleMode?: "circle" | "triangle"
+}
+
+
+type CircularSliderProps = {
     dialDiameter?: number;
     strokeWidth?: number;
     minValue?: number;
@@ -15,12 +22,9 @@ type Props = {
     endAngle?: number; // 0 - 360 degrees
     angleType: AngleDescription;
     handleSize?: number;
-    value: number,
-    onChange: (value: number) => void,
-    handle2?: {
-        value: number;
-        onChange: (value: number) => void;
-    };
+    value: number;
+    onChange: (value: number) => void;
+    handle2?: HandleProps;
     onControlFinished?: () => void;
     disabled?: boolean;
     arcColor?: string;
@@ -32,11 +36,11 @@ type Props = {
     meterText?: string;
     meterTextColor?: string;
     meterTextSize?: number;
-    capMode?: "circle" | "triangle"
+    handleMode?: "circle" | "triangle"
 };
 
 
-export default function CircularSliderNative({...props}: Props) {
+export default function CircularSliderNative({...props}: CircularSliderProps) {
 
     const {
         dialDiameter = 200,
@@ -56,7 +60,7 @@ export default function CircularSliderNative({...props}: Props) {
         disabled,
         arcColor = "#0cd",
         strokeColor = "#aaa",
-        capMode = 'triangle',
+        handleMode = 'triangle',
         handleColor = "#0cd",
         arcWidth = 10,
         meterText = "None",
@@ -96,18 +100,19 @@ export default function CircularSliderNative({...props}: Props) {
 
         // Process the new position
 
-        let x, y: number
+        let x: number, y: number;
 
         if (Platform.OS === "web") {
+            // @ts-ignore  NOTE: this reference aren't in the react-native-svg docs
             const rect = ev.currentTarget.getBoundingClientRect();
             const touch = event.changedTouches[0];
             x = touch.clientX - rect.left;
             y = touch.clientY - rect.top;
 
         } else {
-            // @ts-ignore  NOTE: doesn't in the rn svg docs
+            // @ts-ignore  NOTE: this reference aren't in the react-native-svg docs
             x = event.locationX;
-            // @ts-ignore  NOTE: doesn't in the rn svg docs
+            // @ts-ignore  NOTE: this reference aren't in the react-native-svg docs
             y = event.locationY;
         }
 
@@ -186,10 +191,10 @@ export default function CircularSliderNative({...props}: Props) {
 
     const controllable = !disabled && Boolean(onChange);
 
-    const createCap = () => {
+    const createHandle = (handlePosition) => {
         const triangleRotation = value * step + 180
 
-        if (capMode === "triangle") {
+        if (handleMode === "triangle") {
             return (
                 <Polygon
                     points={`${handlePosition.x},${handlePosition.y - handleSize} 
@@ -242,23 +247,31 @@ export default function CircularSliderNative({...props}: Props) {
         textAnchor: "middle"
     }
 
-    const arcBackgroundProps: any = {
-        thickness: strokeWidth,
+    const pathProps: any = {
         svgSize: dialDiameter,
         direction: angleType.direction,
+        angleType: angleType,
+    }
+
+    const arcBackgroundProps: any = {
+        innerRadius: trackInnerRadius,
+        thickness: strokeWidth,
+        ...pathProps
     }
 
     const arcProps: any = {
+        innerRadius: (trackInnerRadius + strokeWidth / 2 - arcWidth / 2),
         thickness: arcWidth,
-        svgSize: dialDiameter,
-        direction: angleType.direction,
+        ...pathProps
     }
 
     const numbersProps = (value: number): any => {
+        const sin = Math.sin(value * stepRad)
+        const cos = Math.cos(value * stepRad)
         return ({
             key: value,
-            x: numX + (trackInnerRadius - strokeWidth / 2) * Math.sin(value * stepRad),
-            y: numY - (trackInnerRadius - strokeWidth / 2) * Math.cos(value * stepRad),
+            x: numX + (trackInnerRadius - strokeWidth / 2) * sin,
+            y: numY - (trackInnerRadius - strokeWidth / 2) * cos,
             fontSize: 12,
             fill: handleColor,
             textAnchor: "middle"
@@ -266,12 +279,14 @@ export default function CircularSliderNative({...props}: Props) {
     }
 
     const ticksProps = (value: number): any => {
+        const sin = Math.sin(value * stepRad)
+        const cos = Math.cos(value * stepRad)
         return ({
             key: `ticks${value}`,
-            x1: numX + (trackInnerRadius + 2 / 3 * strokeWidth) * Math.sin(value * stepRad),
-            y1: numX - (trackInnerRadius + 2 / 3 * strokeWidth) * Math.cos(value * stepRad),
-            x2: numX + (trackInnerRadius + strokeWidth) * Math.sin(value * stepRad),
-            y2: numX - (trackInnerRadius + strokeWidth) * Math.cos(value * stepRad),
+            x1: numX + (trackInnerRadius + 2 / 3 * strokeWidth) * sin,
+            y1: numX - (trackInnerRadius + 2 / 3 * strokeWidth) * cos,
+            x2: numX + (trackInnerRadius + strokeWidth) * sin,
+            y2: numX - (trackInnerRadius + strokeWidth) * cos,
             stroke: handleColor,
         })
     }
@@ -286,8 +301,6 @@ export default function CircularSliderNative({...props}: Props) {
                         d={arcPathWithRoundedEnds({
                             startAngle: handleAngle,
                             endAngle,
-                            angleType,
-                            innerRadius: trackInnerRadius,
                             ...arcBackgroundProps
                         })}
                         fill={strokeColor}
@@ -297,8 +310,6 @@ export default function CircularSliderNative({...props}: Props) {
                         d={arcPathWithRoundedEnds({
                             startAngle,
                             endAngle: handleAngle,
-                            angleType,
-                            innerRadius: (trackInnerRadius + strokeWidth / 2 - arcWidth / 2),
                             ...arcProps
                         })}
                         fill={arcColor}
@@ -312,8 +323,6 @@ export default function CircularSliderNative({...props}: Props) {
                         d={arcPathWithRoundedEnds({
                             startAngle,
                             endAngle: handleAngle,
-                            angleType,
-                            innerRadius: trackInnerRadius,
                             ...arcBackgroundProps
                         })}
                         fill={strokeColor}
@@ -323,8 +332,6 @@ export default function CircularSliderNative({...props}: Props) {
                         d={arcPathWithRoundedEnds({
                             startAngle: handle2Angle,
                             endAngle,
-                            angleType,
-                            innerRadius: trackInnerRadius,
                             ...arcBackgroundProps
                         })}
                         fill={strokeColor}
@@ -334,34 +341,18 @@ export default function CircularSliderNative({...props}: Props) {
                         d={arcPathWithRoundedEnds({
                             startAngle: handleAngle,
                             endAngle: handle2Angle,
-                            angleType,
-                            innerRadius: trackInnerRadius,
                             ...arcProps
-
                         })}
                         fill={arcColor}
                     />
                 </React.Fragment>
             )}
 
-            {numbers.map(value => <Text {...numbersProps(value)}>{value}</Text>)}
-            {numbers.map(value => <Line {...ticksProps(value)} />)}
             <Text {...meterTextProps}>{meterText}</Text>
-            { /* Handle 1 */ controllable && <React.Fragment>{createCap()}</React.Fragment>}
-
-            {
-                /* Handle 2 */
-                handle2Position && (
-                    <React.Fragment>
-                        <Circle
-                            r={handleSize}
-                            cx={handle2Position.x}
-                            cy={handle2Position.y}
-                            fill="#ffffff"
-                        />
-                    </React.Fragment>
-                )
-            }
+            {numbers.map(value => <Line {...ticksProps(value)} />)}
+            {numbers.map(value => <Text {...numbersProps(value)}>{value}</Text>)}
+            {controllable && <React.Fragment>{createHandle(handlePosition)}</React.Fragment>}
+            {handle2Position && <React.Fragment>{createHandle(handle2Position)}</React.Fragment>}
         </Svg>
     )
 }
