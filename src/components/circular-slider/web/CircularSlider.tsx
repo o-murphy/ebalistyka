@@ -7,6 +7,7 @@ import {
     angleToValue,
 } from "./circularGeometry";
 import { arcPathWithRoundedEnds } from "./svgPaths";
+import {Line, Text} from "react-native-svg";
 
 type Props = {
     size: number;
@@ -34,6 +35,7 @@ type Props = {
     capMode?: "circle" | "triangle"
     btnRadius?: number;
     btnColor?: string;
+    measureText?: string;
 };
 
 export class CircularSlider extends React.Component<
@@ -52,6 +54,7 @@ export class CircularSlider extends React.Component<
         | "handleSize"
         | "capMode"
         | "btnColor"
+        | "measureText"
     > = {
         size: 200,
         trackWidth: 4,
@@ -67,6 +70,7 @@ export class CircularSlider extends React.Component<
         arcBackgroundColor: "#aaa",
         capMode: "triangle",
         btnColor: "#0cd",
+        measureText: "None"
     };
     svgRef = React.createRef<SVGSVGElement>();
 
@@ -273,6 +277,17 @@ export class CircularSlider extends React.Component<
             }
         }
 
+        const step = (this.props.endAngle - this.props.startAngle) / (maxValue - minValue)
+        const stepRad = ((step <= 36 ? step : step / 10) * Math.PI) / 180
+        const numX = size / 2
+        const numY = numX + trackWidth / 4
+        const numR = numX - trackWidth * 5/2
+        // const numR = size - trackInnerRadius + trackWidth + shadowWidth / 2 - 1
+        const numbers = []
+        for (let i=this.props.endAngle; i > this.props.startAngle; i-=step) {
+            numbers.push(Math.round(i / step))
+        }
+        console.log(numbers)
 
         return (
             <svg
@@ -291,15 +306,15 @@ export class CircularSlider extends React.Component<
                 onTouchEnd={this.onTouch}
                 onTouchMove={this.onTouch}
                 onTouchCancel={this.onTouch}
-                style={{ touchAction: "none" }}
+                style={{touchAction: "none"}}
             >
                 {
                     /* Shadow */
                     outerShadow && (
                         <React.Fragment>
                             <radialGradient id="outerShadow">
-                                <stop offset="90%" stopColor={arcColor} />
-                                <stop offset="100%" stopColor="white" />
+                                <stop offset="90%" stopColor={arcColor}/>
+                                <stop offset="100%" stopColor="white"/>
                             </radialGradient>
 
                             <circle
@@ -311,6 +326,7 @@ export class CircularSlider extends React.Component<
                                 r={trackInnerRadius + trackWidth + shadowWidth / 2 - 1}
                                 strokeWidth={shadowWidth}
                             />
+
                         </React.Fragment>
                     )
                 }
@@ -390,6 +406,39 @@ export class CircularSlider extends React.Component<
                     </React.Fragment>
                 )}
 
+                {numbers.map(value => {
+                    return(
+                        <text key={value}
+                              x={numX + (trackInnerRadius - trackWidth / 2)*Math.sin(value*stepRad)}
+                              y={numY - (trackInnerRadius - trackWidth / 2)*Math.cos(value*stepRad)}
+                              fontSize={12} fill={btnColor} textAnchor="middle">
+                            {value}
+                        </text>
+                    )
+                })}
+
+                {numbers.map(value => {
+                    return(
+                        <Line key={`ticks${value}`}
+                              x1={numX + (trackInnerRadius+2/3*trackWidth)*Math.sin(value*stepRad)}
+                              y1={numX - (trackInnerRadius+2/3*trackWidth)*Math.cos(value*stepRad)}
+                              x2={numX + (trackInnerRadius+trackWidth)*Math.sin(value*stepRad)}
+                              y2={numX - (trackInnerRadius+trackWidth)*Math.cos(value*stepRad)}
+                              stroke={btnColor}>
+                        </Line>
+                    )
+                })}
+
+                <text
+                    x={size / 2}
+                    y={size / 2 + 10}
+                    fontSize={20}
+                    fill={btnColor}
+                    textAnchor="middle"
+                >
+                    {this.props.measureText}  {/*TODO: text format*/}
+                </text>
+
                 {
                     /* Handle 1 */
                     controllable && (
@@ -443,8 +492,9 @@ export class CircularSliderWithChildren extends React.Component<
     React.PropsWithChildren<Props>
 > {
     static defaultProps = CircularSlider.defaultProps;
+
     render() {
-        const { size } = this.props;
+        const {size} = this.props;
         return (
             <div
                 style={{

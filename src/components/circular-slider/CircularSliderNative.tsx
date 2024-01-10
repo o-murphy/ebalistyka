@@ -1,6 +1,6 @@
 import React, {FC, useState, useRef, useCallback} from "react";
 import {PanResponder, Dimensions} from "react-native";
-import Svg, {Path, Circle, G, Text, Polygon} from "react-native-svg";
+import Svg, {Path, Circle, G, Text, Polygon, Line} from "react-native-svg";
 
 interface Props {
     btnRadius?: number;
@@ -127,9 +127,11 @@ const CircularSliderNative: FC<Props> = ({
     for (let i=maxAngle; i > minAngle; i-=step) {
         numbers.push(Math.round(i / step))
     }
+
     const numX = width / 2
     const numY = numX + strokeWidth / 4
-    const numR = numX - bR*3
+    // const numR = numX - bR*3
+    const numR = numX - strokeWidth*5/3
 
     return (
         <Svg width={width + strokeWidth} height={width}>
@@ -160,6 +162,18 @@ const CircularSliderNative: FC<Props> = ({
                       {value}
                 </Text>
                )
+            })}
+
+            {numbers.map(value => {
+                return(
+                    <Line key={`ticks${value}`}
+                          x1={numX + (numX-strokeWidth/3)*Math.sin(value*stepRad)}
+                          y1={numX - (numX-strokeWidth/3)*Math.cos(value*stepRad)}
+                          x2={numX + (numX)*Math.sin(value*stepRad)}
+                          y2={numX - (numX)*Math.cos(value*stepRad)}
+                          stroke={btnColor}>
+                    </Line>
+                )
             })}
 
             <Text
