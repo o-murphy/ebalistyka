@@ -22,7 +22,8 @@ interface Props {
     yCenter?: number;
     onChange?: (x: number) => number;
     coerceToInt?: boolean;
-    meterText?: string|number;
+    meterText?: string | number;
+    capMode?: 'circle' | 'triangle'
 }
 
 const CircularSliderNative: FC<Props> = ({
@@ -45,17 +46,17 @@ const CircularSliderNative: FC<Props> = ({
                                              yCenter = Dimensions.get("window").height / 2,
                                              onChange = (x) => x,
                                              coerceToInt = false,
-                                             meterText = "None"
+                                             meterText = "None",
+                                             capMode = 'triangle'
                                          }) => {
     const step = (maxAngle - minAngle) / (maxValue - minValue)
 
     const [angle, setAngle] = useState(value * step);
 
-    const onValueChange = (value) => {
-        value = value / step
-        onChange(value)
-        return value
-    }
+    // const onValueChange = (value: number) => {
+    //     value = value / step
+    //     onChange(value)
+    // }
 
     const panResponder = useRef(
         PanResponder.create({
@@ -79,6 +80,7 @@ const CircularSliderNative: FC<Props> = ({
                     }
                     setAngle(a);
                 }
+                onChange(Math.round(a) / step)
             },
         })
     ).current;
@@ -97,7 +99,7 @@ const CircularSliderNative: FC<Props> = ({
     );
 
     const cartesianToPolar = useCallback(
-        (x, y) => {
+        (x: number, y: number): number => {
             let hC = dialRadius + handleSize;
 
             if (x === 0) {
@@ -124,14 +126,14 @@ const CircularSliderNative: FC<Props> = ({
     const stepRad = ((step <= 36 ? step : step / 10) * Math.PI) / 180
 
     const numbers = []
-    for (let i=maxAngle; i > minAngle; i-=step) {
+    for (let i = maxAngle; i > minAngle; i -= step) {
         numbers.push(Math.round(i / step))
     }
 
     const numX = width / 2
     const numY = numX + strokeWidth / 4
     // const numR = numX - bR*3
-    const numR = numX - strokeWidth*5/3
+    const numR = numX - strokeWidth * 5 / 3
 
     return (
         <Svg width={width + strokeWidth} height={width}>
@@ -154,23 +156,23 @@ const CircularSliderNative: FC<Props> = ({
             />
 
             {numbers.map(value => {
-               return(
-                <Text key={value}
-                      x={numX + numR*Math.sin(value*stepRad)}
-                      y={numY - numR*Math.cos(value*stepRad)}
-                      fontSize={12} fill={meterTextColor} textAnchor="middle">
-                      {value}
-                </Text>
-               )
+                return (
+                    <Text key={value}
+                          x={numX + numR * Math.sin(value * stepRad)}
+                          y={numY - numR * Math.cos(value * stepRad)}
+                          fontSize={12} fill={meterTextColor} textAnchor="middle">
+                        {value}
+                    </Text>
+                )
             })}
 
             {numbers.map(value => {
-                return(
+                return (
                     <Line key={`ticks${value}`}
-                          x1={numX + (numX-strokeWidth/3)*Math.sin(value*stepRad)}
-                          y1={numX - (numX-strokeWidth/3)*Math.cos(value*stepRad)}
-                          x2={numX + (numX)*Math.sin(value*stepRad)}
-                          y2={numX - (numX)*Math.cos(value*stepRad)}
+                          x1={numX + (numX - strokeWidth / 3) * Math.sin(value * stepRad)}
+                          y1={numX - (numX - strokeWidth / 3) * Math.cos(value * stepRad)}
+                          x2={numX + (numX) * Math.sin(value * stepRad)}
+                          y2={numX - (numX) * Math.cos(value * stepRad)}
                           stroke={handleColor}>
                     </Line>
                 )
@@ -186,6 +188,25 @@ const CircularSliderNative: FC<Props> = ({
                 {meterText}
             </Text>
 
+            <G x={endCoord.x - bR} y={endCoord.y - bR}>
+                {capMode === "triangle"
+                    ? <Polygon
+                        points={`${bR},${bR + handleSize}
+                                    ${bR + handleSize},${bR - handleSize} 
+                                    ${bR - handleSize},${bR - handleSize}`}
+                        fill={handleColor}
+                        transform={`rotate(${angle} ${bR} ${bR})`}
+                        {...panResponder.panHandlers}
+                    />
+                    : <Circle
+                        r={bR}
+                        cx={bR}
+                        cy={bR}
+                        fill={handleColor}
+                        {...panResponder.panHandlers}
+                    />}
+            </G>
+
             <Circle  // panResponder place
                 r={dR + arcWidth}
                 cx={numX}
@@ -194,79 +215,6 @@ const CircularSliderNative: FC<Props> = ({
                 {...panResponder.panHandlers}
             />
 
-            <G x={endCoord.x - bR} y={endCoord.y - bR}>
-                {/*<Circle*/}
-                {/*    r={bR}*/}
-                {/*    cx={bR}*/}
-                {/*    cy={bR}*/}
-                {/*    fill={btnColor}*/}
-                {/*    {...panResponder.panHandlers}*/}
-                {/*/>*/}
-
-                {/*<Polygon*/}
-                {/*    points={`*/}
-                {/*     ${bR},${bR + width / 4}*/}
-                {/*     ${bR + 1.5 * btnRadius},${bR} */}
-                {/*     ${bR - 1.5 * btnRadius},${bR} */}
-                {/*    `}*/}
-                {/*    fill={btnColor}*/}
-                {/*    transform={`rotate(${angle} ${bR} ${bR})`}*/}
-                {/*    {...panResponder.panHandlers}*/}
-                {/*>*/}
-                {/*    {onChange(angle) + ""}*/}
-                {/*</Polygon>*/}
-
-                <Polygon
-                    points={`
-                     ${bR},${bR + handleSize}
-                     ${bR + handleSize},${bR - handleSize} 
-                     ${bR - handleSize},${bR - handleSize} 
-                    `}
-                    fill={handleColor}
-                    transform={`rotate(${angle} ${bR} ${bR})`}
-                    {...panResponder.panHandlers}
-                >
-                    {onValueChange(angle) + ""}
-                </Polygon>
-
-                {/*<Polygon*/}
-                {/*    points={`*/}
-                {/*     ${bR - btnRadius},${bR+width/2 - 5*btnRadius} */}
-                {/*     ${bR},${bR+width/2 - btnRadius}*/}
-                {/*     ${bR + btnRadius},${bR+width/2 - 5*btnRadius} */}
-                {/*     ${bR + btnRadius},${bR} */}
-                {/*     ${bR - btnRadius},${bR} */}
-                {/*    `}*/}
-                {/*    fill={btnColor}*/}
-                {/*    transform={`rotate(${angle} ${bR} ${bR})`}*/}
-                {/*    {...panResponder.panHandlers}*/}
-                {/*>*/}
-                {/*    {onChange(angle) + ""}*/}
-                {/*</Polygon>*/}
-
-                {/*<Polygon*/}
-                {/*    points={`${bR},${bR+btnRadius} */}
-                {/*     ${bR + btnRadius},${bR - btnRadius} */}
-                {/*     ${bR - btnRadius},${bR - btnRadius} `}*/}
-                {/*    fill={btnColor}*/}
-                {/*    transform={`rotate(${angle} ${bR} ${bR})`}*/}
-                {/*    {...panResponder.panHandlers}*/}
-
-                {/*>*/}
-                {/*{onChange(angle) + ""}*/}
-                {/*</Polygon>*/}
-
-
-                {/*<Text*/}
-                {/*    x={bR - btnRadius}*/}
-                {/*    y={bR + textSize / 2 - btnRadius}*/}
-                {/*    fontSize={textSize}*/}
-                {/*    fill={textColor}*/}
-                {/*    textAnchor="middle"*/}
-                {/*>*/}
-                {/*    {onChange(angle) + ""}*/}
-                {/*</Text>*/}
-            </G>
         </Svg>
     );
 };

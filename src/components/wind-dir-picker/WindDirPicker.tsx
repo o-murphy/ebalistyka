@@ -30,6 +30,7 @@ export default function WindDirection({value, onChange}) {
 
     const sliderProps = {
         coerceToInt: true,
+        capMode: "triangle",
 
         handleSize: 10,
         arcWidth: 20,
@@ -55,7 +56,6 @@ export default function WindDirection({value, onChange}) {
 
     return (
         <View style={styles.container}>
-
             {Platform.OS === "web"
                 ?
                 <CircularSlider
