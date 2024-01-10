@@ -90,7 +90,7 @@ export default function WindCard() {
                                       onAccept={onWindAccept}
                                       onDecline={onWindDecline}>
                             <WindDirectionPicker
-                                curValue={windDir}
+                                value={windDir}
                                 onChange={onWindDirChange}/>
                         </SimpleDialog>
                     </Col>

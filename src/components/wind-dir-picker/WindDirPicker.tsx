@@ -1,5 +1,5 @@
 import {useTheme} from "react-native-paper";
-import React from "react";
+import React, {useState} from "react";
 import {View} from "react-native";
 import CircularSliderNative from "../circular-slider/CircularSliderNative";
 
@@ -7,7 +7,7 @@ import {Platform} from "react-native";
 import CircularSlider from "../circular-slider/web/CircularSlider";
 
 
-export default function WindDirection({curValue, onChange}) {
+export default function WindDirection({value, onChange}) {
     const theme = useTheme()
 
     const styles = {
@@ -45,11 +45,11 @@ export default function WindDirection({curValue, onChange}) {
     const sliderValues = {
         minValue: 0,
         maxValue: 12,
-        meterText: `${curValue * 30}° (${curValue}h)`
+        meterText: `${value * 30}° (${value}h)`
     }
 
     const sliderValueHandler = {
-        value: curValue,
+        value: value,
         onChange: onChange
     }
 
