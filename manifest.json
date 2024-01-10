@@ -2,8 +2,8 @@
   "background_color": "#ffffff",
   "display": "standalone",
   "lang": "en",
-  "name": "eballistica-web",
-  "short_name": "eballistica-web",
+  "name": "ebalistyka",
+  "short_name": "ebalistyka",
   "start_url": "/?utm_source=web_app_manifest",
   "orientation": "portrait"
 }
