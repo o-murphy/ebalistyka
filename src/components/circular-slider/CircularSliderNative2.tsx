@@ -1,7 +1,9 @@
 import {useRef} from "react";
 import * as React from "react";
-import {AngleDescription, angleToPosition, angleToValue, positionToAngle, valueToAngle} from "./circularGeometry";
-import {arcPathWithRoundedEnds} from "./svgPaths";
+import {AngleDescription, angleToPosition, angleToValue, positionToAngle, valueToAngle} from "./web/circularGeometry";
+import {arcPathWithRoundedEnds} from "./web/svgPaths";
+import Svg, {Circle, Line, Path, Polygon, Text} from "react-native-svg";
+import {Platform} from "react-native";
 
 
 type Props = {
@@ -33,7 +35,7 @@ type Props = {
     capMode?: "circle" | "triangle"
 };
 
-export default function CircularSlider({...props}: Props) {
+export default function CircularSliderNative2({...props}: Props) {
 
     const {
         dialDiameter = 200,
@@ -63,7 +65,7 @@ export default function CircularSlider({...props}: Props) {
         onControlFinished
     } = props;
 
-    const svgRef = useRef<SVGSVGElement | null>(null);
+    const svgRef = useRef<Svg | null>(null);
 
     const onMouseEnter = (ev: React.MouseEvent<SVGSVGElement>) => {
         if (ev.buttons === 1) {
@@ -100,7 +102,12 @@ export default function CircularSlider({...props}: Props) {
         processSelection(x, y);
     };
 
-    const onTouch = (ev: React.TouchEvent<SVGSVGElement>) => {
+
+    const onTouchWeb =  (ev: React.TouchEvent<Svg>) => {
+
+    }
+
+    const onTouch = (ev: React.TouchEvent<Svg>) => {
         /* This is a very simplistic touch handler. Some optimzations might be:
             - Right now, the bounding box for a touch is the entire element. Having the bounding box
               for touched be circular at a fixed distance around the slider would be more intuitive.
@@ -111,28 +118,42 @@ export default function CircularSlider({...props}: Props) {
         // This simple touch handler can't handle multiple touches. Therefore, bail if there are either:
         // - more than 1 touches currently active
         // - a touchEnd event, but there is still another touch active
+
+        let event = Platform.OS === "web" ? ev : ev.nativeEvent
+
         if (
-            ev.touches.length > 1 ||
-            (ev.type === "touchend" && ev.touches.length > 0)
+            event.touches.length > 1 ||
+            (event.type === "touchend" && event.touches.length > 0)
         ) {
             return;
         }
 
         // Process the new position
-        const touch = ev.changedTouches[0];
-        const x = touch.clientX;
-        const y = touch.clientY;
-        processSelection(x, y);
+        const touch = event.changedTouches[0];
+
+        let x, y: number
+
+        if (Platform.OS === "web") {
+            x = touch.clientX
+            y = touch.clientY
+            processSelectionWeb(x, y)
+        } else {
+            // @ts-ignore  NOTE: doesn't in the rn svg docs
+            x = event.locationX;
+            // @ts-ignore  NOTE: doesn't in the rn svg docs
+            y = event.locationY;
+            processSelectionNative(x, y)
+        }
 
         // If the touch is ending, fire onControlFinished
-        if (ev.type === "touchend" || ev.type === "touchcancel") {
+        if (event.type === "touchend" || event.type === "touchcancel") {
             if (onControlFinished) {
                 onControlFinished();
             }
         }
     };
 
-    const processSelection = (x: number, y: number) => {
+    const processSelectionWeb = (x: number, y: number) => {
 
         if (!onChange) {
             // Read-only, don't bother doing calculations
@@ -143,17 +164,67 @@ export default function CircularSlider({...props}: Props) {
             return;
         }
         // Find the coordinates with respect to the SVG
-        const svgPoint = curSvgRef.createSVGPoint();
+
+        const element = curSvgRef
+        console.log(element)
+
+        // @ts-ignore
+        const svgPoint = new element.createSVGPoint();
+
+        // const svgPoint = curSvgRef.createSVGPoint();
         svgPoint.x = x;
         svgPoint.y = y;
+        console.log(curSvgRef)
         const coordsInSvg = svgPoint.matrixTransform(
             curSvgRef.getScreenCTM()?.inverse()
         );
 
-        console.log(svgPoint, coordsInSvg)
+        const angle = positionToAngle(coordsInSvg, dialDiameter, angleType);
+
+        let _value = angleToValue({
+            angle,
+            minValue,
+            maxValue,
+            startAngle,
+            endAngle,
+        });
+        if (coerceToInt) {
+            _value = Math.round(_value);
+        }
+
+        if (!disabled) {
+            if (
+                handle2 &&
+                handle2.onChange &&
+                // make sure we're closer to handle 2 -- i.e. controlling handle2
+                Math.abs(_value - handle2.value) < Math.abs(_value - value)
+            ) {
+                handle2.onChange(_value);
+            } else {
+                onChange(_value);
+            }
+        }
+    };
+
+    const processSelectionNative = (x: number, y: number) => {
+
+        if (!onChange) {
+            // Read-only, don't bother doing calculations
+            return;
+        }
+        const curSvgRef = svgRef.current;
+        if (!curSvgRef) {
+            return;
+        }
+        // Find the coordinates with respect to the SVG
+        // const screenCTM = curSvgRef.getScreenCTM()
+        const element = curSvgRef.ownerSVGElement
+        // @ts-ignore
+        const coordsInSvg = new element.createSVGPoint();
+        coordsInSvg.x = x;
+        coordsInSvg.y = y;
 
         const angle = positionToAngle(coordsInSvg, dialDiameter, angleType);
-        console.log(angle)
 
         let _value = angleToValue({
             angle,
@@ -219,7 +290,7 @@ export default function CircularSlider({...props}: Props) {
 
         if (capMode === "triangle") {
             return (
-                <polygon
+                <Polygon
                     points={`${handlePosition.x},${handlePosition.y - handleSize} 
              ${handlePosition.x - handleSize},${handlePosition.y + handleSize} 
              ${handlePosition.x + handleSize},${handlePosition.y + handleSize}`}
@@ -229,7 +300,7 @@ export default function CircularSlider({...props}: Props) {
             )
         } else {
             return (
-                <circle
+                <Circle
                     r={handleSize}
                     cx={handlePosition.x}
                     cy={handlePosition.y}
@@ -250,7 +321,7 @@ export default function CircularSlider({...props}: Props) {
     }
 
     return (
-        <svg
+        <Svg
             width={dialDiameter}
             height={dialDiameter}
             ref={svgRef}
@@ -275,7 +346,7 @@ export default function CircularSlider({...props}: Props) {
                 /* One-handle mode */
                 <React.Fragment>
                     {/* Arc Background  */}
-                    <path
+                    <Path
                         d={arcPathWithRoundedEnds({
                             startAngle: handleAngle,
                             endAngle,
@@ -288,7 +359,7 @@ export default function CircularSlider({...props}: Props) {
                         fill={strokeColor}
                     />
                     {/* Arc (render after background so it overlays it) */}
-                    <path
+                    <Path
                         d={arcPathWithRoundedEnds({
                             startAngle,
                             endAngle: handleAngle,
@@ -305,7 +376,7 @@ export default function CircularSlider({...props}: Props) {
                 /* Two-handle mode */
                 <React.Fragment>
                     {/* Arc Background Part 1  */}
-                    <path
+                    <Path
                         d={arcPathWithRoundedEnds({
                             startAngle,
                             endAngle: handleAngle,
@@ -318,7 +389,7 @@ export default function CircularSlider({...props}: Props) {
                         fill={strokeColor}
                     />
                     {/* Arc Background Part 2  */}
-                    <path
+                    <Path
                         d={arcPathWithRoundedEnds({
                             startAngle: handle2Angle,
                             endAngle,
@@ -331,7 +402,7 @@ export default function CircularSlider({...props}: Props) {
                         fill={strokeColor}
                     />
                     {/* Arc (render after background so it overlays it) */}
-                    <path
+                    <Path
                         d={arcPathWithRoundedEnds({
                             startAngle: handleAngle,
                             endAngle: handle2Angle,
@@ -348,28 +419,28 @@ export default function CircularSlider({...props}: Props) {
 
             {numbers.map(value => {
                 return (
-                    <text key={value}
+                    <Text key={value}
                           x={numX + (trackInnerRadius - strokeWidth / 2) * Math.sin(value * stepRad)}
                           y={numY - (trackInnerRadius - strokeWidth / 2) * Math.cos(value * stepRad)}
                           fontSize={12} fill={handleColor} textAnchor="middle">
                         {value}
-                    </text>
+                    </Text>
                 )
             })}
 
             {numbers.map(value => {
                 return (
-                    <line key={`ticks${value}`}
+                    <Line key={`ticks${value}`}
                           x1={numX + (trackInnerRadius + 2 / 3 * strokeWidth) * Math.sin(value * stepRad)}
                           y1={numX - (trackInnerRadius + 2 / 3 * strokeWidth) * Math.cos(value * stepRad)}
                           x2={numX + (trackInnerRadius + strokeWidth) * Math.sin(value * stepRad)}
                           y2={numX - (trackInnerRadius + strokeWidth) * Math.cos(value * stepRad)}
                           stroke={handleColor}>
-                    </line>
+                    </Line>
                 )
             })}
 
-            <text
+            <Text
                 x={dialDiameter / 2}
                 y={dialDiameter / 2 + 10}
                 fontSize={meterTextSize}
@@ -377,7 +448,7 @@ export default function CircularSlider({...props}: Props) {
                 textAnchor="middle"
             >
                 {meterText} {/*TODO: text format*/}
-            </text>
+            </Text>
 
             {
                 /* Handle 1 */
@@ -392,7 +463,7 @@ export default function CircularSlider({...props}: Props) {
                 /* Handle 2 */
                 handle2Position && (
                     <React.Fragment>
-                        <circle
+                        <Circle
                             r={handleSize}
                             cx={handle2Position.x}
                             cy={handle2Position.y}
@@ -401,6 +472,6 @@ export default function CircularSlider({...props}: Props) {
                     </React.Fragment>
                 )
             }
-        </svg>
+        </Svg>
     );
 }

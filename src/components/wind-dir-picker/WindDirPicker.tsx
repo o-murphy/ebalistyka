@@ -5,6 +5,7 @@ import CircularSliderNative from "../circular-slider/CircularSliderNative";
 
 import {Platform} from "react-native";
 import CircularSlider from "../circular-slider/web/CircularSlider";
+import CircularSliderNative2 from "../circular-slider/CircularSliderNative2";
 
 
 export default function WindDirection({value, onChange}) {
@@ -58,7 +59,7 @@ export default function WindDirection({value, onChange}) {
         <View style={styles.container}>
             {Platform.OS === "web"
                 ?
-                <CircularSlider
+                <CircularSliderNative2
                     {...sliderValueHandler}
                     {...sliderProps}
                     {...sliderValues}
@@ -70,12 +71,16 @@ export default function WindDirection({value, onChange}) {
                     }}
                 />
                 :
-                <CircularSliderNative
+                <CircularSliderNative2
                     {...sliderValueHandler}
                     {...sliderProps}
                     {...sliderValues}
                     style={styles.slider}
-                    dialRadius={80}
+                    dialRadius={240}
+                    angleType={{
+                        direction: "cw",
+                        axis: "+y"
+                    }}
                 />}
         </View>
     )
