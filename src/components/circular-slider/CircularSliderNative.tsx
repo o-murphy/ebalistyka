@@ -1,18 +1,18 @@
 import React, {FC, useState, useRef, useCallback} from "react";
-import {PanResponder, Dimensions, type ColorValue} from "react-native";
-import Svg, {Path, Circle, G, Text, Polygon} from "react-native-svg";
+import {PanResponder, Dimensions} from "react-native";
+import Svg, {Path, Circle, G, Text, Polygon, Line} from "react-native-svg";
 
 interface Props {
-    btnRadius?: number;
-    btnColor?: string;
+    handleSize?: number;
+    handleColor?: string;
     dialRadius?: number;
-    dialWidth?: number;
-    meterColor?: string;
-    textColor?: string;
+    arcWidth?: number;
+    arcColor?: string;
+    meterTextColor?: string;
     fillColor?: string;
     strokeColor?: string;
     strokeWidth?: number;
-    textSize?: number;
+    meterTextSize?: number;
     value?: number;
     minAngle?: number;
     maxAngle?: number;
@@ -20,39 +20,40 @@ interface Props {
     maxValue?: number;
     xCenter?: number;
     yCenter?: number;
-    onValueChange?: (x: number) => number;
+    onChange?: (x: number) => number;
     coerceToInt?: boolean;
+    meterText?: string|number;
 }
 
 const CircularSliderNative: FC<Props> = ({
-                                     btnRadius = 15,
-                                     btnColor = "#0cd",
-                                     dialRadius = 130,
-                                     dialWidth = 5,
-                                     meterColor = "#0cd",
-                                     textColor = "#fff",
-                                     fillColor = "none",
-                                     strokeColor = "#fff",
-                                     strokeWidth = 0.5,
-                                     textSize = 10,
-                                     value = 0,
-                                     minAngle = 0,
-                                     maxAngle = 360,
-                                     minValue=0,
-                                     maxValue=360,
-                                     xCenter = Dimensions.get("window").width / 2,
-                                     yCenter = Dimensions.get("window").height / 2,
-                                     onValueChange = (x) => x,
-                                     coerceToInt = false
-                                 }) => {
-    const step = (maxAngle-minAngle) / (maxValue-minValue)
+                                             handleSize = 15,
+                                             handleColor = "#0cd",
+                                             dialRadius = 130,
+                                             arcWidth = 5,
+                                             arcColor = "#0cd",
+                                             meterTextColor = "#fff",
+                                             fillColor = "none",
+                                             strokeColor = "#fff",
+                                             strokeWidth = 0.5,
+                                             meterTextSize = 10,
+                                             value = 0,
+                                             minAngle = 0,
+                                             maxAngle = 360,
+                                             minValue = 0,
+                                             maxValue = 360,
+                                             xCenter = Dimensions.get("window").width / 2,
+                                             yCenter = Dimensions.get("window").height / 2,
+                                             onChange = (x) => x,
+                                             coerceToInt = false,
+                                             meterText = "None"
+                                         }) => {
+    const step = (maxAngle - minAngle) / (maxValue - minValue)
 
     const [angle, setAngle] = useState(value * step);
 
-    console.log(step)
-    const onChange = (value) => {
+    const onValueChange = (value) => {
         value = value / step
-        onValueChange(value)
+        onChange(value)
         return value
     }
 
@@ -63,8 +64,8 @@ const CircularSliderNative: FC<Props> = ({
             onMoveShouldSetPanResponder: (e, gs) => true,
             onMoveShouldSetPanResponderCapture: (e, gs) => true,
             onPanResponderMove: (e, gs) => {
-                let xOrigin = xCenter - (dialRadius + btnRadius);
-                let yOrigin = yCenter - (dialRadius + btnRadius);
+                let xOrigin = xCenter - (dialRadius + handleSize);
+                let yOrigin = yCenter - (dialRadius + handleSize);
                 let a = cartesianToPolar(gs.moveX - xOrigin, gs.moveY - yOrigin);
 
                 if (a <= minAngle) {
@@ -85,19 +86,19 @@ const CircularSliderNative: FC<Props> = ({
     const polarToCartesian = useCallback(
         (angle) => {
             let r = dialRadius;
-            let hC = dialRadius + btnRadius;
+            let hC = dialRadius + handleSize;
             let a = ((angle - 90) * Math.PI) / 180.0;
 
             let x = hC + r * Math.cos(a);
             let y = hC + r * Math.sin(a);
             return {x, y};
         },
-        [dialRadius, btnRadius]
+        [dialRadius, handleSize]
     );
 
     const cartesianToPolar = useCallback(
         (x, y) => {
-            let hC = dialRadius + btnRadius;
+            let hC = dialRadius + handleSize;
 
             if (x === 0) {
                 return y > hC ? 0 : 180;
@@ -110,17 +111,30 @@ const CircularSliderNative: FC<Props> = ({
                 );
             }
         },
-        [dialRadius, btnRadius]
+        [dialRadius, handleSize]
     );
 
-    const width = (dialRadius + btnRadius) * 2;
-    const bR = btnRadius;
+    const width = (dialRadius + handleSize) * 2;
+    const bR = handleSize;
     const dR = dialRadius;
     const startCoord = polarToCartesian(0);
     let endCoord = polarToCartesian(angle);
 
+    // draws numeric ruler
+    const stepRad = ((step <= 36 ? step : step / 10) * Math.PI) / 180
+
+    const numbers = []
+    for (let i=maxAngle; i > minAngle; i-=step) {
+        numbers.push(Math.round(i / step))
+    }
+
+    const numX = width / 2
+    const numY = numX + strokeWidth / 4
+    // const numR = numX - bR*3
+    const numR = numX - strokeWidth*5/3
+
     return (
-        <Svg width={width} height={width}>
+        <Svg width={width + strokeWidth} height={width}>
             <Circle
                 r={dR}
                 cx={width / 2}
@@ -131,12 +145,53 @@ const CircularSliderNative: FC<Props> = ({
             />
 
             <Path
-                stroke={meterColor}
-                strokeWidth={dialWidth}
+                stroke={arcColor}
+                strokeWidth={arcWidth}
                 fill="none"
                 d={`M${startCoord.x} ${startCoord.y} A ${dR} ${dR} 0 ${
                     angle > 180 ? 1 : 0
                 } 1 ${endCoord.x} ${endCoord.y}`}
+            />
+
+            {numbers.map(value => {
+               return(
+                <Text key={value}
+                      x={numX + numR*Math.sin(value*stepRad)}
+                      y={numY - numR*Math.cos(value*stepRad)}
+                      fontSize={12} fill={meterTextColor} textAnchor="middle">
+                      {value}
+                </Text>
+               )
+            })}
+
+            {numbers.map(value => {
+                return(
+                    <Line key={`ticks${value}`}
+                          x1={numX + (numX-strokeWidth/3)*Math.sin(value*stepRad)}
+                          y1={numX - (numX-strokeWidth/3)*Math.cos(value*stepRad)}
+                          x2={numX + (numX)*Math.sin(value*stepRad)}
+                          y2={numX - (numX)*Math.cos(value*stepRad)}
+                          stroke={handleColor}>
+                    </Line>
+                )
+            })}
+
+            <Text
+                x={numX}
+                y={numY + meterTextSize / 2}
+                fontSize={meterTextSize}
+                fill={meterTextColor}
+                textAnchor="middle"
+            >
+                {meterText}
+            </Text>
+
+            <Circle  // panResponder place
+                r={dR + arcWidth}
+                cx={numX}
+                cy={numX}
+                fill={"transparent"}
+                {...panResponder.panHandlers}
             />
 
             <G x={endCoord.x - bR} y={endCoord.y - bR}>
@@ -148,17 +203,30 @@ const CircularSliderNative: FC<Props> = ({
                 {/*    {...panResponder.panHandlers}*/}
                 {/*/>*/}
 
+                {/*<Polygon*/}
+                {/*    points={`*/}
+                {/*     ${bR},${bR + width / 4}*/}
+                {/*     ${bR + 1.5 * btnRadius},${bR} */}
+                {/*     ${bR - 1.5 * btnRadius},${bR} */}
+                {/*    `}*/}
+                {/*    fill={btnColor}*/}
+                {/*    transform={`rotate(${angle} ${bR} ${bR})`}*/}
+                {/*    {...panResponder.panHandlers}*/}
+                {/*>*/}
+                {/*    {onChange(angle) + ""}*/}
+                {/*</Polygon>*/}
+
                 <Polygon
                     points={`
-                     ${bR},${bR + width / 4}
-                     ${bR + 1.5 * btnRadius},${bR} 
-                     ${bR - 1.5 * btnRadius},${bR} 
+                     ${bR},${bR + handleSize}
+                     ${bR + handleSize},${bR - handleSize} 
+                     ${bR - handleSize},${bR - handleSize} 
                     `}
-                    fill={btnColor}
+                    fill={handleColor}
                     transform={`rotate(${angle} ${bR} ${bR})`}
                     {...panResponder.panHandlers}
                 >
-                    {onChange(angle) + ""}
+                    {onValueChange(angle) + ""}
                 </Polygon>
 
                 {/*<Polygon*/}

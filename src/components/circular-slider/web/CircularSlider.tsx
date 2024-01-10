@@ -1,111 +1,106 @@
+import {useRef} from "react";
 import * as React from "react";
-import {
-    angleToPosition,
-    positionToAngle,
-    AngleDescription,
-    valueToAngle,
-    angleToValue,
-} from "./circularGeometry";
-import { arcPathWithRoundedEnds } from "./svgPaths";
+import {AngleDescription, angleToPosition, angleToValue, positionToAngle, valueToAngle} from "./circularGeometry";
+import {arcPathWithRoundedEnds} from "./svgPaths";
+
 
 type Props = {
-    size: number;
-    trackWidth: number;
-    minValue: number;
-    maxValue: number;
-    startAngle: number; // 0 - 360 degrees
-    endAngle: number; // 0 - 360 degrees
+    dialDiameter?: number;
+    strokeWidth?: number;
+    minValue?: number;
+    maxValue?: number;
+    startAngle?: number; // 0 - 360 degrees
+    endAngle?: number; // 0 - 360 degrees
     angleType: AngleDescription;
-    handleSize: number;
-    handle1: {
-        value: number;
-        onChange?: (value: number) => void;
-    };
+    handleSize?: number;
+    value: number,
+    onChange: (value: number) => void,
     handle2?: {
         value: number;
         onChange: (value: number) => void;
     };
     onControlFinished?: () => void;
     disabled?: boolean;
-    arcColor: string;
-    arcBackgroundColor: string;
+    arcColor?: string;
+    arcWidth?: number,
+    strokeColor?: string;
     coerceToInt?: boolean;
-    outerShadow?: boolean;
     capMode?: "circle" | "triangle"
     btnRadius?: number;
-    btnColor?: string;
+    handleColor?: string;
+    meterText?: string;
+    meterTextColor?: string;
+    meterTextSize?: number;
 };
 
-export class CircularSlider extends React.Component<
-    React.PropsWithChildren<Props>
-> {
-    static defaultProps: Pick<
-        Props,
-        | "size"
-        | "trackWidth"
-        | "minValue"
-        | "maxValue"
-        | "startAngle"
-        | "endAngle"
-        | "angleType"
-        | "arcBackgroundColor"
-        | "handleSize"
-        | "capMode"
-        | "btnColor"
-    > = {
-        size: 200,
-        trackWidth: 4,
-        minValue: 0,
-        maxValue: 100,
-        startAngle: 0,
-        endAngle: 360,
-        angleType: {
+export default function CircularSliderFunc({...props}: Props) {
+
+    const {
+        dialDiameter = 200,
+        strokeWidth = 4,
+        value,
+        onChange,
+        handle2,
+        handleSize = 8,
+        maxValue = 0,
+        minValue = 360,
+        startAngle = 0,
+        endAngle = 360,
+        angleType = {
             direction: "cw",
             axis: "-y",
         },
-        handleSize: 8,
-        arcBackgroundColor: "#aaa",
-        capMode: "triangle",
-        btnColor: "#0cd",
-    };
-    svgRef = React.createRef<SVGSVGElement>();
+        disabled,
+        arcColor = "#0cd",
+        strokeColor = "#aaa",
+        capMode = "triangle",
+        handleColor = "#0cd",
+        arcWidth = 10,
+        meterText = "None",
+        meterTextColor = "#0cd",
+        meterTextSize = 10,
+        coerceToInt = false,
+        onControlFinished
+    } = props;
 
-    onMouseEnter = (ev: React.MouseEvent<SVGSVGElement>) => {
+    const svgRef = useRef<SVGSVGElement | null>(null);
+
+    const onMouseEnter = (ev: React.MouseEvent<SVGSVGElement>) => {
         if (ev.buttons === 1) {
             // The left mouse button is pressed, act as though user clicked us
-            this.onMouseDown(ev);
+            onMouseDown(ev);
         }
     };
 
-    onMouseDown = (ev: React.MouseEvent<SVGSVGElement>) => {
-        const svgRef = this.svgRef.current;
-        if (svgRef) {
-            svgRef.addEventListener("mousemove", this.handleMousePosition);
-            svgRef.addEventListener("mouseleave", this.removeMouseListeners);
-            svgRef.addEventListener("mouseup", this.removeMouseListeners);
+    const onMouseDown = (ev: React.MouseEvent<SVGSVGElement>) => {
+        const curSvgRef = svgRef.current;
+        if (curSvgRef) {
+            curSvgRef.addEventListener("mousemove", handleMousePosition);
+            curSvgRef.addEventListener("mouseleave", removeMouseListeners);
+            curSvgRef.addEventListener("mouseup", removeMouseListeners);
         }
-        this.handleMousePosition(ev);
+        handleMousePosition(ev);
     };
 
-    removeMouseListeners = () => {
-        const svgRef = this.svgRef.current;
-        if (svgRef) {
-            svgRef.removeEventListener("mousemove", this.handleMousePosition);
-            svgRef.removeEventListener("mouseleave", this.removeMouseListeners);
-            svgRef.removeEventListener("mouseup", this.removeMouseListeners);
+    const removeMouseListeners = () => {
+        const curSvgRef = svgRef.current;
+        if (curSvgRef) {
+            curSvgRef.removeEventListener("mousemove", handleMousePosition);
+            curSvgRef.removeEventListener("mouseleave", removeMouseListeners);
+            curSvgRef.removeEventListener("mouseup", removeMouseListeners);
         }
-        if (this.props.onControlFinished) {
-            this.props.onControlFinished();
+        if (onControlFinished) {
+            onControlFinished();
         }
     };
 
-    handleMousePosition = (ev: React.MouseEvent<SVGSVGElement> | MouseEvent) => {
+    const handleMousePosition = (ev: React.MouseEvent<SVGSVGElement> | MouseEvent) => {
         const x = ev.clientX;
         const y = ev.clientY;
-        this.processSelection(x, y);
+        processSelection(x, y);
     };
 
-    onTouch = (ev: React.TouchEvent<SVGSVGElement>) => {
+    const onTouch = (ev: React.TouchEvent<SVGSVGElement>) => {
         /* This is a very simplistic touch handler. Some optimzations might be:
             - Right now, the bounding box for a touch is the entire element. Having the bounding box
               for touched be circular at a fixed distance around the slider would be more intuitive.
@@ -127,47 +122,36 @@ export class CircularSlider extends React.Component<
         const touch = ev.changedTouches[0];
         const x = touch.clientX;
         const y = touch.clientY;
-        this.processSelection(x, y);
+        processSelection(x, y);
 
         // If the touch is ending, fire onControlFinished
         if (ev.type === "touchend" || ev.type === "touchcancel") {
-            if (this.props.onControlFinished) {
-                this.props.onControlFinished();
+            if (onControlFinished) {
+                onControlFinished();
             }
         }
     };
 
-    processSelection = (x: number, y: number) => {
-        const {
-            size,
-            maxValue,
-            minValue,
-            angleType,
-            startAngle,
-            endAngle,
-            handle1,
-            disabled,
-            handle2,
-            coerceToInt,
-        } = this.props;
-        if (!handle1.onChange) {
+    const processSelection = (x: number, y: number) => {
+
+        if (!onChange) {
             // Read-only, don't bother doing calculations
             return;
         }
-        const svgRef = this.svgRef.current;
-        if (!svgRef) {
+        const curSvgRef = svgRef.current;
+        if (!curSvgRef) {
             return;
         }
         // Find the coordinates with respect to the SVG
-        const svgPoint = svgRef.createSVGPoint();
+        const svgPoint = curSvgRef.createSVGPoint();
         svgPoint.x = x;
         svgPoint.y = y;
         const coordsInSvg = svgPoint.matrixTransform(
-            svgRef.getScreenCTM()?.inverse()
+            curSvgRef.getScreenCTM()?.inverse()
         );
 
-        const angle = positionToAngle(coordsInSvg, size, angleType);
-        let value = angleToValue({
+        const angle = positionToAngle(coordsInSvg, dialDiameter, angleType);
+        let _value = angleToValue({
             angle,
             minValue,
             maxValue,
@@ -175,7 +159,7 @@ export class CircularSlider extends React.Component<
             endAngle,
         });
         if (coerceToInt) {
-            value = Math.round(value);
+            _value = Math.round(_value);
         }
 
         if (!disabled) {
@@ -183,294 +167,236 @@ export class CircularSlider extends React.Component<
                 handle2 &&
                 handle2.onChange &&
                 // make sure we're closer to handle 2 -- i.e. controlling handle2
-                Math.abs(value - handle2.value) < Math.abs(value - handle1.value)
+                Math.abs(_value - handle2.value) < Math.abs(_value - value)
             ) {
-                handle2.onChange(value);
+                handle2.onChange(_value);
             } else {
-                handle1.onChange(value);
+                onChange(_value);
             }
         }
     };
 
-    render() {
-        const {
-            size,
-            trackWidth,
-            handle1,
-            handle2,
-            handleSize,
-            maxValue,
-            minValue,
-            startAngle,
-            endAngle,
-            angleType,
-            disabled,
-            arcColor,
-            arcBackgroundColor,
-            outerShadow,
-            capMode,
-            btnColor
-        } = this.props;
-        const shadowWidth = 20;
-        const trackInnerRadius = size / 2 - trackWidth - shadowWidth;
-        const handle1Angle = valueToAngle({
-            value: handle1.value,
+    const shadowWidth = 20;
+    const trackInnerRadius = dialDiameter / 2 - strokeWidth - shadowWidth;
+    const handleAngle = valueToAngle({
+        value: value,
+        minValue,
+        maxValue,
+        startAngle,
+        endAngle,
+    });
+    const handle2Angle =
+        handle2 &&
+        valueToAngle({
+            value: handle2.value,
             minValue,
             maxValue,
             startAngle,
             endAngle,
         });
-        const handle2Angle =
-            handle2 &&
-            valueToAngle({
-                value: handle2.value,
-                minValue,
-                maxValue,
-                startAngle,
-                endAngle,
-            });
-        const handle1Position = angleToPosition(
-            { degree: handle1Angle, ...angleType },
-            trackInnerRadius + trackWidth / 2,
-            size
+    const handlePosition = angleToPosition(
+        {degree: handleAngle, ...angleType},
+        trackInnerRadius + strokeWidth / 2,
+        dialDiameter
+    );
+    const handle2Position =
+        handle2Angle &&
+        angleToPosition(
+            {degree: handle2Angle, ...angleType},
+            trackInnerRadius + strokeWidth / 2,
+            dialDiameter
         );
-        const handle2Position =
-            handle2Angle &&
-            angleToPosition(
-                { degree: handle2Angle, ...angleType },
-                trackInnerRadius + trackWidth / 2,
-                size
-            );
 
-        const controllable = !disabled && Boolean(handle1.onChange);
+    const controllable = !disabled && Boolean(onChange);
 
-        const createCap = () => {
-            const triangleRotationArg = (endAngle - startAngle) / (maxValue - minValue)
-            const triangleRotation = handle1.value * triangleRotationArg + 180
+    const createCap = () => {
+        const triangleRotationArg = (endAngle - startAngle) / (maxValue - minValue)
+        const triangleRotation = value * triangleRotationArg + 180
 
-            if (capMode === "triangle") {
+        if (capMode === "triangle") {
+            return (
+                <polygon
+                    points={`${handlePosition.x},${handlePosition.y - handleSize} 
+             ${handlePosition.x - handleSize},${handlePosition.y + handleSize} 
+             ${handlePosition.x + handleSize},${handlePosition.y + handleSize}`}
+                    fill={handleColor}
+                    transform={`rotate(${triangleRotation} ${handlePosition.x} ${handlePosition.y})`}
+                />
+            )
+        } else {
+            return (
+                <circle
+                    r={handleSize}
+                    cx={handlePosition.x}
+                    cy={handlePosition.y}
+                    fill="#ffffff"
+                />
+            )
+        }
+    }
+
+    const step = (endAngle - startAngle) / (maxValue - minValue)
+    const stepRad = ((step <= 36 ? step : step / 10) * Math.PI) / 180
+    const numX = dialDiameter / 2
+    const numY = numX + strokeWidth / 4
+    // const numR = numX - strokeWidth * 5/2
+    const numbers = []
+    for (let i = endAngle; i > startAngle; i -= step) {
+        numbers.push(Math.round(i / step))
+    }
+
+    return (
+        <svg
+            width={dialDiameter}
+            height={dialDiameter}
+            ref={svgRef}
+            onMouseDown={onMouseDown}
+            onMouseEnter={onMouseEnter}
+            onClick={
+                /* TODO: be smarter about this -- for example, we could run this through our
+                calculation and determine how close we are to the arc, and use that to decide
+                if we propagate the click. */
+                (ev) => controllable && ev.stopPropagation()
+            }
+
+            onTouchStart={onTouch}
+            onTouchEnd={onTouch}
+            onTouchMove={onTouch}
+            onTouchCancel={onTouch}
+
+            style={{touchAction: "none"}}
+        >
+
+            {handle2Angle === undefined ? (
+                /* One-handle mode */
+                <React.Fragment>
+                    {/* Arc Background  */}
+                    <path
+                        d={arcPathWithRoundedEnds({
+                            startAngle: handleAngle,
+                            endAngle,
+                            angleType,
+                            innerRadius: trackInnerRadius,
+                            thickness: strokeWidth,
+                            svgSize: dialDiameter,
+                            direction: angleType.direction,
+                        })}
+                        fill={strokeColor}
+                    />
+                    {/* Arc (render after background so it overlays it) */}
+                    <path
+                        d={arcPathWithRoundedEnds({
+                            startAngle,
+                            endAngle: handleAngle,
+                            angleType,
+                            innerRadius: (trackInnerRadius + strokeWidth / 2 - arcWidth / 2),
+                            thickness: arcWidth,
+                            svgSize: dialDiameter,
+                            direction: angleType.direction,
+                        })}
+                        fill={arcColor}
+                    />
+                </React.Fragment>
+            ) : (
+                /* Two-handle mode */
+                <React.Fragment>
+                    {/* Arc Background Part 1  */}
+                    <path
+                        d={arcPathWithRoundedEnds({
+                            startAngle,
+                            endAngle: handleAngle,
+                            angleType,
+                            innerRadius: trackInnerRadius,
+                            thickness: strokeWidth,
+                            svgSize: dialDiameter,
+                            direction: angleType.direction,
+                        })}
+                        fill={strokeColor}
+                    />
+                    {/* Arc Background Part 2  */}
+                    <path
+                        d={arcPathWithRoundedEnds({
+                            startAngle: handle2Angle,
+                            endAngle,
+                            angleType,
+                            innerRadius: trackInnerRadius,
+                            thickness: strokeWidth,
+                            svgSize: dialDiameter,
+                            direction: angleType.direction,
+                        })}
+                        fill={strokeColor}
+                    />
+                    {/* Arc (render after background so it overlays it) */}
+                    <path
+                        d={arcPathWithRoundedEnds({
+                            startAngle: handleAngle,
+                            endAngle: handle2Angle,
+                            angleType,
+                            innerRadius: trackInnerRadius,
+                            thickness: strokeWidth,
+                            svgSize: dialDiameter,
+                            direction: angleType.direction,
+                        })}
+                        fill={arcColor}
+                    />
+                </React.Fragment>
+            )}
+
+            {numbers.map(value => {
                 return (
-                    <polygon
-                        points={`${handle1Position.x},${handle1Position.y - handleSize} 
-             ${handle1Position.x - handleSize},${handle1Position.y + handleSize} 
-             ${handle1Position.x + handleSize},${handle1Position.y + handleSize}`}
-                        fill={btnColor}
-                        filter="url(#handleShadow)"
-                        transform={`rotate(${triangleRotation} ${handle1Position.x} ${handle1Position.y})`}
-                    />
+                    <text key={value}
+                          x={numX + (trackInnerRadius - strokeWidth / 2) * Math.sin(value * stepRad)}
+                          y={numY - (trackInnerRadius - strokeWidth / 2) * Math.cos(value * stepRad)}
+                          fontSize={12} fill={handleColor} textAnchor="middle">
+                        {value}
+                    </text>
                 )
-            } else {
-                return(
-                    <circle
-                        r={handleSize}
-                        cx={handle1Position.x}
-                        cy={handle1Position.y}
-                        // fill="#ffffff"
-                        fill="#ffffff"
-                        filter="url(#handleShadow)"
-                    />
+            })}
+
+            {numbers.map(value => {
+                return (
+                    <line key={`ticks${value}`}
+                          x1={numX + (trackInnerRadius + 2 / 3 * strokeWidth) * Math.sin(value * stepRad)}
+                          y1={numX - (trackInnerRadius + 2 / 3 * strokeWidth) * Math.cos(value * stepRad)}
+                          x2={numX + (trackInnerRadius + strokeWidth) * Math.sin(value * stepRad)}
+                          y2={numX - (trackInnerRadius + strokeWidth) * Math.cos(value * stepRad)}
+                          stroke={handleColor}>
+                    </line>
+                )
+            })}
+
+            <text
+                x={dialDiameter / 2}
+                y={dialDiameter / 2 + 10}
+                fontSize={meterTextSize}
+                fill={meterTextColor}
+                textAnchor="middle"
+            >
+                {meterText} {/*TODO: text format*/}
+            </text>
+
+            {
+                /* Handle 1 */
+                controllable && (
+                    <React.Fragment>
+                        {createCap()}
+                    </React.Fragment>
                 )
             }
-        }
 
-
-        return (
-            <svg
-                width={size}
-                height={size}
-                ref={this.svgRef}
-                onMouseDown={this.onMouseDown}
-                onMouseEnter={this.onMouseEnter}
-                onClick={
-                    /* TODO: be smarter about this -- for example, we could run this through our
-                    calculation and determine how close we are to the arc, and use that to decide
-                    if we propagate the click. */
-                    (ev) => controllable && ev.stopPropagation()
-                }
-                onTouchStart={this.onTouch}
-                onTouchEnd={this.onTouch}
-                onTouchMove={this.onTouch}
-                onTouchCancel={this.onTouch}
-                style={{ touchAction: "none" }}
-            >
-                {
-                    /* Shadow */
-                    outerShadow && (
-                        <React.Fragment>
-                            <radialGradient id="outerShadow">
-                                <stop offset="90%" stopColor={arcColor} />
-                                <stop offset="100%" stopColor="white" />
-                            </radialGradient>
-
-                            <circle
-                                fill="none"
-                                stroke="url(#outerShadow)"
-                                cx={size / 2}
-                                cy={size / 2}
-                                // Subtract an extra pixel to ensure there's never any gap between slider and shadow
-                                r={trackInnerRadius + trackWidth + shadowWidth / 2 - 1}
-                                strokeWidth={shadowWidth}
-                            />
-                        </React.Fragment>
-                    )
-                }
-
-                {handle2Angle === undefined ? (
-                    /* One-handle mode */
+            {
+                /* Handle 2 */
+                handle2Position && (
                     <React.Fragment>
-                        {/* Arc Background  */}
-                        <path
-                            d={arcPathWithRoundedEnds({
-                                startAngle: handle1Angle,
-                                endAngle,
-                                angleType,
-                                innerRadius: trackInnerRadius,
-                                thickness: trackWidth,
-                                svgSize: size,
-                                direction: angleType.direction,
-                            })}
-                            fill={arcBackgroundColor}
-                        />
-                        {/* Arc (render after background so it overlays it) */}
-                        <path
-                            d={arcPathWithRoundedEnds({
-                                startAngle,
-                                endAngle: handle1Angle,
-                                angleType,
-                                innerRadius: trackInnerRadius,
-                                thickness: trackWidth,
-                                svgSize: size,
-                                direction: angleType.direction,
-                            })}
-                            fill={arcColor}
+                        <circle
+                            r={handleSize}
+                            cx={handle2Position.x}
+                            cy={handle2Position.y}
+                            fill="#ffffff"
                         />
                     </React.Fragment>
-                ) : (
-                    /* Two-handle mode */
-                    <React.Fragment>
-                        {/* Arc Background Part 1  */}
-                        <path
-                            d={arcPathWithRoundedEnds({
-                                startAngle,
-                                endAngle: handle1Angle,
-                                angleType,
-                                innerRadius: trackInnerRadius,
-                                thickness: trackWidth,
-                                svgSize: size,
-                                direction: angleType.direction,
-                            })}
-                            fill={arcBackgroundColor}
-                        />
-                        {/* Arc Background Part 2  */}
-                        <path
-                            d={arcPathWithRoundedEnds({
-                                startAngle: handle2Angle,
-                                endAngle,
-                                angleType,
-                                innerRadius: trackInnerRadius,
-                                thickness: trackWidth,
-                                svgSize: size,
-                                direction: angleType.direction,
-                            })}
-                            fill={arcBackgroundColor}
-                        />
-                        {/* Arc (render after background so it overlays it) */}
-                        <path
-                            d={arcPathWithRoundedEnds({
-                                startAngle: handle1Angle,
-                                endAngle: handle2Angle,
-                                angleType,
-                                innerRadius: trackInnerRadius,
-                                thickness: trackWidth,
-                                svgSize: size,
-                                direction: angleType.direction,
-                            })}
-                            fill={arcColor}
-                        />
-                    </React.Fragment>
-                )}
-
-                {
-                    /* Handle 1 */
-                    controllable && (
-                        <React.Fragment>
-                            <filter
-                                id="handleShadow"
-                                x="-50%"
-                                y="-50%"
-                                width="16"
-                                height="16"
-                            >
-                                <feOffset result="offOut" in="SourceGraphic" dx="0" dy="0"/>
-                                <feColorMatrix
-                                    result="matrixOut"
-                                    in="offOut"
-                                    type="matrix"
-                                    values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"
-                                />
-                                <feGaussianBlur
-                                    result="blurOut"
-                                    in="matrixOut"
-                                    stdDeviation="5"
-                                />
-                                <feBlend in="SourceGraphic" in2="blurOut" mode="normal"/>
-                            </filter>
-                            {createCap()}
-                        </React.Fragment>
-                    )
-                }
-
-                {
-                    /* Handle 2 */
-                    handle2Position && (
-                        <React.Fragment>
-                            <circle
-                                r={handleSize}
-                                cx={handle2Position.x}
-                                cy={handle2Position.y}
-                                fill="#ffffff"
-                                filter="url(#handleShadow)"
-                            />
-                        </React.Fragment>
-                    )
-                }
-            </svg>
-        );
-    }
+                )
+            }
+        </svg>
+    );
 }
-
-export class CircularSliderWithChildren extends React.Component<
-    React.PropsWithChildren<Props>
-> {
-    static defaultProps = CircularSlider.defaultProps;
-    render() {
-        const { size } = this.props;
-        return (
-            <div
-                style={{
-                    width: size,
-                    height: size,
-                    position: "relative",
-                }}
-            >
-                <CircularSlider {...this.props} />
-                <div
-                    style={{
-                        position: "absolute",
-                        top: "25%",
-                        left: "50%",
-                        transform: "translateX(-50%)",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                    }}
-                >
-                    {this.props.children}
-                </div>
-            </div>
-        );
-    }
-}
-
-export default CircularSlider;
