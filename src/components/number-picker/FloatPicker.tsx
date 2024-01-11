@@ -94,7 +94,7 @@ export default function FloatPicker({...props}: NumberPickerProps) {
     const [int, setInt] = useState(Math.floor(curValue))
     const [decimal, setDecimal] = useState(curValue % 1)
     const onValueChange = (value: number) => {
-        onChange ? onChange(value + decimal) : null
+        onChange ? onChange(value) : null
     }
 
     const onIntChange = (value) => {
