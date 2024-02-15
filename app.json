@@ -2,7 +2,7 @@
   "expo": {
     "name": "ebalistyka",
     "slug": "ebalistyka",
-    "version": "0.1.1-alpha.1",
+    "version": "0.1.1-alpha.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
