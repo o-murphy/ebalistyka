@@ -4,6 +4,8 @@ import {useTheme} from 'react-native-paper';
 import {StyleSheet} from "react-native";
 import {WeaponCard} from "../../components/cards";
 import TabsCard from "../../components/cards/TabsCard";
+import ProjectileCard from "../../components/cards/ProjectileCard";
+import BulletCard from "../../components/cards/BulletCard";
 
 
 export default function HomeScreen({navigation}) {
@@ -27,6 +29,8 @@ export default function HomeScreen({navigation}) {
                 showsVerticalScrollIndicator={true}
             >
                 <WeaponCard/>
+                <ProjectileCard />
+                <BulletCard />
 
                 {/*<TabsCard />*/}
             </ScrollView>

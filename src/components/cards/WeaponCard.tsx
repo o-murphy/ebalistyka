@@ -5,6 +5,7 @@ import InputCard from "./InputCard";
 import styleSheet from "../../styles";
 import {SimpleDialog} from "../dialogs";
 import MeasureSliderModal from "../measure-slider-modal/MeasureSliderModal";
+import {Unit, UnitProps} from "js-ballistics";
 
 
 export default function WeaponCard() {
@@ -15,7 +16,7 @@ export default function WeaponCard() {
         {
             key: "diameter",
             label: "Diameter",
-            suffix: "in",
+            suffix: UnitProps[Unit.Inch].symbol,
             icon: "diameter-variant",
             mode: "float" as const,
             initialValue: 0.308,
@@ -24,9 +25,20 @@ export default function WeaponCard() {
             decimals: 3,
         },
         {
+            key: "sight_height",
+            label: "Sight height",
+            suffix: UnitProps[Unit.Inch].symbol,
+            icon: "crosshairs",
+            mode: "float" as const,
+            initialValue: 3,
+            maxValue: 5,
+            minValue: 0,
+            decimals: 1,
+        },
+        {
             key: "twist",
             label: "Twist",
-            suffix: "in",
+            suffix: UnitProps[Unit.Inch].symbol,
             icon: "screw-flat-top",
             mode: "float" as const,
             initialValue: 11,
@@ -55,6 +67,10 @@ export default function WeaponCard() {
 
     const acceptTwistDir = (): void => {
         setCurTwistDir(twistDir)
+    }
+
+    const declineTwistDir = (): void => {
+        setTwistDir(curTwistDir)
     }
 
     const acceptName = () => {
@@ -87,7 +103,7 @@ export default function WeaponCard() {
                     </Col>
                     <Col size={8}>
                         <SimpleDialog label={"Twist"} icon={curTwistDir === "Right" ? "rotate-right" : "rotate-left"}
-                                      text={curTwistDir} onAccept={acceptTwistDir}>
+                                      text={curTwistDir} onAccept={acceptTwistDir} onDecline={declineTwistDir}>
                             <SegmentedButtons
                                 buttons={twistStates} value={twistDir} onValueChange={setTwistDir}/>
                         </SimpleDialog>
