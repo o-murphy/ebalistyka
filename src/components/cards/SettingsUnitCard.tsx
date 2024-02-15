@@ -12,6 +12,7 @@ import {
 import {SimpleScrollDialog} from "../dialogs";
 import {useState} from "react";
 import RadioGroup from "../radio-group/RadioGroup";
+import {useTranslate} from "../../translations/UseTranslate";
 
 
 const get_unit_list = (measure: Object) =>
@@ -19,80 +20,85 @@ const get_unit_list = (measure: Object) =>
         return {label: UnitProps[measure[key]].name, value: measure[key]}
     })
 
-const fields = [
-    {
-        key: "distance",
-        label: "Distance",
-        list: [
-            {label: UnitProps[Unit.Meter].name, value: Unit.Meter},
-            {label: UnitProps[Unit.Foot].name, value: Unit.Foot},
-            {label: UnitProps[Unit.Yard].name, value: Unit.Yard},
-        ],
-        def: Unit.Meter,
-    },
-    {
-        key: "velocity",
-        label: "Velocity",
-        list: [
-            {label: UnitProps[Unit.MPS].name, value: Unit.MPS},
-            {label: UnitProps[Unit.FPS].name, value: Unit.FPS},
-        ],
-        def: Unit.MPS
-    },
-    {
-        key: "angular",
-        label: "Angular",
-        list: get_unit_list(Measure.Angular),
-        def: Unit.Degree
-    },
-    {
-      key: "sizes",
-      label: "Sizes",
-    list: [
-        {label: UnitProps[Unit.Inch].name, value: Unit.Inch},
-        {label: UnitProps[Unit.Millimeter].name, value: Unit.Millimeter},
-        {label: UnitProps[Unit.Centimeter].name, value: Unit.Centimeter},
-        {label: UnitProps[Unit.Centimeter].name, value: Unit.Line},
-    ],
-      def: Unit.Inch
-    },
-    {
-        key: "weight",
-        label: "Weight",
-        list: get_unit_list(Measure.Weight),
-        def: Unit.Grain
-    },
-    {
-        key: "temperature",
-        label: "Temperature",
-        list: [
-            {label: UnitProps[Unit.Celsius].name, value: Unit.Celsius},
-            {label: UnitProps[Unit.Fahrenheit].name, value: Unit.Fahrenheit},
-        ],
-        def: Unit.Celsius
-    },
-    {
-        key: "pressure",
-        label: "Pressure",
-        list: get_unit_list(Measure.Pressure),
-        def: Unit.PSI
-    },
-    {
-        key: "energy",
-        label: "Energy",
-        list: get_unit_list(Measure.Energy),
-        def: Unit.Joule
-    },
-    {
-        key: "adjustment",
-        label: "Adjustment",
-        list: get_unit_list(Measure.Angular),
-        def: Unit.MIL
-    },
-]
-
 
 export default function SettingsUnitCard() {
+    // translator
+    const me = SettingsUnitCard.name
+    const translator = useTranslate()
+    const tr = (str) => translator(me, str)
+
+    const fields = [
+        {
+            key: "distance",
+            label: tr("Distance"),
+            list: [
+                {label: UnitProps[Unit.Meter].name, value: Unit.Meter},
+                {label: UnitProps[Unit.Foot].name, value: Unit.Foot},
+                {label: UnitProps[Unit.Yard].name, value: Unit.Yard},
+            ],
+            def: Unit.Meter,
+        },
+        {
+            key: "velocity",
+            label: tr("Velocity"),
+            list: [
+                {label: UnitProps[Unit.MPS].name, value: Unit.MPS},
+                {label: UnitProps[Unit.FPS].name, value: Unit.FPS},
+            ],
+            def: Unit.MPS
+        },
+        {
+            key: "angular",
+            label: tr("Angular"),
+            list: get_unit_list(Measure.Angular),
+            def: Unit.Degree
+        },
+        {
+            key: "sizes",
+            label: tr("Sizes"),
+            list: [
+                {label: UnitProps[Unit.Inch].name, value: Unit.Inch},
+                {label: UnitProps[Unit.Millimeter].name, value: Unit.Millimeter},
+                {label: UnitProps[Unit.Centimeter].name, value: Unit.Centimeter},
+                {label: UnitProps[Unit.Centimeter].name, value: Unit.Line},
+            ],
+            def: Unit.Inch
+        },
+        {
+            key: "weight",
+            label: tr("Weight"),
+            list: get_unit_list(Measure.Weight),
+            def: Unit.Grain
+        },
+        {
+            key: "temperature",
+            label: tr("Temperature"),
+            list: [
+                {label: UnitProps[Unit.Celsius].name, value: Unit.Celsius},
+                {label: UnitProps[Unit.Fahrenheit].name, value: Unit.Fahrenheit},
+            ],
+            def: Unit.Celsius
+        },
+        {
+            key: "pressure",
+            label: tr("Pressure"),
+            list: get_unit_list(Measure.Pressure),
+            def: Unit.PSI
+        },
+        {
+            key: "energy",
+            label: tr("Energy"),
+            list: get_unit_list(Measure.Energy),
+            def: Unit.Joule
+        },
+        {
+            key: "adjustment",
+            label: tr("Adjustment"),
+            list: get_unit_list(Measure.Angular),
+            def: Unit.MIL
+        },
+    ]
+
 
     const UnitSelector = ({field}) => {
 
@@ -119,7 +125,7 @@ export default function SettingsUnitCard() {
 
 
     return (
-        <InputCard title="Units of measurement">
+        <InputCard title={tr("Units of measurement")}>
             <Grid style={styleSheet.grid.grid}>
                 {fields.map(field => <UnitSelector key={field.key} field={field}/>)}
             </Grid>

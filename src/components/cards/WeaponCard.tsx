@@ -6,16 +6,21 @@ import styleSheet from "../../styles";
 import {SimpleDialog} from "../dialogs";
 import MeasureSliderModal from "../measure-slider-modal/MeasureSliderModal";
 import {Unit, UnitProps} from "js-ballistics";
+import {useTranslate} from "../../translations/UseTranslate";
 
 
 export default function WeaponCard() {
+
+    const me = WeaponCard.name
+    const translator = useTranslate()
+    const tr = (str) => translator(me, str)
 
     const theme = useTheme()
 
     const fields = [
         {
             key: "diameter",
-            label: "Diameter",
+            label: tr("Diameter"),
             suffix: UnitProps[Unit.Inch].symbol,
             icon: "diameter-variant",
             mode: "float" as const,
@@ -26,7 +31,7 @@ export default function WeaponCard() {
         },
         {
             key: "sight_height",
-            label: "Sight height",
+            label: tr("Sight height"),
             suffix: UnitProps[Unit.Inch].symbol,
             icon: "crosshairs",
             mode: "float" as const,
@@ -37,7 +42,7 @@ export default function WeaponCard() {
         },
         {
             key: "twist",
-            label: "Twist",
+            label: tr("Twist"),
             suffix: UnitProps[Unit.Inch].symbol,
             icon: "screw-flat-top",
             mode: "float" as const,
@@ -51,12 +56,18 @@ export default function WeaponCard() {
     const twistStates = [
         {
             value: 'Right',
-            label: 'Right',
+            label: tr('Right'),
             icon: "rotate-right",
             showSelectedCheck: true,
             checkedColor: theme.colors.primary
         },
-        {value: 'Left', label: 'Left', icon: "rotate-left", showSelectedCheck: true, checkedColor: theme.colors.primary}
+        {
+            value: 'Left',
+            label: tr('Left'),
+            icon: "rotate-left",
+            showSelectedCheck: true,
+            checkedColor: theme.colors.primary
+        }
     ]
 
     const [curTwistDir, setCurTwistDir] = useState("Right");
@@ -83,10 +94,10 @@ export default function WeaponCard() {
 
     return (
 
-        <InputCard title={"Weapon"}>
+        <InputCard title={tr("Weapon")}>
 
-            <SimpleDialog label={"Name"} icon={"card-bulleted-outline"}
-                          text={curName}
+            <SimpleDialog label={tr("Name")} icon={"card-bulleted-outline"}
+                          text={tr(curName)}
                           onAccept={acceptName}
                           onDecline={declineName}
             >
@@ -99,11 +110,11 @@ export default function WeaponCard() {
 
                 <Row style={styleSheet.grid.row}>
                     <Col size={8}>
-                        <Text style={{fontSize: 16}}>Twist direction</Text>
+                        <Text style={{fontSize: 16}}>{tr("Twist direction")}</Text>
                     </Col>
                     <Col size={8}>
-                        <SimpleDialog label={"Twist"} icon={curTwistDir === "Right" ? "rotate-right" : "rotate-left"}
-                                      text={curTwistDir} onAccept={acceptTwistDir} onDecline={declineTwistDir}>
+                        <SimpleDialog label={tr("Twist direction")} icon={curTwistDir === "Right" ? "rotate-right" : "rotate-left"}
+                                      text={tr(curTwistDir)} onAccept={acceptTwistDir} onDecline={declineTwistDir}>
                             <SegmentedButtons
                                 buttons={twistStates} value={twistDir} onValueChange={setTwistDir}/>
                         </SimpleDialog>

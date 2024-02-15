@@ -1,0 +1,39 @@
+import React, { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const useUserData = () => {
+    const [userData, setUserData] = useState(null);
+
+    // Function to load user data
+    const loadUserData = async () => {
+        try {
+            const jsonValue = await AsyncStorage.getItem('@user_data');
+            setUserData(jsonValue != null ? JSON.parse(jsonValue) : null);
+        } catch (e) {
+            // error reading value
+            console.error('Error loading user data', e);
+        }
+    };
+
+    // Function to save user data
+    const saveUserData = async (data) => {
+        try {
+            const jsonValue = JSON.stringify(data);
+            await AsyncStorage.setItem('@user_data', jsonValue);
+            setUserData(data);
+        } catch (e) {
+            // saving error
+            console.error('Error saving user data', e);
+        }
+    };
+
+    // Load user data on component mount
+    useEffect(() => {
+        loadUserData();
+    }, []);
+
+    return [userData, saveUserData];
+};
+
+
+export default useUserData;

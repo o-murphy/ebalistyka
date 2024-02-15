@@ -45,15 +45,15 @@ const BotAppBar = () => {
 
             {
                 currentRoute != "Home" ?
-                    [
+                    <>
                         <Appbar.Action icon="weather-partly-cloudy"
-                                       onPress={() => navigation.navigate("Atmosphere")}/>,
+                                       onPress={() => navigation.navigate("Atmosphere")}/>
                         <Appbar.Action icon="calculator"
-                                       onPress={() => navigation.navigate("Calculate")}/>,
+                                       onPress={() => navigation.navigate("Calculate")}/>
                         <Appbar.Action icon="table-large"
-                                       onPress={() => navigation.navigate("Trajectory")}/>,
+                                       onPress={() => navigation.navigate("Trajectory")}/>
 
-                    ]
+                    </>
                     : null
 
             }

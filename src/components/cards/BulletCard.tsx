@@ -7,14 +7,19 @@ import {SimpleDialog} from "../dialogs";
 import MeasureSliderModal from "../measure-slider-modal/MeasureSliderModal";
 import {Unit, UnitProps} from "js-ballistics";
 import {navigate} from "../../RootNavigation";
+import {useTranslate} from "../../translations/UseTranslate";
 
 
 export default function BulletCard() {
 
+    const me = BulletCard.name
+    const translator = useTranslate()
+    const tr = (str) => translator(me, str)
+
     const fields = [
         {
             key: "diameter",
-            label: "Diameter",
+            label: tr("Diameter"),
             suffix: UnitProps[Unit.Inch].symbol,
             icon: "diameter-variant",
             mode: "float" as const,
@@ -25,7 +30,7 @@ export default function BulletCard() {
         },
         {
             key: "weight",
-            label: "Weight",
+            label: tr("Weight"),
             suffix: UnitProps[Unit.Grain].symbol,
             icon: "weight",
             mode: "float" as const,
@@ -36,7 +41,7 @@ export default function BulletCard() {
         },
         {
             key: "length",
-            label: "Length",
+            label: tr("Length"),
             suffix: UnitProps[Unit.Inch].symbol,
             icon: "arrow-expand-horizontal",
             // icon: "⬌",
@@ -65,10 +70,10 @@ export default function BulletCard() {
 
     return (
 
-        <InputCard title={"Bullet"}>
+        <InputCard title={tr("Bullet")}>
 
-            <SimpleDialog label={"Name"} icon={"card-bulleted-outline"}
-                          text={curName}
+            <SimpleDialog label={tr("Name")} icon={"card-bulleted-outline"}
+                          text={tr(curName)}
                           onAccept={acceptName}
                           onDecline={declineName}
             >
@@ -81,7 +86,7 @@ export default function BulletCard() {
 
                 <Row style={styleSheet.grid.row}>
                     <Col size={8}>
-                        <Text style={{fontSize: 16}}>Drag model</Text>
+                        <Text style={{fontSize: 16}}>{tr("Drag model")}</Text>
                     </Col>
                     <Col size={8}>
 

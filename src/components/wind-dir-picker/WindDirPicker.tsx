@@ -5,6 +5,7 @@ import CircularSliderNative from "../circular-slider/CircularSliderNative";
 
 
 export default function WindDirection({value, onChange}) {
+
     const theme = useTheme()
 
     const styles = {

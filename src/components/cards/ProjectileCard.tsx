@@ -6,16 +6,21 @@ import styleSheet from "../../styles";
 import {SimpleDialog} from "../dialogs";
 import MeasureSliderModal from "../measure-slider-modal/MeasureSliderModal";
 import {Unit, UnitProps} from "js-ballistics";
+import {useTranslate} from "../../translations/UseTranslate";
 
 
 export default function ProjectileCard() {
+
+    const me = ProjectileCard.name
+    const translator = useTranslate()
+    const tr = (str) => translator(me, str)
 
     const theme = useTheme()
 
     const fields = [
         {
             key: "mv",
-            label: "Muzzle velocity",
+            label: tr("Muzzle velocity"),
             suffix: UnitProps[Unit.MPS].symbol,
             icon: "speedometer",
             mode: "int" as const,
@@ -26,7 +31,7 @@ export default function ProjectileCard() {
         },
         {
             key: "powder_temp",
-            label: "Powder temperature",
+            label: tr("Powder temperature"),
             suffix: UnitProps[Unit.Celsius].symbol,
             icon: "thermometer",
             mode: "int" as const,
@@ -37,7 +42,7 @@ export default function ProjectileCard() {
         },
         {
             key: "powder_sens",
-            label: "Temperature coefficient",
+            label: tr("Temperature coefficient"),
             suffix: "/15°C",
             icon: "percent",
             mode: "float" as const,
@@ -62,10 +67,10 @@ export default function ProjectileCard() {
 
     return (
 
-        <InputCard title={"Projectile"}>
+        <InputCard title={tr("Projectile")}>
 
-            <SimpleDialog label={"Name"} icon={"card-bulleted-outline"}
-                          text={curName}
+            <SimpleDialog label={tr("Name")} icon={"card-bulleted-outline"}
+                          text={tr(curName)}
                           onAccept={acceptName}
                           onDecline={declineName}
             >

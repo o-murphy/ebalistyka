@@ -4,14 +4,19 @@ import InputCard from "./InputCard";
 import styleSheet from "../../styles";
 import {Unit, UnitProps} from "js-ballistics";
 import MeasureSliderModal from "../measure-slider-modal/MeasureSliderModal";
+import {useTranslate} from "../../translations/UseTranslate";
 
 
 export default function AtmoCard() {
 
+    const me = AtmoCard.name
+    const translator = useTranslate()
+    const tr = (str) => translator(me, str)
+
     const fields = [
         {
             key: "temp",
-            label: "Temperature",
+            label: tr("Temperature"),
             suffix: UnitProps[Unit.Celsius].symbol,
             icon: "thermometer",
             mode: "int" as const,
@@ -22,7 +27,7 @@ export default function AtmoCard() {
         },
         {
             key: "pressure",
-            label: "Pressure",
+            label: tr("Pressure"),
             suffix: UnitProps[Unit.MmHg].symbol,
             icon: "speedometer",
             mode: "int" as const,
@@ -33,7 +38,7 @@ export default function AtmoCard() {
         },
         {
             key: "humidity",
-            label: "Humidity",
+            label: tr("Humidity"),
             suffix: "%",
             icon: "water",
             mode: "int" as const,
@@ -44,7 +49,7 @@ export default function AtmoCard() {
         },
         {
             key: "altitude",
-            label: "Altitude",
+            label: tr("Altitude"),
             suffix: UnitProps[Unit.Meter].symbol,
             icon: "ruler",
             mode: "int" as const,
@@ -56,7 +61,7 @@ export default function AtmoCard() {
     ]
 
     return (
-        <InputCard title={"Current atmosphere"}>
+        <InputCard title={tr("Current atmosphere")}>
             <Grid style={styleSheet.grid.grid}>
                 {fields.map(field => <MeasureSliderModal key={field.key} field={field}/>)}
             </Grid>

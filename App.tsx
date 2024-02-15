@@ -4,6 +4,7 @@ import {useState} from 'react';
 import {StatusBar} from 'expo-status-bar';
 import {PaperProvider, MD3LightTheme, MD3DarkTheme} from 'react-native-paper';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {UserDataProvider} from "./src/user-data/UserDataContext";
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -45,13 +46,17 @@ export default function App() {
     }
 
     return (
-        <SafeAreaProvider style={styles.provider}>
-            <PaperProvider theme={theme}>
+        <UserDataProvider>
 
-                <RootScreenManager nightMode={nightMode} toggleNightMode={toggleNightMode}/>
+            <SafeAreaProvider style={styles.provider}>
+                <PaperProvider theme={theme}>
 
-                <StatusBar style="auto"/>
-            </PaperProvider>
-        </SafeAreaProvider>
+                    <RootScreenManager nightMode={nightMode} toggleNightMode={toggleNightMode}/>
+
+                    <StatusBar style="auto"/>
+                </PaperProvider>
+            </SafeAreaProvider>
+
+        </UserDataProvider>
     );
 }

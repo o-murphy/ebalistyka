@@ -7,6 +7,7 @@ import TabsCard from "../../components/cards/TabsCard";
 import ProjectileCard from "../../components/cards/ProjectileCard";
 import BulletCard from "../../components/cards/BulletCard";
 import Placeholder from "../placeholder/Placeholder";
+// import UserDataExample from "../../user-data/UseUserDataHookExample";
 
 
 export default function HomeScreen({navigation}) {
@@ -16,8 +17,6 @@ export default function HomeScreen({navigation}) {
     const styles = StyleSheet.create({
         scrollViewContainer: {
             backgroundColor: theme.colors.background,
-            // height: Dimensions.get('window').height * 0.8, // Set the height as a percentage of the screen height
-            // marginBottom: 80
         },
     });
 
@@ -31,7 +30,7 @@ export default function HomeScreen({navigation}) {
             >
 
             <Placeholder text={"Here will be a list of profiles\n\nNot implemented yet"} />
-
+            {/*<UserDataExample />*/}
             </ScrollView>
         </>
     );

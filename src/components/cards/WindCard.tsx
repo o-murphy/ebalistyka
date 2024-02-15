@@ -7,14 +7,19 @@ import {SimpleDialog} from "../dialogs";
 import {Unit, UnitProps} from "js-ballistics";
 import WindDirectionPicker from "../wind-dir-picker/WindDirPicker";
 import MeasureSliderModal from "../measure-slider-modal/MeasureSliderModal";
+import {useTranslate} from "../../translations/UseTranslate";
 
 
 export default function WindCard() {
 
+    const me = WindCard.name
+    const translator = useTranslate()
+    const tr = (str) => translator(me, str)
+
     const fields = [
         {
             key: "windSpeed",
-            label: "Wind speed",
+            label: tr("Wind speed"),
             suffix: UnitProps[Unit.MPS].symbol,
             icon: "windsock",
             mode: "float" as const,
@@ -74,17 +79,17 @@ export default function WindCard() {
 
     return (
 
-        <InputCard title={"Current wind"}>
+        <InputCard title={tr("Current wind")}>
             <Grid style={styleSheet.grid.grid}>
                 {fields.map(field => <MeasureSliderModal key={field.key} field={field}/>)}
 
 
                 <Row style={styleSheet.grid.row}>
                     <Col>
-                        <Text style={{fontSize: 16}}>{"Wind direction"}</Text>
+                        <Text style={{fontSize: 16}}>{tr("Wind direction")}</Text>
                     </Col>
                     <Col>
-                        <SimpleDialog label={`Wind direction, degree`}
+                        <SimpleDialog label={`${tr("Wind direction")}, ${"degree"}`}
                                       text={`${curWindDir}° (${curWindDir / 30}h)`}
                                       icon={getWindIcon()}
                                       onAccept={onWindAccept}

@@ -6,8 +6,29 @@ import styleSheet from "../../styles";
 import {useState} from "react";
 import RadioGroup from "../radio-group/RadioGroup";
 import {SimpleScrollDialog} from "../dialogs";
+import {useTranslate} from "../../translations/UseTranslate";
+import {useUserData, UserDataProvider} from "../../user-data/UserDataContext";
 
 export default function SettingsGeneralCard() {
+
+    // translator
+    const me = SettingsGeneralCard.name
+    const translator = useTranslate()
+    const tr = (str) => translator(me, str)
+
+
+    const {userData, saveUserData} = useUserData();
+    if (userData?.language) {
+
+    }
+
+    const curLanguage = () => {
+        return userData?.language ? userData.language : "EN"
+    }
+    const setCurLanguage = (language) => {
+        const updatedData = {...userData, language: language}; // Modify as needed
+        saveUserData(updatedData);
+    }
 
     const languageList = [
         {
@@ -16,36 +37,36 @@ export default function SettingsGeneralCard() {
             key: "EN"
         },
         {
-            label: "Ukrainian",
+            label: "Українська",
             value: "UA",
             key: "UA"
         },
     ];
 
-    const [curLanguage, setCurLanguage] = useState("EN");
-    const [language, setLanguage] = useState(curLanguage);
+    const [language, setLanguage] = useState(curLanguage());
 
     const onAccept = () => {
         setCurLanguage(language)
     }
 
     const onDecline = () => {
-        setLanguage(curLanguage)
+        setLanguage(curLanguage())
     }
 
     return (
-        <InputCard title={"General"}>
+
+        <InputCard title={tr("General")}>
             <Grid style={styleSheet.grid.grid}>
 
                 <Row style={styleSheet.grid.row}>
                     <Col size={9}>
-                        <Text style={{fontSize: 16}}>{"Language"}</Text>
+                        <Text style={{fontSize: 16}}>{tr("Language")}</Text>
                     </Col>
                     <Col size={7}>
-                        <SimpleScrollDialog title={"Language"} text={curLanguage} icon={"translate"}
-                                      onAccept={onAccept}
-                                      onDecline={onDecline}>
-                            <RadioGroup initialValue={language} onChange={setLanguage} items={languageList} />
+                        <SimpleScrollDialog title={tr("Language")} text={curLanguage()} icon={"translate"}
+                                            onAccept={onAccept}
+                                            onDecline={onDecline}>
+                            <RadioGroup initialValue={curLanguage()} onChange={setLanguage} items={languageList}/>
                         </SimpleScrollDialog>
                     </Col>
                 </Row>
