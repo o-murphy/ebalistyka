@@ -6,10 +6,10 @@ import {WeaponCard} from "../../components/cards";
 import TabsCard from "../../components/cards/TabsCard";
 import ProjectileCard from "../../components/cards/ProjectileCard";
 import BulletCard from "../../components/cards/BulletCard";
-import Placeholder from "../placeholder/Placeholder";
+import DragModelCard from "../../components/cards/drag-model-card";
 
 
-export default function HomeScreen({navigation}) {
+export default function DragModelScreen({navigation}) {
 
     const theme = useTheme();
 
@@ -22,15 +22,14 @@ export default function HomeScreen({navigation}) {
     });
 
     return (
-        <>
+       <>
             <ScrollView
                 style={styles.scrollViewContainer}
                 keyboardShouldPersistTaps="always"
                 alwaysBounceVertical={false}
                 showsVerticalScrollIndicator={true}
             >
-
-            <Placeholder text={"Here will be a list of profiles\n\nNot implemented yet"} />
+                <DragModelCard />
 
             </ScrollView>
         </>

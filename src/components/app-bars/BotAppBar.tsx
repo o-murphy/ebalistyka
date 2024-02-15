@@ -40,12 +40,24 @@ const BotAppBar = () => {
             ]}
             safeAreaInsets={{bottom}}
         >
+            <Appbar.Action icon="ammunition" onPress={() => navigation.navigate("Munition")}/>,
 
-            <Appbar.Action icon="ammunition" onPress={() => navigation.navigate("Home")}/>
-            <Appbar.Action icon="weather-partly-cloudy" onPress={() => navigation.navigate("Atmosphere")}/>
-            <Appbar.Action icon="calculator" onPress={() => navigation.navigate("Calculate")}/>
-            <Appbar.Action icon="table-large" onPress={() => navigation.navigate("Trajectory")}/>
-            <Appbar.Action icon="cog-outline" onPress={() => navigation.navigate("Settings")}/>
+
+            {
+                currentRoute != "Home" ?
+                    [
+                        <Appbar.Action icon="weather-partly-cloudy"
+                                       onPress={() => navigation.navigate("Atmosphere")}/>,
+                        <Appbar.Action icon="calculator"
+                                       onPress={() => navigation.navigate("Calculate")}/>,
+                        <Appbar.Action icon="table-large"
+                                       onPress={() => navigation.navigate("Trajectory")}/>,
+                    ] : null
+
+            }
+
+            <Appbar.Action icon="cog-outline" onPress={() => navigation.navigate("Settings")}/>,
+
 
             <FAB
                 mode="flat"

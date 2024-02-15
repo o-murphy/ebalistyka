@@ -6,10 +6,9 @@ import {WeaponCard} from "../../components/cards";
 import TabsCard from "../../components/cards/TabsCard";
 import ProjectileCard from "../../components/cards/ProjectileCard";
 import BulletCard from "../../components/cards/BulletCard";
-import Placeholder from "../placeholder/Placeholder";
 
 
-export default function HomeScreen({navigation}) {
+export default function MunitionScreen({navigation}) {
 
     const theme = useTheme();
 
@@ -22,17 +21,30 @@ export default function HomeScreen({navigation}) {
     });
 
     return (
-        <>
+       <>
             <ScrollView
                 style={styles.scrollViewContainer}
                 keyboardShouldPersistTaps="always"
                 alwaysBounceVertical={false}
                 showsVerticalScrollIndicator={true}
             >
+                <WeaponCard/>
+                <ProjectileCard />
+                <BulletCard />
 
-            <Placeholder text={"Here will be a list of profiles\n\nNot implemented yet"} />
-
+                {/*<TabsCard />*/}
             </ScrollView>
+            {/*TODO: move fab to screen*/}
+            {/*<FAB*/}
+            {/*    mode="flat"*/}
+            {/*    size="medium"*/}
+            {/*    icon={"plus"}*/}
+            {/*    onPress={() => console.log("BigFabPressed")}*/}
+            {/*    style={[*/}
+            {/*        styleSheet.fab,*/}
+            {/*        {bottom: (BOTTOM_APPBAR_HEIGHT - MEDIUM_FAB_HEIGHT) / 2},*/}
+            {/*    ]}*/}
+            {/*/>*/}
         </>
     );
 }

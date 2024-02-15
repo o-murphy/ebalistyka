@@ -39,7 +39,7 @@ export default function MeasureSliderModal({field}: MeasureField) {
         onChange: setValue
     }
 
-    const picker =  field.mode === "int"
+    const picker = field.mode === "int"
         ? <IntPicker {...pickerProps}/>
         : <FloatPicker {...pickerProps}/>
 

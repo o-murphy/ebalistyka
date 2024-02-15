@@ -1,16 +1,15 @@
-import {Text, SegmentedButtons, TextInput, useTheme, Chip} from "react-native-paper";
+import {Text, TextInput, Chip} from "react-native-paper";
 import {Col, Grid, Row} from "react-native-paper-grid";
-import React, {useState} from "react";
+import React from "react";
 import InputCard from "./InputCard";
 import styleSheet from "../../styles";
 import {SimpleDialog} from "../dialogs";
 import MeasureSliderModal from "../measure-slider-modal/MeasureSliderModal";
 import {Unit, UnitProps} from "js-ballistics";
+import {navigate} from "../../RootNavigation";
 
 
 export default function BulletCard() {
-
-    const theme = useTheme()
 
     const fields = [
         {
@@ -49,44 +48,8 @@ export default function BulletCard() {
         },
     ]
 
-
-    // const dragTypeStates = [
-    //     {
-    //         value: 'G7',
-    //         label: 'G7',
-    //         icon: null,
-    //         showSelectedCheck: true,
-    //         checkedColor: theme.colors.primary
-    //     },
-    //     {
-    //         value: 'G1',
-    //         label: 'G1',
-    //         icon: null,
-    //         showSelectedCheck: true,
-    //         checkedColor: theme.colors.primary
-    //     },
-    //     {
-    //         value: 'CDM',
-    //         label: 'CDM',
-    //         icon: null,
-    //         showSelectedCheck: true,
-    //         checkedColor: theme.colors.primary
-    //     },
-    // ]
-
-    // const [curDragType, setCurDragType] = useState('G7');
-    // const [dragType, setDragType] = useState(curDragType);
-
     const [curName, setCurName] = React.useState("My bullet");
     const [name, setName] = React.useState(curName);
-
-    // const acceptDragType = (): void => {
-    //     setCurDragType(dragType)
-    // }
-    //
-    // const declineDragType = (): void => {
-    //     setDragType(curDragType)
-    // }
 
     const acceptName = () => {
         setCurName(name)
@@ -94,6 +57,10 @@ export default function BulletCard() {
 
     const declineName = () => {
         setName(curName)
+    }
+
+    const editDragModel = () => {
+        navigate("DragModelScreen")
     }
 
     return (
@@ -118,10 +85,9 @@ export default function BulletCard() {
                     </Col>
                     <Col size={8}>
 
-                        {/* FIXME: onPress, onClose */}
                         <Chip icon={"function"} closeIcon="square-edit-outline" style={{margin: 0}} textStyle={{fontSize: 16}}
-                              onPress={() => {}}
-                              onClose={()=>{}}
+                              onPress={editDragModel}
+                              onClose={editDragModel}
                         >
                             {`0.318 G7`}
                         </Chip>
