@@ -1,6 +1,6 @@
 {
   "name": "ebalistyka",
-  "version": "0.1.1-alpha.2",
+  "version": "0.1.1-alpha.3",
   "main": "node_modules/expo/AppEntry.js",
   "homepage": "https://o-murphy.github.io/ebalistyka",
   "scripts": {
