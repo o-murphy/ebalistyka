@@ -1,5 +1,3 @@
-import SettingsGeneralCard from "../components/cards/SettingsGeneralCard";
-
 const UA = {
     root: {
 
