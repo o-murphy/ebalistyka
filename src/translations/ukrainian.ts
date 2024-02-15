@@ -4,6 +4,14 @@ const UA = {
     root: {
 
     },
+    TopAppBar: {
+      "Home": "Home",
+      "Munition": "Профіль",
+      "Atmosphere": "Атмосфера",
+      "Calculate": "Розрахунок",
+      "Trajectory": "Траекторія",
+      "Settings": "Налаштування",
+    },
     SettingsGeneralCard: {
         "Language": "Мова",
         "General": "Головні"
