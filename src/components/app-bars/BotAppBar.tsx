@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Appbar, FAB, useTheme} from 'react-native-paper';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import { useNavigation } from "@react-navigation/native";
+import {useNavigation} from "@react-navigation/native";
 import styleSheet from "../../styles";
 
 
@@ -40,7 +40,7 @@ const BotAppBar = () => {
             ]}
             safeAreaInsets={{bottom}}
         >
-            <Appbar.Action icon="ammunition" onPress={() => navigation.navigate("Munition")}/>,
+            <Appbar.Action icon="ammunition" onPress={() => navigation.navigate("Munition")}/>
 
 
             {
@@ -52,11 +52,13 @@ const BotAppBar = () => {
                                        onPress={() => navigation.navigate("Calculate")}/>,
                         <Appbar.Action icon="table-large"
                                        onPress={() => navigation.navigate("Trajectory")}/>,
-                    ] : null
+
+                    ]
+                    : null
 
             }
 
-            <Appbar.Action icon="cog-outline" onPress={() => navigation.navigate("Settings")}/>,
+            <Appbar.Action icon="cog-outline" onPress={() => navigation.navigate("Settings")}/>
 
 
             <FAB
