@@ -1212,6 +1212,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get openInFlathubAction => 'Open in Flathub';
 
   @override
+  String get openInAppStoreAction => 'Open in App Store';
+
+  @override
   String get upgradeViaWingetAction => 'Upgrade via winget';
 
   @override

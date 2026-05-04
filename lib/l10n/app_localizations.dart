@@ -2450,6 +2450,12 @@ abstract class AppLocalizations {
   /// **'Open in Flathub'**
   String get openInFlathubAction;
 
+  /// Button label to open the Apple App Store page for the update
+  ///
+  /// In en, this message translates to:
+  /// **'Open in App Store'**
+  String get openInAppStoreAction;
+
   /// Button label to copy the winget upgrade command
   ///
   /// In en, this message translates to:

@@ -202,6 +202,8 @@ class _UpdateSheetState extends State<_UpdateSheet> {
                           l10n.viewReleaseAction,
                         _ when widget.release.isPlayStore =>
                           l10n.openInPlayStoreAction,
+                        _ when widget.release.isAppStore =>
+                          l10n.openInAppStoreAction,
                         _ => l10n.viewReleaseAction,
                       }),
                       onPressed: () {
@@ -215,6 +217,9 @@ class _UpdateSheetState extends State<_UpdateSheet> {
                           ),
                           _ when widget.release.isPlayStore => Uri.parse(
                             'https://play.google.com/store/apps/details?id=${widget.release.packageName}',
+                          ),
+                          _ when widget.release.isAppStore => Uri.parse(
+                            appleAppStoreUrl,
                           ),
                           _ => Uri.parse(widget.release.htmlUrl),
                         };

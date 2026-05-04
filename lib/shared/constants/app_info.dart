@@ -30,6 +30,12 @@ const String wingetPackageId = 'o-murphy.ebalistyka';
 const String wingetUpgradeCommand = 'winget upgrade -e --id $wingetPackageId';
 const String wingetInstallPathFragment =
     r'\microsoft\winget\packages\o-murphy.ebalistyka_';
+const String appleAppStoreInstallerSource = 'com.apple.appstore';
+
+// Set to the numeric App Store app ID when the app is published on the App Store.
+const String appleAppStoreAppId = '';
+const String appleAppStoreUrl =
+    'https://apps.apple.com/app/id$appleAppStoreAppId';
 const String rawCollectionUrlPattern =
     '$remoteRawContent/$repoSlug/%s/assets/json/collection.json';
 const String apiCollectionUrlPattern =

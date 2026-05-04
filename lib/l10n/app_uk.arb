@@ -420,6 +420,7 @@
     "openInPlayStoreAction": "Відкрити в Google Play",
     "openInSnapStoreAction": "Відкрити в Snap Store",
     "openInFlathubAction": "Відкрити у Flathub",
+    "openInAppStoreAction": "Відкрити в App Store",
     "upgradeViaWingetAction": "Оновити через winget",
     "wingetCommandCopied": "Команду скопійовано до буфера",
     "downloadAndInstallAction": "Завантажити та встановити",

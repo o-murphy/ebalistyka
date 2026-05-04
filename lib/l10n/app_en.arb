@@ -811,6 +811,8 @@
     "@openInSnapStoreAction": {"description": "Button label to open the Snap Store page for the update"},
     "openInFlathubAction": "Open in Flathub",
     "@openInFlathubAction": {"description": "Button label to open the Flathub page for the update"},
+    "openInAppStoreAction": "Open in App Store",
+    "@openInAppStoreAction": {"description": "Button label to open the Apple App Store page for the update"},
     "upgradeViaWingetAction": "Upgrade via winget",
     "@upgradeViaWingetAction": {"description": "Button label to copy the winget upgrade command"},
     "wingetCommandCopied": "Command copied to clipboard",
