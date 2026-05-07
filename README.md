@@ -13,6 +13,7 @@
 
 [![Build (Android)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-apk.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-apk.yml)
 [![Build (Windows)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-exe.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-exe.yml)
+[![Build (Linux portable)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-portable.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-portable.yml)
 [![Build (Linux AppImage)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-appimage.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-appimage.yml)
 [![Build (Linux Snap)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-snap.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-snap.yml)
 [![Build (Linux Flatpak)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-flatpak.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-flatpak.yml)
@@ -336,6 +337,7 @@ GitHub Actions workflows publish a GitHub Release on every push to `main`:
 
 | Workflow             | Artifact                                    |
 | -------------------- | ------------------------------------------- |
+| `build-portable.yml` | Linux portable tar.gz (x86_64 + aarch64)    |
 | `build-appimage.yml` | Linux AppImage (x86_64 + aarch64)           |
 | `build-snap.yml`     | Linux Snap (x86_64 + aarch64)               |
 | `build-flatpak.yml`  | Linux Flatpak (x86_64 + aarch64)            |

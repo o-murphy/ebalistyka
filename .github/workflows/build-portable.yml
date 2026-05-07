@@ -1,0 +1,76 @@
+name: Build portable (Linux)
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - "lib/**"
+      - "linux/**"
+      - "external/**"
+      - "packages/bclibc_ffi/**"
+      - "pubspec.yaml"
+      - ".github/workflows/build-portable.yml"
+      - ".github/workflows/build.yml"
+  workflow_call:
+    inputs:
+      arch:
+        description: "Target architecture"
+        required: true
+        type: string   # amd64 | arm64
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        type: string
+        default: ""
+      retention_days:
+        description: "Artifact retention in days"
+        required: false
+        type: number
+        default: 30
+    outputs:
+      artifact_name:
+        description: "Name of the uploaded artifact"
+        value: ${{ jobs.build.outputs.artifact_name }}
+      artifact_url:
+        description: "URL to download the artifact"
+        value: ${{ jobs.build.outputs.artifact_url }}
+  workflow_dispatch:
+    inputs:
+      arch:
+        description: "Target architecture"
+        required: true
+        default: "amd64"
+        type: choice
+        options: [ amd64, arm64 ]
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        default: ""
+        type: string
+
+concurrency:
+  group: build-portable-${{ github.ref }}-${{ inputs.arch || 'amd64' }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    with:
+      platform: linux
+      arch: ${{ inputs.arch || 'amd64' }}
+      build_type: release
+      build_name: ${{ inputs.build_name || '' }}
+      retention_days: ${{ inputs.retention_days || 30 }}
+
+  pr-summary:
+    needs: [ build ]
+    if: always() && github.event_name == 'pull_request'
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/pr-summary.yml
+    with:
+      platform: Linux portable (${{ inputs.arch || 'amd64' }})
+      build_result: ${{ needs.build.result }}
+      artifact_name: ${{ needs.build.outputs.artifact_name }}
+      artifact_url: ${{ needs.build.outputs.artifact_url }}
