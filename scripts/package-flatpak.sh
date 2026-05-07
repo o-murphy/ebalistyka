@@ -28,7 +28,7 @@ fi
 # ── Prepare bundle source ─────────────────────────────────────────────────────
 rm -rf flatpak/bundle
 mkdir -p flatpak/bundle
-cp -r "${BUNDLE_DIR}/"* flatpak/bundle/
+cp -a "${BUNDLE_DIR}/." flatpak/bundle/
 
 # Icon (512x512 preferred for Flatpak)
 if [ -f "assets/icon_512x512.png" ]; then
