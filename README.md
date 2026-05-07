@@ -13,6 +13,7 @@
 
 [![Build (Linux AppImage)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-appimage.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-appimage.yml)
 [![Build (Linux Snap)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-snap.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-snap.yml)
+[![Build (Linux Snap)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-flatpak.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-flatpak.yml)
 [![Build (Windows)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-exe.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-exe.yml)
 [![Build (Android)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-apk.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-apk.yml)
 
@@ -63,6 +64,7 @@ _UI/UX inspired by the [**Strilets**](https://download.strilets.tech/) ballistic
   - [Download \& Installation](#download--installation)
     - [Linux — run](#linux--run)
     - [Linux — Snap](#linux--snap)
+    - [Linux — Flatpak](#linux--flatpak)
     - [Linux — AppImage update](#linux--appimage-update)
     - [Windows — install MSIX](#windows--install-msix)
     - [Android — install APK](#android--install-apk)
@@ -111,9 +113,11 @@ Latest release: **[GitHub Releases][GitHub Release Latest]**
 | Linux x86_64            | [ebalistyka_linux_x86_64.AppImage][DownloadAppImageAmd64]     | requires FUSE 2                                                           |
 | Linux x86_64 (portable) | [ebalistyka_linux_x86_64.tar.gz][DownloadLinuxArchiveAmd64]   | no FUSE required                                                          |
 | Linux x86_64 (snap)     | [ebalistyka_linux_x86_64.snap][DownloadLinuxSnapAmd64]        | or `snap install ebalistyka`                                              |
+| Linux x86_64 (flatpak)  | [ebalistyka_linux_x86_64.flatpak][DownloadLinuxFlatpakAmd64]  | sideload — see [Linux — Flatpak](#linux--flatpak)                         |
 | Linux arm64             | [ebalistyka_linux_aarch64.AppImage][DownloadAppImageArm64]    | requires FUSE 2                                                           |
 | Linux arm64 (portable)  | [ebalistyka_linux_aarch64.tar.gz][DownloadLinuxArchiveArm64]  | no FUSE required                                                          |
 | Linux arm64 (snap)      | [ebalistyka_linux_aarch64.snap][DownloadLinuxSnapArm64]       | or `snap install ebalistyka`                                              |
+| Linux arm64 (flatpak)   | [ebalistyka_linux_aarch64.flatpak][DownloadLinuxFlatpakArm64] | sideload — see [Linux — Flatpak](#linux--flatpak)                         |
 | Windows x64             | [ebalistyka_windows_x86_64.msix][DownloadWindowsMsixAmd64]    | install [ebalistyka_cert.cer][DownloadWindowsMsixCer] first (self-signed) |
 | Windows x64 (portable)  | [ebalistyka_windows_x86_64.zip][DownloadWindowsArchiveAmd64]  | extract and run                                                           |
 | Android arm64           | [ebalistyka_android_arm64.apk][DownloadAndroidApkArm64]       | enable "Install from unknown sources"                                     |
@@ -145,6 +149,25 @@ Or sideload a `.snap` file from GitHub Releases:
 
 ```bash
 sudo snap install ebalistyka_linux_x86_64.snap --dangerous
+```
+
+### Linux — Flatpak
+
+Install from a `.flatpak` sideload file (Flathub not yet available):
+
+```bash
+# Install flatpak runtime if needed
+flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+flatpak install --user flathub org.gnome.Platform//48
+
+# Install the app
+flatpak install --user ebalistyka_linux_x86_64.flatpak
+```
+
+Run:
+
+```bash
+flatpak run io.github.o_murphy.ebalistyka
 ```
 
 ### Linux — AppImage update
@@ -275,6 +298,7 @@ GitHub Actions workflows publish a GitHub Release on every push to `main`:
 | -------------------- | ------------------------------------------- |
 | `build-appimage.yml` | Linux AppImage (x86_64 + aarch64)           |
 | `build-snap.yml`     | Linux Snap (x86_64 + aarch64)               |
+| `build-flatpak.yml`  | Linux Flatpak (x86_64 + aarch64)            |
 | `build-exe.yml`      | Windows MSIX installer                      |
 | `build-apk.yml`      | Android APK (arm64 + armv7 + x86_64)        |
 | `build.yml`          | Reusable build workflow called by the above |
@@ -396,6 +420,8 @@ See [LICENSE](LICENSE) for the full text. See [CHANGELOG](CHANGELOG.md) for rele
 [DownloadAppImageArm64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_aarch64.AppImage
 [DownloadLinuxArchiveArm64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_aarch64.tar.gz
 [DownloadLinuxSnapArm64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_aarch64.snap
+[DownloadLinuxFlatpakAmd64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_x86_64.flatpak
+[DownloadLinuxFlatpakArm64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_aarch64.flatpak
 [DownloadWindowsMsixAmd64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_windows_x86_64.msix
 [DownloadWindowsMsixCer]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_cert.cer
 [DownloadWindowsArchiveAmd64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_windows_x86_64.zip
