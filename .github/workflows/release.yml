@@ -113,6 +113,9 @@ jobs:
 
   build-appimage-amd64:
     needs: [prepare-version, build-linux-amd64]
+    permissions:
+      issues: write
+      pull-requests: write
     uses: ./.github/workflows/build-appimage.yml
     with:
       arch: amd64
@@ -122,6 +125,9 @@ jobs:
 
   build-appimage-arm64:
     needs: [prepare-version, build-linux-arm64]
+    permissions:
+      issues: write
+      pull-requests: write
     uses: ./.github/workflows/build-appimage.yml
     with:
       arch: arm64
@@ -155,6 +161,9 @@ jobs:
 
   build-deb-amd64:
     needs: [prepare-version, build-linux-amd64]
+    permissions:
+      issues: write
+      pull-requests: write
     uses: ./.github/workflows/build-deb.yml
     with:
       arch: amd64
@@ -164,6 +173,9 @@ jobs:
 
   build-deb-arm64:
     needs: [prepare-version, build-linux-arm64]
+    permissions:
+      issues: write
+      pull-requests: write
     uses: ./.github/workflows/build-deb.yml
     with:
       arch: arm64
@@ -173,6 +185,9 @@ jobs:
 
   build-rpm-amd64:
     needs: [prepare-version, build-linux-amd64]
+    permissions:
+      issues: write
+      pull-requests: write
     uses: ./.github/workflows/build-rpm.yml
     with:
       arch: amd64
@@ -182,6 +197,9 @@ jobs:
 
   build-rpm-arm64:
     needs: [prepare-version, build-linux-arm64]
+    permissions:
+      issues: write
+      pull-requests: write
     uses: ./.github/workflows/build-rpm.yml
     with:
       arch: arm64
@@ -264,3 +282,12 @@ jobs:
           prerelease: ${{ contains(github.ref_name, '-') }}
           fail_on_unmatched_files: true
           files: release/*
+
+  publish:
+    if: github.ref_type == 'tag'
+    needs: [prepare-version, release]
+    uses: ./.github/workflows/publish.yml
+    with:
+      tag_name: ${{ github.ref_name }}
+      channel: ${{ contains(needs.prepare-version.outputs.version, '-') && 'beta' || 'stable' }}
+    secrets: inherit
