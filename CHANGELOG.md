@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+
+## v0.1.11-dev (2026-05-07)
+[![GitHub release][GitHubReleaseBadge]][v0.1.11-dev]
+
 ## Added
 - **Linux deb package** — `.deb` builds for x86_64 and arm64; installs to `/opt/ebalistyka/`; in-app update sheet detects deb install via `EBALISTYKA_INSTALLER=deb`
 - **Linux rpm package** — `.rpm` builds for x86_64 and arm64; installs to `/opt/ebalistyka/`; in-app update sheet detects rpm install via `EBALISTYKA_INSTALLER=rpm`
@@ -388,7 +392,8 @@ Initial alpha release — first functional build of the ballistic trajectory cal
 - `OBJECTBOX_MIGRATION.md`: migration details
 
 
-[Unreleased]: https://github.com/o-murphy/ebalistyka-app/compare/v0.1.10..HEAD
+[Unreleased]: https://github.com/o-murphy/ebalistyka-app/compare/v0.1.11..HEAD
+[v0.1.11-dev]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.11-dev
 [v0.1.10-dev]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.10-dev
 [v0.1.9-dev]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.9-dev
 [v0.1.8]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.8
