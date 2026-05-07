@@ -82,7 +82,7 @@ jobs:
       artifact_url:  ${{ steps.upload.outputs.artifact-url }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -106,7 +106,7 @@ jobs:
           echo "artifact_name=ebalistyka-rpm-${ARCH_SUFFIX}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
 
       - name: Download bundle artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ${{ inputs.bundle_artifact_name || needs.build-bundle.outputs.artifact_name }}
           path: dl
@@ -130,7 +130,7 @@ jobs:
 
       - name: Upload artifact
         id: upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.meta.outputs.artifact_name }}
           path: artifacts/rpm/

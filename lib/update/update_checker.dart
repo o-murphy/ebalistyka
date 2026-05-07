@@ -11,7 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 
-enum LinuxInstallerType { snap, flatpak, deb, rpm, appImage, portable }
+enum LinuxInstallerType { snap, flatpak, deb, rpm, aur, appImage, portable }
 
 LinuxInstallerType _detectLinuxInstallerType() {
   if (Platform.environment.containsKey('SNAP')) return LinuxInstallerType.snap;
@@ -21,6 +21,7 @@ LinuxInstallerType _detectLinuxInstallerType() {
   final installer = Platform.environment['EBALISTYKA_INSTALLER'];
   if (installer == 'deb') return LinuxInstallerType.deb;
   if (installer == 'rpm') return LinuxInstallerType.rpm;
+  if (installer == 'aur') return LinuxInstallerType.aur;
   if (Platform.environment.containsKey('APPIMAGE')) {
     return LinuxInstallerType.appImage;
   }
@@ -36,7 +37,9 @@ Future<NewVersionState> checkVersionState() async {
   final currentVersion = info.version;
 
   debugPrint('===== PLATFORM INFO =====');
-  debugPrint('OS: ${Platform.operatingSystem} ${Platform.operatingSystemVersion}');
+  debugPrint(
+    'OS: ${Platform.operatingSystem} ${Platform.operatingSystemVersion}',
+  );
   debugPrint('Arch: ${Abi.current()}');
   debugPrint('Version: $currentVersion');
   if (Platform.isLinux) {

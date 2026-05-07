@@ -8,6 +8,8 @@
 [![Flutter Shield]][Flutter]
 ![Linux] ![Windows] ![Android]
 
+![AUR Version]
+
 <a href='https://snapcraft.io/ebalistyka'><img width='200' alt='Get it on Snap Store' src='https://snapcraft.io/static/images/badges/en/snap-store-black.svg'/></a>
 <!-- <a href='https://flathub.org/apps/com.o.murphy.ebalistyka'><img width='200' alt='Get it on Flathub' src='https://flathub.org/api/badge?svg?locale=en&light'/></a> -->
 
@@ -69,6 +71,7 @@ _UI/UX inspired by the [**Strilets**](https://download.strilets.tech/) ballistic
     - [Linux — Flatpak](#linux--flatpak)
     - [Linux — deb](#linux--deb)
     - [Linux — rpm](#linux--rpm)
+    - [Linux — AUR (Arch/Manjaro)](#linux--aur-archmanjaro)
     - [Linux — AppImage update](#linux--appimage-update)
     - [Windows — install MSIX](#windows--install-msix)
     - [Android — install APK](#android--install-apk)
@@ -126,6 +129,8 @@ Latest release: **[GitHub Releases][GitHub Release Latest]**
 | Linux arm64 (deb)       | [ebalistyka_linux_aarch64.deb][DownloadLinuxDebArm64]         | Debian/Ubuntu — see [Linux — deb](#linux--deb)                            |
 | Linux x86_64 (rpm)      | [ebalistyka_linux_x86_64.rpm][DownloadLinuxRpmAmd64]          | Fedora/RHEL/openSUSE — see [Linux — rpm](#linux--rpm)                     |
 | Linux arm64 (rpm)       | [ebalistyka_linux_aarch64.rpm][DownloadLinuxRpmArm64]         | Fedora/RHEL/openSUSE — see [Linux — rpm](#linux--rpm)                     |
+| Linux x86_64 (AUR)      | `yay -S ebalistyka-bin`                                       | Arch / Manjaro — see [Linux — AUR](#linux--aur-archmanjaro)               |
+| Linux arm64 (AUR)       | `yay -S ebalistyka-bin`                                       | Arch / Manjaro — see [Linux — AUR](#linux--aur-archmanjaro)               |
 | Windows x64             | [ebalistyka_windows_x86_64.msix][DownloadWindowsMsixAmd64]    | install [ebalistyka_cert.cer][DownloadWindowsMsixCer] first (self-signed) |
 | Windows x64 (portable)  | [ebalistyka_windows_x86_64.zip][DownloadWindowsArchiveAmd64]  | extract and run                                                           |
 | Android arm64           | [ebalistyka_android_arm64.apk][DownloadAndroidApkArm64]       | enable "Install from unknown sources"                                     |
@@ -209,6 +214,28 @@ Uninstall:
 
 ```bash
 sudo rpm -e ebalistyka
+```
+
+### Linux — AUR (Arch/Manjaro)
+
+Install via any AUR helper:
+
+```bash
+yay -S ebalistyka-bin
+```
+
+Or manually with `makepkg`:
+
+```bash
+git clone https://aur.archlinux.org/ebalistyka-bin.git
+cd ebalistyka-bin
+makepkg -si
+```
+
+Uninstall:
+
+```bash
+sudo pacman -R ebalistyka-bin
 ```
 
 ### Linux — AppImage update
@@ -347,6 +374,7 @@ GitHub Actions workflows publish a GitHub Release on every push to `main`:
 | `build-apk.yml`      | Android APK (arm64 + armv7 + x86_64)        |
 | `build.yml`          | Reusable build workflow called by the above |
 | `publish.yml`        | Publishes to Snap Store on GitHub Release   |
+| `scripts/update-aur.sh` | Updates `aur/PKGBUILD` checksums (run manually after release) |
 
 ---
 
@@ -456,6 +484,7 @@ See [LICENSE](LICENSE) for the full text. See [CHANGELOG](CHANGELOG.md) for rele
 
 [Android]: https://img.shields.io/badge/Android-arm64%20%7C%20armv7%20%7C%20x86__64-grey?logo=android&logoColor=white&labelColor=3DDC84
 
+[AUR Version]: https://img.shields.io/aur/version/ebalistyka?style=for-the-badge&logo=arch-linux&logoColor=fff&labelColor=1793D1 
 
 <!-- DOWNLOADS -->
 [DownloadAppImageAmd64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_x86_64.AppImage

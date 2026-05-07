@@ -44,3 +44,24 @@ jobs:
         with:
           snap: snap/${{ matrix.snap }}
           release: ${{ inputs.channel || (github.event.release.prerelease && 'beta' || 'stable') }}
+
+  aur:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Update PKGBUILD checksums
+        run: |
+          TAG="${{ inputs.tag_name || github.event.release.tag_name }}"
+          bash scripts/update-aur.sh "${TAG#v}"
+
+      - name: Publish to AUR
+        uses: KSXGitHub/github-actions-deploy-aur@v3
+        with:
+          pkgname: ebalistyka-bin
+          pkgbuild: aur/PKGBUILD
+          commit_username: o-murphy
+          commit_email: thehelixpg@gmail.com
+          ssh_private_key: ${{ secrets.AUR_SSH_KEY }}
+          commit_message: "upgpkg: ebalistyka-bin ${{ inputs.tag_name || github.event.release.tag_name }}"
+          ssh_keyscan_types: rsa,ecdsa,ed25519
