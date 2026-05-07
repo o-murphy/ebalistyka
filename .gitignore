@@ -82,3 +82,4 @@ flatpak/bundle/
 aur/src/
 aur/pkg/
 aur/*.pkg.tar.*
+aur/*.tar.gz
