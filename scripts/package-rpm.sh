@@ -38,7 +38,7 @@ cp -a "${BUNDLE_DIR}/." "$SRC/opt/ebalistyka/"
 install -Dm755 /dev/stdin "$SRC/usr/bin/ebalistyka" <<'EOF'
 #!/bin/sh
 APP=/opt/ebalistyka
-export LD_LIBRARY_PATH="$APP/lib:${LD_LIBRARY_PATH:-}"
+export LD_LIBRARY_PATH="$APP/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export EBALISTYKA_INSTALLER=rpm
 exec "$APP/ebalistyka" "$@"
 EOF

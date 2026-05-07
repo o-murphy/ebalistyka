@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Package a Flutter Linux bundle into a portable tar.gz.
 #
-# Usage: package-linux.sh <bundle_dir> <arch_suffix> [build_name] [build_number]
+# Usage: package-linux.sh <bundle_dir> <arch_suffix>
 #   arch_suffix  — x86_64 | aarch64
 set -euo pipefail
 

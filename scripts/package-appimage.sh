@@ -72,7 +72,7 @@ install -m755 /dev/stdin "$APPDIR/AppRun" <<'EOF'
 #!/bin/sh
 HERE="$(dirname "$(readlink -f "$0")")"
 APP_DIR="$HERE/usr/share/ebalistyka"
-export LD_LIBRARY_PATH="$APP_DIR/lib:${LD_LIBRARY_PATH:-}"
+export LD_LIBRARY_PATH="$APP_DIR/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 exec "$APP_DIR/ebalistyka" "$@"
 EOF
 

@@ -15,7 +15,7 @@
 [![Build (Windows)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-exe.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-exe.yml)
 [![Build (Linux AppImage)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-appimage.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-appimage.yml)
 [![Build (Linux Snap)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-snap.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-snap.yml)
-[![Build (Linux Snap)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-flatpak.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-flatpak.yml)
+[![Build (Linux Flatpak)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-flatpak.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-flatpak.yml)
 [![Build (Linux deb)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-deb.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-deb.yml)
 [![Build (Linux rpm)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-rpm.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-rpm.yml)
 
