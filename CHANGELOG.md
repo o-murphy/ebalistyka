@@ -11,8 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+
+## v0.1.10-dev (2026-05-07)
+[![GitHub release][GitHubReleaseBadge]][v0.1.10-dev]
+
 ### Added
 - **Linux Snap package** — `.snap` builds for x86_64 and arm64; published to Snap Store on release (`stable` / `beta` channel); auto-updates via Snap Store; in-app update sheet links to Snap Store for snap installs
+- **Linux Flatpak package** — `.flatpak` builds for x86_64 and arm64
 
 
 ## v0.1.9-dev (2026-05-06)
@@ -378,7 +383,8 @@ Initial alpha release — first functional build of the ballistic trajectory cal
 - `OBJECTBOX_MIGRATION.md`: migration details
 
 
-[Unreleased]: https://github.com/o-murphy/ebalistyka-app/compare/v0.1.9..HEAD
+[Unreleased]: https://github.com/o-murphy/ebalistyka-app/compare/v0.1.10..HEAD
+[v0.1.10-dev]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.10-dev
 [v0.1.9-dev]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.9-dev
 [v0.1.8]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.8
 [v0.1.7]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.7
