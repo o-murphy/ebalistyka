@@ -11,12 +11,19 @@ import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 
-enum LinuxInstallerType { snap, flatpak, appImage, portable }
+enum LinuxInstallerType { snap, flatpak, deb, appImage, portable }
 
 LinuxInstallerType _detectLinuxInstallerType() {
   if (Platform.environment.containsKey('SNAP')) return LinuxInstallerType.snap;
-  if (Platform.environment.containsKey('FLATPAK_ID')) return LinuxInstallerType.flatpak;
-  if (Platform.environment.containsKey('APPIMAGE')) return LinuxInstallerType.appImage;
+  if (Platform.environment.containsKey('FLATPAK_ID')) {
+    return LinuxInstallerType.flatpak;
+  }
+  if (Platform.environment['EBALISTYKA_INSTALLER'] == 'deb') {
+    return LinuxInstallerType.deb;
+  }
+  if (Platform.environment.containsKey('APPIMAGE')) {
+    return LinuxInstallerType.appImage;
+  }
   return LinuxInstallerType.portable;
 }
 

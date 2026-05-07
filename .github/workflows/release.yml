@@ -133,8 +133,24 @@ jobs:
       build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 1
 
+  build-deb-amd64:
+    needs: prepare-version
+    uses: ./.github/workflows/build-deb.yml
+    with:
+      arch: amd64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 1
+
+  build-deb-arm64:
+    needs: prepare-version
+    uses: ./.github/workflows/build-deb.yml
+    with:
+      arch: arm64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 1
+
   release:
-    needs: [prepare-version, build-linux-amd64, build-linux-arm64, build-windows-amd64, build-android, build-android-aab, build-snap-amd64, build-snap-arm64, build-flatpak-amd64, build-flatpak-arm64]
+    needs: [prepare-version, build-linux-amd64, build-linux-arm64, build-windows-amd64, build-android, build-android-aab, build-snap-amd64, build-snap-arm64, build-flatpak-amd64, build-flatpak-arm64, build-deb-amd64, build-deb-arm64]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -164,7 +180,8 @@ jobs:
             -name "*.apk"         -o \
             -name "*.aab"         -o \
             -name "*.snap"        -o \
-            -name "*.flatpak" \
+            -name "*.flatpak"     -o \
+            -name "*.deb" \
           \) -exec cp {} release/ \;
 
           echo "=== Release assets ==="

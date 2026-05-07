@@ -11,13 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+## Added
+- **Linux deb package** — `.deb` builds for x86_64 and arm64; installs to `/opt/ebalistyka/`; in-app update sheet detects deb install via `EBALISTYKA_INSTALLER=deb`
+
 
 ## v0.1.10-dev (2026-05-07)
 [![GitHub release][GitHubReleaseBadge]][v0.1.10-dev]
 
 ### Added
 - **Linux Snap package** — `.snap` builds for x86_64 and arm64; published to Snap Store on release (`stable` / `beta` channel); auto-updates via Snap Store; in-app update sheet links to Snap Store for snap installs
-- **Linux Flatpak package** — `.flatpak` builds for x86_64 and arm64
+- **Linux Flatpak package** — `.flatpak` builds for x86_64 and arm64; in-app update sheet detects Flatpak sandbox via `FLATPAK_ID`
 
 
 ## v0.1.9-dev (2026-05-06)
