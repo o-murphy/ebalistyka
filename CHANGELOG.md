@@ -392,7 +392,7 @@ Initial alpha release — first functional build of the ballistic trajectory cal
 - `OBJECTBOX_MIGRATION.md`: migration details
 
 
-[Unreleased]: https://github.com/o-murphy/ebalistyka-app/compare/v0.1.11..HEAD
+[Unreleased]: https://github.com/o-murphy/ebalistyka-app/compare/v0.1.11-dev..HEAD
 [v0.1.11-dev]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.11-dev
 [v0.1.10-dev]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.10-dev
 [v0.1.9-dev]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.9-dev
