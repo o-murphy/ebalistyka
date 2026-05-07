@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## Added
 - **Linux deb package** — `.deb` builds for x86_64 and arm64; installs to `/opt/ebalistyka/`; in-app update sheet detects deb install via `EBALISTYKA_INSTALLER=deb`
+- **Linux rpm package** — `.rpm` builds for x86_64 and arm64; installs to `/opt/ebalistyka/`; in-app update sheet detects rpm install via `EBALISTYKA_INSTALLER=rpm`
 
 
 ## v0.1.10-dev (2026-05-07)

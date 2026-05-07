@@ -17,6 +17,7 @@
 [![Build (Linux Snap)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-snap.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-snap.yml)
 [![Build (Linux Snap)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-flatpak.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-flatpak.yml)
 [![Build (Linux deb)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-deb.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-deb.yml)
+[![Build (Linux rpm)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-rpm.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-rpm.yml)
 
 
 > [!WARNING]
@@ -66,6 +67,7 @@ _UI/UX inspired by the [**Strilets**](https://download.strilets.tech/) ballistic
     - [Linux — Snap](#linux--snap)
     - [Linux — Flatpak](#linux--flatpak)
     - [Linux — deb](#linux--deb)
+    - [Linux — rpm](#linux--rpm)
     - [Linux — AppImage update](#linux--appimage-update)
     - [Windows — install MSIX](#windows--install-msix)
     - [Android — install APK](#android--install-apk)
@@ -121,6 +123,8 @@ Latest release: **[GitHub Releases][GitHub Release Latest]**
 | Linux arm64 (flatpak)   | [ebalistyka_linux_aarch64.flatpak][DownloadLinuxFlatpakArm64] | sideload — see [Linux — Flatpak](#linux--flatpak)                         |
 | Linux x86_64 (deb)      | [ebalistyka_linux_x86_64.deb][DownloadLinuxDebAmd64]          | Debian/Ubuntu — see [Linux — deb](#linux--deb)                            |
 | Linux arm64 (deb)       | [ebalistyka_linux_aarch64.deb][DownloadLinuxDebArm64]         | Debian/Ubuntu — see [Linux — deb](#linux--deb)                            |
+| Linux x86_64 (rpm)      | [ebalistyka_linux_x86_64.rpm][DownloadLinuxRpmAmd64]          | Fedora/RHEL/openSUSE — see [Linux — rpm](#linux--rpm)                     |
+| Linux arm64 (rpm)       | [ebalistyka_linux_aarch64.rpm][DownloadLinuxRpmArm64]         | Fedora/RHEL/openSUSE — see [Linux — rpm](#linux--rpm)                     |
 | Windows x64             | [ebalistyka_windows_x86_64.msix][DownloadWindowsMsixAmd64]    | install [ebalistyka_cert.cer][DownloadWindowsMsixCer] first (self-signed) |
 | Windows x64 (portable)  | [ebalistyka_windows_x86_64.zip][DownloadWindowsArchiveAmd64]  | extract and run                                                           |
 | Android arm64           | [ebalistyka_android_arm64.apk][DownloadAndroidApkArm64]       | enable "Install from unknown sources"                                     |
@@ -185,6 +189,25 @@ Uninstall:
 
 ```bash
 sudo dpkg -r ebalistyka
+```
+
+### Linux — rpm
+
+Install on Fedora/RHEL/openSUSE:
+
+```bash
+sudo rpm -i ebalistyka_linux_x86_64.rpm
+```
+
+> **Note for Debian/Ubuntu users:** if you are testing the `.rpm` on a Debian-based system, RPM cannot resolve package names like `gtk3` from `apt`. Use `--nodeps` to skip dependency checks — the bundle is self-contained and does not actually require them to be installed via RPM:
+> ```bash
+> sudo rpm -i --nodeps ebalistyka_linux_x86_64.rpm
+> ```
+
+Uninstall:
+
+```bash
+sudo rpm -e ebalistyka
 ```
 
 ### Linux — AppImage update
@@ -317,6 +340,7 @@ GitHub Actions workflows publish a GitHub Release on every push to `main`:
 | `build-snap.yml`     | Linux Snap (x86_64 + aarch64)               |
 | `build-flatpak.yml`  | Linux Flatpak (x86_64 + aarch64)            |
 | `build-deb.yml`      | Linux deb (x86_64 + aarch64)               |
+| `build-rpm.yml`      | Linux rpm (x86_64 + aarch64)               |
 | `build-exe.yml`      | Windows MSIX installer                      |
 | `build-apk.yml`      | Android APK (arm64 + armv7 + x86_64)        |
 | `build.yml`          | Reusable build workflow called by the above |
@@ -442,6 +466,8 @@ See [LICENSE](LICENSE) for the full text. See [CHANGELOG](CHANGELOG.md) for rele
 [DownloadLinuxFlatpakArm64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_aarch64.flatpak
 [DownloadLinuxDebAmd64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_x86_64.deb
 [DownloadLinuxDebArm64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_aarch64.deb
+[DownloadLinuxRpmAmd64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_x86_64.rpm
+[DownloadLinuxRpmArm64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_aarch64.rpm
 [DownloadWindowsMsixAmd64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_windows_x86_64.msix
 [DownloadWindowsMsixCer]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_cert.cer
 [DownloadWindowsArchiveAmd64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_windows_x86_64.zip
