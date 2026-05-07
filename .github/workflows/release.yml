@@ -111,8 +111,26 @@ jobs:
       build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 1
 
+  build-appimage-amd64:
+    needs: [prepare-version, build-linux-amd64]
+    uses: ./.github/workflows/build-appimage.yml
+    with:
+      arch: amd64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 1
+      bundle_artifact_name: ${{ needs.build-linux-amd64.outputs.artifact_name }}
+
+  build-appimage-arm64:
+    needs: [prepare-version, build-linux-arm64]
+    uses: ./.github/workflows/build-appimage.yml
+    with:
+      arch: arm64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 1
+      bundle_artifact_name: ${{ needs.build-linux-arm64.outputs.artifact_name }}
+
   build-flatpak-amd64:
-    needs: prepare-version
+    needs: [prepare-version, build-linux-amd64]
     permissions:
       issues: write
       pull-requests: write
@@ -121,9 +139,10 @@ jobs:
       arch: amd64
       build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 1
+      bundle_artifact_name: ${{ needs.build-linux-amd64.outputs.artifact_name }}
 
   build-flatpak-arm64:
-    needs: prepare-version
+    needs: [prepare-version, build-linux-arm64]
     permissions:
       issues: write
       pull-requests: write
@@ -132,41 +151,46 @@ jobs:
       arch: arm64
       build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 1
+      bundle_artifact_name: ${{ needs.build-linux-arm64.outputs.artifact_name }}
 
   build-deb-amd64:
-    needs: prepare-version
+    needs: [prepare-version, build-linux-amd64]
     uses: ./.github/workflows/build-deb.yml
     with:
       arch: amd64
       build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 1
+      bundle_artifact_name: ${{ needs.build-linux-amd64.outputs.artifact_name }}
 
   build-deb-arm64:
-    needs: prepare-version
+    needs: [prepare-version, build-linux-arm64]
     uses: ./.github/workflows/build-deb.yml
     with:
       arch: arm64
       build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 1
+      bundle_artifact_name: ${{ needs.build-linux-arm64.outputs.artifact_name }}
 
   build-rpm-amd64:
-    needs: prepare-version
+    needs: [prepare-version, build-linux-amd64]
     uses: ./.github/workflows/build-rpm.yml
     with:
       arch: amd64
       build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 1
+      bundle_artifact_name: ${{ needs.build-linux-amd64.outputs.artifact_name }}
 
   build-rpm-arm64:
-    needs: prepare-version
+    needs: [prepare-version, build-linux-arm64]
     uses: ./.github/workflows/build-rpm.yml
     with:
       arch: arm64
       build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 1
+      bundle_artifact_name: ${{ needs.build-linux-arm64.outputs.artifact_name }}
 
   release:
-    needs: [prepare-version, build-linux-amd64, build-linux-arm64, build-windows-amd64, build-android, build-android-aab, build-snap-amd64, build-snap-arm64, build-flatpak-amd64, build-flatpak-arm64, build-deb-amd64, build-deb-arm64, build-rpm-amd64, build-rpm-arm64]
+    needs: [prepare-version, build-linux-amd64, build-linux-arm64, build-windows-amd64, build-android, build-android-aab, build-snap-amd64, build-snap-arm64, build-appimage-amd64, build-appimage-arm64, build-flatpak-amd64, build-flatpak-arm64, build-deb-amd64, build-deb-arm64, build-rpm-amd64, build-rpm-arm64]
     runs-on: ubuntu-latest
     permissions:
       contents: write

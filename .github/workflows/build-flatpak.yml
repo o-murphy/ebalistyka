@@ -28,6 +28,11 @@ on:
         required: false
         type: number
         default: 30
+      bundle_artifact_name:
+        description: "Pre-built bundle artifact name (skips build-bundle job)"
+        required: false
+        type: string
+        default: ""
     outputs:
       artifact_name:
         description: "Name of the uploaded artifact"
@@ -55,16 +60,18 @@ concurrency:
 
 jobs:
   build-bundle:
+    if: inputs.bundle_artifact_name == ''
     uses: ./.github/workflows/build.yml
     with:
       platform: linux
       arch: ${{ inputs.arch || 'amd64' }}
       build_type: release
       build_name: ${{ inputs.build_name || '' }}
-      retention_days: ${{ inputs.retention_days || 30 }}
+      retention_days: 1
 
   package:
     needs: build-bundle
+    if: always() && (needs.build-bundle.result == 'success' || needs.build-bundle.result == 'skipped')
     name: flatpak-${{ inputs.arch || 'amd64' }}
     runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
 
@@ -99,7 +106,7 @@ jobs:
       - name: Download bundle artifact
         uses: actions/download-artifact@v8
         with:
-          name: ${{ needs.build-bundle.outputs.artifact_name }}
+          name: ${{ inputs.bundle_artifact_name || needs.build-bundle.outputs.artifact_name }}
           path: dl
 
       - name: Extract bundle
