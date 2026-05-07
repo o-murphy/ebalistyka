@@ -484,7 +484,7 @@ See [LICENSE](LICENSE) for the full text. See [CHANGELOG](CHANGELOG.md) for rele
 
 [Android]: https://img.shields.io/badge/Android-arm64%20%7C%20armv7%20%7C%20x86__64-grey?logo=android&logoColor=white&labelColor=3DDC84
 
-[AUR Version]: https://img.shields.io/aur/version/ebalistyka?style=for-the-badge&logo=arch-linux&logoColor=fff&labelColor=1793D1 
+[AUR Version]: https://img.shields.io/aur/version/ebalistyka-bin?style=for-the-badge&logo=arch-linux&logoColor=fff&labelColor=1793D1
 
 <!-- DOWNLOADS -->
 [DownloadAppImageAmd64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_x86_64.AppImage
