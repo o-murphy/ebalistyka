@@ -87,7 +87,8 @@ jobs:
             BUILD_NAME="${BUILD_NAME%%-*}-pr.${{ github.event.number }}"
           fi
           BUILD_NUMBER=$(git rev-list --count --first-parent HEAD)
-          ARCH_SUFFIX=${{ inputs.arch == 'amd64' && 'x86_64' || 'aarch64' }}
+          ARCH="${{ inputs.arch || 'amd64' }}"
+          if [ "$ARCH" = "amd64" ]; then ARCH_SUFFIX="x86_64"; else ARCH_SUFFIX="aarch64"; fi
           echo "build_name=$BUILD_NAME"     >> $GITHUB_OUTPUT
           echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
           echo "arch_suffix=$ARCH_SUFFIX"   >> $GITHUB_OUTPUT
