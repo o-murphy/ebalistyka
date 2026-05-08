@@ -1,0 +1,50 @@
+name: Publish Flathub
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Release tag to publish (e.g. v0.1.12)"
+        required: true
+        type: string
+  workflow_call:
+    inputs:
+      tag_name:
+        description: "Release tag to publish"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  flathub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Clone Flathub repo
+        env:
+          FLATHUB_TOKEN: ${{ secrets.FLATHUB_TOKEN }}
+        run: |
+          git clone \
+            "https://x-access-token:${FLATHUB_TOKEN}@github.com/flathub/io.github.o_murphy.ebalistyka.git" \
+            /tmp/flathub-repo
+
+      - name: Update Flathub repo
+        run: |
+          bash scripts/update-flathub.sh \
+            "${{ inputs.tag_name }}" \
+            /tmp/flathub-repo
+
+      - name: Commit and push
+        env:
+          TAG: ${{ inputs.tag_name }}
+        run: |
+          cd /tmp/flathub-repo
+          git config user.name  "o-murphy"
+          git config user.email "thehelixpg@gmail.com"
+          git add -A
+          git diff --cached --quiet && { echo "Nothing changed, skipping commit"; exit 0; }
+          git commit -m "Update to ${TAG}"
+          git push
