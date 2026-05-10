@@ -60,7 +60,7 @@ flutter build apk --release --flavor sideload --split-per-abi \
 mkdir -p artifacts
 cp build/app/outputs/flutter-apk/app-arm64-v8a-sideload-release.apk   artifacts/ebalistyka_android_arm64.apk
 cp build/app/outputs/flutter-apk/app-armeabi-v7a-sideload-release.apk artifacts/ebalistyka_android_armeabi_v7a.apk
-cp build/app/outputs/flutter-apk/app-x86_64-sideload-release.apk.apk      artifacts/ebalistyka_android_x86_64.apk
+cp build/app/outputs/flutter-apk/app-x86_64-sideload-release.apk      artifacts/ebalistyka_android_x86_64.apk
 
 # ── Build universal (fat) APK ────────────────────────────────────────────────
 flutter build apk --release --flavor sideload \
