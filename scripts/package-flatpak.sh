@@ -32,9 +32,9 @@ cp -a "${BUNDLE_DIR}/." flatpak/bundle/
 
 # Icon (512x512 preferred for Flatpak)
 if [ -f "assets/icon_512x512.png" ]; then
-  cp "assets/icon_512x512.png" "flatpak/bundle/ebalistyka.png"
+  cp "assets/icon_512x512.png" "flatpak/bundle/${APP_ID}.png"
 elif [ -f "assets/icon.png" ]; then
-  cp "assets/icon.png" "flatpak/bundle/ebalistyka.png"
+  cp "assets/icon.png" "flatpak/bundle/${APP_ID}.png"
 else
   echo "❌ No icon found" >&2
   exit 1
