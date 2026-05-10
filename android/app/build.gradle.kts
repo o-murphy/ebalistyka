@@ -25,7 +25,7 @@ android {
     productFlavors {
         create("googlePlay") {
             dimension = "type"
-            // Можна додати суфікс до ID, якщо хочете окремий додаток для тестів
+            // You can add an ID suffix if you want a separate app for testing
             // applicationIdSuffix = ".play" 
         }
         create("sideload") {
