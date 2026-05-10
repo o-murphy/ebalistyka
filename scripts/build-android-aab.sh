@@ -48,7 +48,7 @@ else
 fi
 
 # ── Build AAB ────────────────────────────────────────────────────────────────
-flutter build appbundle --release \
+flutter build appbundle --release --flavor googlePlay \
   --build-name="$BUILD_NAME" \
   --build-number="$BUILD_NUMBER"
 

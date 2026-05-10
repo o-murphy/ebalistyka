@@ -51,7 +51,7 @@ else
 fi
 
 # ── Build per-ABI split APKs ─────────────────────────────────────────────────
-flutter build apk --release --split-per-abi \
+flutter build apk --release --flavor sideload --split-per-abi \
   --build-name="$BUILD_NAME" \
   --build-number="$BUILD_NUMBER"
 
@@ -63,7 +63,7 @@ cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk artifacts/ebalistyk
 cp build/app/outputs/flutter-apk/app-x86_64-release.apk      artifacts/ebalistyka_android_x86_64.apk
 
 # ── Build universal (fat) APK ────────────────────────────────────────────────
-flutter build apk --release \
+flutter build apk --release --flavor sideload \
   --build-name="$BUILD_NAME" \
   --build-number="$BUILD_NUMBER"
 
