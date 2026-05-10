@@ -58,16 +58,16 @@ flutter build apk --release --flavor sideload --split-per-abi \
 # Copy split APKs immediately — Gradle stale-output cleanup in the next build
 # may remove files produced by a differently-configured assembleRelease run.
 mkdir -p artifacts
-cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk   artifacts/ebalistyka_android_arm64.apk
-cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk artifacts/ebalistyka_android_armeabi_v7a.apk
-cp build/app/outputs/flutter-apk/app-x86_64-release.apk      artifacts/ebalistyka_android_x86_64.apk
+cp build/app/outputs/flutter-apk/app-arm64-v8a-sideload-release.apk   artifacts/ebalistyka_android_arm64.apk
+cp build/app/outputs/flutter-apk/app-armeabi-v7a-sideload-release.apk artifacts/ebalistyka_android_armeabi_v7a.apk
+cp build/app/outputs/flutter-apk/app-x86_64-sideload-release.apk.apk      artifacts/ebalistyka_android_x86_64.apk
 
 # ── Build universal (fat) APK ────────────────────────────────────────────────
 flutter build apk --release --flavor sideload \
   --build-name="$BUILD_NAME" \
   --build-number="$BUILD_NUMBER"
 
-cp build/app/outputs/flutter-apk/app-release.apk artifacts/ebalistyka_android_universal.apk
+cp build/app/outputs/flutter-apk/app-sideload-release.apk artifacts/ebalistyka_android_universal.apk
 
 echo "=== APK artifacts ==="
 ls -lh artifacts/

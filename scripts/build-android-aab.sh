@@ -55,7 +55,7 @@ flutter build appbundle --release --flavor googlePlay \
 # ── Package ──────────────────────────────────────────────────────────────────
 mkdir -p artifacts
 
-cp build/app/outputs/bundle/release/app-release.aab artifacts/ebalistyka_android.aab
+cp build/app/outputs/bundle/googlePlayRelease/app-googlePlay-release.aab artifacts/ebalistyka_android.aab
 
 echo "=== AAB artifacts ==="
 ls -lh artifacts/
