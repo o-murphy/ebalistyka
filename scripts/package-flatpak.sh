@@ -5,11 +5,11 @@
 #   bundle_dir   — path to the extracted Flutter Linux bundle
 #   arch_suffix  — x86_64 | aarch64
 #
-# Requirements: flatpak, flatpak-builder, org.gnome.Platform//48 runtime.
+# Requirements: flatpak, flatpak-builder, org.gnome.Platform//49 runtime.
 # Local setup:
 #   sudo apt install flatpak flatpak-builder
 #   flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-#   flatpak install --user flathub org.gnome.Platform//48 org.gnome.Sdk//48
+#   flatpak install --user flathub org.gnome.Platform//49 org.gnome.Sdk//49
 set -euo pipefail
 
 BUNDLE_DIR="${1:?Usage: package-flatpak.sh <bundle_dir> <arch_suffix>}"
@@ -52,7 +52,7 @@ sed -i "s|<release version=\"[^\"]*\" date=\"[^\"]*\"/>|<release version=\"${BUI
 
 echo "✓ Bundle prepared (version: ${BUILD_NAME})"
 
-# ── Build ─────────────────────────────────────────────────────────────────────
+# ── Build ───────────────────────────────────────────────────────────────────
 REPO_DIR=".flatpak-repo"
 BUILD_DIR=".flatpak-build"
 
