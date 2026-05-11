@@ -115,13 +115,19 @@ jobs:
           mkdir -p bundle
           tar -xzf "dl/portable/ebalistyka_linux_${ARCH_SUFFIX}.tar.gz" -C bundle/
 
+      - name: Cache Flatpak runtimes
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/flatpak
+          key: flatpak-gnome-49-${{ runner.arch }}
+
       - name: Install flatpak tools
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y flatpak flatpak-builder
-          sudo flatpak remote-add --system --if-not-exists flathub \
+          flatpak remote-add --user --if-not-exists flathub \
             https://flathub.org/repo/flathub.flatpakrepo
-          sudo flatpak install --system -y --noninteractive flathub \
+          flatpak install --user -y --noninteractive flathub \
             org.gnome.Platform//49 org.gnome.Sdk//49
 
       - name: Package Flatpak
