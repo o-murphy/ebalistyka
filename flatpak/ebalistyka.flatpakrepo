@@ -1,0 +1,7 @@
+[Flatpak Repo]
+Title=eBalistyka
+Url=https://o-murphy.github.io/flatpak-repo/
+Homepage=https://github.com/o-murphy/ebalistyka-app
+Description=eBalistyka ballistic trajectory calculator
+Icon=https://raw.githubusercontent.com/o-murphy/ebalistyka-app/main/assets/icon_512x512.png
+GPGKey=__GPG_KEY_BASE64__
