@@ -310,10 +310,10 @@ jobs:
       tag_name: ${{ github.ref_name }}
     secrets: inherit
 
-  publish-flatpak-repo:
-    if: github.ref_type == 'tag'
-    needs: [prepare-version, release]
-    uses: ./.github/workflows/publish-flatpak-repo.yml
-    with:
-      tag_name: ${{ github.ref_name }}
-    secrets: inherit
+  # publish-flatpak-repo:
+  #   if: github.ref_type == 'tag'
+  #   needs: [prepare-version, release]
+  #   uses: ./.github/workflows/publish-flatpak-repo.yml
+  #   with:
+  #     tag_name: ${{ github.ref_name }}
+  #   secrets: inherit
