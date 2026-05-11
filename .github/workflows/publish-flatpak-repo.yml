@@ -1,0 +1,29 @@
+name: Publish Flatpak Repo
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Release tag (e.g. v0.1.13)"
+        required: true
+        type: string
+  workflow_call:
+    inputs:
+      tag_name:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: o-murphy/flatpak-repo/.github/actions/publish@main
+        with:
+          tag_name: ${{ inputs.tag_name }}
+          repository: ${{ github.repository }}
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          flatpak_repo_token: ${{ secrets.FLATPAK_REPO_TOKEN }}

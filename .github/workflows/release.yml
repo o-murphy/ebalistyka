@@ -310,11 +310,10 @@ jobs:
       tag_name: ${{ github.ref_name }}
     secrets: inherit
 
-  # # Disabled till new-pr merge
-  # publish-flathub:
-  #   if: github.ref_type == 'tag' && !contains(github.ref_name, '-')
+  # publish-flatpak-repo:
+  #   if: github.ref_type == 'tag'
   #   needs: [prepare-version, release]
-  #   uses: ./.github/workflows/publish-flathub.yml
+  #   uses: ./.github/workflows/publish-flatpak-repo.yml
   #   with:
   #     tag_name: ${{ github.ref_name }}
   #   secrets: inherit
