@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+## Changed
+- **file_picker updated** - updated to `file_picker@11.0.2` to be compaible with `xdg-portal`
+- **flatpack manifest** - aligned to be compatible with `flathub` requirements
+
+## Removed
+- **zenity workarounds** - aligned to be compatible with `flathub` requirements
+
 
 ## v0.1.12 (2026-05-07)
 [![GitHub release][GitHubReleaseBadge]][v0.1.12]
