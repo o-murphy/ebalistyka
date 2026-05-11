@@ -21,11 +21,12 @@ git clone --depth=1 --filter=blob:none --sparse "${GENERATOR_REPO}" "${WORK_DIR}
 cd "${WORK_DIR}/flatpak-builder-tools"
 git sparse-checkout set dart
 
-cd "${WORK_DIR}"
-pip3 install -q toml
+echo "Setting up Python venv…"
+python3 -m venv "${WORK_DIR}/venv"
+"${WORK_DIR}/venv/bin/pip" install -q toml
 
 echo "Running dart generator against pubspec.lock…"
-python3 "${WORK_DIR}/flatpak-builder-tools/dart/flatpak-dart-generator.py" \
+"${WORK_DIR}/venv/bin/python3" "${WORK_DIR}/flatpak-builder-tools/dart/flatpak-dart-generator.py" \
   "${ROOT_DIR}/pubspec.lock" \
   -o "${ROOT_DIR}/${OUTPUT_DIR}/pub-sources.json"
 
