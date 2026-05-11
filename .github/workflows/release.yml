@@ -311,11 +311,9 @@ jobs:
     secrets: inherit
 
   publish-flatpak-repo:
-    if: github.ref_type == 'tag' && !contains(github.ref_name, '-')
-    needs: [prepare-version, release, build-portable-amd64, build-portable-arm64]
+    if: github.ref_type == 'tag'
+    needs: [prepare-version, release]
     uses: ./.github/workflows/publish-flatpak-repo.yml
     with:
       tag_name: ${{ github.ref_name }}
-      bundle_artifact_amd64: ${{ needs.build-portable-amd64.outputs.artifact_name }}
-      bundle_artifact_arm64: ${{ needs.build-portable-arm64.outputs.artifact_name }}
     secrets: inherit

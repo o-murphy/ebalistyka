@@ -12,156 +12,30 @@ on:
       tag_name:
         required: true
         type: string
-      bundle_artifact_amd64:
-        required: true
-        type: string
-      bundle_artifact_arm64:
-        required: true
-        type: string
 
 permissions:
   contents: read
 
-env:
-  APP_ID: io.github.o_murphy.ebalistyka
-  RUNTIME_VERSION: '25.08'
-
 jobs:
-  build-flatpak-amd64:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Download portable bundle (amd64)
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ inputs.bundle_artifact_amd64 }}
-          path: dl/amd64
-
-      - name: Prepare bundle dir
-        run: |
-          mkdir -p flatpak/bundle
-          tar -xzf dl/amd64/portable/ebalistyka_linux_x86_64.tar.gz -C flatpak/bundle/
-          cp assets/icon_512x512.png          flatpak/bundle/${APP_ID}.png
-          cp flatpak/${APP_ID}.desktop        flatpak/bundle/
-          cp flatpak/${APP_ID}.metainfo.xml   flatpak/bundle/
-          cp flatpak/ebalistyka-wrapper.sh    flatpak/bundle/
-          VERSION="${{ inputs.tag_name }}"
-          VERSION="${VERSION#v}"
-          TODAY=$(date +%Y-%m-%d)
-          sed -i "s|<release version=\"[^\"]*\" date=\"[^\"]*\"/>|<release version=\"${VERSION}\" date=\"${TODAY}\"/>|" \
-            "flatpak/bundle/${APP_ID}.metainfo.xml"
-
-      - name: Install flatpak tools
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y flatpak flatpak-builder ostree
-          flatpak remote-add --user --if-not-exists flathub \
-            https://flathub.org/repo/flathub.flatpakrepo
-          flatpak install --user -y --noninteractive flathub \
-            org.freedesktop.Platform//${RUNTIME_VERSION} \
-            org.freedesktop.Sdk//${RUNTIME_VERSION}
-
-      - name: Build Flatpak (amd64)
-        run: |
-          flatpak-builder \
-            --force-clean \
-            --disable-rofiles-fuse \
-            .flatpak-build \
-            flatpak/${APP_ID}.yml
-
-      - name: Export to OSTree repo (amd64)
-        run: |
-          ostree init --mode=archive-z2 --repo=ostree-export
-          flatpak build-export ostree-export .flatpak-build stable
-
-      - name: Upload OSTree export (amd64)
-        uses: actions/upload-artifact@v4
-        with:
-          name: ostree-amd64
-          path: ostree-export/
-          retention-days: 1
-
-  build-flatpak-arm64:
-    runs-on: ubuntu-24.04-arm
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Download portable bundle (arm64)
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ inputs.bundle_artifact_arm64 }}
-          path: dl/arm64
-
-      - name: Prepare bundle dir
-        run: |
-          mkdir -p flatpak/bundle
-          tar -xzf dl/arm64/portable/ebalistyka_linux_aarch64.tar.gz -C flatpak/bundle/
-          cp assets/icon_512x512.png          flatpak/bundle/${APP_ID}.png
-          cp flatpak/${APP_ID}.desktop        flatpak/bundle/
-          cp flatpak/${APP_ID}.metainfo.xml   flatpak/bundle/
-          cp flatpak/ebalistyka-wrapper.sh    flatpak/bundle/
-          VERSION="${{ inputs.tag_name }}"
-          VERSION="${VERSION#v}"
-          TODAY=$(date +%Y-%m-%d)
-          sed -i "s|<release version=\"[^\"]*\" date=\"[^\"]*\"/>|<release version=\"${VERSION}\" date=\"${TODAY}\"/>|" \
-            "flatpak/bundle/${APP_ID}.metainfo.xml"
-
-      - name: Install flatpak tools
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y flatpak flatpak-builder ostree
-          flatpak remote-add --user --if-not-exists flathub \
-            https://flathub.org/repo/flathub.flatpakrepo
-          flatpak install --user -y --noninteractive flathub \
-            org.freedesktop.Platform//${RUNTIME_VERSION} \
-            org.freedesktop.Sdk//${RUNTIME_VERSION}
-
-      - name: Build Flatpak (arm64)
-        run: |
-          flatpak-builder \
-            --force-clean \
-            --disable-rofiles-fuse \
-            .flatpak-build \
-            flatpak/${APP_ID}.yml
-
-      - name: Export to OSTree repo (arm64)
-        run: |
-          ostree init --mode=archive-z2 --repo=ostree-export
-          flatpak build-export ostree-export .flatpak-build stable
-
-      - name: Upload OSTree export (arm64)
-        uses: actions/upload-artifact@v4
-        with:
-          name: ostree-arm64
-          path: ostree-export/
-          retention-days: 1
-
   publish:
-    needs: [build-flatpak-amd64, build-flatpak-arm64]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install ostree + flatpak
+      - name: Install flatpak + ostree
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y flatpak ostree
 
-      - name: Download OSTree exports
-        uses: actions/download-artifact@v4
-        with:
-          name: ostree-amd64
-          path: ostree-amd64
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: ostree-arm64
-          path: ostree-arm64
+      - name: Download .flatpak assets from GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p dl
+          gh release download "${{ inputs.tag_name }}" \
+            --repo "${{ github.repository }}" \
+            --pattern "*.flatpak" \
+            --dir dl/
+          echo "Downloaded:"
+          ls -lh dl/
 
       - name: Import GPG key
         env:
@@ -189,20 +63,17 @@ jobs:
             ostree init --mode=archive-z2 --repo=/tmp/flatpak-repo
           fi
 
-      - name: Pull refs from per-arch exports into main repo
+      - name: Import .flatpak bundles into OSTree repo
         run: |
-          for arch_dir in ostree-amd64 ostree-arm64; do
-            ostree refs --repo="$arch_dir" | while read ref; do
-              ostree pull-local --repo=/tmp/flatpak-repo "$arch_dir" "$ref"
-            done
+          for f in dl/*.flatpak; do
+            [ -f "$f" ] || continue
+            echo "Importing $f …"
+            flatpak build-import-bundle /tmp/flatpak-repo "$f"
           done
 
       - name: Sign and update repo
-        env:
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          flatpak build-sign /tmp/flatpak-repo \
-            --gpg-sign="$GPG_KEY_ID"
+          flatpak build-sign /tmp/flatpak-repo --gpg-sign="$GPG_KEY_ID"
           flatpak build-update-repo /tmp/flatpak-repo \
             --gpg-sign="$GPG_KEY_ID" \
             --generate-static-deltas
