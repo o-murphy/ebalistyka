@@ -1206,9 +1206,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get openInSnapStoreAction => 'Open in Snap Store';
 
   @override
-  String get openInFlathubAction => 'Open in Flathub';
-
-  @override
   String get downloadAndInstallAction => 'Download & Install';
 
   @override
