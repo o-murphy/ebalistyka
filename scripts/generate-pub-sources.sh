@@ -17,9 +17,7 @@ trap 'rm -rf "${WORK_DIR}"' EXIT
 
 echo "=== Generating pub-sources.json ==="
 echo "Cloning flatpak-builder-tools…"
-git clone --depth=1 --filter=blob:none --sparse "${GENERATOR_REPO}" "${WORK_DIR}/flatpak-builder-tools"
-cd "${WORK_DIR}/flatpak-builder-tools"
-git sparse-checkout set dart
+git clone --depth=1 "${GENERATOR_REPO}" "${WORK_DIR}/flatpak-builder-tools"
 
 echo "Setting up Python venv…"
 python3 -m venv "${WORK_DIR}/venv"
