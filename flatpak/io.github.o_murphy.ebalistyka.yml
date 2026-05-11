@@ -1,7 +1,7 @@
 app-id: io.github.o_murphy.ebalistyka
-runtime: org.gnome.Platform
-runtime-version: '49'
-sdk: org.gnome.Sdk
+runtime: org.freedesktop.Platform
+runtime-version: '25.08'
+sdk: org.freedesktop.Sdk
 command: ebalistyka
 
 finish-args:
@@ -10,7 +10,6 @@ finish-args:
   - --socket=fallback-x11
   - --socket=wayland
   - --device=dri
-  - --talk-name=org.freedesktop.portal.Desktop
 
 modules:
   - name: ebalistyka

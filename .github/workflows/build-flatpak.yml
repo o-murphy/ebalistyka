@@ -119,7 +119,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.local/share/flatpak
-          key: flatpak-gnome-49-${{ runner.arch }}
+          key: flatpak-freedesktop-25.08-${{ runner.arch }}
 
       - name: Install flatpak tools
         run: |
@@ -128,7 +128,7 @@ jobs:
           flatpak remote-add --user --if-not-exists flathub \
             https://flathub.org/repo/flathub.flatpakrepo
           flatpak install --user -y --noninteractive flathub \
-            org.gnome.Platform//49 org.gnome.Sdk//49
+            org.freedesktop.Platform//25.08 org.freedesktop.Sdk//25.08
 
       - name: Package Flatpak
         run: |
