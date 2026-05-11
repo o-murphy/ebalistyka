@@ -11,12 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+### Fixed
+- **FilePicker API migration** — replaced broken `FilePicker.platform.*` calls with the static `FilePicker.*` API introduced in `file_picker@11.0.0` (`ebcp_service.dart`, `a7p_service.dart`)
+
 ### Changed
-- **file_picker updated** — upgraded to `file_picker@11.0.2` for XDG portal support; migrated all call sites from `FilePicker.platform.*` to the new static `FilePicker.*` API
+- **file_picker updated** — upgraded to `file_picker@11.0.2`; uses XDG portal (`org.freedesktop.portal.FileChooser`) exclusively on Linux
 - **flatpak manifest** — aligned icon filename and finish-args to be compatible with Flathub requirements
 
 ### Removed
-- **zenity workarounds** — removed; `file_picker@11.0.x` uses only the XDG portal backend (`org.freedesktop.portal.FileChooser`), so zenity is no longer needed
+- **zenity workarounds** — removed; `file_picker@11.0.x` uses only the XDG portal backend, so zenity is no longer needed
 
 
 ## v0.1.12 (2026-05-07)
