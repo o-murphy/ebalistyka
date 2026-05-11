@@ -35,8 +35,10 @@ runs:
         shopt -s nullglob
         for f in "${{ inputs.path }}"*; do
           [ -f "$f" ] || continue
+          [[ "$f" == *.asc ]] && continue
           echo "Signing $f …"
           gpg --batch --yes \
+              --local-user "$GPG_KEY_ID" \
               --passphrase-fd 3 \
               --pinentry-mode loopback \
               --detach-sign --armor \
