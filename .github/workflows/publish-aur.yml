@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          pacman -Sy --noconfirm git openssh
+          pacman -Sy --noconfirm git openssh gnupg
           useradd -m builder
 
       - uses: actions/checkout@v4
@@ -34,6 +34,15 @@ jobs:
           TAG="${{ inputs.tag_name || github.event.release.tag_name }}"
           chown -R builder:builder "$GITHUB_WORKSPACE"
           su builder -c "bash '$GITHUB_WORKSPACE/scripts/update-aur.sh' '${TAG#v}'"
+
+      - name: Import GPG key for signed commits
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+          GPG_KEY_ID=$(gpg --list-secret-keys --keyid-format=long \
+            | grep '^sec' | head -1 | awk '{print $2}' | cut -d/ -f2)
+          echo "GPG_KEY_ID=$GPG_KEY_ID" >> "$GITHUB_ENV"
 
       - name: Publish to AUR
         shell: bash
@@ -54,6 +63,8 @@ jobs:
 
           git config --global user.name "o-murphy"
           git config --global user.email "thehelixpg@gmail.com"
+          git config --global user.signingkey "$GPG_KEY_ID"
+          git config --global commit.gpgsign true
           git config --global --add safe.directory '*'
 
           GIT_SSH_COMMAND="ssh -i /root/.ssh/aur -v" \
@@ -66,5 +77,5 @@ jobs:
           cd /tmp/aur-repo
           git add PKGBUILD .SRCINFO
           git diff --cached --quiet && exit 0
-          git commit -m "upgpkg: ebalistyka-bin ${TAG}"
+          git commit -S -m "upgpkg: ebalistyka-bin ${TAG}"
           GIT_SSH_COMMAND="ssh -i /root/.ssh/aur" git push
