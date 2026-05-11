@@ -1,0 +1,42 @@
+name: Publish Winget
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Release tag (e.g. v0.1.12)"
+        required: true
+        type: string
+      version:
+        description: "Package version without v prefix (e.g. 0.1.12)"
+        required: true
+        type: string
+  workflow_call:
+    inputs:
+      tag_name:
+        description: "Release tag"
+        required: true
+        type: string
+      version:
+        description: "Package version without v prefix"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  winget:
+    runs-on: windows-latest
+    steps:
+      - name: Install wingetcreate
+        run: dotnet tool install --global wingetcreate
+
+      - name: Submit to Winget
+        shell: pwsh
+        run: |
+          wingetcreate update o-murphy.ebalistyka `
+            --version "${{ inputs.version }}.0" `
+            --urls "https://github.com/o-murphy/ebalistyka-app/releases/download/${{ inputs.tag_name }}/ebalistyka_windows_x86_64.zip" `
+            --token "${{ secrets.WINGET_TOKEN }}" `
+            --submit

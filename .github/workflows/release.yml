@@ -317,3 +317,12 @@ jobs:
     with:
       tag_name: ${{ github.ref_name }}
     secrets: inherit
+
+  # publish-winget:
+  #   if: github.ref_type == 'tag' && !contains(github.ref_name, '-')
+  #   needs: [prepare-version, release]
+  #   uses: ./.github/workflows/publish-winget.yml
+  #   with:
+  #     tag_name: ${{ github.ref_name }}
+  #     version: ${{ needs.prepare-version.outputs.version }}
+  #   secrets: inherit
