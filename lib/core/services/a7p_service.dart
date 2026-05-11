@@ -59,7 +59,7 @@ abstract final class A7pService {
     _setPayloadOffsets(profile, payload);
     final bytes = A7pFile.encode(payload);
     final name =
-        '${EbcpService.sanitizeName(profile.name).replaceFirst(RegExp(r'^\.'), '')}.a7p';
+        '${EbcpService.sanitizeName(profile.name).replaceFirst(RegExp(r'^\.'),'')}.a7p';
 
     if (Platform.isAndroid || Platform.isIOS) {
       final tmp = await getTemporaryDirectory();
@@ -69,7 +69,7 @@ abstract final class A7pService {
         XFile(path, mimeType: 'application/octet-stream', name: name),
       ]);
     } else {
-      final savePath = await FilePicker.platform.saveFile(
+      final savePath = await FilePicker.saveFile(
         fileName: name,
         type: FileType.custom,
         allowedExtensions: ['a7p'],
@@ -84,7 +84,7 @@ abstract final class A7pService {
   /// Returns `null` if the user cancelled.
   /// Throws [A7pParseException] if the file is invalid.
   static Future<ProfileExport?> pickAndParse() async {
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFiles(
       type: Platform.isAndroid ? FileType.any : FileType.custom,
       allowedExtensions: Platform.isAndroid ? null : ['a7p'],
       withData: true,
@@ -116,7 +116,7 @@ abstract final class A7pService {
   /// Returns `null` if the user cancelled.
   /// Throws [A7pParseException] on invalid .a7p files or [Exception] on other errors.
   static Future<List<ProfileExport>?> pickAndParseProfiles() async {
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFiles(
       type: Platform.isAndroid ? FileType.any : FileType.custom,
       allowedExtensions: Platform.isAndroid ? null : ['ebcp', 'a7p'],
       withData: true,

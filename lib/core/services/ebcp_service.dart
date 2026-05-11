@@ -11,12 +11,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
 abstract final class EbcpService {
-  // ── Export ──────────────────────────────────────────────────────────────────
+  // ── Export ──────────────────────────────────────────────────────────────────────────
 
   static Future<void> shareFile(EbcpFile file, String fileName) async {
     final bytes = file.toEbcp();
     final name =
-        '${EbcpService.sanitizeName(fileName).replaceFirst(RegExp(r'^\.'), '')}.ebcp';
+        '${EbcpService.sanitizeName(fileName).replaceFirst(RegExp(r'^\.'),'')}.ebcp';
 
     if (Platform.isAndroid || Platform.isIOS) {
       final tmp = await getTemporaryDirectory();
@@ -26,7 +26,7 @@ abstract final class EbcpService {
         XFile(path, mimeType: 'application/octet-stream', name: name),
       ]);
     } else {
-      final savePath = await FilePicker.platform.saveFile(
+      final savePath = await FilePicker.saveFile(
         fileName: name,
         type: FileType.custom,
         allowedExtensions: ['ebcp'],
@@ -38,12 +38,12 @@ abstract final class EbcpService {
     }
   }
 
-  // ── Import ──────────────────────────────────────────────────────────────────
+  // ── Import ─────────────────────────────────────────────────────────────────────────
 
   /// Opens a file picker for .ebcp files and returns the parsed [EbcpFile].
   /// Returns `null` if the user cancels or the file is invalid.
   static Future<EbcpFile?> pickAndParse() async {
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFiles(
       type: Platform.isAndroid ? FileType.any : FileType.custom,
       allowedExtensions: Platform.isAndroid ? null : ['ebcp'],
       withData: true,
@@ -67,7 +67,7 @@ abstract final class EbcpService {
     return EbcpFile.fromEbcp(bytes);
   }
 
-  // ── Full backup ─────────────────────────────────────────────────────────────
+  // ── Full backup ──────────────────────────────────────────────────────────────────────
 
   /// Builds a full [EbcpFile] from the current DB state:
   /// all profiles (with weapon/ammo/sight embedded) +
@@ -182,7 +182,7 @@ abstract final class EbcpService {
     }
   }
 
-  // ── Helpers ─────────────────────────────────────────────────────────────────
+  // ── Helpers ─────────────────────────────────────────────────────────────────────────
 
   static String sanitizeName(String name) =>
       name.replaceAll(RegExp(r'[^\w\-. ]'), '_').trim();
