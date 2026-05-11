@@ -24,13 +24,20 @@ echo "=== Updating Flathub repo for ${TAG} ==="
 
 # ── Resolve commit SHA for the tag ───────────────────────────────────────────
 echo "Resolving commit SHA for ${TAG}…"
-COMMIT_SHA=$(git -C "${ROOT_DIR}" rev-list -n1 "${TAG}" 2>/dev/null || \
-             curl -fsSL "https://api.github.com/repos/${REPO}/git/ref/tags/${TAG}" \
-               | python3 -c "import sys,json; d=json.load(sys.stdin); \
-                 print(d['object']['sha'] if d['object']['type']=='commit' else \
-                 __import__('urllib.request',fromlist=['urlopen']).urlopen( \
-                   'https://api.github.com/repos/${REPO}/git/tags/'+d['object']['sha']).read())" \
-             2>/dev/null || echo "__COMMIT_SHA__")
+if git -C "${ROOT_DIR}" rev-list -n1 "${TAG}" &>/dev/null; then
+  COMMIT_SHA=$(git -C "${ROOT_DIR}" rev-list -n1 "${TAG}")
+else
+  # Resolve via GitHub API, handling both lightweight and annotated tags
+  REF_JSON=$(curl -fsSL "https://api.github.com/repos/${REPO}/git/ref/tags/${TAG#refs/tags/}")
+  OBJ_TYPE=$(echo "${REF_JSON}" | python3 -c "import sys,json; print(json.load(sys.stdin)['object']['type'])")
+  OBJ_SHA=$(echo "${REF_JSON}"  | python3 -c "import sys,json; print(json.load(sys.stdin)['object']['sha'])")
+  if [ "${OBJ_TYPE}" = "tag" ]; then
+    COMMIT_SHA=$(curl -fsSL "https://api.github.com/repos/${REPO}/git/tags/${OBJ_SHA}" \
+      | python3 -c "import sys,json; print(json.load(sys.stdin)['object']['sha'])")
+  else
+    COMMIT_SHA="${OBJ_SHA}"
+  fi
+fi
 echo "  commit: ${COMMIT_SHA}"
 
 # ── Compute SHA256 of Flutter SDK ─────────────────────────────────────────────
@@ -51,23 +58,21 @@ sed \
   -e "s|__SHA256_FLUTTER_SDK__|${FLUTTER_SHA256}|g" \
   "${ROOT_DIR}/flatpak/${APP_ID}.flathub.yml" > "${FLATHUB_DIR}/${APP_ID}.yml"
 
-# ── Update metainfo release list ──────────────────────────────────────────────
+# ── Bump release entry in upstream metainfo ───────────────────────────────────
+# metainfo.xml stays in the upstream repo (flatpak/); it is installed from the
+# git source during the Flatpak build.  We only update it here in-place so the
+# release list is current before tagging.
 METAINFO="${ROOT_DIR}/flatpak/${APP_ID}.metainfo.xml"
-METAINFO_DEST="${FLATHUB_DIR}/${APP_ID}.metainfo.xml"
 NEW_RELEASE="    <release version=\"${VERSION}\" date=\"${TODAY}\"/>"
 
-cp "${METAINFO}" "${METAINFO_DEST}"
-if grep -q "release version=\"${VERSION}\"" "${METAINFO_DEST}"; then
+if grep -q "release version=\"${VERSION}\"" "${METAINFO}"; then
   echo "  metainfo: ${VERSION} already present"
 else
-  sed -i "/<releases>/a\\${NEW_RELEASE}" "${METAINFO_DEST}"
+  sed -i "/<releases>/a\\${NEW_RELEASE}" "${METAINFO}"
+  echo "  metainfo: added release ${VERSION}"
 fi
 
 echo "✓ Flathub repo ready at ${FLATHUB_DIR}"
 echo ""
 echo "Files:"
 ls -lh "${FLATHUB_DIR}/"
-echo ""
-echo "NOTE: desktop, icon, and metainfo are managed in the upstream repo"
-echo "      (flatpak/ directory) and installed from the git source during build."
-echo "      Do NOT commit them separately into the Flathub repo."
