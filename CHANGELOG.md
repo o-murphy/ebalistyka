@@ -13,14 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 - **flatpak runtime** — bumped `org.gnome.Platform` from `49` to `50` (GNOME 49 is not actual for flathub in 2026)
+- **file_picker updated** — upgraded to `file_picker@11.0.2`; uses XDG portal (`org.freedesktop.portal.FileChooser`) exclusively on Linux
+- **flatpak manifest** — aligned icon filename and finish-args to be compatible with Flathub requirements
 
 ### Fixed
 - **FilePicker API migration** — replaced broken `FilePicker.platform.*` calls with the static `FilePicker.*` API introduced in `file_picker@11.0.0` (`ebcp_service.dart`, `a7p_service.dart`)
-
-### Changed
-- **file_picker updated** — upgraded to `file_picker@11.0.2`; uses XDG portal (`org.freedesktop.portal.FileChooser`) exclusively on Linux
-- **flatpak manifest** — aligned icon filename and finish-args to be compatible with Flathub requirements
-- **flatpak runtime** — bumped `org.gnome.Platform` from `48` to `49` (GNOME 48 is end-of-life since March 24, 2026)
 
 ### Removed
 - **zenity workarounds** — removed; `file_picker@11.0.x` uses only the XDG portal backend, so zenity is no longer needed
