@@ -20,72 +20,10 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Install flatpak + ostree
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y flatpak ostree
-
-      - name: Download .flatpak assets from GitHub Release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          mkdir -p dl
-          gh release download "${{ inputs.tag_name }}" \
-            --repo "${{ github.repository }}" \
-            --pattern "*.flatpak" \
-            --dir dl/
-          echo "Downloaded:"
-          ls -lh dl/
-
-      - name: Import GPG key
-        env:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: |
-          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
-          GPG_KEY_ID=$(gpg --list-secret-keys --keyid-format=long \
-            | grep '^sec' | head -1 | awk '{print $2}' | cut -d/ -f2)
-          echo "GPG_KEY_ID=$GPG_KEY_ID" >> $GITHUB_ENV
-          echo "$GPG_PASSPHRASE" | gpg --batch --passphrase-fd 0 \
-            --pinentry-mode loopback -u "$GPG_KEY_ID" --sign /dev/null 2>/dev/null || true
-
-      - name: Clone Flatpak repo
-        env:
-          FLATPAK_REPO_TOKEN: ${{ secrets.FLATPAK_REPO_TOKEN }}
-        run: |
-          git clone \
-            "https://x-access-token:${FLATPAK_REPO_TOKEN}@github.com/o-murphy/flatpak-repo.git" \
-            /tmp/flatpak-repo
-
-      - name: Initialize OSTree repo if empty
-        run: |
-          if [ ! -f /tmp/flatpak-repo/config ]; then
-            ostree init --mode=archive-z2 --repo=/tmp/flatpak-repo
-          fi
-
-      - name: Import .flatpak bundles into OSTree repo
-        run: |
-          for f in dl/*.flatpak; do
-            [ -f "$f" ] || continue
-            echo "Importing $f …"
-            flatpak build-import-bundle /tmp/flatpak-repo "$f"
-          done
-
-      - name: Sign and update repo
-        run: |
-          flatpak build-sign /tmp/flatpak-repo --gpg-sign="$GPG_KEY_ID"
-          flatpak build-update-repo /tmp/flatpak-repo \
-            --gpg-sign="$GPG_KEY_ID" \
-            --generate-static-deltas
-
-      - name: Push to flatpak-repo
-        env:
-          FLATPAK_REPO_TOKEN: ${{ secrets.FLATPAK_REPO_TOKEN }}
-        run: |
-          cd /tmp/flatpak-repo
-          git config user.name "o-murphy"
-          git config user.email "thehelixpg@gmail.com"
-          git add -A
-          git diff --cached --quiet && echo "No changes" && exit 0
-          git commit -m "Update to ${{ inputs.tag_name }}"
-          git push "https://x-access-token:${FLATPAK_REPO_TOKEN}@github.com/o-murphy/flatpak-repo.git"
+      - uses: o-murphy/flatpak-repo/.github/actions/publish@main
+        with:
+          tag_name: ${{ inputs.tag_name }}
+          repository: ${{ github.repository }}
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          flatpak_repo_token: ${{ secrets.FLATPAK_REPO_TOKEN }}
