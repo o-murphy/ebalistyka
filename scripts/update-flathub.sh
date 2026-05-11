@@ -47,7 +47,7 @@ echo "  Flutter ${FLUTTER_VERSION}: ${FLUTTER_SHA256}"
 
 # ── Generate pub-sources.json ─────────────────────────────────────────────────
 echo "Generating pub-sources.json…"
-"${SCRIPT_DIR}/generate-pub-sources.sh" "${ROOT_DIR}/flatpak"
+"${SCRIPT_DIR}/generate-pub-sources.sh" flatpak
 cp "${ROOT_DIR}/flatpak/pub-sources.json" "${FLATHUB_DIR}/pub-sources.json"
 
 # ── Build manifest from template ─────────────────────────────────────────────
