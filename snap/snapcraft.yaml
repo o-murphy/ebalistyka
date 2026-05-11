@@ -38,4 +38,3 @@ parts:
       - llvm
     stage-packages:
       - libstdc++6
-      - zenity
