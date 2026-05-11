@@ -248,6 +248,14 @@ jobs:
           echo "=== Release assets ==="
           ls -lh release/
 
+      - name: Sign release artifacts
+        if: github.ref_type == 'tag'
+        uses: ./.github/actions/gpg-sign
+        with:
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase:  ${{ secrets.GPG_PASSPHRASE }}
+          path: release/
+
       - name: Extract changelog
         if: github.ref_type == 'tag'
         run: |

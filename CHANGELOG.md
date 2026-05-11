@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+### Changed
+- **flatpak runtime** — bumped `org.gnome.Platform` from `49` to `50` (GNOME 49 is not actual for flathub in 2026)
+
 ### Fixed
 - **FilePicker API migration** — replaced broken `FilePicker.platform.*` calls with the static `FilePicker.*` API introduced in `file_picker@11.0.0` (`ebcp_service.dart`, `a7p_service.dart`)
 
