@@ -30,7 +30,7 @@ fi
 
 mkdir -p artifacts/appimage
 
-# ── AppDir ────────────────────────────────────────────────────────────────────
+# ── AppDir ─────────────────────────────────────────────────────────────────────────────
 APPDIR=".appimage-build/AppDir"
 rm -rf "$APPDIR"
 mkdir -p "$APPDIR/usr/share/ebalistyka"
@@ -76,27 +76,33 @@ export LD_LIBRARY_PATH="$APP_DIR/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 exec "$APP_DIR/ebalistyka" "$@"
 EOF
 
-# ── Build AppImage ────────────────────────────────────────────────────────────
+# ── Build AppImage ──────────────────────────────────────────────────────────────────────────
 echo "Downloading appimagetool (${ARCH_SUFFIX})..."
 curl -fsSL "$APPIMAGE_TOOL_URL" -o /tmp/appimagetool
 chmod +x /tmp/appimagetool
 
 APPIMAGE_OUT="artifacts/appimage/ebalistyka_linux_${ARCH_SUFFIX}.AppImage"
 
+SIGN_ARGS=()
+if [ -n "${GPG_KEY_ID:-}" ]; then
+  SIGN_ARGS=(--sign --sign-key "$GPG_KEY_ID")
+  echo "✓ Signing AppImage with key $GPG_KEY_ID"
+fi
+
 if [ -n "$UPDATE_INFO" ]; then
-  ARCH="${ARCH_SUFFIX}" /tmp/appimagetool --updateinformation "$UPDATE_INFO" "$APPDIR" "$APPIMAGE_OUT"
+  ARCH="${ARCH_SUFFIX}" /tmp/appimagetool "${SIGN_ARGS[@]}" --updateinformation "$UPDATE_INFO" "$APPDIR" "$APPIMAGE_OUT"
 else
-  ARCH="${ARCH_SUFFIX}" /tmp/appimagetool "$APPDIR" "$APPIMAGE_OUT"
+  ARCH="${ARCH_SUFFIX}" /tmp/appimagetool "${SIGN_ARGS[@]}" "$APPDIR" "$APPIMAGE_OUT"
 fi
 echo "✓ AppImage: $APPIMAGE_OUT"
 
-# ── zsync ─────────────────────────────────────────────────────────────────────
+# ── zsync ─────────────────────────────────────────────────────────────────────────────────
 if [ -n "$ZSYNC_URL" ] && command -v zsyncmake &>/dev/null; then
   zsyncmake -u "$ZSYNC_URL" -o "${APPIMAGE_OUT}.zsync" "$APPIMAGE_OUT"
   echo "✓ zsync:    ${APPIMAGE_OUT}.zsync"
 fi
 
-# ── Cleanup ───────────────────────────────────────────────────────────────────
+# ── Cleanup ────────────────────────────────────────────────────────────────────────────
 rm -rf ".appimage-build"
 
 echo ""
