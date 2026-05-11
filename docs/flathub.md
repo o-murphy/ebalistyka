@@ -26,8 +26,9 @@ git clone https://github.com/flathub/io.github.o_murphy.ebalistyka ~/flathub-eba
 ### 2. Переконатись, що встановлені залежності
 
 ```bash
-sudo apt install flatpak flatpak-builder git curl python3 python3-pip
+sudo apt install flatpak flatpak-builder git curl python3 python3-venv
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+flatpak install --user flathub org.freedesktop.Platform//25.08 org.freedesktop.Sdk//25.08
 ```
 
 ---
@@ -78,21 +79,51 @@ git push
 
 ---
 
-## Локальне тестування з готовим бандлом
+## Локальне тестування
 
-Для перевірки маніфесту без відправки у Flathub:
+### Швидко — з готовим бандлом
 
 ```bash
 # Зібрати Linux-бандл
 flutter build linux --release
 
-# Запакувати у .flatpak
+# Запакувати у .flatpak (готує bundle/, запускає flatpak-builder, експортує артефакт)
 bash scripts/package-flatpak.sh \
   build/linux/x64/release/bundle \
   x86_64
+
+# Встановити і запустити
+flatpak install --user --bundle artifacts/flatpak/ebalistyka_linux_x86_64.flatpak
+flatpak run io.github.o_murphy.ebalistyka
 ```
 
-Артефакт з'явиться у `artifacts/flatpak/ebalistyka_linux_x86_64.flatpak`.
+### Повна перевірка — from-source (як на Flathub)
+
+```bash
+# 1. Підготувати маніфест і pub-sources.json у тимчасову директорію
+bash scripts/update-flathub.sh v0.1.13 /tmp/flathub-test
+
+# 2. Встановити рантайм (якщо ще не встановлено)
+flatpak install --user flathub org.freedesktop.Platform//25.08 org.freedesktop.Sdk//25.08
+
+# 3. Зібрати і встановити
+flatpak-builder \
+  --force-clean \
+  --user \
+  --install \
+  .flatpak-build \
+  /tmp/flathub-test/io.github.o_murphy.ebalistyka.yml
+
+# 4. Запустити
+flatpak run io.github.o_murphy.ebalistyka
+```
+
+### Прибрати після тестування
+
+```bash
+flatpak uninstall --user io.github.o_murphy.ebalistyka
+rm -rf .flatpak-build .flatpak-repo
+```
 
 ---
 
