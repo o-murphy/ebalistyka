@@ -122,7 +122,7 @@ jobs:
           sudo flatpak remote-add --system --if-not-exists flathub \
             https://flathub.org/repo/flathub.flatpakrepo
           sudo flatpak install --system -y --noninteractive flathub \
-            org.gnome.Platform//48 org.gnome.Sdk//48
+            org.gnome.Platform//49 org.gnome.Sdk//49
 
       - name: Package Flatpak
         run: |
