@@ -24,7 +24,52 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      core:     ${{ steps.filter.outputs.core }}
+      appimage: ${{ steps.filter.outputs.appimage }}
+      deb:      ${{ steps.filter.outputs.deb }}
+      rpm:      ${{ steps.filter.outputs.rpm }}
+      flatpak:  ${{ steps.filter.outputs.flatpak }}
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            core:
+              - "lib/**"
+              - "linux/**"
+              - "external/**"
+              - "packages/bclibc_ffi/**"
+              - "pubspec.yaml"
+              - ".github/workflows/build.yml"
+              - ".github/workflows/build-portable.yml"
+              - ".github/workflows/pr-linux.yml"
+            appimage:
+              - ".github/workflows/build-appimage.yml"
+            deb:
+              - "deb/**"
+              - "flatpak/*.desktop"
+              - "flatpak/*.metainfo.xml"
+              - ".github/workflows/build-deb.yml"
+            rpm:
+              - "rpm/**"
+              - "flatpak/*.desktop"
+              - "flatpak/*.metainfo.xml"
+              - ".github/workflows/build-rpm.yml"
+            flatpak:
+              - "flatpak/**"
+              - ".github/workflows/build-flatpak.yml"
+
   build-bundle:
+    needs: changes
+    if: |
+      needs.changes.outputs.core     == 'true' ||
+      needs.changes.outputs.appimage == 'true' ||
+      needs.changes.outputs.deb      == 'true' ||
+      needs.changes.outputs.rpm      == 'true' ||
+      needs.changes.outputs.flatpak  == 'true'
     permissions:
       pull-requests: write
       issues: write
@@ -34,7 +79,11 @@ jobs:
       retention_days: 1
 
   build-appimage:
-    needs: build-bundle
+    needs: [changes, build-bundle]
+    if: |
+      always() &&
+      needs.build-bundle.result == 'success' &&
+      (needs.changes.outputs.core == 'true' || needs.changes.outputs.appimage == 'true')
     permissions:
       pull-requests: write
       issues: write
@@ -45,7 +94,11 @@ jobs:
       bundle_artifact_name: ${{ needs.build-bundle.outputs.artifact_name }}
 
   build-deb:
-    needs: build-bundle
+    needs: [changes, build-bundle]
+    if: |
+      always() &&
+      needs.build-bundle.result == 'success' &&
+      (needs.changes.outputs.core == 'true' || needs.changes.outputs.deb == 'true')
     permissions:
       pull-requests: write
       issues: write
@@ -56,7 +109,11 @@ jobs:
       bundle_artifact_name: ${{ needs.build-bundle.outputs.artifact_name }}
 
   build-rpm:
-    needs: build-bundle
+    needs: [changes, build-bundle]
+    if: |
+      always() &&
+      needs.build-bundle.result == 'success' &&
+      (needs.changes.outputs.core == 'true' || needs.changes.outputs.rpm == 'true')
     permissions:
       pull-requests: write
       issues: write
@@ -67,7 +124,11 @@ jobs:
       bundle_artifact_name: ${{ needs.build-bundle.outputs.artifact_name }}
 
   build-flatpak:
-    needs: build-bundle
+    needs: [changes, build-bundle]
+    if: |
+      always() &&
+      needs.build-bundle.result == 'success' &&
+      (needs.changes.outputs.core == 'true' || needs.changes.outputs.flatpak == 'true')
     permissions:
       pull-requests: write
       issues: write
