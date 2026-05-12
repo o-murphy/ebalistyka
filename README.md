@@ -10,6 +10,7 @@
 
 [![AUR Version]][AUR Package]
 [![Snapcraft Version]][Snapcraft Package]
+[![FlatpakRepoVersion]][FlatpakRepoPackage]
 
 [![Google Play]][Google Play Internal Test]
 
@@ -170,12 +171,20 @@ sudo snap install ebalistyka_linux_x86_64.snap --dangerous
 
 ### Linux — Flatpak
 
+Install from repo
+
+```
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+flatpak remote-add --if-not-exists o-murphy https://o-murphy.github.io/flatpak-repo/o_murphy.flatpakrepo
+flatpak install o-murphy io.github.o_murphy.ebalistyka
+```
+
 Install from a `.flatpak` sideload file (Flathub not yet available):
 
 ```bash
 # Install flatpak runtime if needed
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install --user flathub org.gnome.Platform//48
+flatpak install --user flathub org.gnome.Platform//50
 
 # Install the app
 flatpak install --user ebalistyka_linux_x86_64.flatpak
@@ -496,6 +505,9 @@ See [LICENSE](LICENSE) for the full text. See [CHANGELOG](CHANGELOG.md) for rele
 
 [Snapcraft Version]: https://img.shields.io/snapcraft/v/ebalistyka/latest/stable?style=for-the-badge&logo=snapcraft&cacheSeconds=0
 [Snapcraft Package]: https://snapcraft.io/ebalistyka
+
+[FlatpakRepoVersion]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fo-murphy.github.io%2Fflatpak-repo%2Fapps.json&query=%24%5B'io.github.o_murphy.ebalistyka'%5D.version&style=for-the-badge&logo=flatpak&label=FLATPAK
+[FlatpakRepoPackage]: https://o-murphy.net/flatpak-repo/#io.github.o_murphy.ebalistyka
 
 [Google Play]: https://img.shields.io/badge/Internal%20Test%20Registration-black?style=for-the-badge&logo=google-play&label=Google%20Play&labelColor=000&color=orange
 [Google Play Internal Test]: https://docs.google.com/forms/d/e/1FAIpQLSdMKHwnBLuwSo9BkqPXRPx4eZwio6RiaNxWEyrvyEpK0dLcuA/viewform?usp=dialog

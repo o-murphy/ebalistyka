@@ -11,6 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+
+## v0.1.14 (2026-05-12)
+[![GitHub release][GitHubReleaseBadge]][v0.1.14]
+
+### Changed
+- **flatpak publish** — publishing to self-hosted repo
+
+
+## v0.1.13 (2026-05-11)
+[![GitHub release][GitHubReleaseBadge]][v0.1.13]
+
 ### Changed
 - **flatpak runtime** — bumped `org.gnome.Platform` from `49` to `50` (GNOME 49 is not actual for flathub in 2026)
 - **file_picker updated** — upgraded to `file_picker@11.0.2`; uses XDG portal (`org.freedesktop.portal.FileChooser`) exclusively on Linux
@@ -410,7 +421,9 @@ Initial alpha release — first functional build of the ballistic trajectory cal
 - `OBJECTBOX_MIGRATION.md`: migration details
 
 
-[Unreleased]: https://github.com/o-murphy/ebalistyka-app/compare/v0.1.12..HEAD
+[Unreleased]: https://github.com/o-murphy/ebalistyka-app/compare/v0.1.14..HEAD
+[v0.1.14]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.14
+[v0.1.13]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.13
 [v0.1.12]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.12
 [v0.1.11-dev]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.11-dev
 [v0.1.10-dev]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.10-dev

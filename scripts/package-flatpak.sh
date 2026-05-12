@@ -25,7 +25,7 @@ if [ ! -f "$MANIFEST" ]; then
   exit 1
 fi
 
-# ── Prepare bundle source ─────────────────────────────────────────────────────
+# ── Prepare bundle source ───────────────────────────────────────────────────
 rm -rf flatpak/bundle
 mkdir -p flatpak/bundle
 cp -a "${BUNDLE_DIR}/." flatpak/bundle/
@@ -50,9 +50,15 @@ TODAY=$(date +%Y-%m-%d)
 sed -i "s|<release version=\"[^\"]*\" date=\"[^\"]*\"/>|<release version=\"${BUILD_NAME}\" date=\"${TODAY}\"/>|" \
   "flatpak/bundle/${APP_ID}.metainfo.xml"
 
+# Pin screenshot URLs to the release tag (source file uses 'main' as placeholder)
+if [ "$BUILD_NAME" != "local" ]; then
+  sed -i "s|raw\.githubusercontent\.com/o-murphy/ebalistyka-app/[^/]*/|raw.githubusercontent.com/o-murphy/ebalistyka-app/v${BUILD_NAME}/|g" \
+    "flatpak/bundle/${APP_ID}.metainfo.xml"
+fi
+
 echo "✓ Bundle prepared (version: ${BUILD_NAME})"
 
-# ── Build ───────────────────────────────────────────────────────────────────
+# ── Build ─────────────────────────────────────────────────────────────────────────────
 REPO_DIR=".flatpak-repo"
 BUILD_DIR=".flatpak-build"
 
@@ -64,7 +70,7 @@ flatpak-builder \
 
 flatpak build-export "$REPO_DIR" "$BUILD_DIR" stable
 
-# ── Export .flatpak bundle ────────────────────────────────────────────────────
+# ── Export .flatpak bundle ─────────────────────────────────────────────────────────────────
 mkdir -p artifacts/flatpak
 OUT="artifacts/flatpak/ebalistyka_linux_${ARCH_SUFFIX}.flatpak"
 
@@ -77,7 +83,7 @@ flatpak build-bundle \
 
 echo "✓ Flatpak: $OUT"
 
-# ── Cleanup ───────────────────────────────────────────────────────────────────
+# ── Cleanup ─────────────────────────────────────────────────────────────────────────────
 rm -rf "$BUILD_DIR" "$REPO_DIR" flatpak/bundle
 
 echo ""
