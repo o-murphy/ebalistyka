@@ -1,0 +1,79 @@
+name: PR Linux Builds
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - "lib/**"
+      - "linux/**"
+      - "external/**"
+      - "packages/bclibc_ffi/**"
+      - "pubspec.yaml"
+      - "deb/**"
+      - "rpm/**"
+      - "flatpak/**"
+      - ".github/workflows/pr-linux.yml"
+      - ".github/workflows/build.yml"
+      - ".github/workflows/build-portable.yml"
+      - ".github/workflows/build-appimage.yml"
+      - ".github/workflows/build-deb.yml"
+      - ".github/workflows/build-rpm.yml"
+      - ".github/workflows/build-flatpak.yml"
+
+concurrency:
+  group: pr-linux-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-bundle:
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/build-portable.yml
+    with:
+      arch: amd64
+      retention_days: 1
+
+  build-appimage:
+    needs: build-bundle
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/build-appimage.yml
+    with:
+      arch: amd64
+      retention_days: 1
+      bundle_artifact_name: ${{ needs.build-bundle.outputs.artifact_name }}
+
+  build-deb:
+    needs: build-bundle
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/build-deb.yml
+    with:
+      arch: amd64
+      retention_days: 1
+      bundle_artifact_name: ${{ needs.build-bundle.outputs.artifact_name }}
+
+  build-rpm:
+    needs: build-bundle
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/build-rpm.yml
+    with:
+      arch: amd64
+      retention_days: 1
+      bundle_artifact_name: ${{ needs.build-bundle.outputs.artifact_name }}
+
+  build-flatpak:
+    needs: build-bundle
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/build-flatpak.yml
+    with:
+      arch: amd64
+      retention_days: 1
+      bundle_artifact_name: ${{ needs.build-bundle.outputs.artifact_name }}
