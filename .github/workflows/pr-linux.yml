@@ -2,7 +2,6 @@ name: PR Linux Builds
 
 on:
   pull_request:
-    branches: [ main, develop ]
     paths:
       - "lib/**"
       - "linux/**"
