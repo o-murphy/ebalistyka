@@ -1,16 +1,16 @@
 name: Build AppImage
 
 on:
-  pull_request:
-    branches: [ main, develop ]
-    paths:
-      - "lib/**"
-      - "linux/**"
-      - "external/**"
-      - "packages/bclibc_ffi/**"
-      - "pubspec.yaml"
-      - ".github/workflows/build-appimage.yml"
-      - ".github/workflows/build.yml"
+  # pull_request:
+  #   branches: [ main, develop ]
+  #   paths:
+  #     - "lib/**"
+  #     - "linux/**"
+  #     - "external/**"
+  #     - "packages/bclibc_ffi/**"
+  #     - "pubspec.yaml"
+  #     - ".github/workflows/build-appimage.yml"
+  #     - ".github/workflows/build.yml"
   workflow_call:
     inputs:
       arch:

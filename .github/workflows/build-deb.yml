@@ -1,19 +1,19 @@
 name: Build deb
 
 on:
-  pull_request:
-    branches: [ main, develop ]
-    paths:
-      - "lib/**"
-      - "linux/**"
-      - "external/**"
-      - "packages/bclibc_ffi/**"
-      - "pubspec.yaml"
-      - "deb/**"
-      - "flatpak/*.desktop"
-      - "flatpak/*.metainfo.xml"
-      - ".github/workflows/build-deb.yml"
-      - ".github/workflows/build.yml"
+  # pull_request:
+  #   branches: [ main, develop ]
+  #   paths:
+  #     - "lib/**"
+  #     - "linux/**"
+  #     - "external/**"
+  #     - "packages/bclibc_ffi/**"
+  #     - "pubspec.yaml"
+  #     - "deb/**"
+  #     - "flatpak/*.desktop"
+  #     - "flatpak/*.metainfo.xml"
+  #     - ".github/workflows/build-deb.yml"
+  #     - ".github/workflows/build.yml"
   workflow_call:
     inputs:
       arch:

@@ -1,19 +1,19 @@
 name: Build rpm
 
 on:
-  pull_request:
-    branches: [ main, develop ]
-    paths:
-      - "lib/**"
-      - "linux/**"
-      - "external/**"
-      - "packages/bclibc_ffi/**"
-      - "pubspec.yaml"
-      - "rpm/**"
-      - "flatpak/*.desktop"
-      - "flatpak/*.metainfo.xml"
-      - ".github/workflows/build-rpm.yml"
-      - ".github/workflows/build.yml"
+  # pull_request:
+  #   branches: [ main, develop ]
+  #   paths:
+  #     - "lib/**"
+  #     - "linux/**"
+  #     - "external/**"
+  #     - "packages/bclibc_ffi/**"
+  #     - "pubspec.yaml"
+  #     - "rpm/**"
+  #     - "flatpak/*.desktop"
+  #     - "flatpak/*.metainfo.xml"
+  #     - ".github/workflows/build-rpm.yml"
+  #     - ".github/workflows/build.yml"
   workflow_call:
     inputs:
       arch:
