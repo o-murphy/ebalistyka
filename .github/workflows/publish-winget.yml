@@ -49,12 +49,12 @@ jobs:
 
       - name: Install wingetcreate
         run: winget install wingetcreate --disable-interactivity --accept-source-agreements
-        
-      # - name: Submit to Winget
-      #   shell: pwsh
-      #   run: |
-      #     wingetcreate update o-murphy.ebalistyka `
-      #       --version "${{ inputs.version }}.0" `
-      #       --urls "https://github.com/o-murphy/ebalistyka-app/releases/download/${{ inputs.tag_name }}/ebalistyka_windows_x86_64.zip" `
-      #       --token "${{ secrets.WINGET_TOKEN }}" `
-      #       --submit
+
+      - name: Submit to Winget
+        shell: pwsh
+        run: |
+          wingetcreate update o-murphy.ebalistyka `
+            --version "${{ inputs.version }}.0" `
+            --urls "https://github.com/o-murphy/ebalistyka-app/releases/download/${{ inputs.tag_name }}/ebalistyka_windows_x86_64.zip" `
+            --token "${{ secrets.WINGET_TOKEN }}" `
+            --submit
