@@ -29,7 +29,19 @@ jobs:
   winget:
     runs-on: windows-latest
     steps:
-      - name: Install winget
+      - name: Check winget availability
+        id: check_winget
+        run: |
+          if (winget --version 2>$null) {
+            echo "winget_installed=true" >> $env:GITHUB_OUTPUT
+            winget --version
+          } else {
+            echo "winget_installed=false" >> $env:GITHUB_OUTPUT
+          }
+        shell: pwsh
+
+      - name: Install winget (if missing)
+        if: steps.check_winget.outputs.winget_installed == 'false'
         uses: Cyberboss/install-winget@v1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -37,7 +49,7 @@ jobs:
 
       - name: Install wingetcreate
         run: winget install wingetcreate --disable-interactivity --accept-source-agreements
-
+        
       # - name: Submit to Winget
       #   shell: pwsh
       #   run: |
