@@ -1,0 +1,51 @@
+name: Publish to WinGet
+
+on:
+  workflow_call:
+    inputs:
+      tag_name:
+        description: "Release tag (e.g. v0.1.14)"
+        required: true
+        type: string
+      version:
+        description: "WinGet package version (e.g. 0.1.14.0)"
+        required: true
+        type: string
+    secrets:
+      WINGET_TOKEN:
+        required: true
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Release tag (e.g. v0.1.14)"
+        required: true
+        type: string
+      version:
+        description: "WinGet package version (e.g. 0.1.14.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  winget:
+    runs-on: windows-latest
+    steps:
+      - name: Download wingetcreate
+        run: |
+          Invoke-WebRequest -Uri https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
+        shell: pwsh
+
+      - name: Submit to WinGet
+        run: |
+          $TAG     = "${{ inputs.tag_name }}"
+          $VERSION = "${{ inputs.version }}"
+          $URL     = "https://github.com/o-murphy/ebalistyka-app/releases/download/$TAG/ebalistyka_windows_x86_64.zip"
+
+          .\wingetcreate.exe update o-murphy.ebalistyka `
+            --version $VERSION `
+            --urls $URL `
+            --submit `
+            --token "${{ secrets.WINGET_TOKEN }}"
+        shell: pwsh
