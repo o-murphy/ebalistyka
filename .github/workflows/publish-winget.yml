@@ -47,8 +47,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           wget_release_id: latest
 
-      - name: Install wingetcreate
-        run: winget install wingetcreate --disable-interactivity --accept-source-agreements
+      - name: Fix winget sources and install wingetcreate
+        shell: pwsh
+        run: |
+          winget source reset --force
+          winget source update
+          
+          Start-Sleep -Seconds 3
+          
+          winget install wingetcreate --disable-interactivity --accept-source-agreements
 
       - name: Submit to Winget
         shell: pwsh
