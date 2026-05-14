@@ -178,6 +178,7 @@ jobs:
             --install-deps-from=flathub \
             --force-clean \
             --disable-rofiles-fuse \
+            --default-branch=stable \
             --repo=.flatpak-repo \
             --state-dir=.flatpak-builder \
             --arch="${ARCH_SUFFIX}" \
