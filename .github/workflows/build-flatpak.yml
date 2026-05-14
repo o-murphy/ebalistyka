@@ -11,7 +11,6 @@ on:
   #     - "pubspec.yaml"
   #     - "flatpak/**"
   #     - ".github/workflows/build-flatpak.yml"
-  #     - ".github/workflows/build.yml"
   workflow_call:
     inputs:
       arch:
@@ -28,18 +27,13 @@ on:
         required: false
         type: number
         default: 30
-      bundle_artifact_name:
-        description: "Pre-built bundle artifact name (skips build-bundle job)"
-        required: false
-        type: string
-        default: ""
     outputs:
       artifact_name:
         description: "Name of the uploaded artifact"
-        value: ${{ jobs.package.outputs.artifact_name }}
+        value: ${{ jobs.build.outputs.artifact_name }}
       artifact_url:
         description: "URL to download the artifact"
-        value: ${{ jobs.package.outputs.artifact_url }}
+        value: ${{ jobs.build.outputs.artifact_url }}
   workflow_dispatch:
     inputs:
       arch:
@@ -59,19 +53,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-bundle:
-    if: inputs.bundle_artifact_name == ''
-    uses: ./.github/workflows/build.yml
-    with:
-      platform: linux
-      arch: ${{ inputs.arch || 'amd64' }}
-      build_type: release
-      build_name: ${{ inputs.build_name || '' }}
-      retention_days: 1
-
-  package:
-    needs: build-bundle
-    if: always() && (needs.build-bundle.result == 'success' || needs.build-bundle.result == 'skipped')
+  build:
     name: flatpak-${{ inputs.arch || 'amd64' }}
     runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
 
@@ -98,28 +80,83 @@ jobs:
           BUILD_NUMBER=$(git rev-list --count --first-parent HEAD)
           ARCH="${{ inputs.arch || 'amd64' }}"
           if [ "$ARCH" = "amd64" ]; then ARCH_SUFFIX="x86_64"; else ARCH_SUFFIX="aarch64"; fi
+          COMMIT=$(git rev-parse HEAD)
+          REF_TYPE="${{ github.ref_type }}"
+          TAG="${{ github.ref_name }}"
+          if [ "$REF_TYPE" != "tag" ]; then TAG=""; fi
           echo "build_name=$BUILD_NAME"     >> $GITHUB_OUTPUT
           echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
           echo "arch_suffix=$ARCH_SUFFIX"   >> $GITHUB_OUTPUT
+          echo "commit=$COMMIT"             >> $GITHUB_OUTPUT
+          echo "tag=$TAG"                   >> $GITHUB_OUTPUT
           echo "artifact_name=ebalistyka-flatpak-${ARCH_SUFFIX}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
 
-      - name: Download bundle artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: ${{ inputs.bundle_artifact_name || needs.build-bundle.outputs.artifact_name }}
-          path: dl
-
-      - name: Extract bundle
+      - name: Patch manifest for current tag/commit
+        env:
+          TAG: ${{ steps.meta.outputs.tag }}
+          COMMIT: ${{ steps.meta.outputs.commit }}
         run: |
-          ARCH_SUFFIX="${{ steps.meta.outputs.arch_suffix }}"
-          mkdir -p bundle
-          tar -xzf "dl/portable/ebalistyka_linux_${ARCH_SUFFIX}.tar.gz" -C bundle/
+          python3 - "$TAG" "$COMMIT" "flatpak/io.github.o_murphy.ebalistyka.yml" << 'PYEOF'
+          import sys
+
+          tag, commit, path = sys.argv[1], sys.argv[2], sys.argv[3]
+          lines = open(path).readlines()
+          out = []
+          i = 0
+
+          # Pass 1: update app source tag + commit
+          # If tag is empty, remove the tag: line (commit-only source)
+          in_app_source = False
+          while i < len(lines):
+              line = lines[i]
+              if 'github.com/o-murphy/ebalistyka-app.git' in line:
+                  in_app_source = True
+                  out.append(line)
+              elif in_app_source and line.lstrip().startswith('tag:'):
+                  if tag:
+                      indent = len(line) - len(line.lstrip())
+                      out.append(' ' * indent + f'tag: {tag}\n')
+                  # else: drop the tag: line (commit-only is valid)
+              elif in_app_source and line.lstrip().startswith('commit:'):
+                  indent = len(line) - len(line.lstrip())
+                  out.append(' ' * indent + f'commit: {commit}\n')
+                  in_app_source = False
+              else:
+                  out.append(line)
+              i += 1
+
+          # Pass 2: remove temporary backport patches (not needed for tags after v0.1.14)
+          TEMP_PATCHES = ('bclibc_ffi_plugin_cmake.patch', 'linux_cmake_bclibc_conditional.patch')
+          lines, out = out, []
+          i = 0
+          while i < len(lines):
+              line = lines[i]
+              if (line.lstrip().startswith('- type: patch')
+                      and i + 1 < len(lines)
+                      and any(p in lines[i + 1] for p in TEMP_PATCHES)):
+                  i += 2  # skip "- type: patch" + "  path: ..." lines
+              else:
+                  out.append(line)
+                  i += 1
+
+          open(path, 'w').writelines(out)
+          label = tag if tag else commit[:12]
+          print(f"  manifest patched: ref={label}, commit={commit[:12]}")
+          PYEOF
 
       - name: Cache Flatpak runtimes
         uses: actions/cache@v4
         with:
           path: ~/.local/share/flatpak
-          key: flatpak-freedesktop-25.08-${{ runner.arch }}
+          key: flatpak-runtimes-25.08-llvm20-${{ runner.arch }}
+
+      - name: Cache flatpak-builder downloads
+        uses: actions/cache@v4
+        with:
+          path: .flatpak-builder/downloads
+          key: flatpak-dl-${{ hashFiles('flatpak/io.github.o_murphy.ebalistyka.yml', 'flatpak/pubspec-sources.json') }}-${{ runner.arch }}
+          restore-keys: |
+            flatpak-dl-${{ runner.arch }}-
 
       - name: Install flatpak tools
         run: |
@@ -128,15 +165,35 @@ jobs:
           flatpak remote-add --user --if-not-exists flathub \
             https://flathub.org/repo/flathub.flatpakrepo
           flatpak install --user -y --noninteractive flathub \
-            org.freedesktop.Platform//25.08 org.freedesktop.Sdk//25.08
+            org.freedesktop.Platform//25.08 \
+            org.freedesktop.Sdk//25.08 \
+            org.freedesktop.Sdk.Extension.llvm20//25.08
 
-      - name: Package Flatpak
+      - name: Build Flatpak (source build)
         run: |
-          bash scripts/package-flatpak.sh \
-            bundle \
-            "${{ steps.meta.outputs.arch_suffix }}" \
-            "${{ steps.meta.outputs.build_name }}" \
-            "${{ steps.meta.outputs.build_number }}"
+          ARCH_SUFFIX="${{ steps.meta.outputs.arch_suffix }}"
+          flatpak-builder \
+            --sandbox \
+            --user \
+            --install-deps-from=flathub \
+            --force-clean \
+            --disable-rofiles-fuse \
+            --repo=.flatpak-repo \
+            --state-dir=.flatpak-builder \
+            --arch="${ARCH_SUFFIX}" \
+            .flatpak-build \
+            flatpak/io.github.o_murphy.ebalistyka.yml
+
+      - name: Export .flatpak bundle
+        run: |
+          ARCH_SUFFIX="${{ steps.meta.outputs.arch_suffix }}"
+          mkdir -p artifacts/flatpak
+          flatpak build-bundle \
+            --arch="${ARCH_SUFFIX}" \
+            .flatpak-repo \
+            "artifacts/flatpak/ebalistyka_linux_${ARCH_SUFFIX}.flatpak" \
+            io.github.o_murphy.ebalistyka \
+            stable
 
       - name: Upload artifact
         id: upload
@@ -148,7 +205,7 @@ jobs:
           if-no-files-found: error
 
   pr-summary:
-    needs: [ package ]
+    needs: [ build ]
     if: always() && github.event_name == 'pull_request'
     permissions:
       pull-requests: write
@@ -156,6 +213,6 @@ jobs:
     uses: ./.github/workflows/pr-summary.yml
     with:
       platform: Linux Flatpak (${{ inputs.arch || 'amd64' }})
-      build_result: ${{ needs.package.result }}
-      artifact_name: ${{ needs.package.outputs.artifact_name }}
-      artifact_url: ${{ needs.package.outputs.artifact_url }}
+      build_result: ${{ needs.build.result }}
+      artifact_name: ${{ needs.build.outputs.artifact_name }}
+      artifact_url: ${{ needs.build.outputs.artifact_url }}
