@@ -9,15 +9,15 @@ app on Flathub.
 
 Flathub requires **full offline source builds** — the sandbox has no network access during
 `flatpak-builder`. Every dependency (Flutter SDK, Dart packages, C libraries) must be declared as
-a source with a verified SHA-256 checksum. This is different from the GitHub CI flow, which
-packages a pre-built bundle.
+a source with a verified SHA-256 checksum.
 
-Two separate manifests exist for this reason:
+GitHub CI also uses the same source-build approach (via `build-flatpak.yml`) so that CI-produced
+artifacts and Flathub builds are identical.
 
 | File | Used by | Purpose |
 |---|---|---|
-| `io.github.o_murphy.ebalistyka.yml` | Flathub | Full offline source build |
-| `io.github.o_murphy.ebalistyka.bundle.yml` | GitHub CI / local | Packages a pre-built bundle |
+| `io.github.o_murphy.ebalistyka.yml` | Flathub + GitHub CI | Full offline source build |
+| `io.github.o_murphy.ebalistyka.bundle.yml` | local packaging only | Packages a pre-built bundle |
 
 ---
 
@@ -222,34 +222,16 @@ git push origin v0.1.15
 If any `pubspec.lock` file changed (new or upgraded packages):
 
 ```bash
-cd /home/murphy/flutterproj/ebalistyka-app
-
-# Activate the Python venv (recreate if /tmp was cleared)
-python3 -m venv /tmp/ff-venv
-/tmp/ff-venv/bin/pip install packaging PyYAML tomlkit
-
-# Clone flatpak-flutter if not present
-[ -d /tmp/flatpak-flutter ] || git clone https://github.com/TheAppgineer/flatpak-flutter /tmp/flatpak-flutter
-
-# Regenerate pub sources from all 4 pubspec.lock files
-PYTHONPATH=/tmp/flatpak-flutter \
-  /tmp/ff-venv/bin/python3 \
-  /tmp/flatpak-flutter/pubspec_generator/pubspec_generator.py \
-  "pubspec.lock,packages/a7p/pubspec.lock,packages/bclibc_ffi/pubspec.lock,packages/ebalistyka_db/pubspec.lock" \
-  -o /tmp/pubspec-sources-raw.json
-
-# Fix the tuple bug in pubspec_generator output
-python3 -c "
-import json
-raw = json.load(open('/tmp/pubspec-sources-raw.json'))
-sources = raw[0] if isinstance(raw, list) and len(raw) == 2 and isinstance(raw[0], list) else raw
-json.dump(sources, open('flatpak/pubspec-sources.json', 'w'), indent=2)
-print(f'{len(sources)} sources written')
-"
+bash scripts/update-pubspec-sources.sh
 ```
 
-> **Tip:** If `flutter_tools` dependencies changed (upgrading Flutter version), include
-> `/path/to/flutter/packages/flutter_tools/pubspec.lock` in the comma-separated list above.
+The script automatically includes `flutter/packages/flutter_tools/pubspec.lock` (needed for the
+offline `flutter pub get` step inside the sandbox). It looks for it in `$FLUTTER_ROOT`,
+`~/flutter/`, or `.flatpak-builder/build/` from a previous local build.
+
+> **Important:** `flutter_tools/pubspec.lock` must be included — the sandbox `pub get` step
+> resolves flutter tool dependencies offline too. Omitting it causes:
+> `json_annotation X.Y.Z which doesn't match any versions`
 
 ### Step 3 — Update the manifest
 
@@ -445,9 +427,9 @@ diff -u ~/.pub-cache/hosted/pub.dev/objectbox_flutter_libs-<ver>/linux/CMakeList
 Something is trying to download at build time. Common culprits:
 
 - **Missing pub package**: A package in `pubspec.lock` is not in `pubspec-sources.json`.
-  Regenerate `pubspec-sources.json` (Step 2 of version update).
-- **flutter_tools packages missing**: Include `/path/to/flutter/packages/flutter_tools/pubspec.lock`
-  in the pub sources generator.
+  Run `bash scripts/update-pubspec-sources.sh`.
+- **flutter_tools packages missing** (`json_annotation X.Y.Z not found`): The script auto-includes
+  `flutter_tools/pubspec.lock` — if it fails, check that `~/flutter/` or `$FLUTTER_ROOT` is set.
 - **ObjectBox download**: The objectbox patch didn't apply. Check source ordering —
   the patch must come *after* `pubspec-sources.json` in the manifest.
 
@@ -532,7 +514,7 @@ During the Flathub build, the filesystem looks like:
 /run/build/bclibc/             ← bclibc module build (cmake-ninja)
 
 /app/                          ← after bclibc module installs:
-  lib/libbclibc_ffi.so         ← found by bclibc_ffi plugin (mode 2)
+  lib64/libbclibc_ffi.so       ← found by bclibc_ffi plugin (mode 2, searches lib + lib64)
   include/bclibc/...
 
 /run/build/ebalistyka/         ← ebalistyka module working directory

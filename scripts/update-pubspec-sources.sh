@@ -17,6 +17,27 @@ packages/a7p/pubspec.lock,\
 packages/bclibc_ffi/pubspec.lock,\
 packages/ebalistyka_db/pubspec.lock"
 
+# flutter_tools packages are needed for the offline `flutter pub get` step inside the sandbox.
+# Try to find pubspec.lock from local Flutter SDK or from a previous flatpak-builder build.
+FLUTTER_TOOLS_LOCK=""
+if [ -n "${FLUTTER_ROOT:-}" ] && [ -f "$FLUTTER_ROOT/packages/flutter_tools/pubspec.lock" ]; then
+  FLUTTER_TOOLS_LOCK="$FLUTTER_ROOT/packages/flutter_tools/pubspec.lock"
+elif [ -f "$HOME/flutter/packages/flutter_tools/pubspec.lock" ]; then
+  FLUTTER_TOOLS_LOCK="$HOME/flutter/packages/flutter_tools/pubspec.lock"
+else
+  LATEST_BUILD=$(find .flatpak-builder/build -name "pubspec.lock" -path "*/flutter_tools/*" 2>/dev/null | sort | tail -1)
+  if [ -n "$LATEST_BUILD" ]; then
+    FLUTTER_TOOLS_LOCK="$LATEST_BUILD"
+  fi
+fi
+
+if [ -n "$FLUTTER_TOOLS_LOCK" ]; then
+  echo "Including flutter_tools: $FLUTTER_TOOLS_LOCK"
+  PUBSPEC_LOCKS="${PUBSPEC_LOCKS},${FLUTTER_TOOLS_LOCK}"
+else
+  echo "⚠️  flutter_tools/pubspec.lock not found — run a local flatpak build first, or set FLUTTER_ROOT"
+fi
+
 # ── Ensure flatpak-flutter is available ───────────────────────────────────────
 if [ ! -d "$FF_REPO" ]; then
   echo "Cloning flatpak-flutter..."

@@ -30,8 +30,9 @@ if(EXISTS "${BCLIBC_ROOT}/CMakeLists.txt")
   set(bclibc_ffi_bundled_libraries $<TARGET_FILE:bclibc_ffi> PARENT_SCOPE)
 else()
   # Mode 2: use pre-installed library (Flatpak separate module)
+  # Check both lib and lib64 — freedesktop SDK installs to lib64 on x86_64
   find_library(BCLIBC_FFI_LIB bclibc_ffi REQUIRED
-    HINTS /app/lib "${CMAKE_INSTALL_PREFIX}/lib")
+    HINTS /app/lib /app/lib64 "${CMAKE_INSTALL_PREFIX}/lib" "${CMAKE_INSTALL_PREFIX}/lib64")
   message(STATUS "bclibc_ffi: using pre-installed library: ${BCLIBC_FFI_LIB}")
   set(bclibc_ffi_bundled_libraries "${BCLIBC_FFI_LIB}" PARENT_SCOPE)
 endif()
