@@ -18,7 +18,7 @@ BUILD_NAME="${3:-local}"
 BUILD_NUMBER="${4:-0}"
 
 APP_ID="io.github.o_murphy.ebalistyka"
-MANIFEST="flatpak/${APP_ID}.yml"
+MANIFEST="flatpak/${APP_ID}.bundle.yml"
 
 if [ ! -f "$MANIFEST" ]; then
   echo "❌ $MANIFEST not found — run from the project root" >&2

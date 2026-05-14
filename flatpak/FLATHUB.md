@@ -1,0 +1,481 @@
+# Flathub Publishing Guide
+
+This document covers the complete workflow for building, testing, publishing, and updating the
+app on Flathub.
+
+---
+
+## Background: why source builds?
+
+Flathub requires **full offline source builds** — the sandbox has no network access during
+`flatpak-builder`. Every dependency (Flutter SDK, Dart packages, C libraries) must be declared as
+a source with a verified SHA-256 checksum. This is different from the GitHub CI flow, which
+packages a pre-built bundle.
+
+Two separate manifests exist for this reason:
+
+| File | Used by | Purpose |
+|---|---|---|
+| `io.github.o_murphy.ebalistyka.yml` | Flathub | Full offline source build |
+| `io.github.o_murphy.ebalistyka.bundle.yml` | GitHub CI / local | Packages a pre-built bundle |
+
+---
+
+## Repository layout
+
+```
+flatpak/
+├── io.github.o_murphy.ebalistyka.yml        # Flathub manifest (source build)
+├── io.github.o_murphy.ebalistyka.bundle.yml # CI manifest (bundle)
+├── flutter-sdk.json                          # Flutter 3.41.9 SDK sources (20 archives)
+├── pubspec-sources.json                      # 426 pub.dev package sources
+├── ebalistyka-wrapper.sh                     # /app/bin/ebalistyka launcher
+├── io.github.o_murphy.ebalistyka.desktop     # .desktop file
+├── io.github.o_murphy.ebalistyka.metainfo.xml# AppStream metadata
+└── patches/
+    ├── flutter/shared.sh.patch               # Forces --offline in flutter pub upgrade
+    └── objectbox_flutter_libs/
+        └── CMakeLists.txt.patch              # Skips FetchContent download for libobjectbox
+```
+
+Generator scripts (kept in `/tmp/` — not committed, recreate if `/tmp` is cleared):
+
+```
+/tmp/gen_manifest.py       # Regenerates io.github.o_murphy.ebalistyka.yml from flutter-sdk.json
+/tmp/gen_flutter_sdk.py    # Regenerates flutter-sdk.json from local Flutter install
+/tmp/flatpak-flutter/      # flatpak-flutter tool (git clone of TheAppgineer/flatpak-flutter)
+/tmp/ff-venv/              # Python venv for the generators
+```
+
+---
+
+## How the offline build works
+
+When `flatpak-builder` runs, all sources are fetched and verified **before** build commands
+execute. Sources in the manifest are applied in order:
+
+```
+1. App source      git @ v0.1.14         → /run/build/ebalistyka/
+2. Flutter SDK     git @ 3.41.9          → /run/build/ebalistyka/flutter/
+   + 17 engine artifact archives          → flutter/bin/cache/artifacts/...
+   + shared.sh.patch                      → patches flutter pub upgrade to --offline
+   + setup-flutter.sh script
+3. bclibc          git @ 5669f35         → /run/build/ebalistyka/external/bclibc/
+4. objectbox-c     archive x64/aarch64   → /run/build/ebalistyka/objectbox-c/
+5. pubspec-sources.json                  → /run/build/ebalistyka/.pub-cache/hosted/pub.dev/*/
+6. objectbox patch (after pubspec!)      → patches objectbox_flutter_libs CMakeLists.txt
+```
+
+Then build commands run:
+```
+7 stamp copies → setup-flutter.sh (flutter pub get --offline) → flutter build linux --release --no-pub → install
+```
+
+### Why ObjectBox needs a patch
+
+`objectbox_flutter_libs` downloads `libobjectbox.so` via CMake `FetchContent_Populate`. This
+deprecated API creates a cmake *subbuild* — a separate cmake process that doesn't inherit
+variables from the parent. The standard `FETCHCONTENT_SOURCE_DIR_*` approach fails here.
+
+The fix: `patches/objectbox_flutter_libs/CMakeLists.txt.patch` makes the plugin check whether
+`${CMAKE_SOURCE_DIR}/../objectbox-c/lib/libobjectbox.so` already exists (placed there by the
+archive source) and skip the download entirely.
+
+---
+
+## Local testing
+
+### Prerequisites (one-time setup)
+
+```bash
+sudo apt install flatpak flatpak-builder
+flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+flatpak install --user flathub \
+  org.freedesktop.Platform//25.08 \
+  org.freedesktop.Sdk//25.08 \
+  org.freedesktop.Sdk.Extension.llvm20//25.08
+```
+
+### Build and install
+
+```bash
+cd /home/murphy/flutterproj/ebalistyka-app
+
+flatpak-builder --sandbox --user --install --install-deps-from=flathub --force-clean \
+  --repo=.flatpak-repo --state-dir=.flatpak-builder \
+  .flatpak-build flatpak/io.github.o_murphy.ebalistyka.yml
+```
+
+First run downloads all sources (~1–2 GB) into `.flatpak-builder/downloads/` — this is cached
+and subsequent builds are fast. `--force-clean` removes only the build dir, not the cache.
+
+### Run the installed app
+
+```bash
+flatpak run io.github.o_murphy.ebalistyka
+```
+
+### Export a standalone `.flatpak` file
+
+```bash
+flatpak build-bundle .flatpak-repo \
+  ebalistyka_linux_x86_64.flatpak \
+  io.github.o_murphy.ebalistyka
+```
+
+---
+
+## Publishing to Flathub (first submission)
+
+Flathub uses its own git repository per app. The process:
+
+### 1. Fork the Flathub repository
+
+Go to https://github.com/flathub/flathub and click **"Add New App"** (top right),
+or for direct submission: fork https://github.com/flathub/flathub and submit a PR
+adding a new directory `io.github.o_murphy.ebalistyka/`.
+
+The Flathub submission repository needs:
+```
+io.github.o_murphy.ebalistyka/
+└── io.github.o_murphy.ebalistyka.yml   ← the source-build manifest
+```
+
+All supporting files referenced in the manifest (`pubspec-sources.json`,
+`patches/`, etc.) must also be in that same directory.
+
+### 2. Prepare the Flathub repository
+
+```bash
+# Clone your fork
+git clone https://github.com/YOUR_FORK/io.github.o_murphy.ebalistyka flathub-repo
+cd flathub-repo
+
+# Copy the manifest and all referenced files
+cp ../ebalistyka-app/flatpak/io.github.o_murphy.ebalistyka.yml .
+cp ../ebalistyka-app/flatpak/pubspec-sources.json .
+cp ../ebalistyka-app/flatpak/flutter-sdk.json .
+cp -r ../ebalistyka-app/flatpak/patches .
+# (The manifest, desktop, metainfo, wrapper, icon are fetched from git source — no copy needed)
+```
+
+> **Note:** The manifest's `type: git` sources (app source, Flutter, bclibc) pull files from
+> GitHub at build time. Only the generated JSON/patch files need to be in the Flathub repo.
+
+### 3. Update metainfo before submission
+
+Edit `flatpak/io.github.o_murphy.ebalistyka.metainfo.xml` — the `<releases>` section must
+list at least the current version with today's date:
+
+```xml
+<releases>
+  <release version="0.1.14" date="2026-05-14"/>
+</releases>
+```
+
+### 4. Validate locally before submitting
+
+```bash
+# AppStream validation
+flatpak run --command=appstreamcli org.freedesktop.Sdk//25.08 \
+  validate flatpak/io.github.o_murphy.ebalistyka.metainfo.xml
+
+# Full sandbox build (as described in Local testing above)
+```
+
+### 5. Submit PR
+
+Push to your fork and open a PR against `https://github.com/flathub/io.github.o_murphy.ebalistyka`
+(the app-specific repo, not the main flathub repo). Flathub CI will run the sandbox build.
+
+---
+
+## Version update workflow
+
+When releasing a new version (e.g. `v0.1.15`):
+
+### Step 1 — Tag and push the release
+
+```bash
+git tag v0.1.15
+git push origin v0.1.15
+# Note the commit hash from: git rev-parse v0.1.15
+```
+
+### Step 2 — Update Dart dependencies (if pubspec.lock changed)
+
+If any `pubspec.lock` file changed (new or upgraded packages):
+
+```bash
+cd /home/murphy/flutterproj/ebalistyka-app
+
+# Activate the Python venv (recreate if /tmp was cleared)
+python3 -m venv /tmp/ff-venv
+/tmp/ff-venv/bin/pip install packaging PyYAML tomlkit
+
+# Clone flatpak-flutter if not present
+[ -d /tmp/flatpak-flutter ] || git clone https://github.com/TheAppgineer/flatpak-flutter /tmp/flatpak-flutter
+
+# Regenerate pub sources from all 4 pubspec.lock files
+PYTHONPATH=/tmp/flatpak-flutter \
+  /tmp/ff-venv/bin/python3 \
+  /tmp/flatpak-flutter/pubspec_generator/pubspec_generator.py \
+  "pubspec.lock,packages/a7p/pubspec.lock,packages/bclibc_ffi/pubspec.lock,packages/ebalistyka_db/pubspec.lock" \
+  -o /tmp/pubspec-sources-raw.json
+
+# Fix the tuple bug in pubspec_generator output
+python3 -c "
+import json
+raw = json.load(open('/tmp/pubspec-sources-raw.json'))
+sources = raw[0] if isinstance(raw, list) and len(raw) == 2 and isinstance(raw[0], list) else raw
+json.dump(sources, open('flatpak/pubspec-sources.json', 'w'), indent=2)
+print(f'{len(sources)} sources written')
+"
+```
+
+> **Tip:** If `flutter_tools` dependencies changed (upgrading Flutter version), include
+> `/path/to/flutter/packages/flutter_tools/pubspec.lock` in the comma-separated list above.
+
+### Step 3 — Update the manifest
+
+Edit `flatpak/io.github.o_murphy.ebalistyka.yml` — change the app's git source:
+
+```yaml
+sources:
+  - type: git
+    url: https://github.com/o-murphy/ebalistyka-app.git
+    tag: v0.1.15                              # ← new tag
+    commit: <new-commit-hash>                 # ← git rev-parse v0.1.15
+    disable-submodules: true
+```
+
+Also update `flatpak/io.github.o_murphy.ebalistyka.metainfo.xml` releases:
+
+```xml
+<releases>
+  <release version="0.1.15" date="2026-05-14"/>  <!-- update version and date -->
+</releases>
+```
+
+### Step 4 — Test locally
+
+```bash
+flatpak-builder --sandbox --user --install --install-deps-from=flathub --force-clean \
+  --repo=.flatpak-repo --state-dir=.flatpak-builder \
+  .flatpak-build flatpak/io.github.o_murphy.ebalistyka.yml
+
+flatpak run io.github.o_murphy.ebalistyka
+```
+
+### Step 5 — Push to Flathub repo
+
+```bash
+cd flathub-repo  # the separate Flathub git repo
+
+# Update the files
+cp ../ebalistyka-app/flatpak/io.github.o_murphy.ebalistyka.yml .
+cp ../ebalistyka-app/flatpak/pubspec-sources.json .  # if changed
+
+git add -A
+git commit -m "Update to v0.1.15"
+git push
+```
+
+Flathub CI triggers automatically on push to the app's `master` branch.
+
+---
+
+## Flutter version upgrade
+
+When bumping Flutter (e.g. `3.41.9` → `3.42.0`):
+
+### 1. Update local Flutter
+
+```bash
+flutter upgrade  # or: cd ~/flutter && git checkout 3.42.0
+```
+
+### 2. Regenerate flutter-sdk.json
+
+```bash
+# flutter-sdk.json requires downloading engine artifacts to compute SHA-256.
+# This needs network access (once), then everything is cached.
+
+python3 -m venv /tmp/ff-venv
+/tmp/ff-venv/bin/pip install packaging PyYAML tomlkit
+[ -d /tmp/flatpak-flutter ] || git clone https://github.com/TheAppgineer/flatpak-flutter /tmp/flatpak-flutter
+
+cat > /tmp/gen_flutter_sdk.py << 'EOF'
+import sys
+sys.path.insert(0, '/tmp/flatpak-flutter')
+from flutter_sdk_generator.flutter_sdk_generator import generate_sdk
+import json
+
+sdk_path = '/home/murphy/flutter'
+tag = open(f'{sdk_path}/version').read().strip()
+patch_path = '../patches/flutter'  # relative path for the patch entry
+
+result = generate_sdk(sdk_path, tag, patch_path)
+json.dump(result, open('/home/murphy/flutterproj/ebalistyka-app/flatpak/flutter-sdk.json', 'w'), indent=2)
+print(f"Written flutter-sdk.json (tag: {tag})")
+EOF
+
+python3 /tmp/gen_flutter_sdk.py
+```
+
+### 3. Regenerate pub sources
+
+Run Step 2 of the version update workflow above (include `flutter_tools/pubspec.lock`).
+
+### 4. Regenerate the manifest
+
+```bash
+python3 /tmp/gen_manifest.py flatpak/io.github.o_murphy.ebalistyka.yml
+```
+
+Then manually set the correct `tag` and `commit` for the app source in the manifest
+(the generator uses the values hardcoded in `gen_manifest.py` — update them first):
+
+```python
+# In /tmp/gen_manifest.py, update:
+APP_SOURCES = [
+    {
+        'type': 'git',
+        'url': 'https://github.com/o-murphy/ebalistyka-app.git',
+        'tag': 'v0.1.15',           # ← update
+        'commit': '<hash>',          # ← update
+        'disable-submodules': True,
+    },
+    ...
+]
+```
+
+---
+
+## ObjectBox version upgrade
+
+If `objectbox_flutter_libs` is upgraded (e.g. `5.3.1` → `5.4.0`):
+
+### 1. Find new archive SHA-256
+
+```bash
+VERSION=5.4.0
+curl -sL "https://github.com/objectbox/objectbox-c/releases/download/v${VERSION}/objectbox-linux-x64.tar.gz" | sha256sum
+curl -sL "https://github.com/objectbox/objectbox-c/releases/download/v${VERSION}/objectbox-linux-aarch64.tar.gz" | sha256sum
+```
+
+### 2. Update the manifest
+
+In `flatpak/io.github.o_murphy.ebalistyka.yml`, update the two objectbox archive sources:
+
+```yaml
+- type: archive
+  only-arches: [x86_64]
+  url: .../objectbox-linux-x64.tar.gz        # ← new version
+  sha256: <new-sha256-x64>
+  dest: objectbox-c
+  strip-components: 0
+- type: archive
+  only-arches: [aarch64]
+  url: .../objectbox-linux-aarch64.tar.gz    # ← new version
+  sha256: <new-sha256-aarch64>
+  dest: objectbox-c
+  strip-components: 0
+```
+
+Also update the patch `dest` path if the package version changed:
+
+```yaml
+- type: patch
+  dest: .pub-cache/hosted/pub.dev/objectbox_flutter_libs-5.4.0   # ← new version
+  path: patches/objectbox_flutter_libs/CMakeLists.txt.patch
+```
+
+### 3. Verify the patch still applies
+
+```bash
+patch --dry-run -p1 -d ~/.pub-cache/hosted/pub.dev/objectbox_flutter_libs-5.4.0 \
+  < flatpak/patches/objectbox_flutter_libs/CMakeLists.txt.patch
+```
+
+If it fails, update the patch against the new CMakeLists.txt:
+
+```bash
+# Make the same changes manually to /tmp/objectbox_cmake_new.txt, then:
+diff -u ~/.pub-cache/hosted/pub.dev/objectbox_flutter_libs-<ver>/linux/CMakeLists.txt \
+        /tmp/objectbox_cmake_new.txt \
+  | sed 's|.*CMakeLists.txt.*|--- a/linux/CMakeLists.txt\n+++ b/linux/CMakeLists.txt|' \
+  > flatpak/patches/objectbox_flutter_libs/CMakeLists.txt.patch
+```
+
+---
+
+## Troubleshooting
+
+### Build fails with "network access" errors
+
+Something is trying to download at build time. Common culprits:
+
+- **Missing pub package**: A package in `pubspec.lock` is not in `pubspec-sources.json`.
+  Regenerate `pubspec-sources.json` (Step 2 of version update).
+- **flutter_tools packages missing**: Include `/path/to/flutter/packages/flutter_tools/pubspec.lock`
+  in the pub sources generator.
+- **ObjectBox download**: The objectbox patch didn't apply. Check source ordering —
+  the patch must come *after* `pubspec-sources.json` in the manifest.
+
+### Patch fails to apply: "can't find file to patch"
+
+The `objectbox_flutter_libs` package version in `.pub-cache` doesn't match the `dest` path.
+Check the version in `pubspec.lock`:
+
+```bash
+grep -A3 'objectbox_flutter_libs:' pubspec.lock
+```
+
+Update the `dest` in the manifest to match the actual version.
+
+### Build fails at `flutter pub get`
+
+The offline pub cache is incomplete. Check which package is missing:
+
+```bash
+# Run pub get manually pointing at the pub cache from the last build
+PUB_CACHE=/path/to/.flatpak-builder/... flutter pub get
+```
+
+Then regenerate `pubspec-sources.json`.
+
+### `appstreamcli compose` warning: no release
+
+Update the `<releases>` block in `io.github.o_murphy.ebalistyka.metainfo.xml` with the
+current version and date.
+
+### Flathub CI passes locally but fails on Flathub
+
+- Flathub builds on `x86_64` and `aarch64` — test aarch64 locally with `--arch=aarch64`
+  if you have the runtime: `flatpak install flathub org.freedesktop.Platform//25.08//aarch64`
+- Flathub uses a stricter sandbox. Run locally with `--sandbox` flag (already in the test command).
+
+---
+
+## Key paths inside the sandbox
+
+During the Flathub build, the filesystem looks like:
+
+```
+/run/build/ebalistyka/         ← module working directory (all sources land here)
+  ebalistyka-app/              ← app source (the git checkout)
+  flutter/                     ← Flutter SDK
+  external/bclibc/             ← bclibc C library
+  objectbox-c/                 ← objectbox prebuilt (lib/libobjectbox.so, include/)
+  .pub-cache/hosted/pub.dev/   ← Dart packages (from pubspec-sources.json)
+    objectbox_flutter_libs-5.3.1/linux/CMakeLists.txt  ← patched to skip download
+  build/linux/x64/release/bundle/  ← flutter build output
+
+/app/                          ← installed app destination
+  ebalistyka/                  ← bundle files (binary + libs + data)
+  bin/ebalistyka               ← wrapper script (sets LD_LIBRARY_PATH)
+  share/applications/...       ← .desktop file
+  share/icons/...              ← icon
+  share/metainfo/...           ← AppStream XML
+```

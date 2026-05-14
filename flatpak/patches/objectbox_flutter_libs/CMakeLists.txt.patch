@@ -1,0 +1,21 @@
+--- a/linux/CMakeLists.txt	2026-05-14 17:47:15.630376898 +0300
++++ b/linux/CMakeLists.txt	2026-05-14 17:47:15.643918242 +0300
+@@ -66,9 +66,15 @@
+     URL https://github.com/objectbox/objectbox-c/releases/download/v${OBJECTBOX_VERSION}/objectbox-linux-${OBJECTBOX_ARCH}.tar.gz
+ )
+ 
+-FetchContent_GetProperties(objectbox-download)
+-if(NOT objectbox-download_POPULATED)
+-  FetchContent_Populate(objectbox-download)
++# Support offline/sandboxed builds (e.g. Flatpak) via a pre-seeded directory.
++set(_objectbox_offline_dir "${CMAKE_SOURCE_DIR}/../objectbox-c")
++if(EXISTS "${_objectbox_offline_dir}/lib/libobjectbox.so")
++  set(objectbox-download_SOURCE_DIR "${_objectbox_offline_dir}")
++else()
++  FetchContent_GetProperties(objectbox-download)
++  if(NOT objectbox-download_POPULATED)
++    FetchContent_Populate(objectbox-download)
++  endif()
+ endif()
+ 
+ # ----------------------------------------------------------------------
