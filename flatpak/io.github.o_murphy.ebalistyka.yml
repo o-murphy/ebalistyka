@@ -35,6 +35,7 @@ modules:
       prepend-ld-library-path: /usr/lib/sdk/llvm20/lib
       env:
         PUB_CACHE: /run/build/ebalistyka/.pub-cache
+        OBJECTBOX_PREBUILT_DIR: /run/build/ebalistyka/objectbox-c
     build-commands:
       - cp flutter/bin/internal/engine.version flutter/bin/cache/engine-dart-sdk.stamp
       - cp flutter/bin/internal/material_fonts.version flutter/bin/cache/material_fonts.stamp
@@ -44,7 +45,7 @@ modules:
       - cp flutter/bin/internal/engine.version flutter/bin/cache/font-subset.stamp
       - cp flutter/bin/internal/engine.version flutter/bin/cache/linux-sdk.stamp
       - setup-flutter.sh
-      - flutter build linux --release --no-pub -- -DOBJECTBOX_PREBUILT_DIR=/run/build/ebalistyka/objectbox-c
+      - flutter build linux --release --no-pub
       - mkdir -p /app/ebalistyka
       - cp -r "$BUNDLE_PATH"/. /app/ebalistyka/
       - install -Dm755 flatpak/ebalistyka-wrapper.sh /app/bin/ebalistyka
