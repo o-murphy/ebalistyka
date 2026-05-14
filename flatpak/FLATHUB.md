@@ -51,8 +51,21 @@ Generator scripts (kept in `/tmp/` — not committed, recreate if `/tmp` is clea
 
 ## How the offline build works
 
-When `flatpak-builder` runs, all sources are fetched and verified **before** build commands
-execute. Sources in the manifest are applied in order:
+Two modules are built in sequence. When `flatpak-builder` runs, all sources are fetched and
+verified **before** build commands execute.
+
+### Module 1: `bclibc` (cmake-ninja)
+
+```
+sources:  git @ v1.0.5
+builds:   libbclibc_core.a + libbclibc_ffi.so
+installs: /app/lib/libbclibc_ffi.so
+          /app/include/bclibc/...
+```
+
+### Module 2: `ebalistyka` (simple)
+
+Sources applied in order:
 
 ```
 1. App source      git @ v0.1.14         → /run/build/ebalistyka/
@@ -60,16 +73,18 @@ execute. Sources in the manifest are applied in order:
    + 17 engine artifact archives          → flutter/bin/cache/artifacts/...
    + shared.sh.patch                      → patches flutter pub upgrade to --offline
    + setup-flutter.sh script
-3. bclibc          git @ 5669f35         → /run/build/ebalistyka/external/bclibc/
-4. objectbox-c     archive x64/aarch64   → /run/build/ebalistyka/objectbox-c/
-5. pubspec-sources.json                  → /run/build/ebalistyka/.pub-cache/hosted/pub.dev/*/
-6. objectbox patch (after pubspec!)      → patches objectbox_flutter_libs CMakeLists.txt
+3. objectbox-c     archive x64/aarch64   → /run/build/ebalistyka/objectbox-c/
+4. pubspec-sources.json                  → /run/build/ebalistyka/.pub-cache/hosted/pub.dev/*/
+5. objectbox patch (after pubspec!)      → patches objectbox_flutter_libs CMakeLists.txt
 ```
 
 Then build commands run:
 ```
 7 stamp copies → setup-flutter.sh (flutter pub get --offline) → flutter build linux --release --no-pub → install
 ```
+
+The `bclibc_ffi` Flutter plugin detects that `external/bclibc` is absent and finds
+`/app/lib/libbclibc_ffi.so` (installed by module 1) instead of building from source.
 
 ### Why ObjectBox needs a patch
 
@@ -238,7 +253,7 @@ print(f'{len(sources)} sources written')
 
 ### Step 3 — Update the manifest
 
-Edit `flatpak/io.github.o_murphy.ebalistyka.yml` — change the app's git source:
+Edit `flatpak/io.github.o_murphy.ebalistyka.yml` — change the app git source tag/commit:
 
 ```yaml
 sources:
@@ -247,7 +262,20 @@ sources:
     tag: v0.1.15                              # ← new tag
     commit: <new-commit-hash>                 # ← git rev-parse v0.1.15
     disable-submodules: true
+  # ↓ Temporary patches — remove both once the new tag contains these changes committed
+  - type: patch
+    path: patches/bclibc_ffi_plugin_cmake.patch    # packages/bclibc_ffi/linux/CMakeLists.txt
+  - type: patch
+    path: patches/linux_cmake_bclibc_conditional.patch  # linux/CMakeLists.txt
 ```
+
+> **Temporary patches** — `patches/bclibc_ffi_plugin_cmake.patch` and
+> `patches/linux_cmake_bclibc_conditional.patch` backport two changes to the app source that
+> aren't yet in the release tag:
+> - `bclibc_ffi` plugin: use pre-installed `/app/lib/libbclibc_ffi.so` when `external/bclibc` is absent
+> - `linux/CMakeLists.txt`: `install(TARGETS bclibc_ffi ...)` is now conditional on target existence
+>
+> Once these are committed and included in the new release tag, **remove both patch sources**.
 
 Also update `flatpak/io.github.o_murphy.ebalistyka.metainfo.xml` releases:
 
@@ -458,24 +486,68 @@ current version and date.
 
 ---
 
+## bclibc version upgrade
+
+When `bclibc` is updated:
+
+### 1. Update the submodule
+
+```bash
+cd external/bclibc
+git fetch --tags
+git checkout v1.0.6   # new version
+cd ../..
+git add external/bclibc
+```
+
+### 2. Update the manifest
+
+In `flatpak/io.github.o_murphy.ebalistyka.yml`, update the bclibc module source:
+
+```yaml
+- name: bclibc
+  ...
+  sources:
+    - type: git
+      url: https://github.com/ballistics-lab/bclibc.git
+      tag: v1.0.6                           # ← new tag
+      commit: <git rev-parse v1.0.6>        # ← new commit hash
+```
+
+### 3. Test locally
+
+```bash
+flatpak-builder --sandbox --user --install --install-deps-from=flathub --force-clean \
+  --repo=.flatpak-repo --state-dir=.flatpak-builder \
+  .flatpak-build flatpak/io.github.o_murphy.ebalistyka.yml
+```
+
+---
+
 ## Key paths inside the sandbox
 
 During the Flathub build, the filesystem looks like:
 
 ```
-/run/build/ebalistyka/         ← module working directory (all sources land here)
-  ebalistyka-app/              ← app source (the git checkout)
+/run/build/bclibc/             ← bclibc module build (cmake-ninja)
+
+/app/                          ← after bclibc module installs:
+  lib/libbclibc_ffi.so         ← found by bclibc_ffi plugin (mode 2)
+  include/bclibc/...
+
+/run/build/ebalistyka/         ← ebalistyka module working directory
   flutter/                     ← Flutter SDK
-  external/bclibc/             ← bclibc C library
   objectbox-c/                 ← objectbox prebuilt (lib/libobjectbox.so, include/)
   .pub-cache/hosted/pub.dev/   ← Dart packages (from pubspec-sources.json)
     objectbox_flutter_libs-5.3.1/linux/CMakeLists.txt  ← patched to skip download
-  build/linux/x64/release/bundle/  ← flutter build output
+  build/linux/x64/release/bundle/  ← flutter build output (copied to /app/ebalistyka/)
 
-/app/                          ← installed app destination
+/app/                          ← final installed state
   ebalistyka/                  ← bundle files (binary + libs + data)
+    lib/libbclibc_ffi.so       ← copied from /app/lib/ via bclibc_ffi_bundled_libraries
+    lib/libobjectbox.so        ← copied from objectbox-c/
   bin/ebalistyka               ← wrapper script (sets LD_LIBRARY_PATH)
-  share/applications/...       ← .desktop file
-  share/icons/...              ← icon
-  share/metainfo/...           ← AppStream XML
+  share/applications/...
+  share/icons/...
+  share/metainfo/...
 ```
