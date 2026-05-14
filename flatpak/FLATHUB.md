@@ -9,15 +9,15 @@ app on Flathub.
 
 Flathub requires **full offline source builds** — the sandbox has no network access during
 `flatpak-builder`. Every dependency (Flutter SDK, Dart packages, C libraries) must be declared as
-a source with a verified SHA-256 checksum. This is different from the GitHub CI flow, which
-packages a pre-built bundle.
+a source with a verified SHA-256 checksum.
 
-Two separate manifests exist for this reason:
+GitHub CI also uses the same source-build approach (via `build-flatpak.yml`) so that CI-produced
+artifacts and Flathub builds are identical.
 
 | File | Used by | Purpose |
 |---|---|---|
-| `io.github.o_murphy.ebalistyka.yml` | Flathub | Full offline source build |
-| `io.github.o_murphy.ebalistyka.bundle.yml` | GitHub CI / local | Packages a pre-built bundle |
+| `io.github.o_murphy.ebalistyka.yml` | Flathub + GitHub CI | Full offline source build |
+| `io.github.o_murphy.ebalistyka.bundle.yml` | local packaging only | Packages a pre-built bundle |
 
 ---
 
@@ -92,9 +92,10 @@ The `bclibc_ffi` Flutter plugin detects that `external/bclibc` is absent and fin
 deprecated API creates a cmake *subbuild* — a separate cmake process that doesn't inherit
 variables from the parent. The standard `FETCHCONTENT_SOURCE_DIR_*` approach fails here.
 
-The fix: `patches/objectbox_flutter_libs/CMakeLists.txt.patch` makes the plugin check whether
-`${CMAKE_SOURCE_DIR}/../objectbox-c/lib/libobjectbox.so` already exists (placed there by the
-archive source) and skip the download entirely.
+The fix: `patches/objectbox_flutter_libs/CMakeLists.txt.patch` adds support for
+`OBJECTBOX_PREBUILT_DIR` cmake variable — same approach proposed upstream. The manifest passes
+`-DOBJECTBOX_PREBUILT_DIR=/run/build/ebalistyka/objectbox-c` via `flutter build linux -- ...`,
+pointing to the pre-seeded archive source. If upstream accepts the fix, the patch can be dropped.
 
 ---
 
@@ -207,109 +208,45 @@ Push to your fork and open a PR against `https://github.com/flathub/io.github.o_
 
 ## Version update workflow
 
-When releasing a new version (e.g. `v0.1.15`):
+### What goes into the release PR
 
-### Step 1 — Tag and push the release
+**Only if `pubspec.lock` changed** (new/upgraded Dart packages):
+```bash
+bash scripts/update-pubspec-sources.sh
+# commit the updated flatpak/pubspec-sources.json
+```
+
+The script includes `flutter/packages/flutter_tools/pubspec.lock` automatically (needed for the
+offline `pub get` step inside the sandbox). Without it the build fails with:
+`json_annotation X.Y.Z which doesn't match any versions`
+
+**The manifest `tag`/`commit` fields do NOT need manual editing** — `build-flatpak.yml` patches
+them automatically from `${{ github.ref_name }}` when the tag is pushed.
+
+---
+
+### After merging — tag and push
 
 ```bash
 git tag v0.1.15
 git push origin v0.1.15
-# Note the commit hash from: git rev-parse v0.1.15
 ```
 
-### Step 2 — Update Dart dependencies (if pubspec.lock changed)
+This triggers `release.yml` automatically:
+- Builds all artifacts including the source-built `.flatpak`
+- Creates the GitHub release
 
-If any `pubspec.lock` file changed (new or upgraded packages):
+---
 
-```bash
-cd /home/murphy/flutterproj/ebalistyka-app
+### After the GitHub release — publish to Flathub
 
-# Activate the Python venv (recreate if /tmp was cleared)
-python3 -m venv /tmp/ff-venv
-/tmp/ff-venv/bin/pip install packaging PyYAML tomlkit
+Trigger manually: **GitHub → Actions → Publish Flathub → Run workflow → tag: `v0.1.15`**
 
-# Clone flatpak-flutter if not present
-[ -d /tmp/flatpak-flutter ] || git clone https://github.com/TheAppgineer/flatpak-flutter /tmp/flatpak-flutter
-
-# Regenerate pub sources from all 4 pubspec.lock files
-PYTHONPATH=/tmp/flatpak-flutter \
-  /tmp/ff-venv/bin/python3 \
-  /tmp/flatpak-flutter/pubspec_generator/pubspec_generator.py \
-  "pubspec.lock,packages/a7p/pubspec.lock,packages/bclibc_ffi/pubspec.lock,packages/ebalistyka_db/pubspec.lock" \
-  -o /tmp/pubspec-sources-raw.json
-
-# Fix the tuple bug in pubspec_generator output
-python3 -c "
-import json
-raw = json.load(open('/tmp/pubspec-sources-raw.json'))
-sources = raw[0] if isinstance(raw, list) and len(raw) == 2 and isinstance(raw[0], list) else raw
-json.dump(sources, open('flatpak/pubspec-sources.json', 'w'), indent=2)
-print(f'{len(sources)} sources written')
-"
-```
-
-> **Tip:** If `flutter_tools` dependencies changed (upgrading Flutter version), include
-> `/path/to/flutter/packages/flutter_tools/pubspec.lock` in the comma-separated list above.
-
-### Step 3 — Update the manifest
-
-Edit `flatpak/io.github.o_murphy.ebalistyka.yml` — change the app git source tag/commit:
-
-```yaml
-sources:
-  - type: git
-    url: https://github.com/o-murphy/ebalistyka-app.git
-    tag: v0.1.15                              # ← new tag
-    commit: <new-commit-hash>                 # ← git rev-parse v0.1.15
-    disable-submodules: true
-  # ↓ Temporary patches — remove both once the new tag contains these changes committed
-  - type: patch
-    path: patches/bclibc_ffi_plugin_cmake.patch    # packages/bclibc_ffi/linux/CMakeLists.txt
-  - type: patch
-    path: patches/linux_cmake_bclibc_conditional.patch  # linux/CMakeLists.txt
-```
-
-> **Temporary patches** — `patches/bclibc_ffi_plugin_cmake.patch` and
-> `patches/linux_cmake_bclibc_conditional.patch` backport two changes to the app source that
-> aren't yet in the release tag:
-> - `bclibc_ffi` plugin: use pre-installed `/app/lib/libbclibc_ffi.so` when `external/bclibc` is absent
-> - `linux/CMakeLists.txt`: `install(TARGETS bclibc_ffi ...)` is now conditional on target existence
->
-> Once these are committed and included in the new release tag, **remove both patch sources**.
-
-Also update `flatpak/io.github.o_murphy.ebalistyka.metainfo.xml` releases:
-
-```xml
-<releases>
-  <release version="0.1.15" date="2026-05-14"/>  <!-- update version and date -->
-</releases>
-```
-
-### Step 4 — Test locally
-
-```bash
-flatpak-builder --sandbox --user --install --install-deps-from=flathub --force-clean \
-  --repo=.flatpak-repo --state-dir=.flatpak-builder \
-  .flatpak-build flatpak/io.github.o_murphy.ebalistyka.yml
-
-flatpak run io.github.o_murphy.ebalistyka
-```
-
-### Step 5 — Push to Flathub repo
-
-```bash
-cd flathub-repo  # the separate Flathub git repo
-
-# Update the files
-cp ../ebalistyka-app/flatpak/io.github.o_murphy.ebalistyka.yml .
-cp ../ebalistyka-app/flatpak/pubspec-sources.json .  # if changed
-
-git add -A
-git commit -m "Update to v0.1.15"
-git push
-```
-
-Flathub CI triggers automatically on push to the app's `master` branch.
+This runs `scripts/update-flathub.sh` which:
+- Copies the manifest + pubspec-sources.json + patches to the Flathub repo
+- Updates the manifest `tag`/`commit` to `v0.1.15`
+- Removes temporary backport patches (no longer needed once cmake changes are in the tag)
+- Commits and pushes to the Flathub repo → Flathub CI triggers automatically
 
 ---
 
@@ -445,9 +382,9 @@ diff -u ~/.pub-cache/hosted/pub.dev/objectbox_flutter_libs-<ver>/linux/CMakeList
 Something is trying to download at build time. Common culprits:
 
 - **Missing pub package**: A package in `pubspec.lock` is not in `pubspec-sources.json`.
-  Regenerate `pubspec-sources.json` (Step 2 of version update).
-- **flutter_tools packages missing**: Include `/path/to/flutter/packages/flutter_tools/pubspec.lock`
-  in the pub sources generator.
+  Run `bash scripts/update-pubspec-sources.sh`.
+- **flutter_tools packages missing** (`json_annotation X.Y.Z not found`): The script auto-includes
+  `flutter_tools/pubspec.lock` — if it fails, check that `~/flutter/` or `$FLUTTER_ROOT` is set.
 - **ObjectBox download**: The objectbox patch didn't apply. Check source ordering —
   the patch must come *after* `pubspec-sources.json` in the manifest.
 
@@ -532,7 +469,7 @@ During the Flathub build, the filesystem looks like:
 /run/build/bclibc/             ← bclibc module build (cmake-ninja)
 
 /app/                          ← after bclibc module installs:
-  lib/libbclibc_ffi.so         ← found by bclibc_ffi plugin (mode 2)
+  lib64/libbclibc_ffi.so       ← found by bclibc_ffi plugin (mode 2, searches lib + lib64)
   include/bclibc/...
 
 /run/build/ebalistyka/         ← ebalistyka module working directory
