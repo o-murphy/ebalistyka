@@ -92,9 +92,10 @@ The `bclibc_ffi` Flutter plugin detects that `external/bclibc` is absent and fin
 deprecated API creates a cmake *subbuild* — a separate cmake process that doesn't inherit
 variables from the parent. The standard `FETCHCONTENT_SOURCE_DIR_*` approach fails here.
 
-The fix: `patches/objectbox_flutter_libs/CMakeLists.txt.patch` makes the plugin check whether
-`${CMAKE_SOURCE_DIR}/../objectbox-c/lib/libobjectbox.so` already exists (placed there by the
-archive source) and skip the download entirely.
+The fix: `patches/objectbox_flutter_libs/CMakeLists.txt.patch` adds support for
+`OBJECTBOX_PREBUILT_DIR` cmake variable — same approach proposed upstream. The manifest passes
+`-DOBJECTBOX_PREBUILT_DIR=/run/build/ebalistyka/objectbox-c` via `flutter build linux -- ...`,
+pointing to the pre-seeded archive source. If upstream accepts the fix, the patch can be dropped.
 
 ---
 

@@ -44,7 +44,7 @@ modules:
       - cp flutter/bin/internal/engine.version flutter/bin/cache/font-subset.stamp
       - cp flutter/bin/internal/engine.version flutter/bin/cache/linux-sdk.stamp
       - setup-flutter.sh
-      - flutter build linux --release --no-pub
+      - flutter build linux --release --no-pub -- -DOBJECTBOX_PREBUILT_DIR=/run/build/ebalistyka/objectbox-c
       - mkdir -p /app/ebalistyka
       - cp -r "$BUNDLE_PATH"/. /app/ebalistyka/
       - install -Dm755 flatpak/ebalistyka-wrapper.sh /app/bin/ebalistyka
