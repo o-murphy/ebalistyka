@@ -207,91 +207,45 @@ Push to your fork and open a PR against `https://github.com/flathub/io.github.o_
 
 ## Version update workflow
 
-When releasing a new version (e.g. `v0.1.15`):
+### What goes into the release PR
 
-### Step 1 — Tag and push the release
+**Only if `pubspec.lock` changed** (new/upgraded Dart packages):
+```bash
+bash scripts/update-pubspec-sources.sh
+# commit the updated flatpak/pubspec-sources.json
+```
+
+The script includes `flutter/packages/flutter_tools/pubspec.lock` automatically (needed for the
+offline `pub get` step inside the sandbox). Without it the build fails with:
+`json_annotation X.Y.Z which doesn't match any versions`
+
+**The manifest `tag`/`commit` fields do NOT need manual editing** — `build-flatpak.yml` patches
+them automatically from `${{ github.ref_name }}` when the tag is pushed.
+
+---
+
+### After merging — tag and push
 
 ```bash
 git tag v0.1.15
 git push origin v0.1.15
-# Note the commit hash from: git rev-parse v0.1.15
 ```
 
-### Step 2 — Update Dart dependencies (if pubspec.lock changed)
+This triggers `release.yml` automatically:
+- Builds all artifacts including the source-built `.flatpak`
+- Creates the GitHub release
 
-If any `pubspec.lock` file changed (new or upgraded packages):
+---
 
-```bash
-bash scripts/update-pubspec-sources.sh
-```
+### After the GitHub release — publish to Flathub
 
-The script automatically includes `flutter/packages/flutter_tools/pubspec.lock` (needed for the
-offline `flutter pub get` step inside the sandbox). It looks for it in `$FLUTTER_ROOT`,
-`~/flutter/`, or `.flatpak-builder/build/` from a previous local build.
+Trigger manually: **GitHub → Actions → Publish Flathub → Run workflow → tag: `v0.1.15`**
 
-> **Important:** `flutter_tools/pubspec.lock` must be included — the sandbox `pub get` step
-> resolves flutter tool dependencies offline too. Omitting it causes:
-> `json_annotation X.Y.Z which doesn't match any versions`
-
-### Step 3 — Update the manifest
-
-Edit `flatpak/io.github.o_murphy.ebalistyka.yml` — change the app git source tag/commit:
-
-```yaml
-sources:
-  - type: git
-    url: https://github.com/o-murphy/ebalistyka-app.git
-    tag: v0.1.15                              # ← new tag
-    commit: <new-commit-hash>                 # ← git rev-parse v0.1.15
-    disable-submodules: true
-  # ↓ Temporary patches — remove both once the new tag contains these changes committed
-  - type: patch
-    path: patches/bclibc_ffi_plugin_cmake.patch    # packages/bclibc_ffi/linux/CMakeLists.txt
-  - type: patch
-    path: patches/linux_cmake_bclibc_conditional.patch  # linux/CMakeLists.txt
-```
-
-> **Temporary patches** — `patches/bclibc_ffi_plugin_cmake.patch` and
-> `patches/linux_cmake_bclibc_conditional.patch` backport two changes to the app source that
-> aren't yet in the release tag:
-> - `bclibc_ffi` plugin: use pre-installed `/app/lib/libbclibc_ffi.so` when `external/bclibc` is absent
-> - `linux/CMakeLists.txt`: `install(TARGETS bclibc_ffi ...)` is now conditional on target existence
->
-> Once these are committed and included in the new release tag, **remove both patch sources**.
-
-Also update `flatpak/io.github.o_murphy.ebalistyka.metainfo.xml` releases:
-
-```xml
-<releases>
-  <release version="0.1.15" date="2026-05-14"/>  <!-- update version and date -->
-</releases>
-```
-
-### Step 4 — Test locally
-
-```bash
-flatpak-builder --sandbox --user --install --install-deps-from=flathub --force-clean \
-  --repo=.flatpak-repo --state-dir=.flatpak-builder \
-  .flatpak-build flatpak/io.github.o_murphy.ebalistyka.yml
-
-flatpak run io.github.o_murphy.ebalistyka
-```
-
-### Step 5 — Push to Flathub repo
-
-```bash
-cd flathub-repo  # the separate Flathub git repo
-
-# Update the files
-cp ../ebalistyka-app/flatpak/io.github.o_murphy.ebalistyka.yml .
-cp ../ebalistyka-app/flatpak/pubspec-sources.json .  # if changed
-
-git add -A
-git commit -m "Update to v0.1.15"
-git push
-```
-
-Flathub CI triggers automatically on push to the app's `master` branch.
+This runs `scripts/update-flathub.sh` which:
+- Copies the manifest + pubspec-sources.json + patches to the Flathub repo
+- Updates the manifest `tag`/`commit` to `v0.1.15`
+- Removes temporary backport patches (no longer needed once cmake changes are in the tag)
+- Commits and pushes to the Flathub repo → Flathub CI triggers automatically
 
 ---
 

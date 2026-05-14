@@ -34,5 +34,10 @@ else()
   find_library(BCLIBC_FFI_LIB bclibc_ffi REQUIRED
     HINTS /app/lib /app/lib64 "${CMAKE_INSTALL_PREFIX}/lib" "${CMAKE_INSTALL_PREFIX}/lib64")
   message(STATUS "bclibc_ffi: using pre-installed library: ${BCLIBC_FFI_LIB}")
-  set(bclibc_ffi_bundled_libraries "${BCLIBC_FFI_LIB}" PARENT_SCOPE)
+  # Resolve symlinks and copy into build dir so Flutter bundles a plain file named
+  # libbclibc_ffi.so — not a dangling relative symlink that breaks dlopen at runtime.
+  get_filename_component(BCLIBC_FFI_REAL "${BCLIBC_FFI_LIB}" REALPATH)
+  set(BCLIBC_FFI_COPY "${CMAKE_BINARY_DIR}/libbclibc_ffi.so")
+  configure_file("${BCLIBC_FFI_REAL}" "${BCLIBC_FFI_COPY}" COPYONLY)
+  set(bclibc_ffi_bundled_libraries "${BCLIBC_FFI_COPY}" PARENT_SCOPE)
 endif()
