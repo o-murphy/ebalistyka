@@ -31,8 +31,10 @@ if [ ! -f "$TOOL_BIN" ]; then
   git clone --depth 1 \
     https://github.com/o-murphy/flutter_flatpak_gen.git \
     "$TOOL_DIR"
-  dart pub get -C "$TOOL_DIR"
-  dart compile exe "$TOOL_DIR/bin/flatpak_gen.dart" -o "$TOOL_BIN"
+  cd "$TOOL_DIR"
+  dart pub get
+  dart compile exe bin/flatpak_gen.dart -o "$TOOL_BIN"
+  cd "$REPO_ROOT"
 fi
 
 # ── Generate sources ──────────────────────────────────────────────────────────
@@ -41,6 +43,6 @@ echo "Generating flatpak/generated-sources.json..."
   --lock pubspec.lock \
   --sdk "$FLUTTER_ROOT" \
   --output flatpak/generated-sources.json \
-  --patch flatpak/patches/flutter/shared.sh.patch
+  --patch patches/flutter/shared.sh.patch
 
 echo "✓ flatpak/generated-sources.json updated"

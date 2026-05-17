@@ -177,7 +177,7 @@ jobs:
             --lock pubspec.lock \
             --sdk "$FLUTTER_ROOT" \
             --output flatpak/generated-sources.json \
-            --patch flatpak/patches/flutter/shared.sh.patch
+            --patch patches/flutter/shared.sh.patch
 
       - name: Cache Flatpak runtimes
         uses: actions/cache@v4
