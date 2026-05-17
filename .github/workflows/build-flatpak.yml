@@ -62,7 +62,7 @@ jobs:
       artifact_url:  ${{ steps.upload.outputs.artifact-url }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -233,7 +233,7 @@ jobs:
 
       - name: Upload artifact
         id: upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.meta.outputs.artifact_name }}
           path: artifacts/flatpak/
