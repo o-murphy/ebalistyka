@@ -167,9 +167,9 @@ jobs:
           git clone --depth 1 \
             https://github.com/o-murphy/flutter_flatpak_gen.git \
             /tmp/flatpak_gen_tool
-          dart pub get -C /tmp/flatpak_gen_tool
-          dart compile exe /tmp/flatpak_gen_tool/bin/flatpak_gen.dart \
-            -o /tmp/flatpak_gen
+          cd /tmp/flatpak_gen_tool
+          dart pub get
+          dart compile exe bin/flatpak_gen.dart -o /tmp/flatpak_gen
 
       - name: Generate Flatpak sources
         run: |
