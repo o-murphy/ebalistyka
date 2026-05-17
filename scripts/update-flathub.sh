@@ -20,10 +20,16 @@ echo "Commit:  $COMMIT"
 echo "Version: $VERSION"
 echo "Date:    $TODAY"
 
+# ── Regenerate sources if not already fresh ───────────────────────────────────
+if [ ! -f "flatpak/generated-sources.json" ]; then
+  echo "generated-sources.json not found — running update-sources.sh first"
+  "$(dirname "${BASH_SOURCE[0]}")/update-sources.sh"
+fi
+
 # ── Copy manifest and files it references ──────────────────────────────────
-cp "flatpak/${APP_ID}.yml"        "${FLATHUB_DIR}/${APP_ID}.yml"
-cp "flatpak/pubspec-sources.json" "${FLATHUB_DIR}/pubspec-sources.json"
-cp -r "flatpak/patches"           "${FLATHUB_DIR}/"
+cp "flatpak/${APP_ID}.yml"              "${FLATHUB_DIR}/${APP_ID}.yml"
+cp "flatpak/generated-sources.json"    "${FLATHUB_DIR}/generated-sources.json"
+cp -r "flatpak/patches"                "${FLATHUB_DIR}/"
 
 # ── Patch manifest: update app source tag + commit, drop temp patches ──────
 python3 - "$TAG" "$COMMIT" "${FLATHUB_DIR}/${APP_ID}.yml" << 'PYEOF'
@@ -72,9 +78,6 @@ print(f"  manifest updated: tag={tag}, commit={commit[:12]}")
 PYEOF
 
 # ── Update metainfo release entry ──────────────────────────────────────────
-# metainfo is installed from the app's git source, so the Flathub build
-# reads the version from the tagged commit. Stamp it here too so the
-# Flathub-repo copy is in sync.
 sed -i \
   "s|<release version=\"[^\"]*\" date=\"[^\"]*\"/>|<release version=\"${VERSION}\" date=\"${TODAY}\"/>|" \
   "flatpak/${APP_ID}.metainfo.xml"

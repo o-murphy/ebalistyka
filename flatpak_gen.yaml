@@ -1,0 +1,9 @@
+output: flatpak/generated-sources.json
+patch_path: flatpak/patches/flutter/shared.sh.patch
+
+pub:
+  locks:
+    - pubspec.lock
+
+flutter:
+  sdk: $FLUTTER_ROOT

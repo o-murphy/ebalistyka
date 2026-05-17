@@ -62,7 +62,7 @@ jobs:
       artifact_url:  ${{ steps.upload.outputs.artifact-url }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -144,6 +144,41 @@ jobs:
           print(f"  manifest patched: ref={label}, commit={commit[:12]}")
           PYEOF
 
+      - name: Read Flutter version
+        id: flutter-ver
+        run: echo "version=$(cat flatpak/flutter.version)" >> $GITHUB_OUTPUT
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Install Flutter ${{ steps.flutter-ver.outputs.version }}
+        run: |
+          FLUTTER_DIR="$RUNNER_TEMP/flutter"
+          git clone --depth 1 \
+            --branch "${{ steps.flutter-ver.outputs.version }}" \
+            https://github.com/flutter/flutter.git \
+            "$FLUTTER_DIR"
+          echo "$FLUTTER_DIR/bin" >> $GITHUB_PATH
+          echo "FLUTTER_ROOT=$FLUTTER_DIR" >> $GITHUB_ENV
+
+      - name: Build flatpak_gen
+        run: |
+          git clone --depth 1 \
+            https://github.com/o-murphy/flutter_flatpak_gen.git \
+            /tmp/flatpak_gen_tool
+          dart pub get -C /tmp/flatpak_gen_tool
+          dart compile exe /tmp/flatpak_gen_tool/bin/flatpak_gen.dart \
+            -o /tmp/flatpak_gen
+
+      - name: Generate Flatpak sources
+        run: |
+          /tmp/flatpak_gen sources \
+            --lock pubspec.lock \
+            --sdk "$FLUTTER_ROOT" \
+            --output flatpak/generated-sources.json \
+            --patch flatpak/patches/flutter/shared.sh.patch
+
       - name: Cache Flatpak runtimes
         uses: actions/cache@v4
         with:
@@ -154,7 +189,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .flatpak-builder/downloads
-          key: flatpak-dl-${{ hashFiles('flatpak/io.github.o_murphy.ebalistyka.yml', 'flatpak/pubspec-sources.json') }}-${{ runner.arch }}
+          key: flatpak-dl-${{ hashFiles('flatpak/io.github.o_murphy.ebalistyka.yml', 'pubspec.lock', 'flatpak/flutter.version') }}-${{ runner.arch }}
           restore-keys: |
             flatpak-dl-${{ runner.arch }}-
 
@@ -198,7 +233,7 @@ jobs:
 
       - name: Upload artifact
         id: upload
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.meta.outputs.artifact_name }}
           path: artifacts/flatpak/
