@@ -1,0 +1,11 @@
+output: flatpak/generated-sources.json
+# Path relative to flatpak/ (the manifest directory) as required by flatpak-builder
+patch_path: patches/flutter/shared.sh.patch
+
+pub:
+  locks:
+    - pubspec.lock
+    - $FLUTTER_ROOT/packages/flutter_tools/pubspec.lock
+
+flutter:
+  sdk: $FLUTTER_ROOT
