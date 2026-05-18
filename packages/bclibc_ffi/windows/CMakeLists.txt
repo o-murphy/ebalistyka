@@ -35,12 +35,20 @@ endif()
 # Prevent bclibc's cmake-package install() rules from running here — they are
 # only needed when bclibc is built standalone (Flatpak cmake-ninja module).
 # In the Flutter plugin context the parent build owns the install step.
+#
+# CMAKE_SKIP_INSTALL_RULES suppresses install() registration.  On some CMake
+# versions this also suppresses cmake_install.cmake generation for the
+# subdirectory, causing the parent's include() to fail.  We write a stub
+# cmake_install.cmake after add_subdirectory so the parent include always finds
+# a valid file even when CMake decides not to generate one.
 set(CMAKE_SKIP_INSTALL_RULES TRUE)
 add_subdirectory(
     "${BCLIBC_ROOT}"
     "${CMAKE_CURRENT_BINARY_DIR}/bclibc_ffi_build"
 )
 set(CMAKE_SKIP_INSTALL_RULES FALSE)
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/bclibc_ffi_build/cmake_install.cmake"
+     "# bclibc install rules intentionally disabled in Flutter plugin context\n")
 
 # List of absolute paths to libraries that should be bundled with the plugin.
 set(bclibc_ffi_bundled_libraries
