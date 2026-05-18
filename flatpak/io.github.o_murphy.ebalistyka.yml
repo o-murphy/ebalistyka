@@ -19,8 +19,7 @@ modules:
     sources:
       - type: git
         url: https://github.com/ballistics-lab/bclibc.git
-        tag: v1.0.5
-        commit: 7f4c53441636c5e178e9460b3d88611a2f26b862
+        commit: fb117ad23c4997d583762741d9e220ebfcd65746
   - name: ebalistyka
     buildsystem: simple
     build-options:
