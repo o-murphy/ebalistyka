@@ -175,6 +175,7 @@ jobs:
         run: |
           /tmp/flatpak_gen sources \
             --lock pubspec.lock \
+            --lock "$FLUTTER_ROOT/packages/flutter_tools/pubspec.lock" \
             --sdk "$FLUTTER_ROOT" \
             --output flatpak/generated-sources.json \
             --patch patches/flutter/shared.sh.patch

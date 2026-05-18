@@ -41,6 +41,7 @@ fi
 echo "Generating flatpak/generated-sources.json..."
 "$TOOL_BIN" sources \
   --lock pubspec.lock \
+  --lock "$FLUTTER_ROOT/packages/flutter_tools/pubspec.lock" \
   --sdk "$FLUTTER_ROOT" \
   --output flatpak/generated-sources.json \
   --patch patches/flutter/shared.sh.patch
