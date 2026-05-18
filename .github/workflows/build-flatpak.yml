@@ -91,71 +91,6 @@ jobs:
           echo "tag=$TAG"                   >> $GITHUB_OUTPUT
           echo "artifact_name=ebalistyka-flatpak-${ARCH_SUFFIX}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
 
-      - name: Patch manifest for current tag/commit
-        env:
-          TAG: ${{ steps.meta.outputs.tag }}
-          COMMIT: ${{ steps.meta.outputs.commit }}
-        run: |
-          python3 - "$TAG" "$COMMIT" "flatpak/io.github.o_murphy.ebalistyka.yml" << 'PYEOF'
-          import sys
-
-          tag, commit, path = sys.argv[1], sys.argv[2], sys.argv[3]
-          lines = open(path).readlines()
-          out = []
-          i = 0
-
-          # Pass 1: update app source tag + commit
-          # If tag is empty, remove the tag: line (commit-only source)
-          in_app_source = False
-          while i < len(lines):
-              line = lines[i]
-              if 'github.com/o-murphy/ebalistyka-app.git' in line:
-                  in_app_source = True
-                  out.append(line)
-              elif in_app_source and line.lstrip().startswith('tag:'):
-                  if tag:
-                      indent = len(line) - len(line.lstrip())
-                      out.append(' ' * indent + f'tag: {tag}\n')
-                  # else: drop the tag: line (commit-only is valid)
-              elif in_app_source and line.lstrip().startswith('commit:'):
-                  indent = len(line) - len(line.lstrip())
-                  out.append(' ' * indent + f'commit: {commit}\n')
-                  in_app_source = False
-              else:
-                  out.append(line)
-              i += 1
-
-          # Pass 2: remove temporary backport patches (not needed for tags after v0.1.14)
-          TEMP_PATCHES = ('bclibc_ffi_plugin_cmake.patch', 'linux_cmake_bclibc_conditional.patch')
-          lines, out = out, []
-          i = 0
-          while i < len(lines):
-              line = lines[i]
-              if (line.lstrip().startswith('- type: patch')
-                      and i + 1 < len(lines)
-                      and any(p in lines[i + 1] for p in TEMP_PATCHES)):
-                  i += 2  # skip "- type: patch" + "  path: ..." lines
-              else:
-                  out.append(line)
-                  i += 1
-
-          open(path, 'w').writelines(out)
-          label = tag if tag else commit[:12]
-          print(f"  manifest patched: ref={label}, commit={commit[:12]}")
-
-          # Pass 3: pin metainfo.xml screenshot URLs from /main/ to tag or commit
-          metainfo_path = 'flatpak/io.github.o_murphy.ebalistyka.metainfo.xml'
-          ref = tag if tag else commit
-          content = open(metainfo_path).read()
-          patched = content.replace(
-              'raw.githubusercontent.com/o-murphy/ebalistyka-app/main/',
-              f'raw.githubusercontent.com/o-murphy/ebalistyka-app/{ref}/'
-          )
-          if patched != content:
-              open(metainfo_path, 'w').write(patched)
-              print(f"  metainfo patched: screenshot URLs → {ref}")
-          PYEOF
-
       - name: Read Flutter version
         id: flutter-ver
         run: echo "version=$(cat flatpak/flutter.version)" >> $GITHUB_OUTPUT
@@ -183,7 +118,9 @@ jobs:
           dart pub get
           dart compile exe bin/flatpak_gen.dart -o /tmp/flatpak_gen
 
-      - name: Generate Flatpak sources
+      - name: Prepare Flatpak sources and manifest
+        env:
+          FLUTTER_TOOLS_LOCK: ${{ env.FLUTTER_ROOT }}/packages/flutter_tools/pubspec.lock
         run: |
           FLUTTER_TOOLS_DIR="$FLUTTER_ROOT/packages/flutter_tools"
           FLUTTER_TOOLS_LOCK="$FLUTTER_TOOLS_DIR/pubspec.lock"
@@ -196,12 +133,10 @@ jobs:
             echo "ERROR: could not resolve $FLUTTER_TOOLS_LOCK"
             exit 1
           fi
-          /tmp/flatpak_gen sources \
-            --lock pubspec.lock \
-            --lock "$FLUTTER_TOOLS_LOCK" \
-            --sdk "$FLUTTER_ROOT" \
-            --output flatpak/generated-sources.json \
-            --patch patches/flutter/shared.sh.patch
+          /tmp/flatpak_gen prepare \
+            --tag "${{ steps.meta.outputs.tag }}" \
+            --commit "${{ steps.meta.outputs.commit }}" \
+            --sdk "$FLUTTER_ROOT"
 
       - name: Verify generated sources
         run: |

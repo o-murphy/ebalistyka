@@ -58,13 +58,9 @@ modules:
     sources:
       - type: git
         url: https://github.com/o-murphy/ebalistyka-app.git
-        tag: v0.1.14
-        commit: 7b15d6fcc2aed1ade6c4578a47fc297f5b6270e2
+        tag: __FLATPAK_TAG__
+        commit: __FLATPAK_COMMIT__
         disable-submodules: true
-      - type: patch
-        path: patches/bclibc_ffi_plugin_cmake.patch
-      - type: patch
-        path: patches/linux_cmake_bclibc_conditional.patch
       - type: archive
         only-arches:
           - x86_64
