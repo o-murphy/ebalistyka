@@ -173,12 +173,46 @@ jobs:
 
       - name: Generate Flatpak sources
         run: |
+          FLUTTER_TOOLS_LOCK="$FLUTTER_ROOT/packages/flutter_tools/pubspec.lock"
+          if [ ! -f "$FLUTTER_TOOLS_LOCK" ]; then
+            echo "ERROR: flutter_tools/pubspec.lock not found at $FLUTTER_TOOLS_LOCK"
+            exit 1
+          fi
           /tmp/flatpak_gen sources \
             --lock pubspec.lock \
-            --lock "$FLUTTER_ROOT/packages/flutter_tools/pubspec.lock" \
+            --lock "$FLUTTER_TOOLS_LOCK" \
             --sdk "$FLUTTER_ROOT" \
             --output flatpak/generated-sources.json \
             --patch patches/flutter/shared.sh.patch
+
+      - name: Verify generated sources
+        run: |
+          COUNT=$(python3 -c "import json; d=json.load(open('flatpak/generated-sources.json')); print(len(d))")
+          echo "Total entries: $COUNT"
+          JANN=$(python3 -c "
+          import json
+          d = json.load(open('flatpak/generated-sources.json'))
+          versions = sorted(set(
+            s['dest'].split('json_annotation-')[1]
+            for s in d
+            if s.get('type') == 'archive' and 'json_annotation-' in s.get('dest','')
+          ))
+          print(' '.join(versions) if versions else 'MISSING')
+          ")
+          echo "json_annotation versions in cache: $JANN"
+          if [[ "$JANN" == *"4.9"* ]]; then
+            echo "✓ json_annotation 4.9.x present (needed by flutter_tools)"
+          else
+            echo "ERROR: json_annotation 4.9.x missing — flutter_tools bootstrap will fail"
+            exit 1
+          fi
+
+      - name: Upload generated sources as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-sources-${{ steps.meta.outputs.arch_suffix }}
+          path: flatpak/generated-sources.json
+          retention-days: 7
 
       - name: Cache Flatpak runtimes
         uses: actions/cache@v4
