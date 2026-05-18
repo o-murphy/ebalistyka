@@ -112,6 +112,7 @@ jobs:
       - name: Build flatpak_gen
         run: |
           git clone --depth 1 \
+            --branch claude/fix-flatpak-ci-build-v1c7Q \
             https://github.com/o-murphy/flutter_flatpak_gen.git \
             /tmp/flatpak_gen_tool
           cd /tmp/flatpak_gen_tool
