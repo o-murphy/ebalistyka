@@ -31,11 +31,16 @@ if(NOT EXISTS "${BCLIBC_ROOT}/CMakeLists.txt")
     message(FATAL_ERROR "bclibc CMakeLists.txt not found at ${BCLIBC_ROOT}")
 endif()
 
-# Add the bclibc subdirectory
+# Add the bclibc subdirectory.
+# Prevent bclibc's cmake-package install() rules from running here — they are
+# only needed when bclibc is built standalone (Flatpak cmake-ninja module).
+# In the Flutter plugin context the parent build owns the install step.
+set(CMAKE_SKIP_INSTALL_RULES TRUE)
 add_subdirectory(
     "${BCLIBC_ROOT}"
     "${CMAKE_CURRENT_BINARY_DIR}/bclibc_ffi_build"
 )
+set(CMAKE_SKIP_INSTALL_RULES FALSE)
 
 # List of absolute paths to libraries that should be bundled with the plugin.
 set(bclibc_ffi_bundled_libraries

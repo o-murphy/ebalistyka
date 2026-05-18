@@ -24,9 +24,12 @@ message(STATUS "bclibc_ffi: project root = ${PROJECT_ROOT}")
 message(STATUS "bclibc_ffi: submodule path = ${BCLIBC_ROOT}")
 
 if(EXISTS "${BCLIBC_ROOT}/CMakeLists.txt")
-  # Mode 1: build bclibc from the submodule (local development)
+  # Mode 1: build bclibc from the submodule (local development).
+  # Skip bclibc's cmake-package install() rules — not needed in plugin context.
   message(STATUS "bclibc_ffi: building from source at ${BCLIBC_ROOT}")
+  set(CMAKE_SKIP_INSTALL_RULES TRUE)
   add_subdirectory("${BCLIBC_ROOT}" "${CMAKE_CURRENT_BINARY_DIR}/bclibc_ffi_build")
+  set(CMAKE_SKIP_INSTALL_RULES FALSE)
   set(bclibc_ffi_bundled_libraries $<TARGET_FILE:bclibc_ffi> PARENT_SCOPE)
 else()
   # Mode 2: use pre-installed library (Flatpak separate module)
