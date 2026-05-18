@@ -159,3 +159,49 @@ msix_config:
   logo_path: assets/icon.png
   sign_msix: true
   install_certificate: false
+
+flatpak_gen:
+  output: flatpak/generated-sources.json
+  flutter_version_file: flatpak/flutter.version
+
+  pub:
+    locks:
+      - pubspec.lock
+      - $FLUTTER_ROOT/packages/flutter_tools/pubspec.lock
+
+  flutter:
+    sdk: $FLUTTER_ROOT
+    patch: patches/flutter/shared.sh.patch
+
+  patches:
+    - package: objectbox_flutter_libs
+      path: flatpak/patches/objectbox_flutter_libs/CMakeLists.txt.patch
+
+  manifest:
+    app_id: io.github.o_murphy.ebalistyka
+    runtime_version: "25.08"
+    sdk_extensions:
+      - org.freedesktop.Sdk.Extension.llvm20
+    command: ebalistyka
+    repo_url: https://github.com/o-murphy/ebalistyka-app.git
+    finish_args:
+      - --share=ipc
+      - --socket=fallback-x11
+      - --socket=wayland
+      - --device=dri
+    extra_modules:
+      - flatpak/modules/bclibc.yml
+    env:
+      OBJECTBOX_PREBUILT_DIR: /run/build/ebalistyka/objectbox-c
+    icons:
+      - size: 512x512
+        path: assets/icon_512x512.png
+    screenshots:
+      - path: docs/screenshots/home.png
+      - path: docs/screenshots/conditions.png
+      - path: docs/screenshots/tables_trajectory.png
+      - path: docs/screenshots/tables_details.png
+      - path: docs/screenshots/convertors.png
+    metainfo:
+      path: flatpak/io.github.o_murphy.ebalistyka.metainfo.xml
+      repo_slug: o-murphy/ebalistyka-app
