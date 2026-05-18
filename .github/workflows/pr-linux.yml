@@ -136,4 +136,3 @@ jobs:
     with:
       arch: amd64
       retention_days: 1
-      bundle_artifact_name: ${{ needs.build-bundle.outputs.artifact_name }}
