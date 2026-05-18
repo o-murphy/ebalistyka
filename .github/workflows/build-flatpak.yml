@@ -173,9 +173,15 @@ jobs:
 
       - name: Generate Flatpak sources
         run: |
-          FLUTTER_TOOLS_LOCK="$FLUTTER_ROOT/packages/flutter_tools/pubspec.lock"
+          FLUTTER_TOOLS_DIR="$FLUTTER_ROOT/packages/flutter_tools"
+          FLUTTER_TOOLS_LOCK="$FLUTTER_TOOLS_DIR/pubspec.lock"
+          # pubspec.lock may not be committed in this Flutter version — resolve it.
           if [ ! -f "$FLUTTER_TOOLS_LOCK" ]; then
-            echo "ERROR: flutter_tools/pubspec.lock not found at $FLUTTER_TOOLS_LOCK"
+            echo "flutter_tools/pubspec.lock not found, resolving via dart pub get..."
+            (cd "$FLUTTER_TOOLS_DIR" && dart pub get --no-example 2>&1)
+          fi
+          if [ ! -f "$FLUTTER_TOOLS_LOCK" ]; then
+            echo "ERROR: could not resolve $FLUTTER_TOOLS_LOCK"
             exit 1
           fi
           /tmp/flatpak_gen sources \
