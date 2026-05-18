@@ -124,11 +124,10 @@ jobs:
       bundle_artifact_name: ${{ needs.build-bundle.outputs.artifact_name }}
 
   build-flatpak:
-    needs: [changes, build-bundle]
+    needs: [changes]
     if: |
-      always() &&
-      needs.build-bundle.result == 'success' &&
-      (needs.changes.outputs.core == 'true' || needs.changes.outputs.flatpak == 'true')
+      needs.changes.outputs.core == 'true' || 
+      needs.changes.outputs.flatpak == 'true'
     permissions:
       pull-requests: write
       issues: write
