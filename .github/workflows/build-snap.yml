@@ -60,6 +60,9 @@ jobs:
       matrix:
         arch: ${{ github.event_name == 'pull_request' && fromJSON('["amd64","arm64"]') || fromJSON(format('["{0}"]', inputs.arch || 'amd64')) }}
     runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    permissions:
+      pull-requests: write
+      issues: write
 
     outputs:
       artifact_name: ${{ steps.meta.outputs.artifact_name }}
@@ -124,15 +127,11 @@ jobs:
           retention-days: ${{ inputs.retention_days || 2 }}
           if-no-files-found: error
 
-  pr-summary:
-    needs: [ build ]
-    if: always() && github.event_name == 'pull_request'
-    permissions:
-      pull-requests: write
-      issues: write
-    uses: ./.github/workflows/pr-summary.yml
-    with:
-      platform: Linux Snap (${{ matrix.arch }})
-      build_result: ${{ needs.build.result }}
-      artifact_name: ${{ needs.build.outputs.artifact_name }}
-      artifact_url: ${{ needs.build.outputs.artifact_url }}
+      - name: Post PR summary
+        if: always() && github.event_name == 'pull_request'
+        uses: ./.github/actions/pr-summary
+        with:
+          platform: Linux Snap (${{ matrix.arch }})
+          build_result: ${{ job.status }}
+          artifact_name: ${{ steps.meta.outputs.artifact_name }}
+          artifact_url: ${{ steps.upload.outputs.artifact-url }}

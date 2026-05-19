@@ -76,6 +76,9 @@ jobs:
     if: always() && (needs.build-bundle.result == 'success' || needs.build-bundle.result == 'skipped')
     name: deb-${{ inputs.arch || 'amd64' }}
     runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    permissions:
+      pull-requests: write
+      issues: write
 
     outputs:
       artifact_name: ${{ steps.meta.outputs.artifact_name }}
@@ -137,15 +140,11 @@ jobs:
           retention-days: ${{ inputs.retention_days || 2 }}
           if-no-files-found: error
 
-  pr-summary:
-    needs: [ package ]
-    if: always() && github.event_name == 'pull_request'
-    permissions:
-      pull-requests: write
-      issues: write
-    uses: ./.github/workflows/pr-summary.yml
-    with:
-      platform: Linux deb (${{ inputs.arch || 'amd64' }})
-      build_result: ${{ needs.package.result }}
-      artifact_name: ${{ needs.package.outputs.artifact_name }}
-      artifact_url: ${{ needs.package.outputs.artifact_url }}
+      - name: Post PR summary
+        if: always() && github.event_name == 'pull_request'
+        uses: ./.github/actions/pr-summary
+        with:
+          platform: Linux deb (${{ inputs.arch || 'amd64' }})
+          build_result: ${{ job.status }}
+          artifact_name: ${{ steps.meta.outputs.artifact_name }}
+          artifact_url: ${{ steps.upload.outputs.artifact-url }}

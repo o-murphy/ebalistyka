@@ -65,12 +65,16 @@ jobs:
   pr-summary:
     needs: [ build ]
     if: always() && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
     permissions:
       pull-requests: write
       issues: write
-    uses: ./.github/workflows/pr-summary.yml
-    with:
-      platform: Linux portable (${{ inputs.arch || 'amd64' }})
-      build_result: ${{ needs.build.result }}
-      artifact_name: ${{ needs.build.outputs.artifact_name }}
-      artifact_url: ${{ needs.build.outputs.artifact_url }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Post PR summary
+        uses: ./.github/actions/pr-summary
+        with:
+          platform: Linux portable (${{ inputs.arch || 'amd64' }})
+          build_result: ${{ needs.build.result }}
+          artifact_name: ${{ needs.build.outputs.artifact_name }}
+          artifact_url: ${{ needs.build.outputs.artifact_url }}

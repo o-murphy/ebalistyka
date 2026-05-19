@@ -87,6 +87,9 @@ jobs:
     if: always()
     name: Android APK (${{ inputs.build_type || 'release' }})
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
     outputs:
       artifact_name: ${{ steps.meta.outputs.artifact_name }}
       artifact_url:  ${{ steps.upload.outputs.artifact-url }}
@@ -187,16 +190,11 @@ jobs:
           retention-days: ${{ inputs.retention_days || 2 }}
           if-no-files-found: error
 
-
-  pr-summary:
-    needs: [ build ]
-    if: always() && github.event_name == 'pull_request'
-    permissions:
-      pull-requests: write
-      issues: write
-    uses: ./.github/workflows/pr-summary.yml
-    with:
-      platform: Android
-      build_result: ${{ needs.build.result }}
-      artifact_name: ${{ needs.build.outputs.artifact_name }}
-      artifact_url: ${{ needs.build.outputs.artifact_url }}
+      - name: Post PR summary
+        if: always() && github.event_name == 'pull_request'
+        uses: ./.github/actions/pr-summary
+        with:
+          platform: Android
+          build_result: ${{ job.status }}
+          artifact_name: ${{ steps.meta.outputs.artifact_name }}
+          artifact_url: ${{ steps.upload.outputs.artifact-url }}
