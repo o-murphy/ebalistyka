@@ -62,7 +62,7 @@ jobs:
               - "flatpak/**"
               - ".github/workflows/build-flatpak.yml"
 
-  build-bundle:
+  build-bundle-amd64:
     needs: changes
     if: |
       needs.changes.outputs.core     == 'true' ||
@@ -78,11 +78,27 @@ jobs:
       arch: amd64
       retention_days: 1
 
-  build-appimage:
-    needs: [changes, build-bundle]
+  build-bundle-arm64:
+    needs: changes
+    if: |
+      needs.changes.outputs.core     == 'true' ||
+      needs.changes.outputs.appimage == 'true' ||
+      needs.changes.outputs.deb      == 'true' ||
+      needs.changes.outputs.rpm      == 'true' ||
+      needs.changes.outputs.flatpak  == 'true'
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/build-portable.yml
+    with:
+      arch: arm64
+      retention_days: 1
+
+  build-appimage-amd64:
+    needs: [changes, build-bundle-amd64]
     if: |
       always() &&
-      needs.build-bundle.result == 'success' &&
+      needs.build-bundle-amd64.result == 'success' &&
       (needs.changes.outputs.core == 'true' || needs.changes.outputs.appimage == 'true')
     permissions:
       pull-requests: write
@@ -91,13 +107,28 @@ jobs:
     with:
       arch: amd64
       retention_days: 1
-      bundle_artifact_name: ${{ needs.build-bundle.outputs.artifact_name }}
-
-  build-deb:
-    needs: [changes, build-bundle]
+      bundle_artifact_name: ${{ needs.build-bundle-amd64.outputs.artifact_name }}
+    
+  build-appimage-arm64:
+    needs: [changes, build-bundle-arm64]
     if: |
       always() &&
-      needs.build-bundle.result == 'success' &&
+      needs.build-bundle-arm64.result == 'success' &&
+      (needs.changes.outputs.core == 'true' || needs.changes.outputs.appimage == 'true')
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/build-appimage.yml
+    with:
+      arch: arm64
+      retention_days: 1
+      bundle_artifact_name: ${{ needs.build-bundle-arm64.outputs.artifact_name }}
+
+  build-deb-amd64:
+    needs: [changes, build-bundle-amd64]
+    if: |
+      always() &&
+      needs.build-bundle-amd64.result == 'success' &&
       (needs.changes.outputs.core == 'true' || needs.changes.outputs.deb == 'true')
     permissions:
       pull-requests: write
@@ -106,13 +137,28 @@ jobs:
     with:
       arch: amd64
       retention_days: 1
-      bundle_artifact_name: ${{ needs.build-bundle.outputs.artifact_name }}
+      bundle_artifact_name: ${{ needs.build-bundle-amd64.outputs.artifact_name }}
 
-  build-rpm:
-    needs: [changes, build-bundle]
+  build-deb-arm64:
+    needs: [changes, build-bundle-arm64]
     if: |
       always() &&
-      needs.build-bundle.result == 'success' &&
+      needs.build-bundle-arm64.result == 'success' &&
+      (needs.changes.outputs.core == 'true' || needs.changes.outputs.deb == 'true')
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/build-deb.yml
+    with:
+      arch: arm64
+      retention_days: 1
+      bundle_artifact_name: ${{ needs.build-bundle-arm64.outputs.artifact_name }}
+
+  build-rpm-amd64:
+    needs: [changes, build-bundle-amd64]
+    if: |
+      always() &&
+      needs.build-bundle-amd64.result == 'success' &&
       (needs.changes.outputs.core == 'true' || needs.changes.outputs.rpm == 'true')
     permissions:
       pull-requests: write
@@ -121,14 +167,28 @@ jobs:
     with:
       arch: amd64
       retention_days: 1
-      bundle_artifact_name: ${{ needs.build-bundle.outputs.artifact_name }}
+      bundle_artifact_name: ${{ needs.build-bundle-amd64.outputs.artifact_name }}
 
-  build-flatpak:
-    needs: [changes, build-bundle]
+  build-rpm-arm64:
+    needs: [changes, build-bundle-arm64]
     if: |
       always() &&
-      needs.build-bundle.result == 'success' &&
-      (needs.changes.outputs.core == 'true' || needs.changes.outputs.flatpak == 'true')
+      needs.build-bundle-arm64.result == 'success' &&
+      (needs.changes.outputs.core == 'true' || needs.changes.outputs.rpm == 'true')
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/build-rpm.yml
+    with:
+      arch: arm64
+      retention_days: 1
+      bundle_artifact_name: ${{ needs.build-bundle-arm64.outputs.artifact_name }}
+
+  build-flatpak-amd64:
+    needs: [changes]
+    if: |
+      needs.changes.outputs.core == 'true' || 
+      needs.changes.outputs.flatpak == 'true'
     permissions:
       pull-requests: write
       issues: write
@@ -136,4 +196,16 @@ jobs:
     with:
       arch: amd64
       retention_days: 1
-      bundle_artifact_name: ${{ needs.build-bundle.outputs.artifact_name }}
+
+  build-flatpak-arm64:
+    needs: [changes]
+    if: |
+      needs.changes.outputs.core == 'true' || 
+      needs.changes.outputs.flatpak == 'true'
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/build-flatpak.yml
+    with:
+      arch: arm64
+      retention_days: 1

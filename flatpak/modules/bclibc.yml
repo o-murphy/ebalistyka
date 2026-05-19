@@ -1,0 +1,10 @@
+- name: bclibc
+  buildsystem: cmake-ninja
+  config-opts:
+    - -DCMAKE_BUILD_TYPE=Release
+    - -DBCLIBC_BUILD_TESTS=OFF
+  sources:
+    - type: git
+      url: https://github.com/ballistics-lab/bclibc.git
+      tag: v1.0.6
+      commit: 26cb17bca86a52d58a05dff07ddfb62ce98445e2

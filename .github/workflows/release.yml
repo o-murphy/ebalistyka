@@ -138,7 +138,7 @@ jobs:
       bundle_artifact_name: ${{ needs.build-portable-arm64.outputs.artifact_name }}
 
   build-flatpak-amd64:
-    needs: [prepare-version, build-portable-amd64]
+    needs: [prepare-version]
     permissions:
       issues: write
       pull-requests: write
@@ -147,10 +147,9 @@ jobs:
       arch: amd64
       build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 1
-      bundle_artifact_name: ${{ needs.build-portable-amd64.outputs.artifact_name }}
 
   build-flatpak-arm64:
-    needs: [prepare-version, build-portable-arm64]
+    needs: [prepare-version]
     permissions:
       issues: write
       pull-requests: write
@@ -159,7 +158,6 @@ jobs:
       arch: arm64
       build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 1
-      bundle_artifact_name: ${{ needs.build-portable-arm64.outputs.artifact_name }}
 
   build-deb-amd64:
     needs: [prepare-version, build-portable-amd64]

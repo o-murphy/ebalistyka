@@ -108,9 +108,11 @@ install(FILES "${FLUTTER_ICU_DATA_FILE}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}
 install(FILES "${FLUTTER_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
   COMPONENT Runtime)
 
-install(TARGETS bclibc_ffi
-    LIBRARY DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
-    COMPONENT Runtime)
+if(TARGET bclibc_ffi)
+  install(TARGETS bclibc_ffi
+      LIBRARY DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+      COMPONENT Runtime)
+endif()
 
 foreach(bundled_library ${PLUGIN_BUNDLED_LIBRARIES})
   install(FILES "${bundled_library}"
