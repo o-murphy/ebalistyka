@@ -171,7 +171,6 @@ flatpak_gen:
 
   flutter:
     sdk: $FLUTTER_ROOT
-    patch: patches/flutter/shared.sh.patch
 
   patches:
     - package: objectbox_flutter_libs
