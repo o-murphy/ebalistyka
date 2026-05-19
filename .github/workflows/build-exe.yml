@@ -36,7 +36,7 @@ jobs:
       arch: amd64
       build_type: release
       build_name: ${{ needs.prepare-version.outputs.version }}
-      retention_days: 30
+      retention_days: 2
     secrets:
       CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
       CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}

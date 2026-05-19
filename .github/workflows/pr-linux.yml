@@ -10,14 +10,12 @@ on:
       - "pubspec.yaml"
       - "deb/**"
       - "rpm/**"
-      - "flatpak/**"
       - ".github/workflows/pr-linux.yml"
       - ".github/workflows/build.yml"
       - ".github/workflows/build-portable.yml"
       - ".github/workflows/build-appimage.yml"
       - ".github/workflows/build-deb.yml"
       - ".github/workflows/build-rpm.yml"
-      - ".github/workflows/build-flatpak.yml"
 
 concurrency:
   group: pr-linux-${{ github.ref }}
@@ -31,7 +29,6 @@ jobs:
       appimage: ${{ steps.filter.outputs.appimage }}
       deb:      ${{ steps.filter.outputs.deb }}
       rpm:      ${{ steps.filter.outputs.rpm }}
-      flatpak:  ${{ steps.filter.outputs.flatpak }}
     steps:
       - uses: dorny/paths-filter@v4
         id: filter
@@ -58,9 +55,6 @@ jobs:
               - "flatpak/*.desktop"
               - "flatpak/*.metainfo.xml"
               - ".github/workflows/build-rpm.yml"
-            flatpak:
-              - "flatpak/**"
-              - ".github/workflows/build-flatpak.yml"
 
   build-bundle-amd64:
     needs: changes
@@ -68,15 +62,14 @@ jobs:
       needs.changes.outputs.core     == 'true' ||
       needs.changes.outputs.appimage == 'true' ||
       needs.changes.outputs.deb      == 'true' ||
-      needs.changes.outputs.rpm      == 'true' ||
-      needs.changes.outputs.flatpak  == 'true'
+      needs.changes.outputs.rpm      == 'true'
     permissions:
       pull-requests: write
       issues: write
     uses: ./.github/workflows/build-portable.yml
     with:
       arch: amd64
-      retention_days: 1
+      retention_days: 2
 
   build-bundle-arm64:
     needs: changes
@@ -84,15 +77,14 @@ jobs:
       needs.changes.outputs.core     == 'true' ||
       needs.changes.outputs.appimage == 'true' ||
       needs.changes.outputs.deb      == 'true' ||
-      needs.changes.outputs.rpm      == 'true' ||
-      needs.changes.outputs.flatpak  == 'true'
+      needs.changes.outputs.rpm      == 'true'
     permissions:
       pull-requests: write
       issues: write
     uses: ./.github/workflows/build-portable.yml
     with:
       arch: arm64
-      retention_days: 1
+      retention_days: 2
 
   build-appimage-amd64:
     needs: [changes, build-bundle-amd64]
@@ -106,7 +98,7 @@ jobs:
     uses: ./.github/workflows/build-appimage.yml
     with:
       arch: amd64
-      retention_days: 1
+      retention_days: 2
       bundle_artifact_name: ${{ needs.build-bundle-amd64.outputs.artifact_name }}
     
   build-appimage-arm64:
@@ -121,7 +113,7 @@ jobs:
     uses: ./.github/workflows/build-appimage.yml
     with:
       arch: arm64
-      retention_days: 1
+      retention_days: 2
       bundle_artifact_name: ${{ needs.build-bundle-arm64.outputs.artifact_name }}
 
   build-deb-amd64:
@@ -136,7 +128,7 @@ jobs:
     uses: ./.github/workflows/build-deb.yml
     with:
       arch: amd64
-      retention_days: 1
+      retention_days: 2
       bundle_artifact_name: ${{ needs.build-bundle-amd64.outputs.artifact_name }}
 
   build-deb-arm64:
@@ -151,7 +143,7 @@ jobs:
     uses: ./.github/workflows/build-deb.yml
     with:
       arch: arm64
-      retention_days: 1
+      retention_days: 2
       bundle_artifact_name: ${{ needs.build-bundle-arm64.outputs.artifact_name }}
 
   build-rpm-amd64:
@@ -166,7 +158,7 @@ jobs:
     uses: ./.github/workflows/build-rpm.yml
     with:
       arch: amd64
-      retention_days: 1
+      retention_days: 2
       bundle_artifact_name: ${{ needs.build-bundle-amd64.outputs.artifact_name }}
 
   build-rpm-arm64:
@@ -181,31 +173,6 @@ jobs:
     uses: ./.github/workflows/build-rpm.yml
     with:
       arch: arm64
-      retention_days: 1
+      retention_days: 2
       bundle_artifact_name: ${{ needs.build-bundle-arm64.outputs.artifact_name }}
 
-  build-flatpak-amd64:
-    needs: [changes]
-    if: |
-      needs.changes.outputs.core == 'true' || 
-      needs.changes.outputs.flatpak == 'true'
-    permissions:
-      pull-requests: write
-      issues: write
-    uses: ./.github/workflows/build-flatpak.yml
-    with:
-      arch: amd64
-      retention_days: 1
-
-  build-flatpak-arm64:
-    needs: [changes]
-    if: |
-      needs.changes.outputs.core == 'true' || 
-      needs.changes.outputs.flatpak == 'true'
-    permissions:
-      pull-requests: write
-      issues: write
-    uses: ./.github/workflows/build-flatpak.yml
-    with:
-      arch: arm64
-      retention_days: 1

@@ -33,7 +33,7 @@ jobs:
     with:
       arch: amd64
       build_name: ${{ needs.prepare-version.outputs.version }}
-      retention_days: 1
+      retention_days: 2
 
   build-portable-arm64:
     needs: prepare-version
@@ -44,7 +44,7 @@ jobs:
     with:
       arch: arm64
       build_name: ${{ needs.prepare-version.outputs.version }}
-      retention_days: 1
+      retention_days: 2
 
   build-windows-amd64:
     needs: prepare-version
@@ -54,7 +54,7 @@ jobs:
       arch: amd64
       build_type: release
       build_name: ${{ needs.prepare-version.outputs.version }}
-      retention_days: 1
+      retention_days: 2
     secrets:
       CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
       CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
@@ -68,7 +68,7 @@ jobs:
     with:
       build_name: ${{ needs.prepare-version.outputs.version }}
       build_type: release
-      retention_days: 1
+      retention_days: 2
     secrets:
       ANDROID_KEYSTORE_BASE64:   ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
       ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -84,7 +84,7 @@ jobs:
     with:
       build_name: ${{ needs.prepare-version.outputs.version }}
       build_type: release
-      retention_days: 1
+      retention_days: 2
     secrets:
       ANDROID_KEYSTORE_BASE64:   ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
       ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -100,7 +100,7 @@ jobs:
     with:
       arch: amd64
       build_name: ${{ needs.prepare-version.outputs.version }}
-      retention_days: 1
+      retention_days: 2
 
   build-snap-arm64:
     needs: prepare-version
@@ -111,7 +111,7 @@ jobs:
     with:
       arch: arm64
       build_name: ${{ needs.prepare-version.outputs.version }}
-      retention_days: 1
+      retention_days: 2
 
   build-appimage-amd64:
     needs: [prepare-version, build-portable-amd64]
@@ -122,7 +122,7 @@ jobs:
     with:
       arch: amd64
       build_name: ${{ needs.prepare-version.outputs.version }}
-      retention_days: 1
+      retention_days: 2
       bundle_artifact_name: ${{ needs.build-portable-amd64.outputs.artifact_name }}
 
   build-appimage-arm64:
@@ -134,7 +134,7 @@ jobs:
     with:
       arch: arm64
       build_name: ${{ needs.prepare-version.outputs.version }}
-      retention_days: 1
+      retention_days: 2
       bundle_artifact_name: ${{ needs.build-portable-arm64.outputs.artifact_name }}
 
   pin-flatpak-manifest:
@@ -170,21 +170,29 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Pin manifest and metainfo to ${{ github.ref_name }}
+      - name: Resolve flutter_tools pubspec.lock
+        run: |
+          FLUTTER_TOOLS_LOCK="$FLUTTER_ROOT/packages/flutter_tools/pubspec.lock"
+          if [ ! -f "$FLUTTER_TOOLS_LOCK" ]; then
+            (cd "$FLUTTER_ROOT/packages/flutter_tools" && dart pub get --no-example 2>&1)
+          fi
+
+      - name: Generate sources and pin manifest to ${{ github.ref_name }}
         run: |
           dart run flutpak prepare \
             --tag "${{ github.ref_name }}" \
             --commit "${{ github.sha }}" \
-            --no-sources
+            --sdk "$FLUTTER_ROOT"
 
       - name: Commit pinned flatpak files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add flatpak/io.github.o_murphy.ebalistyka.yml \
-                  flatpak/io.github.o_murphy.ebalistyka.metainfo.xml
+                  flatpak/io.github.o_murphy.ebalistyka.metainfo.xml \
+                  flatpak/generated-sources.json
           git diff --cached --quiet || \
-            git commit -m "chore: pin flatpak manifest to ${{ github.ref_name }}"
+            git commit -m "chore: pin flatpak manifest and sources to ${{ github.ref_name }}"
           git push origin main
 
   build-flatpak-amd64:
@@ -196,7 +204,7 @@ jobs:
     with:
       arch: amd64
       build_name: ${{ needs.prepare-version.outputs.version }}
-      retention_days: 1
+      retention_days: 2
 
   build-flatpak-arm64:
     needs: [prepare-version]
@@ -207,7 +215,7 @@ jobs:
     with:
       arch: arm64
       build_name: ${{ needs.prepare-version.outputs.version }}
-      retention_days: 1
+      retention_days: 2
 
   build-deb-amd64:
     needs: [prepare-version, build-portable-amd64]
@@ -218,7 +226,7 @@ jobs:
     with:
       arch: amd64
       build_name: ${{ needs.prepare-version.outputs.version }}
-      retention_days: 1
+      retention_days: 2
       bundle_artifact_name: ${{ needs.build-portable-amd64.outputs.artifact_name }}
 
   build-deb-arm64:
@@ -230,7 +238,7 @@ jobs:
     with:
       arch: arm64
       build_name: ${{ needs.prepare-version.outputs.version }}
-      retention_days: 1
+      retention_days: 2
       bundle_artifact_name: ${{ needs.build-portable-arm64.outputs.artifact_name }}
 
   build-rpm-amd64:
@@ -242,7 +250,7 @@ jobs:
     with:
       arch: amd64
       build_name: ${{ needs.prepare-version.outputs.version }}
-      retention_days: 1
+      retention_days: 2
       bundle_artifact_name: ${{ needs.build-portable-amd64.outputs.artifact_name }}
 
   build-rpm-arm64:
@@ -254,7 +262,7 @@ jobs:
     with:
       arch: arm64
       build_name: ${{ needs.prepare-version.outputs.version }}
-      retention_days: 1
+      retention_days: 2
       bundle_artifact_name: ${{ needs.build-portable-arm64.outputs.artifact_name }}
 
   release:

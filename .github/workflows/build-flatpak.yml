@@ -1,16 +1,16 @@
 name: Build Flatpak
 
 on:
-  # pull_request:
-  #   branches: [ main, develop ]
-  #   paths:
-  #     - "lib/**"
-  #     - "linux/**"
-  #     - "external/**"
-  #     - "packages/bclibc_ffi/**"
-  #     - "pubspec.yaml"
-  #     - "flatpak/**"
-  #     - ".github/workflows/build-flatpak.yml"
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - "lib/**"
+      - "linux/**"
+      - "external/**"
+      - "packages/bclibc_ffi/**"
+      - "pubspec.yaml"
+      - "flatpak/**"
+      - ".github/workflows/build-flatpak.yml"
   workflow_call:
     inputs:
       arch:
@@ -26,7 +26,7 @@ on:
         description: "Artifact retention in days"
         required: false
         type: number
-        default: 30
+        default: 2
     outputs:
       artifact_name:
         description: "Name of the uploaded artifact"
@@ -49,13 +49,17 @@ on:
         type: string
 
 concurrency:
-  group: build-flatpak-${{ github.ref }}-${{ inputs.arch || 'amd64' }}
+  group: build-flatpak-${{ github.ref }}-${{ inputs.arch || 'all' }}
   cancel-in-progress: true
 
 jobs:
   build:
-    name: flatpak-${{ inputs.arch || 'amd64' }}
-    runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    name: flatpak-${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ${{ github.event_name == 'pull_request' && fromJSON('["amd64","arm64"]') || fromJSON(format('["{0}"]', inputs.arch || 'amd64')) }}
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
 
     outputs:
       artifact_name: ${{ steps.meta.outputs.artifact_name }}
@@ -78,7 +82,7 @@ jobs:
             BUILD_NAME="${BUILD_NAME%%-*}-pr.${{ github.event.number }}"
           fi
           BUILD_NUMBER=$(git rev-list --count --first-parent HEAD)
-          ARCH="${{ inputs.arch || 'amd64' }}"
+          ARCH="${{ matrix.arch }}"
           if [ "$ARCH" = "amd64" ]; then ARCH_SUFFIX="x86_64"; else ARCH_SUFFIX="aarch64"; fi
           COMMIT=$(git rev-parse HEAD)
           REF_TYPE="${{ github.ref_type }}"
@@ -89,15 +93,12 @@ jobs:
           echo "arch_suffix=$ARCH_SUFFIX"   >> $GITHUB_OUTPUT
           echo "commit=$COMMIT"             >> $GITHUB_OUTPUT
           echo "tag=$TAG"                   >> $GITHUB_OUTPUT
+          echo "bundle=ebalistyka_linux_${ARCH_SUFFIX}.flatpak" >> $GITHUB_OUTPUT
           echo "artifact_name=ebalistyka-flatpak-${ARCH_SUFFIX}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
 
       - name: Read Flutter version
         id: flutter-ver
         run: echo "version=$(cat flatpak/flutter.version)" >> $GITHUB_OUTPUT
-
-      - uses: dart-lang/setup-dart@v1
-        with:
-          sdk: stable
 
       - name: Install Flutter ${{ steps.flutter-ver.outputs.version }}
         run: |
@@ -113,14 +114,10 @@ jobs:
         run: flutter pub get
 
       - name: Prepare Flatpak sources and manifest
-        env:
-          FLUTTER_TOOLS_LOCK: ${{ env.FLUTTER_ROOT }}/packages/flutter_tools/pubspec.lock
         run: |
           FLUTTER_TOOLS_DIR="$FLUTTER_ROOT/packages/flutter_tools"
           FLUTTER_TOOLS_LOCK="$FLUTTER_TOOLS_DIR/pubspec.lock"
-          # pubspec.lock may not be committed in this Flutter version — resolve it.
           if [ ! -f "$FLUTTER_TOOLS_LOCK" ]; then
-            echo "flutter_tools/pubspec.lock not found, resolving via dart pub get..."
             (cd "$FLUTTER_TOOLS_DIR" && dart pub get --no-example 2>&1)
           fi
           if [ ! -f "$FLUTTER_TOOLS_LOCK" ]; then
@@ -132,34 +129,12 @@ jobs:
             --commit "${{ steps.meta.outputs.commit }}" \
             --sdk "$FLUTTER_ROOT"
 
-      - name: Verify generated sources
-        run: |
-          COUNT=$(python3 -c "import json; d=json.load(open('flatpak/generated-sources.json')); print(len(d))")
-          echo "Total entries: $COUNT"
-          JANN=$(python3 -c "
-          import json
-          d = json.load(open('flatpak/generated-sources.json'))
-          versions = sorted(set(
-            s['dest'].split('json_annotation-')[1]
-            for s in d
-            if s.get('type') == 'archive' and 'json_annotation-' in s.get('dest','')
-          ))
-          print(' '.join(versions) if versions else 'MISSING')
-          ")
-          echo "json_annotation versions in cache: $JANN"
-          if [[ "$JANN" == *"4.9"* ]]; then
-            echo "✓ json_annotation 4.9.x present (needed by flutter_tools)"
-          else
-            echo "ERROR: json_annotation 4.9.x missing — flutter_tools bootstrap will fail"
-            exit 1
-          fi
-
       - name: Upload generated sources as artifact
         uses: actions/upload-artifact@v7
         with:
           name: generated-sources-${{ steps.meta.outputs.arch_suffix }}
           path: flatpak/generated-sources.json
-          retention-days: 7
+          retention-days: 2
 
       - name: Cache Flatpak runtimes
         uses: actions/cache@v5
@@ -171,11 +146,10 @@ jobs:
         uses: actions/cache@v5
         with:
           path: .flatpak-builder/downloads
-          key: flatpak-dl-${{ hashFiles('flatpak/io.github.o_murphy.ebalistyka.yml', 'pubspec.lock', 'flatpak/flutter.version') }}-${{ runner.arch }}
-          restore-keys: |
-            flatpak-dl-${{ runner.arch }}-
+          key: flatpak-dl-${{ steps.meta.outputs.arch_suffix }}-${{ hashFiles('flatpak/io.github.o_murphy.ebalistyka.yml', 'pubspec.lock', 'flatpak/flutter.version') }}
+          restore-keys: flatpak-dl-${{ steps.meta.outputs.arch_suffix }}-
 
-      - name: Install flatpak tools
+      - name: Install flatpak and flatpak-builder
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y flatpak flatpak-builder
@@ -191,9 +165,8 @@ jobs:
           echo "machine github.com login x-access-token password ${{ secrets.GITHUB_TOKEN }}" >> ~/.netrc
           chmod 600 ~/.netrc
 
-      - name: Build Flatpak (source build)
+      - name: Build Flatpak
         run: |
-          ARCH_SUFFIX="${{ steps.meta.outputs.arch_suffix }}"
           flatpak-builder \
             --sandbox \
             --user \
@@ -203,18 +176,16 @@ jobs:
             --default-branch=stable \
             --repo=.flatpak-repo \
             --state-dir=.flatpak-builder \
-            --arch="${ARCH_SUFFIX}" \
+            --arch="${{ steps.meta.outputs.arch_suffix }}" \
             .flatpak-build \
             flatpak/io.github.o_murphy.ebalistyka.yml
 
       - name: Export .flatpak bundle
         run: |
-          ARCH_SUFFIX="${{ steps.meta.outputs.arch_suffix }}"
-          mkdir -p artifacts/flatpak
           flatpak build-bundle \
-            --arch="${ARCH_SUFFIX}" \
+            --arch="${{ steps.meta.outputs.arch_suffix }}" \
             .flatpak-repo \
-            "artifacts/flatpak/ebalistyka_linux_${ARCH_SUFFIX}.flatpak" \
+            "${{ steps.meta.outputs.bundle }}" \
             io.github.o_murphy.ebalistyka \
             stable
 
@@ -223,8 +194,8 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.meta.outputs.artifact_name }}
-          path: artifacts/flatpak/
-          retention-days: ${{ inputs.retention_days || 30 }}
+          path: ${{ steps.meta.outputs.bundle }}
+          retention-days: ${{ inputs.retention_days || 2 }}
           if-no-files-found: error
 
   pr-summary:
@@ -235,7 +206,7 @@ jobs:
       issues: write
     uses: ./.github/workflows/pr-summary.yml
     with:
-      platform: Linux Flatpak (${{ inputs.arch || 'amd64' }})
+      platform: Linux Flatpak (${{ matrix.arch }})
       build_result: ${{ needs.build.result }}
       artifact_name: ${{ needs.build.outputs.artifact_name }}
       artifact_url: ${{ needs.build.outputs.artifact_url }}

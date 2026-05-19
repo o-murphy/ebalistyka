@@ -26,7 +26,7 @@ on:
         description: "Artifact retention in days"
         required: false
         type: number
-        default: 30
+        default: 2
       bundle_artifact_name:
         description: "Pre-built bundle artifact name (skips build-bundle job)"
         required: false
@@ -66,7 +66,7 @@ jobs:
       arch: ${{ inputs.arch || 'amd64' }}
       build_type: release
       build_name: ${{ inputs.build_name || '' }}
-      retention_days: 1
+      retention_days: 2
 
   package:
     needs: build-bundle
@@ -152,7 +152,7 @@ jobs:
         with:
           name: ${{ steps.meta.outputs.artifact_name }}
           path: artifacts/appimage/
-          retention-days: ${{ inputs.retention_days || 30 }}
+          retention-days: ${{ inputs.retention_days || 2 }}
           if-no-files-found: error
 
   pr-summary:

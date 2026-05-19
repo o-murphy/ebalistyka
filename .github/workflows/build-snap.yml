@@ -26,7 +26,7 @@ on:
         description: "Artifact retention in days"
         required: false
         type: number
-        default: 30
+        default: 2
     outputs:
       artifact_name:
         description: "Name of the uploaded artifact"
@@ -49,13 +49,17 @@ on:
         type: string
 
 concurrency:
-  group: build-snap-${{ github.ref }}-${{ inputs.arch || 'amd64' }}
+  group: build-snap-${{ github.ref }}-${{ inputs.arch || 'all' }}
   cancel-in-progress: true
 
 jobs:
   build:
-    name: snap-${{ inputs.arch || 'amd64' }}
-    runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    name: snap-${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ${{ github.event_name == 'pull_request' && fromJSON('["amd64","arm64"]') || fromJSON(format('["{0}"]', inputs.arch || 'amd64')) }}
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
 
     outputs:
       artifact_name: ${{ steps.meta.outputs.artifact_name }}
@@ -79,7 +83,7 @@ jobs:
             BUILD_NAME="${BUILD_NAME%%-*}-pr.${{ github.event.number }}"
           fi
           BUILD_NUMBER=$(git rev-list --count --first-parent HEAD)
-          ARCH_SUFFIX=${{ inputs.arch == 'amd64' && 'x86_64' || 'aarch64' }}
+          ARCH_SUFFIX=${{ matrix.arch == 'amd64' && 'x86_64' || 'aarch64' }}
           echo "build_name=$BUILD_NAME"     >> $GITHUB_OUTPUT
           echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
           echo "arch_suffix=$ARCH_SUFFIX"   >> $GITHUB_OUTPUT
@@ -117,7 +121,7 @@ jobs:
         with:
           name: ${{ steps.meta.outputs.artifact_name }}
           path: artifacts/snap/
-          retention-days: ${{ inputs.retention_days || 30 }}
+          retention-days: ${{ inputs.retention_days || 2 }}
           if-no-files-found: error
 
   pr-summary:
@@ -128,7 +132,7 @@ jobs:
       issues: write
     uses: ./.github/workflows/pr-summary.yml
     with:
-      platform: Linux Snap (${{ inputs.arch || 'amd64' }})
+      platform: Linux Snap (${{ matrix.arch }})
       build_result: ${{ needs.build.result }}
       artifact_name: ${{ needs.build.outputs.artifact_name }}
       artifact_url: ${{ needs.build.outputs.artifact_url }}

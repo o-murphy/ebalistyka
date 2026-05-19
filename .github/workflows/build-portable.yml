@@ -26,7 +26,7 @@ on:
         description: "Artifact retention in days"
         required: false
         type: number
-        default: 30
+        default: 2
     outputs:
       artifact_name:
         description: "Name of the uploaded artifact"
@@ -60,7 +60,7 @@ jobs:
       arch: ${{ inputs.arch || 'amd64' }}
       build_type: release
       build_name: ${{ inputs.build_name || '' }}
-      retention_days: ${{ inputs.retention_days || 30 }}
+      retention_days: ${{ inputs.retention_days || 2 }}
 
   pr-summary:
     needs: [ build ]
