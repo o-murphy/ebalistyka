@@ -137,6 +137,56 @@ jobs:
       retention_days: 1
       bundle_artifact_name: ${{ needs.build-portable-arm64.outputs.artifact_name }}
 
+  pin-flatpak-manifest:
+    if: github.ref_type == 'tag'
+    needs: [prepare-version]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Read Flutter version
+        id: flutter-ver
+        run: echo "version=$(cat flatpak/flutter.version)" >> $GITHUB_OUTPUT
+
+      - name: Install Flutter ${{ steps.flutter-ver.outputs.version }}
+        run: |
+          FLUTTER_DIR="$RUNNER_TEMP/flutter"
+          git clone --depth 1 \
+            --branch "${{ steps.flutter-ver.outputs.version }}" \
+            https://github.com/flutter/flutter.git \
+            "$FLUTTER_DIR"
+          echo "$FLUTTER_DIR/bin" >> $GITHUB_PATH
+          echo "FLUTTER_ROOT=$FLUTTER_DIR" >> $GITHUB_ENV
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Pin manifest and metainfo to ${{ github.ref_name }}
+        run: |
+          dart run flutpak prepare \
+            --tag "${{ github.ref_name }}" \
+            --commit "${{ github.sha }}" \
+            --no-sources
+
+      - name: Commit pinned flatpak files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add flatpak/io.github.o_murphy.ebalistyka.yml \
+                  flatpak/io.github.o_murphy.ebalistyka.metainfo.xml
+          git diff --cached --quiet || \
+            git commit -m "chore: pin flatpak manifest to ${{ github.ref_name }}"
+          git push origin main
+
   build-flatpak-amd64:
     needs: [prepare-version]
     permissions:

@@ -27,7 +27,7 @@ jobs:
           pacman -Sy --noconfirm git openssh gnupg
           useradd -m builder
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Update PKGBUILD checksums
         run: |

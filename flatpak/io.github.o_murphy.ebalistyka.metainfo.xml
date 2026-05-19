@@ -62,5 +62,7 @@
     <release version="0.1.14" date="2026-05-14"/>
   </releases>
 
-  <content_rating type="oars-1.1"/>
+  <content_rating type="oars-1.1">
+    <content_attribute id="violence-realistic">none</content_attribute>
+  </content_rating>
 </component>

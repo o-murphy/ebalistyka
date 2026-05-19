@@ -33,7 +33,7 @@ jobs:
       rpm:      ${{ steps.filter.outputs.rpm }}
       flatpak:  ${{ steps.filter.outputs.flatpak }}
     steps:
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |

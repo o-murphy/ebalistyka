@@ -155,20 +155,20 @@ jobs:
           fi
 
       - name: Upload generated sources as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: generated-sources-${{ steps.meta.outputs.arch_suffix }}
           path: flatpak/generated-sources.json
           retention-days: 7
 
       - name: Cache Flatpak runtimes
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.local/share/flatpak
           key: flatpak-runtimes-25.08-llvm20-${{ runner.arch }}
 
       - name: Cache flatpak-builder downloads
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .flatpak-builder/downloads
           key: flatpak-dl-${{ hashFiles('flatpak/io.github.o_murphy.ebalistyka.yml', 'pubspec.lock', 'flatpak/flutter.version') }}-${{ runner.arch }}
@@ -185,6 +185,11 @@ jobs:
             org.freedesktop.Platform//25.08 \
             org.freedesktop.Sdk//25.08 \
             org.freedesktop.Sdk.Extension.llvm20//25.08
+
+      - name: Configure GitHub token for flatpak-builder
+        run: |
+          echo "machine github.com login x-access-token password ${{ secrets.GITHUB_TOKEN }}" >> ~/.netrc
+          chmod 600 ~/.netrc
 
       - name: Build Flatpak (source build)
         run: |
