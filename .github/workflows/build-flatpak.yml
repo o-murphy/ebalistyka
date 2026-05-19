@@ -109,14 +109,8 @@ jobs:
           echo "$FLUTTER_DIR/bin" >> $GITHUB_PATH
           echo "FLUTTER_ROOT=$FLUTTER_DIR" >> $GITHUB_ENV
 
-      - name: Build flatpak_gen
-        run: |
-          git clone --depth 1 \
-            https://github.com/o-murphy/flutter_flatpak_gen.git \
-            /tmp/flatpak_gen_tool
-          cd /tmp/flatpak_gen_tool
-          dart pub get
-          dart compile exe bin/flatpak_gen.dart -o /tmp/flatpak_gen
+      - name: Get Dart dependencies
+        run: dart pub get
 
       - name: Prepare Flatpak sources and manifest
         env:
@@ -133,7 +127,7 @@ jobs:
             echo "ERROR: could not resolve $FLUTTER_TOOLS_LOCK"
             exit 1
           fi
-          /tmp/flatpak_gen prepare \
+          dart run flutpak prepare \
             --tag "${{ steps.meta.outputs.tag }}" \
             --commit "${{ steps.meta.outputs.commit }}" \
             --sdk "$FLUTTER_ROOT"
