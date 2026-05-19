@@ -160,7 +160,7 @@ msix_config:
   sign_msix: true
   install_certificate: false
 
-flatpak_gen:
+flutpak:
   output: flatpak/generated-sources.json
   flutter_version_file: flatpak/flutter.version
 
