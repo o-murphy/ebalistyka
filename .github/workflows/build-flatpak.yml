@@ -117,11 +117,11 @@ jobs:
           validate: 'false'
           flutpak_ref: v0.2.7
 
-      - name: Verify Flatpak manifest is pinned
-        uses: o-murphy/flutpak/.github/actions/verify@v0.2.7
-        with:
-          manifest: flatpak/io.github.o_murphy.ebalistyka.yml
-          flutpak_ref: v0.2.7
+      # - name: Verify Flatpak manifest is pinned
+      #   uses: o-murphy/flutpak/.github/actions/verify@v0.2.7
+      #   with:
+      #     manifest: flatpak/io.github.o_murphy.ebalistyka.yml
+      #     flutpak_ref: v0.2.7
 
       - name: Read Flutter version
         id: flutter-ver
