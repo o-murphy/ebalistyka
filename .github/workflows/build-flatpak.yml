@@ -130,7 +130,7 @@ jobs:
         run: | 
           dart run flutpak prepare \
             --tag "${{ steps.resolve-ref.outputs.ref_value }}" \
-            --commit "$(git rev-parse HEAD)" \  
+            --commit "$(git rev-parse HEAD)" \
             --sdk "$FLUTTER_ROOT"
 
       - name: Remove useless file (dirty trick)
