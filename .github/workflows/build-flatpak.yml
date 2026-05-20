@@ -97,6 +97,7 @@ jobs:
         uses: o-murphy/flutpak/.github/actions/verify@claude/flutpak-desktop-entry-pnKsB
         with:
           manifest: flatpak/io.github.o_murphy.ebalistyka.yml
+          flutpak_ref: claude/flutpak-desktop-entry-pnKsB
 
       - name: Read Flutter version
         id: flutter-ver
