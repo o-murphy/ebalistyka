@@ -135,38 +135,19 @@ jobs:
       bundle_artifact_name: ${{ needs.build-portable-arm64.outputs.artifact_name }}
 
   # Verify that the committed flatpak manifest is already pinned to this
-  # exact tag and commit. Fails loudly if `flutpak prepare --tag` was not
-  # run and committed before the release tag was pushed.
+  # exact tag and commit. Fails if 'flutpak prepare --tag' was not run
+  # and committed before pushing the release tag.
   verify-flatpak-manifest:
     if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
 
-      - name: Verify manifest is pinned to this tag and commit
-        run: |
-          MANIFEST=flatpak/io.github.o_murphy.ebalistyka.yml
-          MANIFEST_TAG=$(grep -E '^\s+tag:\s' "$MANIFEST" | head -1 | awk '{print $2}')
-          MANIFEST_COMMIT=$(grep -E '^\s+commit:\s' "$MANIFEST" | head -1 | awk '{print $2}')
-          EXPECTED_TAG="${{ github.ref_name }}"
-          EXPECTED_COMMIT="${{ github.sha }}"
-
-          FAIL=0
-          if [ "$MANIFEST_TAG" != "$EXPECTED_TAG" ]; then
-            echo "::error::Manifest tag ($MANIFEST_TAG) ≠ release tag ($EXPECTED_TAG)"
-            FAIL=1
-          fi
-          if [ "$MANIFEST_COMMIT" != "$EXPECTED_COMMIT" ]; then
-            echo "::error::Manifest commit (${MANIFEST_COMMIT:0:12}) ≠ HEAD (${EXPECTED_COMMIT:0:12})"
-            FAIL=1
-          fi
-          if [ "$FAIL" = "1" ]; then
-            echo ""
-            echo "Run 'flutpak prepare --tag $EXPECTED_TAG --commit $EXPECTED_COMMIT' locally,"
-            echo "commit the updated flatpak/ files, and re-push the tag."
-            exit 1
-          fi
-          echo "✓ manifest correctly pinned to $EXPECTED_TAG @ ${EXPECTED_COMMIT:0:12}"
+      - uses: o-murphy/flutpak/.github/actions/verify@main
+        with:
+          tag_name: ${{ github.ref_name }}
+          commit: ${{ github.sha }}
+          manifest: flatpak/io.github.o_murphy.ebalistyka.yml
 
   build-flatpak-amd64:
     needs: [prepare-version, verify-flatpak-manifest]
