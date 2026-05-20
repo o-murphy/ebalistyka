@@ -65,7 +65,7 @@ on:
       - ".github/workflows/build-apk.yml"
 
 env:
-  FLUTTER_VERSION: "3.41.6"
+  FLUTTER_VERSION: "3.41.9"
 
 concurrency:
   group: build-apk-${{ github.ref }}
