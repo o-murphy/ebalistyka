@@ -3,8 +3,8 @@ name: Release
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'        # v1.2.3       → full release
-      - 'v[0-9]+.[0-9]+.[0-9]+-*'      # v1.2.3-beta  → prerelease
+      - "v[0-9]+.[0-9]+.[0-9]+" # v1.2.3       → full release
+      - "v[0-9]+.[0-9]+.[0-9]+-*" # v1.2.3-beta  → prerelease
   workflow_dispatch:
 
 concurrency:
@@ -67,10 +67,10 @@ jobs:
       build_type: release
       retention_days: 2
     secrets:
-      ANDROID_KEYSTORE_BASE64:   ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
       ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-      ANDROID_KEY_ALIAS:         ${{ secrets.ANDROID_KEY_ALIAS }}
-      ANDROID_KEY_PASSWORD:      ${{ secrets.ANDROID_KEY_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
   build-android-aab:
     needs: prepare-version
@@ -83,10 +83,10 @@ jobs:
       build_type: release
       retention_days: 2
     secrets:
-      ANDROID_KEYSTORE_BASE64:   ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
       ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-      ANDROID_KEY_ALIAS:         ${{ secrets.ANDROID_KEY_ALIAS }}
-      ANDROID_KEY_PASSWORD:      ${{ secrets.ANDROID_KEY_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
   build-snap-amd64:
     needs: prepare-version
@@ -134,45 +134,45 @@ jobs:
       retention_days: 2
       bundle_artifact_name: ${{ needs.build-portable-arm64.outputs.artifact_name }}
 
-  # Verify that the committed flatpak manifest is already pinned to this
-  # exact tag and commit. Fails if 'flutpak prepare --tag' was not run
-  # and committed before pushing the release tag.
-  verify-flatpak-manifest:
-    if: github.ref_type == 'tag'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
+  # # Verify that the committed flatpak manifest is already pinned to this
+  # # exact tag and commit. Fails if 'flutpak prepare --tag' was not run
+  # # and committed before pushing the release tag.
+  # verify-flatpak-manifest:
+  #   if: github.ref_type == 'tag'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v6
 
-      - uses: o-murphy/flutpak/.github/actions/verify@v0.2.7
-        with:
-          tag_name: ${{ github.ref_name }}
-          commit: ${{ github.sha }}
-          manifest: flatpak/io.github.o_murphy.ebalistyka.yml
-          flutpak_ref: v0.2.7
+  #     - uses: o-murphy/flutpak/.github/actions/verify@v0.2.7
+  #       with:
+  #         tag_name: ${{ github.ref_name }}
+  #         commit: ${{ github.sha }}
+  #         manifest: flatpak/io.github.o_murphy.ebalistyka.yml
+  #         flutpak_ref: v0.2.7
 
-  build-flatpak-amd64:
-    needs: [prepare-version, verify-flatpak-manifest]
-    if: always() && needs.prepare-version.result == 'success' && (needs.verify-flatpak-manifest.result == 'success' || needs.verify-flatpak-manifest.result == 'skipped')
-    permissions:
-      issues: write
-      pull-requests: write
-    uses: ./.github/workflows/build-flatpak.yml
-    with:
-      arch: amd64
-      build_name: ${{ needs.prepare-version.outputs.version }}
-      retention_days: 2
+  # build-flatpak-amd64:
+  #   needs: [prepare-version, verify-flatpak-manifest]
+  #   if: always() && needs.prepare-version.result == 'success' && (needs.verify-flatpak-manifest.result == 'success' || needs.verify-flatpak-manifest.result == 'skipped')
+  #   permissions:
+  #     issues: write
+  #     pull-requests: write
+  #   uses: ./.github/workflows/build-flatpak.yml
+  #   with:
+  #     arch: amd64
+  #     build_name: ${{ needs.prepare-version.outputs.version }}
+  #     retention_days: 2
 
-  build-flatpak-arm64:
-    needs: [prepare-version, verify-flatpak-manifest]
-    if: always() && needs.prepare-version.result == 'success' && (needs.verify-flatpak-manifest.result == 'success' || needs.verify-flatpak-manifest.result == 'skipped')
-    permissions:
-      issues: write
-      pull-requests: write
-    uses: ./.github/workflows/build-flatpak.yml
-    with:
-      arch: arm64
-      build_name: ${{ needs.prepare-version.outputs.version }}
-      retention_days: 2
+  # build-flatpak-arm64:
+  #   needs: [prepare-version, verify-flatpak-manifest]
+  #   if: always() && needs.prepare-version.result == 'success' && (needs.verify-flatpak-manifest.result == 'success' || needs.verify-flatpak-manifest.result == 'skipped')
+  #   permissions:
+  #     issues: write
+  #     pull-requests: write
+  #   uses: ./.github/workflows/build-flatpak.yml
+  #   with:
+  #     arch: arm64
+  #     build_name: ${{ needs.prepare-version.outputs.version }}
+  #     retention_days: 2
 
   build-deb-amd64:
     needs: [prepare-version, build-portable-amd64]
@@ -223,7 +223,24 @@ jobs:
       bundle_artifact_name: ${{ needs.build-portable-arm64.outputs.artifact_name }}
 
   release:
-    needs: [prepare-version, build-portable-amd64, build-portable-arm64, build-windows-amd64, build-android, build-android-aab, build-snap-amd64, build-snap-arm64, build-appimage-amd64, build-appimage-arm64, build-flatpak-amd64, build-flatpak-arm64, build-deb-amd64, build-deb-arm64, build-rpm-amd64, build-rpm-arm64]
+    needs: [
+        prepare-version,
+        build-portable-amd64,
+        build-portable-arm64,
+        build-windows-amd64,
+        build-android,
+        build-android-aab,
+        build-snap-amd64,
+        build-snap-arm64,
+        build-appimage-amd64,
+        build-appimage-arm64,
+        # build-flatpak-amd64,
+        # build-flatpak-arm64,
+        build-deb-amd64,
+        build-deb-arm64,
+        build-rpm-amd64,
+        build-rpm-arm64,
+      ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -266,7 +283,7 @@ jobs:
         uses: ./.github/actions/gpg-sign
         with:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase:  ${{ secrets.GPG_PASSPHRASE }}
+          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
           path: release/
 
       - name: Extract changelog
@@ -320,13 +337,13 @@ jobs:
       tag_name: ${{ github.ref_name }}
     secrets: inherit
 
-  publish-flatpak-repo:
-    if: github.ref_type == 'tag'
-    needs: [prepare-version, release]
-    uses: ./.github/workflows/publish-flatpak-repo.yml
-    with:
-      tag_name: ${{ github.ref_name }}
-    secrets: inherit
+  # publish-flatpak-repo:
+  #   if: github.ref_type == 'tag'
+  #   needs: [prepare-version, release]
+  #   uses: ./.github/workflows/publish-flatpak-repo.yml
+  #   with:
+  #     tag_name: ${{ github.ref_name }}
+  #   secrets: inherit
 
   publish-winget:
     if: github.ref_type == 'tag' && !contains(github.ref_name, '-')
