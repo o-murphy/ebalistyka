@@ -94,7 +94,7 @@ jobs:
           echo "artifact_name=ebalistyka-flatpak-${ARCH_SUFFIX}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
 
       - name: Verify Flatpak manifest is pinned
-        uses: o-murphy/flutpak/.github/actions/verify@main
+        uses: o-murphy/flutpak/.github/actions/verify@claude/flutpak-desktop-entry-pnKsB
         with:
           manifest: flatpak/io.github.o_murphy.ebalistyka.yml
 

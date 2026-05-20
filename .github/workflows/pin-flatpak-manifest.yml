@@ -23,11 +23,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: o-murphy/flutpak/.github/actions/prepare@main
+      - uses: o-murphy/flutpak/.github/actions/prepare@claude/flutpak-desktop-entry-pnKsB
         with:
           tag_name: ${{ inputs.tag_name }}
           flutter_version_file: flatpak/flutter.version
           validate: 'false'
+          flutpak_ref: flutpak-desktop-entry-pnKsB
 
       - name: Commit and push pinned flatpak files
         run: |
