@@ -196,6 +196,11 @@ flutpak:
     icons:
       - size: 512x512
         path: assets/icon_512x512.png
+    desktop:  # should be generated as is
+      name: eBalistyka
+      categories: 
+        - Utility
+        - Science
     extra_sources:
       - type: archive
         only-arches:
@@ -211,7 +216,7 @@ flutpak:
         sha256: 948fe456904b8b0ae6b22a26a9f460734dc3c2ec58750df3a329ccae1ebe035d
         dest: objectbox-c
         strip-components: 0
-    metainfo:
+    metainfo:  # should be generated from scratch ?
       path: flatpak/io.github.o_murphy.ebalistyka.metainfo.xml
       repo_slug: o-murphy/ebalistyka
       developer:
