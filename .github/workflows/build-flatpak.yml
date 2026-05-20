@@ -2,7 +2,6 @@ name: Build Flatpak
 
 on:
   pull_request:
-    branches: [ main, develop ]
     paths:
       - "app/**"
       - "lib/**"
