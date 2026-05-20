@@ -123,19 +123,19 @@ jobs:
       #     manifest: flatpak/io.github.o_murphy.ebalistyka.yml
       #     flutpak_ref: v0.2.7
 
-      - name: Read Flutter version
-        id: flutter-ver
-        run: echo "version=$(cat flatpak/flutter.version)" >> $GITHUB_OUTPUT
+      # - name: Read Flutter version
+      #   id: flutter-ver
+      #   run: echo "version=$(cat flatpak/flutter.version)" >> $GITHUB_OUTPUT
 
-      - name: Install Flutter ${{ steps.flutter-ver.outputs.version }}
-        run: |
-          FLUTTER_DIR="$RUNNER_TEMP/flutter"
-          git clone --depth 1 \
-            --branch "${{ steps.flutter-ver.outputs.version }}" \
-            https://github.com/flutter/flutter.git \
-            "$FLUTTER_DIR"
-          echo "$FLUTTER_DIR/bin" >> $GITHUB_PATH
-          echo "FLUTTER_ROOT=$FLUTTER_DIR" >> $GITHUB_ENV
+      # - name: Install Flutter ${{ steps.flutter-ver.outputs.version }}
+      #   run: |
+      #     FLUTTER_DIR="$RUNNER_TEMP/flutter"
+      #     git clone --depth 1 \
+      #       --branch "${{ steps.flutter-ver.outputs.version }}" \
+      #       https://github.com/flutter/flutter.git \
+      #       "$FLUTTER_DIR"
+      #     echo "$FLUTTER_DIR/bin" >> $GITHUB_PATH
+      #     echo "FLUTTER_ROOT=$FLUTTER_DIR" >> $GITHUB_ENV
 
       - name: Get dependencies
         run: flutter pub get

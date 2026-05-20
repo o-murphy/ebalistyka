@@ -57,7 +57,7 @@ modules:
       - type: git
         url: https://github.com/o-murphy/ebalistyka.git
         tag: v0.1.16-beta.1
-        commit: 16a6575a9a742aba246b3e14c1b2c532833d877f
+        commit: 00a52036c14e211543698368bd39bebf887e8fab
         disable-submodules: true
       - type: archive
         only-arches:
