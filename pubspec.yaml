@@ -141,14 +141,14 @@ flutter_native_splash:
   image: assets/splash_logo.png
 
 flutter_launcher_icons:
-  image_path: "assets/icon.png"
+  image_path: "app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png"
   android: true
   ios: true
   remove_alpha_ios: true
   windows:
     generate: true
-    image_path: "assets/icon.png"
-    icon_size: 256
+    image_path: "app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png"
+    icon_size: 512
   macos:
     generate: true
 
@@ -157,7 +157,7 @@ msix_config:
   publisher_display_name: o-murphy
   identity_name: com.o.murphy.ebalistyka
   publisher: CN=o-murphy
-  logo_path: assets/icon.png
+  logo_path: "app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png"
   sign_msix: true
   install_certificate: false
 
@@ -193,15 +193,6 @@ flutpak:
       - flatpak/modules/bclibc.yml
     env:
       OBJECTBOX_PREBUILT_DIR: /run/build/ebalistyka/objectbox-c
-    icons:
-      - size: 512x512
-        path: assets/icon_512x512.png
-    desktop:
-      name: eBalistyka
-      comment: Ballistic calculator
-      categories:
-        - Utility
-        - Science
     extra_sources:
       - type: archive
         only-arches:
@@ -217,35 +208,3 @@ flutpak:
         sha256: 948fe456904b8b0ae6b22a26a9f460734dc3c2ec58750df3a329ccae1ebe035d
         dest: objectbox-c
         strip-components: 0
-    metainfo:
-      path: app/share/metainfo/io.github.o_murphy.ebalistyka.metainfo.xml
-      repo_slug: o-murphy/ebalistyka
-      name: eBalistyka
-      summary: Ballistic trajectory calculator
-      description: |
-        eBalistyka is a professional ballistic calculator for shooters.
-        Supports trajectory calculation, wind drift, multiple ammo profiles,
-        and custom reticle overlays.
-      metadata_license: MIT
-      project_license: GPL-3.0-only
-      developer:
-        id: io.github.o_murphy
-        name: o-murphy
-      url:
-        homepage: https://github.com/o-murphy/ebalistyka
-        bugtracker: https://github.com/o-murphy/ebalistyka/issues
-      categories:
-        - Utility
-        - Science
-      supports:
-        - pointing
-        - keyboard
-        - touch
-      screenshots:
-        - path: docs/screenshots/home.png
-        - path: docs/screenshots/conditions.png
-        - path: docs/screenshots/tables_trajectory.png
-        - path: docs/screenshots/tables_details.png
-        - path: docs/screenshots/convertors.png
-      content_rating_attributes:
-        violence-realistic: none
