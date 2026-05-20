@@ -40,14 +40,11 @@ sed -i "s/^grade: .*/grade: ${GRADE}/" "$YAML"
 echo "✓ Set snap version: ${VERSION} (grade: ${GRADE})"
 
 # Copy icon into snap/gui so snapcraft picks it up
-if [ -f "assets/icon.png" ]; then
-  cp "assets/icon.png" "snap/gui/ebalistyka.png"
+if [ -f "app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png" ]; then
+  cp "app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png" "snap/gui/ebalistyka.png"
   echo "✓ Icon copied"
-elif [ -f "assets/icon.svg" ] && command -v convert &>/dev/null; then
-  convert "assets/icon.svg" -resize 256x256 "snap/gui/ebalistyka.png"
-  echo "✓ Icon converted from SVG"
 else
-  echo "❌ No icon found (assets/icon.png or assets/icon.svg with ImageMagick)" >&2
+  echo "❌ No icon found" >&2
   exit 1
 fi
 
