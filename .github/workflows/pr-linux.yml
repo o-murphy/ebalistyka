@@ -51,14 +51,10 @@ jobs:
             deb:
               - "app/**"
               - "deb/**"
-              - "flatpak/*.desktop"
-              - "flatpak/*.metainfo.xml"
               - ".github/workflows/build-deb.yml"
             rpm:
               - "app/**"
               - "rpm/**"
-              - "flatpak/*.desktop"
-              - "flatpak/*.metainfo.xml"
               - ".github/workflows/build-rpm.yml"
 
   build-bundle-amd64:
