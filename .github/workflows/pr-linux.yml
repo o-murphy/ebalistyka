@@ -3,6 +3,7 @@ name: PR Linux Builds
 on:
   pull_request:
     paths:
+      - "app/**"
       - "lib/**"
       - "linux/**"
       - "external/**"
