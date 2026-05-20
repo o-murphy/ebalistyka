@@ -44,24 +44,18 @@ exec "$APP/ebalistyka" "$@"
 EOF
 
 # Icon
-if [ -f "assets/icon_512x512.png" ]; then
-  ICON="assets/icon_512x512.png"
-elif [ -f "assets/icon.png" ]; then
-  ICON="assets/icon.png"
-else
-  echo "❌ No icon found" >&2; exit 1
-fi
-install -Dm644 "$ICON" "$SRC/usr/share/icons/hicolor/512x512/apps/${APP_ID}.png"
+install -Dm644 "app/share/icons/hicolor/512x512/apps/${APP_ID}.png" \
+  "$SRC/usr/share/icons/hicolor/512x512/apps/${APP_ID}.png"
 
 # Desktop entry
-install -Dm644 "packaging/${APP_ID}.desktop" \
+install -Dm644 "app/share/applications/${APP_ID}.desktop" \
   "$SRC/usr/share/applications/${APP_ID}.desktop"
 
 # AppStream metainfo (stamp version + date)
 TODAY=$(date +%Y-%m-%d)
 mkdir -p "$SRC/usr/share/metainfo"
 sed "s|<release version=\"[^\"]*\" date=\"[^\"]*\"/>|<release version=\"${BUILD_NAME}\" date=\"${TODAY}\"/>|" \
-  "packaging/${APP_ID}.metainfo.xml" > "$SRC/usr/share/metainfo/${APP_ID}.metainfo.xml"
+  "app/share/metainfo/${APP_ID}.metainfo.xml" > "$SRC/usr/share/metainfo/${APP_ID}.metainfo.xml"
 
 echo "✓ Sources prepared (version: ${RPM_VERSION}, release: ${RPM_RELEASE}, arch: ${RPM_ARCH})"
 
