@@ -98,57 +98,46 @@ jobs:
         id: resolve-ref
         shell: bash
         run: |
-          # Якщо inputs.tag_name передано і це реальний тег
           if [[ -n "${{ inputs.tag_name }}" ]] && git rev-parse --verify "refs/tags/${{ inputs.tag_name }}" 2>/dev/null; then
             echo "ref_type=tag" >> $GITHUB_OUTPUT
             echo "ref_value=${{ inputs.tag_name }}" >> $GITHUB_OUTPUT
             echo "✅ Using existing tag: ${{ inputs.tag_name }}"
           else
-            # Якщо тегу немає - використовуємо commit hash поточної гілки
             COMMIT_HASH=$(git rev-parse HEAD)
             echo "ref_type=commit" >> $GITHUB_OUTPUT
             echo "ref_value=$COMMIT_HASH" >> $GITHUB_OUTPUT
             echo "⚠️ Tag not found, using commit: $COMMIT_HASH"
           fi
 
-      - uses: o-murphy/flutpak/.github/actions/prepare@v0.2.7
-        with:
-          tag_name: ${{ steps.resolve-ref.outputs.ref_value }}
-          flutter_version_file: flatpak/flutter.version
-          validate: 'false'
-          flutpak_ref: v0.2.7
+      - name: Read Flutter version
+        id: flutter-ver
+        run: echo "version=$(cat flatpak/flutter.version)" >> $GITHUB_OUTPUT
 
-      - name: Restore original files
-        if: always()  # Важливо: виконати навіть якщо збірка не вдалася
-        shell: bash
+      - name: Install Flutter ${{ steps.flutter-ver.outputs.version }}
         run: |
-          # Відновлюємо оригінальні файли з git
-          git restore flatpak/io.github.o_murphy.ebalistyka.metainfo.xml
-          git restore flatpak/io.github.o_murphy.ebalistyka.desktop          
-          echo "✅ Restored original flatpak files"
-
-      # - name: Verify Flatpak manifest is pinned
-      #   uses: o-murphy/flutpak/.github/actions/verify@v0.2.7
-      #   with:
-      #     manifest: flatpak/io.github.o_murphy.ebalistyka.yml
-      #     flutpak_ref: v0.2.7
-
-      # - name: Read Flutter version
-      #   id: flutter-ver
-      #   run: echo "version=$(cat flatpak/flutter.version)" >> $GITHUB_OUTPUT
-
-      # - name: Install Flutter ${{ steps.flutter-ver.outputs.version }}
-      #   run: |
-      #     FLUTTER_DIR="$RUNNER_TEMP/flutter"
-      #     git clone --depth 1 \
-      #       --branch "${{ steps.flutter-ver.outputs.version }}" \
-      #       https://github.com/flutter/flutter.git \
-      #       "$FLUTTER_DIR"
-      #     echo "$FLUTTER_DIR/bin" >> $GITHUB_PATH
-      #     echo "FLUTTER_ROOT=$FLUTTER_DIR" >> $GITHUB_ENV
+          FLUTTER_DIR="$RUNNER_TEMP/flutter"
+          git clone --depth 1 \
+            --branch "${{ steps.flutter-ver.outputs.version }}" \
+            https://github.com/flutter/flutter.git \
+            "$FLUTTER_DIR"
+          echo "$FLUTTER_DIR/bin" >> $GITHUB_PATH
+          echo "FLUTTER_ROOT=$FLUTTER_DIR" >> $GITHUB_ENV
 
       - name: Get dependencies
         run: flutter pub get
+
+      - name: Flutpak prepare
+        run: | 
+          dart run flutpak prepare \
+            --tag "${{ steps.resolve-ref.outputs.ref_value }}" \
+            --commit "${{ steps.meta.outputs.commit }}" \  
+            --sdk "$FLUTTER_ROOT"
+
+      - name: Remove useless file (dirty trick)
+        if: always()
+        shell: bash
+        run: |
+          rm flatpak/io.github.o_murphy.ebalistyka.desktop          
 
       - name: Upload generated sources as artifact
         uses: actions/upload-artifact@v7
@@ -165,7 +154,7 @@ jobs:
       - name: Validate metainfo
         run: |
           appstreamcli validate --explain --no-net \
-            flatpak/io.github.o_murphy.ebalistyka.metainfo.xml
+            app/share/metainfo/io.github.o_murphy.ebalistyka.metainfo.xml
 
       - name: Cache Flatpak installation (org.flatpak.Builder + runtimes)
         uses: actions/cache@v5

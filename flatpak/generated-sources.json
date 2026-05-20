@@ -456,16 +456,16 @@
     },
     {
         "type": "archive",
-        "url": "https://pub.dartlang.org/packages/flutpak/versions/0.2.6.tar.gz",
-        "sha256": "db4b219a8b1f8cc045d210507d22bd38c378d5db4bc1d252f055c67633c3e358",
-        "dest": ".pub-cache/hosted/pub.dev/flutpak-0.2.6",
+        "url": "https://pub.dartlang.org/packages/flutpak/versions/0.2.7.tar.gz",
+        "sha256": "191a872bb1f794317ec0858422af5a05c8c1d16f2821c5d306fcfb77a371005c",
+        "dest": ".pub-cache/hosted/pub.dev/flutpak-0.2.7",
         "strip-components": 0
     },
     {
         "type": "inline",
-        "contents": "db4b219a8b1f8cc045d210507d22bd38c378d5db4bc1d252f055c67633c3e358",
+        "contents": "191a872bb1f794317ec0858422af5a05c8c1d16f2821c5d306fcfb77a371005c",
         "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "flutpak-0.2.6.sha256"
+        "dest-filename": "flutpak-0.2.7.sha256"
     },
     {
         "type": "archive",
@@ -872,16 +872,16 @@
     },
     {
         "type": "archive",
-        "url": "https://pub.dartlang.org/packages/meta/versions/1.17.0.tar.gz",
-        "sha256": "23f08335362185a5ea2ad3a4e597f1375e78bce8a040df5c600c8d3552ef2394",
-        "dest": ".pub-cache/hosted/pub.dev/meta-1.17.0",
+        "url": "https://pub.dartlang.org/packages/meta/versions/1.18.0.tar.gz",
+        "sha256": "1741988757a65eb6b36abe716829688cf01910bbf91c34354ff7ec1c3de2b349",
+        "dest": ".pub-cache/hosted/pub.dev/meta-1.18.0",
         "strip-components": 0
     },
     {
         "type": "inline",
-        "contents": "23f08335362185a5ea2ad3a4e597f1375e78bce8a040df5c600c8d3552ef2394",
+        "contents": "1741988757a65eb6b36abe716829688cf01910bbf91c34354ff7ec1c3de2b349",
         "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "meta-1.17.0.sha256"
+        "dest-filename": "meta-1.18.0.sha256"
     },
     {
         "type": "archive",
@@ -1522,42 +1522,42 @@
     },
     {
         "type": "archive",
-        "url": "https://pub.dartlang.org/packages/test/versions/1.30.0.tar.gz",
-        "sha256": "280d6d890011ca966ad08df7e8a4ddfab0fb3aa49f96ed6de56e3521347a9ae7",
-        "dest": ".pub-cache/hosted/pub.dev/test-1.30.0",
+        "url": "https://pub.dartlang.org/packages/test/versions/1.31.0.tar.gz",
+        "sha256": "8d9ceddbab833f180fbefed08afa76d7c03513dfdba87ffcec2718b02bbcbf20",
+        "dest": ".pub-cache/hosted/pub.dev/test-1.31.0",
         "strip-components": 0
     },
     {
         "type": "inline",
-        "contents": "280d6d890011ca966ad08df7e8a4ddfab0fb3aa49f96ed6de56e3521347a9ae7",
+        "contents": "8d9ceddbab833f180fbefed08afa76d7c03513dfdba87ffcec2718b02bbcbf20",
         "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "test-1.30.0.sha256"
+        "dest-filename": "test-1.31.0.sha256"
     },
     {
         "type": "archive",
-        "url": "https://pub.dartlang.org/packages/test_api/versions/0.7.10.tar.gz",
-        "sha256": "8161c84903fd860b26bfdefb7963b3f0b68fee7adea0f59ef805ecca346f0c7a",
-        "dest": ".pub-cache/hosted/pub.dev/test_api-0.7.10",
+        "url": "https://pub.dartlang.org/packages/test_api/versions/0.7.11.tar.gz",
+        "sha256": "949a932224383300f01be9221c39180316445ecb8e7547f70a41a35bf421fb9e",
+        "dest": ".pub-cache/hosted/pub.dev/test_api-0.7.11",
         "strip-components": 0
     },
     {
         "type": "inline",
-        "contents": "8161c84903fd860b26bfdefb7963b3f0b68fee7adea0f59ef805ecca346f0c7a",
+        "contents": "949a932224383300f01be9221c39180316445ecb8e7547f70a41a35bf421fb9e",
         "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "test_api-0.7.10.sha256"
+        "dest-filename": "test_api-0.7.11.sha256"
     },
     {
         "type": "archive",
-        "url": "https://pub.dartlang.org/packages/test_core/versions/0.6.16.tar.gz",
-        "sha256": "0381bd1585d1a924763c308100f2138205252fb90c9d4eeaf28489ee65ccde51",
-        "dest": ".pub-cache/hosted/pub.dev/test_core-0.6.16",
+        "url": "https://pub.dartlang.org/packages/test_core/versions/0.6.17.tar.gz",
+        "sha256": "1991d4cfe85d5043241acac92962c3977c8d2f2add1ee73130c7b286417d1d34",
+        "dest": ".pub-cache/hosted/pub.dev/test_core-0.6.17",
         "strip-components": 0
     },
     {
         "type": "inline",
-        "contents": "0381bd1585d1a924763c308100f2138205252fb90c9d4eeaf28489ee65ccde51",
+        "contents": "1991d4cfe85d5043241acac92962c3977c8d2f2add1ee73130c7b286417d1d34",
         "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "test_core-0.6.16.sha256"
+        "dest-filename": "test_core-0.6.17.sha256"
     },
     {
         "type": "archive",
@@ -1899,29 +1899,29 @@
     },
     {
         "type": "archive",
-        "url": "https://pub.dartlang.org/packages/_fe_analyzer_shared/versions/92.0.0.tar.gz",
-        "sha256": "5b7468c326d2f8a4f630056404ca0d291ade42918f4a3c6233618e724f39da8e",
-        "dest": ".pub-cache/hosted/pub.dev/_fe_analyzer_shared-92.0.0",
+        "url": "https://pub.dartlang.org/packages/_fe_analyzer_shared/versions/95.0.0.tar.gz",
+        "sha256": "0e4db51a88671b676adc09e923ffebd765a1f0c2b04dc19b08b35a335de2972c",
+        "dest": ".pub-cache/hosted/pub.dev/_fe_analyzer_shared-95.0.0",
         "strip-components": 0
     },
     {
         "type": "inline",
-        "contents": "5b7468c326d2f8a4f630056404ca0d291ade42918f4a3c6233618e724f39da8e",
+        "contents": "0e4db51a88671b676adc09e923ffebd765a1f0c2b04dc19b08b35a335de2972c",
         "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "_fe_analyzer_shared-92.0.0.sha256"
+        "dest-filename": "_fe_analyzer_shared-95.0.0.sha256"
     },
     {
         "type": "archive",
-        "url": "https://pub.dartlang.org/packages/analyzer/versions/9.0.0.tar.gz",
-        "sha256": "70e4b1ef8003c64793a9e268a551a82869a8a96f39deb73dea28084b0e8bf75e",
-        "dest": ".pub-cache/hosted/pub.dev/analyzer-9.0.0",
+        "url": "https://pub.dartlang.org/packages/analyzer/versions/10.1.0.tar.gz",
+        "sha256": "3d577a36cde804a46bd1d89e673c3d87c3538c49a39c35d4d336f7760b48c319",
+        "dest": ".pub-cache/hosted/pub.dev/analyzer-10.1.0",
         "strip-components": 0
     },
     {
         "type": "inline",
-        "contents": "70e4b1ef8003c64793a9e268a551a82869a8a96f39deb73dea28084b0e8bf75e",
+        "contents": "3d577a36cde804a46bd1d89e673c3d87c3538c49a39c35d4d336f7760b48c319",
         "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "analyzer-9.0.0.sha256"
+        "dest-filename": "analyzer-10.1.0.sha256"
     },
     {
         "type": "archive",
@@ -1935,19 +1935,6 @@
         "contents": "cb6a278ef2dbb298455e1a713bda08524a175630ec643a242c399c932a0a1f7d",
         "dest": ".pub-cache/hosted-hashes/pub.dev",
         "dest-filename": "archive-3.6.1.sha256"
-    },
-    {
-        "type": "archive",
-        "url": "https://pub.dartlang.org/packages/async/versions/2.13.0.tar.gz",
-        "sha256": "758e6d74e971c3e5aceb4110bfd6698efc7f501675bcfe0c775459a8140750eb",
-        "dest": ".pub-cache/hosted/pub.dev/async-2.13.0",
-        "strip-components": 0
-    },
-    {
-        "type": "inline",
-        "contents": "758e6d74e971c3e5aceb4110bfd6698efc7f501675bcfe0c775459a8140750eb",
-        "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "async-2.13.0.sha256"
     },
     {
         "type": "archive",
@@ -1977,16 +1964,16 @@
     },
     {
         "type": "archive",
-        "url": "https://pub.dartlang.org/packages/built_value/versions/8.12.1.tar.gz",
-        "sha256": "426cf75afdb23aa74bd4e471704de3f9393f3c7b04c1e2d9c6f1073ae0b8b139",
-        "dest": ".pub-cache/hosted/pub.dev/built_value-8.12.1",
+        "url": "https://pub.dartlang.org/packages/built_value/versions/8.12.5.tar.gz",
+        "sha256": "0730c18c770d05636a8f945c32a4d7d81cb6e0f0148c8db4ad12e7748f7e49af",
+        "dest": ".pub-cache/hosted/pub.dev/built_value-8.12.5",
         "strip-components": 0
     },
     {
         "type": "inline",
-        "contents": "426cf75afdb23aa74bd4e471704de3f9393f3c7b04c1e2d9c6f1073ae0b8b139",
+        "contents": "0730c18c770d05636a8f945c32a4d7d81cb6e0f0148c8db4ad12e7748f7e49af",
         "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "built_value-8.12.1.sha256"
+        "dest-filename": "built_value-8.12.5.sha256"
     },
     {
         "type": "archive",
@@ -2042,6 +2029,19 @@
     },
     {
         "type": "archive",
+        "url": "https://pub.dartlang.org/packages/dart_style/versions/3.1.7.tar.gz",
+        "sha256": "29f7ecc274a86d32920b1d9cfc7502fa87220da41ec60b55f329559d5732e2b2",
+        "dest": ".pub-cache/hosted/pub.dev/dart_style-3.1.7",
+        "strip-components": 0
+    },
+    {
+        "type": "inline",
+        "contents": "29f7ecc274a86d32920b1d9cfc7502fa87220da41ec60b55f329559d5732e2b2",
+        "dest": ".pub-cache/hosted-hashes/pub.dev",
+        "dest-filename": "dart_style-3.1.7.sha256"
+    },
+    {
+        "type": "archive",
         "url": "https://pub.dartlang.org/packages/data_assets/versions/0.19.6.tar.gz",
         "sha256": "d8b93648a338f471e576e0ba05f6b5d63a4e0fa447ca839a500267421d9245ba",
         "dest": ".pub-cache/hosted/pub.dev/data_assets-0.19.6",
@@ -2055,16 +2055,16 @@
     },
     {
         "type": "archive",
-        "url": "https://pub.dartlang.org/packages/dds/versions/5.1.0.tar.gz",
-        "sha256": "06d09ee8b4a0b58e721fd3780aa53a80eeec0e14479899b74be39e4bd522c5ff",
-        "dest": ".pub-cache/hosted/pub.dev/dds-5.1.0",
+        "url": "https://pub.dartlang.org/packages/dds/versions/5.3.0.tar.gz",
+        "sha256": "6673c5b29e502fd44dbf5836685e7c7c16b11c0fa7f91ef241e0cbf0638c8794",
+        "dest": ".pub-cache/hosted/pub.dev/dds-5.3.0",
         "strip-components": 0
     },
     {
         "type": "inline",
-        "contents": "06d09ee8b4a0b58e721fd3780aa53a80eeec0e14479899b74be39e4bd522c5ff",
+        "contents": "6673c5b29e502fd44dbf5836685e7c7c16b11c0fa7f91ef241e0cbf0638c8794",
         "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "dds-5.1.0.sha256"
+        "dest-filename": "dds-5.3.0.sha256"
     },
     {
         "type": "archive",
@@ -2081,16 +2081,16 @@
     },
     {
         "type": "archive",
-        "url": "https://pub.dartlang.org/packages/devtools_shared/versions/12.0.0.tar.gz",
-        "sha256": "275e48a8a145fa09c7ae433a96fd433c01cc079d39b40acf5ba883236ae2c887",
-        "dest": ".pub-cache/hosted/pub.dev/devtools_shared-12.0.0",
+        "url": "https://pub.dartlang.org/packages/devtools_shared/versions/12.1.0.tar.gz",
+        "sha256": "2daf7a9fba6a470668b26ecbd04200f7bf992aad81a2c31d12457c7791419dea",
+        "dest": ".pub-cache/hosted/pub.dev/devtools_shared-12.1.0",
         "strip-components": 0
     },
     {
         "type": "inline",
-        "contents": "275e48a8a145fa09c7ae433a96fd433c01cc079d39b40acf5ba883236ae2c887",
+        "contents": "2daf7a9fba6a470668b26ecbd04200f7bf992aad81a2c31d12457c7791419dea",
         "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "devtools_shared-12.0.0.sha256"
+        "dest-filename": "devtools_shared-12.1.0.sha256"
     },
     {
         "type": "archive",
@@ -2107,16 +2107,16 @@
     },
     {
         "type": "archive",
-        "url": "https://pub.dartlang.org/packages/dwds/versions/26.2.3.tar.gz",
-        "sha256": "982c5727eeb966dbc6099087b6622be3633fef9616ead8d78d3da737d363a077",
-        "dest": ".pub-cache/hosted/pub.dev/dwds-26.2.3",
+        "url": "https://pub.dartlang.org/packages/dwds/versions/26.2.5.tar.gz",
+        "sha256": "37829d11cc9ef3fe4cd8c6263873b4e8b640a8862d4d741b8fa58dd1eeadfb48",
+        "dest": ".pub-cache/hosted/pub.dev/dwds-26.2.5",
         "strip-components": 0
     },
     {
         "type": "inline",
-        "contents": "982c5727eeb966dbc6099087b6622be3633fef9616ead8d78d3da737d363a077",
+        "contents": "37829d11cc9ef3fe4cd8c6263873b4e8b640a8862d4d741b8fa58dd1eeadfb48",
         "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "dwds-26.2.3.sha256"
+        "dest-filename": "dwds-26.2.5.sha256"
     },
     {
         "type": "archive",
@@ -2130,19 +2130,6 @@
         "contents": "de1fce715ab013cdfb00befc3bdf0914bea5e409c3a567b7f8f144bc061611a7",
         "dest": ".pub-cache/hosted-hashes/pub.dev",
         "dest-filename": "extension_discovery-2.1.0.sha256"
-    },
-    {
-        "type": "archive",
-        "url": "https://pub.dartlang.org/packages/ffi/versions/2.1.4.tar.gz",
-        "sha256": "289279317b4b16eb2bb7e271abccd4bf84ec9bdcbe999e278a94b804f5630418",
-        "dest": ".pub-cache/hosted/pub.dev/ffi-2.1.4",
-        "strip-components": 0
-    },
-    {
-        "type": "inline",
-        "contents": "289279317b4b16eb2bb7e271abccd4bf84ec9bdcbe999e278a94b804f5630418",
-        "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "ffi-2.1.4.sha256"
     },
     {
         "type": "archive",
@@ -2185,29 +2172,16 @@
     },
     {
         "type": "archive",
-        "url": "https://pub.dartlang.org/packages/hooks/versions/1.0.0.tar.gz",
-        "sha256": "5d309c86e7ce34cd8e37aa71cb30cb652d3829b900ab145e4d9da564b31d59f7",
-        "dest": ".pub-cache/hosted/pub.dev/hooks-1.0.0",
+        "url": "https://pub.dartlang.org/packages/hooks_runner/versions/1.1.1.tar.gz",
+        "sha256": "1da87338673b2c0618cd65ad07cebb6244f69e70e9ee0aad3288605eba1e18dc",
+        "dest": ".pub-cache/hosted/pub.dev/hooks_runner-1.1.1",
         "strip-components": 0
     },
     {
         "type": "inline",
-        "contents": "5d309c86e7ce34cd8e37aa71cb30cb652d3829b900ab145e4d9da564b31d59f7",
+        "contents": "1da87338673b2c0618cd65ad07cebb6244f69e70e9ee0aad3288605eba1e18dc",
         "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "hooks-1.0.0.sha256"
-    },
-    {
-        "type": "archive",
-        "url": "https://pub.dartlang.org/packages/hooks_runner/versions/1.0.1.tar.gz",
-        "sha256": "87832cd552d8ddc6014c240ee724f37bc9ea5141aa74a21658b73d22358f43fd",
-        "dest": ".pub-cache/hosted/pub.dev/hooks_runner-1.0.1",
-        "strip-components": 0
-    },
-    {
-        "type": "inline",
-        "contents": "87832cd552d8ddc6014c240ee724f37bc9ea5141aa74a21658b73d22358f43fd",
-        "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "hooks_runner-1.0.1.sha256"
+        "dest-filename": "hooks_runner-1.1.1.sha256"
     },
     {
         "type": "archive",
@@ -2224,29 +2198,16 @@
     },
     {
         "type": "archive",
-        "url": "https://pub.dartlang.org/packages/json_annotation/versions/4.9.0.tar.gz",
-        "sha256": "1ce844379ca14835a50d2f019a3099f419082cfdd231cd86a142af94dd5c6bb1",
-        "dest": ".pub-cache/hosted/pub.dev/json_annotation-4.9.0",
+        "url": "https://pub.dartlang.org/packages/json_rpc_2/versions/4.1.0.tar.gz",
+        "sha256": "82dfd37d3b2e5030ae4729e1d7f5538cbc45eb1c73d618b9272931facac3bec1",
+        "dest": ".pub-cache/hosted/pub.dev/json_rpc_2-4.1.0",
         "strip-components": 0
     },
     {
         "type": "inline",
-        "contents": "1ce844379ca14835a50d2f019a3099f419082cfdd231cd86a142af94dd5c6bb1",
+        "contents": "82dfd37d3b2e5030ae4729e1d7f5538cbc45eb1c73d618b9272931facac3bec1",
         "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "json_annotation-4.9.0.sha256"
-    },
-    {
-        "type": "archive",
-        "url": "https://pub.dartlang.org/packages/json_rpc_2/versions/4.0.0.tar.gz",
-        "sha256": "3c46c2633aec07810c3d6a2eb08d575b5b4072980db08f1344e66aeb53d6e4a7",
-        "dest": ".pub-cache/hosted/pub.dev/json_rpc_2-4.0.0",
-        "strip-components": 0
-    },
-    {
-        "type": "inline",
-        "contents": "3c46c2633aec07810c3d6a2eb08d575b5b4072980db08f1344e66aeb53d6e4a7",
-        "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "json_rpc_2-4.0.0.sha256"
+        "dest-filename": "json_rpc_2-4.1.0.sha256"
     },
     {
         "type": "archive",
@@ -2263,16 +2224,16 @@
     },
     {
         "type": "archive",
-        "url": "https://pub.dartlang.org/packages/mustache_template/versions/2.0.2.tar.gz",
-        "sha256": "daa42be75f2ccfb287c24a75e7ac594f2ea0b32bf9ebe7c15154aa45b2dfb2de",
-        "dest": ".pub-cache/hosted/pub.dev/mustache_template-2.0.2",
+        "url": "https://pub.dartlang.org/packages/mustache_template/versions/2.0.4.tar.gz",
+        "sha256": "544ff0b837836f5ad6b351e7a676ff7c2cad4fa412c465908aeb9358caddb6fc",
+        "dest": ".pub-cache/hosted/pub.dev/mustache_template-2.0.4",
         "strip-components": 0
     },
     {
         "type": "inline",
-        "contents": "daa42be75f2ccfb287c24a75e7ac594f2ea0b32bf9ebe7c15154aa45b2dfb2de",
+        "contents": "544ff0b837836f5ad6b351e7a676ff7c2cad4fa412c465908aeb9358caddb6fc",
         "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "mustache_template-2.0.2.sha256"
+        "dest-filename": "mustache_template-2.0.4.sha256"
     },
     {
         "type": "archive",
@@ -2289,19 +2250,6 @@
     },
     {
         "type": "archive",
-        "url": "https://pub.dartlang.org/packages/petitparser/versions/7.0.1.tar.gz",
-        "sha256": "1a97266a94f7350d30ae522c0af07890c70b8e62c71e8e3920d1db4d23c057d1",
-        "dest": ".pub-cache/hosted/pub.dev/petitparser-7.0.1",
-        "strip-components": 0
-    },
-    {
-        "type": "inline",
-        "contents": "1a97266a94f7350d30ae522c0af07890c70b8e62c71e8e3920d1db4d23c057d1",
-        "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "petitparser-7.0.1.sha256"
-    },
-    {
-        "type": "archive",
         "url": "https://pub.dartlang.org/packages/process/versions/5.0.5.tar.gz",
         "sha256": "c6248e4526673988586e8c00bb22a49210c258dc91df5227d5da9748ecf79744",
         "dest": ".pub-cache/hosted/pub.dev/process-5.0.5",
@@ -2315,6 +2263,19 @@
     },
     {
         "type": "archive",
+        "url": "https://pub.dartlang.org/packages/record_use/versions/0.6.0.tar.gz",
+        "sha256": "2551bd8eecfe95d14ae75f6021ad0248be5c27f138c2ec12fcb52b500b3ba1ed",
+        "dest": ".pub-cache/hosted/pub.dev/record_use-0.6.0",
+        "strip-components": 0
+    },
+    {
+        "type": "inline",
+        "contents": "2551bd8eecfe95d14ae75f6021ad0248be5c27f138c2ec12fcb52b500b3ba1ed",
+        "dest": ".pub-cache/hosted-hashes/pub.dev",
+        "dest-filename": "record_use-0.6.0.sha256"
+    },
+    {
+        "type": "archive",
         "url": "https://pub.dartlang.org/packages/shelf_proxy/versions/1.0.4.tar.gz",
         "sha256": "a71d2307f4393211930c590c3d2c00630f6c5a7a77edc1ef6436dfd85a6a7ee3",
         "dest": ".pub-cache/hosted/pub.dev/shelf_proxy-1.0.4",
@@ -2325,19 +2286,6 @@
         "contents": "a71d2307f4393211930c590c3d2c00630f6c5a7a77edc1ef6436dfd85a6a7ee3",
         "dest": ".pub-cache/hosted-hashes/pub.dev",
         "dest-filename": "shelf_proxy-1.0.4.sha256"
-    },
-    {
-        "type": "archive",
-        "url": "https://pub.dartlang.org/packages/source_span/versions/1.10.1.tar.gz",
-        "sha256": "254ee5351d6cb365c859e20ee823c3bb479bf4a293c22d17a9f1bf144ce86f7c",
-        "dest": ".pub-cache/hosted/pub.dev/source_span-1.10.1",
-        "strip-components": 0
-    },
-    {
-        "type": "inline",
-        "contents": "254ee5351d6cb365c859e20ee823c3bb479bf4a293c22d17a9f1bf144ce86f7c",
-        "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "source_span-1.10.1.sha256"
     },
     {
         "type": "archive",
@@ -2393,16 +2341,16 @@
     },
     {
         "type": "archive",
-        "url": "https://pub.dartlang.org/packages/unified_analytics/versions/8.0.10.tar.gz",
-        "sha256": "ce091b2bec81f26a7d4cf83212380ac314bfa4f6061f8c2168274ba5fd828a23",
-        "dest": ".pub-cache/hosted/pub.dev/unified_analytics-8.0.10",
+        "url": "https://pub.dartlang.org/packages/unified_analytics/versions/8.0.14.tar.gz",
+        "sha256": "406724e9231f8e30119673133c1087f9b24e2a75ba7111ea071253d57bb8f3b9",
+        "dest": ".pub-cache/hosted/pub.dev/unified_analytics-8.0.14",
         "strip-components": 0
     },
     {
         "type": "inline",
-        "contents": "ce091b2bec81f26a7d4cf83212380ac314bfa4f6061f8c2168274ba5fd828a23",
+        "contents": "406724e9231f8e30119673133c1087f9b24e2a75ba7111ea071253d57bb8f3b9",
         "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "unified_analytics-8.0.10.sha256"
+        "dest-filename": "unified_analytics-8.0.14.sha256"
     },
     {
         "type": "archive",
@@ -2416,19 +2364,6 @@
         "contents": "0bdbde65a6e710343d02a56552eeaefd20b735e04bfb6b3ee025b6b22e8d0e15",
         "dest": ".pub-cache/hosted-hashes/pub.dev",
         "dest-filename": "usage-4.1.1.sha256"
-    },
-    {
-        "type": "archive",
-        "url": "https://pub.dartlang.org/packages/uuid/versions/4.5.2.tar.gz",
-        "sha256": "a11b666489b1954e01d992f3d601b1804a33937b5a8fe677bd26b8a9f96f96e8",
-        "dest": ".pub-cache/hosted/pub.dev/uuid-4.5.2",
-        "strip-components": 0
-    },
-    {
-        "type": "inline",
-        "contents": "a11b666489b1954e01d992f3d601b1804a33937b5a8fe677bd26b8a9f96f96e8",
-        "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "uuid-4.5.2.sha256"
     },
     {
         "type": "archive",
@@ -2458,19 +2393,6 @@
     },
     {
         "type": "archive",
-        "url": "https://pub.dartlang.org/packages/watcher/versions/1.2.0.tar.gz",
-        "sha256": "f52385d4f73589977c80797e60fe51014f7f2b957b5e9a62c3f6ada439889249",
-        "dest": ".pub-cache/hosted/pub.dev/watcher-1.2.0",
-        "strip-components": 0
-    },
-    {
-        "type": "inline",
-        "contents": "f52385d4f73589977c80797e60fe51014f7f2b957b5e9a62c3f6ada439889249",
-        "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "watcher-1.2.0.sha256"
-    },
-    {
-        "type": "archive",
         "url": "https://pub.dartlang.org/packages/webdriver/versions/3.1.0.tar.gz",
         "sha256": "2f3a14ca026957870cfd9c635b83507e0e51d8091568e90129fbf805aba7cade",
         "dest": ".pub-cache/hosted/pub.dev/webdriver-3.1.0",
@@ -2484,28 +2406,28 @@
     },
     {
         "type": "archive",
-        "url": "https://pub.dartlang.org/packages/yaml_edit/versions/2.2.3.tar.gz",
-        "sha256": "ec709065bb2c911b336853b67f3732dd13e0336bd065cc2f1061d7610ddf45e3",
-        "dest": ".pub-cache/hosted/pub.dev/yaml_edit-2.2.3",
+        "url": "https://pub.dartlang.org/packages/yaml_edit/versions/2.2.4.tar.gz",
+        "sha256": "07c9e63ba42519745182b88ca12264a7ba2484d8239958778dfe4d44fe760488",
+        "dest": ".pub-cache/hosted/pub.dev/yaml_edit-2.2.4",
         "strip-components": 0
     },
     {
         "type": "inline",
-        "contents": "ec709065bb2c911b336853b67f3732dd13e0336bd065cc2f1061d7610ddf45e3",
+        "contents": "07c9e63ba42519745182b88ca12264a7ba2484d8239958778dfe4d44fe760488",
         "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "yaml_edit-2.2.3.sha256"
+        "dest-filename": "yaml_edit-2.2.4.sha256"
     },
     {
         "type": "git",
         "url": "https://github.com/flutter/flutter.git",
-        "tag": "3.41.9",
-        "commit": "00b0c91f06209d9e4a41f71b7a512d6eb3b9c694",
+        "tag": "3.44.0",
+        "commit": "559ffa3f75e7402d65a8def9c28389a9b2e6fe42",
         "dest": "flutter"
     },
     {
         "type": "archive",
-        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/42d3d75a56efe1a2e9902f52dc8006099c45d937/dart-sdk-linux-x64.zip",
-        "sha256": "16a40e0db2351260380f832078aeee71124382fbc7ba4c8201b0b49801b6f710",
+        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/4c525dac5ebe5971c5708ef73558ed8edcf4a362/dart-sdk-linux-x64.zip",
+        "sha256": "c48c502bccab437e8ccc5a51cfec96fc39c6ad075567d98a5ae64704735566ec",
         "dest": "flutter/bin/cache",
         "strip-components": 0,
         "only-arches": [
@@ -2514,8 +2436,8 @@
     },
     {
         "type": "archive",
-        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/42d3d75a56efe1a2e9902f52dc8006099c45d937/dart-sdk-linux-arm64.zip",
-        "sha256": "30eb1852d922ad02bf8e922ae82f7b5f20eab48e148a6eaf3c98309ccc75b5aa",
+        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/4c525dac5ebe5971c5708ef73558ed8edcf4a362/dart-sdk-linux-arm64.zip",
+        "sha256": "5dfcca67f48e0b01609df7f1e96c3117b30f2456e92973578fc8e221ccc30212",
         "dest": "flutter/bin/cache",
         "strip-components": 0,
         "only-arches": [
@@ -2538,36 +2460,36 @@
     },
     {
         "type": "archive",
-        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/42d3d75a56efe1a2e9902f52dc8006099c45d937/sky_engine.zip",
-        "sha256": "001d1fc52996b8b0966b1157ebd3df8220fe3b3007fca7285a5e46943f29fd7d",
+        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/4c525dac5ebe5971c5708ef73558ed8edcf4a362/sky_engine.zip",
+        "sha256": "3c9bc114a44e4b23d3936fb4bd08ca961a34dbbc2ce009545f403e6e6fd0a1ea",
         "dest": "flutter/bin/cache/pkg/sky_engine",
         "strip-components": 1
     },
     {
         "type": "archive",
-        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/42d3d75a56efe1a2e9902f52dc8006099c45d937/flutter_gpu.zip",
-        "sha256": "d277dfb3115e0188e4a914252322c1bb30b2681851b353d4ef549ebd3b1308a4",
+        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/4c525dac5ebe5971c5708ef73558ed8edcf4a362/flutter_gpu.zip",
+        "sha256": "3b10841192cdc3c4a99db2f8e0640805a1d338c1afd2224932fef588f27a5f35",
         "dest": "flutter/bin/cache/pkg/flutter_gpu",
         "strip-components": 1
     },
     {
         "type": "archive",
-        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/42d3d75a56efe1a2e9902f52dc8006099c45d937/flutter_patched_sdk.zip",
-        "sha256": "b84856c7f3229bad0a7c3c7031c1bd29bed65ea2757c39d0d4923d940a65dfa6",
+        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/4c525dac5ebe5971c5708ef73558ed8edcf4a362/flutter_patched_sdk.zip",
+        "sha256": "2f5feba0f5e1eef058ccfb536fe99078956abf0392dbbdc2a3d9b94722f06381",
         "dest": "flutter/bin/cache/artifacts/engine/common/flutter_patched_sdk",
         "strip-components": 1
     },
     {
         "type": "archive",
-        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/42d3d75a56efe1a2e9902f52dc8006099c45d937/flutter_patched_sdk_product.zip",
-        "sha256": "0423aab55d4b8fe18ef33d7445ff52b7f643464b30b5bbf2a4e93098668b2853",
+        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/4c525dac5ebe5971c5708ef73558ed8edcf4a362/flutter_patched_sdk_product.zip",
+        "sha256": "9cbb4c1d130945e9f1f87e039fca592cc40eb24ae98f385a15d4666e6d806ac3",
         "dest": "flutter/bin/cache/artifacts/engine/common/flutter_patched_sdk_product",
         "strip-components": 1
     },
     {
         "type": "archive",
-        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/42d3d75a56efe1a2e9902f52dc8006099c45d937/linux-x64/artifacts.zip",
-        "sha256": "1b19ece7a8eb3d794972eb8e8041cc04daa846c970dcd21d443cab9126023a58",
+        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/4c525dac5ebe5971c5708ef73558ed8edcf4a362/linux-x64/artifacts.zip",
+        "sha256": "62c031502c444acc76ceb7574b540c6aa71f495dee845f2b43f28734f95e3864",
         "dest": "flutter/bin/cache/artifacts/engine/linux-x64",
         "strip-components": 0,
         "only-arches": [
@@ -2576,8 +2498,8 @@
     },
     {
         "type": "archive",
-        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/42d3d75a56efe1a2e9902f52dc8006099c45d937/linux-x64/font-subset.zip",
-        "sha256": "7cfe20cf4ea100b2dc6bc1a6e6bbef6c5fbf3d8915d50bffc7e67351f70e72ef",
+        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/4c525dac5ebe5971c5708ef73558ed8edcf4a362/linux-x64/font-subset.zip",
+        "sha256": "0f14c76f551af4db42144397ed826cfe1a76995e04a547d154e340ce1997a00c",
         "dest": "flutter/bin/cache/artifacts/engine/linux-x64",
         "strip-components": 0,
         "only-arches": [
@@ -2586,8 +2508,8 @@
     },
     {
         "type": "archive",
-        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/42d3d75a56efe1a2e9902f52dc8006099c45d937/linux-x64-profile/linux-x64-flutter-gtk.zip",
-        "sha256": "cf7b33e5876ded0d391641e2ef127a9d1307e5c27784264905d4cb9907883dfc",
+        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/4c525dac5ebe5971c5708ef73558ed8edcf4a362/linux-x64-profile/linux-x64-flutter-gtk.zip",
+        "sha256": "2de742867d88e42b03aa26340003ccedfe0a7b2567cd4501cd1c94bc0289b565",
         "dest": "flutter/bin/cache/artifacts/engine/linux-x64-profile",
         "strip-components": 0,
         "only-arches": [
@@ -2596,8 +2518,8 @@
     },
     {
         "type": "archive",
-        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/42d3d75a56efe1a2e9902f52dc8006099c45d937/linux-x64-release/linux-x64-flutter-gtk.zip",
-        "sha256": "75c79f1fa49e6ae41263c38fc3f3052277c616572da0411127e169988222bca6",
+        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/4c525dac5ebe5971c5708ef73558ed8edcf4a362/linux-x64-release/linux-x64-flutter-gtk.zip",
+        "sha256": "00d3565cc1a6b7dfb90f06ac29dff25cd63be54aec36d9f419f28c748a82c016",
         "dest": "flutter/bin/cache/artifacts/engine/linux-x64-release",
         "strip-components": 0,
         "only-arches": [
@@ -2606,8 +2528,8 @@
     },
     {
         "type": "archive",
-        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/42d3d75a56efe1a2e9902f52dc8006099c45d937/linux-arm64/artifacts.zip",
-        "sha256": "f5ddaf4f9100b2c2eda14f1f9d7e518b3ec34ea63dd54a105c9abbc5f528f6f1",
+        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/4c525dac5ebe5971c5708ef73558ed8edcf4a362/linux-arm64/artifacts.zip",
+        "sha256": "950edb5042a89db31e38526fd14524c838e023c6acf9b6c61c7bdd21e9ea473d",
         "dest": "flutter/bin/cache/artifacts/engine/linux-arm64",
         "strip-components": 0,
         "only-arches": [
@@ -2616,8 +2538,8 @@
     },
     {
         "type": "archive",
-        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/42d3d75a56efe1a2e9902f52dc8006099c45d937/linux-arm64/font-subset.zip",
-        "sha256": "d10833773d194ac22a96e997e9ca3ae9b2d3b855fcf481bb1fe79988338edf88",
+        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/4c525dac5ebe5971c5708ef73558ed8edcf4a362/linux-arm64/font-subset.zip",
+        "sha256": "f3b2113431e5cca4f140eac4bc0a433be6b145309786e2d13b55ca7a19d0dfb9",
         "dest": "flutter/bin/cache/artifacts/engine/linux-arm64",
         "strip-components": 0,
         "only-arches": [
@@ -2626,8 +2548,8 @@
     },
     {
         "type": "archive",
-        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/42d3d75a56efe1a2e9902f52dc8006099c45d937/linux-arm64-profile/linux-arm64-flutter-gtk.zip",
-        "sha256": "a71d75348ff1d7f990449a23e50f78ceb6a229455133d21d2032745fe7016060",
+        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/4c525dac5ebe5971c5708ef73558ed8edcf4a362/linux-arm64-profile/linux-arm64-flutter-gtk.zip",
+        "sha256": "a1ed85cb687a4051b7ae5558ca8131f76afc614707c6dfefdaf6e83c741d3459",
         "dest": "flutter/bin/cache/artifacts/engine/linux-arm64-profile",
         "strip-components": 0,
         "only-arches": [
@@ -2636,8 +2558,8 @@
     },
     {
         "type": "archive",
-        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/42d3d75a56efe1a2e9902f52dc8006099c45d937/linux-arm64-release/linux-arm64-flutter-gtk.zip",
-        "sha256": "9fdd9799c003460d3817418e331f2739968cc626b4b819b593a19898d9d0c35f",
+        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/4c525dac5ebe5971c5708ef73558ed8edcf4a362/linux-arm64-release/linux-arm64-flutter-gtk.zip",
+        "sha256": "dd5b1b948d927448f0f7ff4ecb4827c526aad6771fad793fdf24ca0ac185ee34",
         "dest": "flutter/bin/cache/artifacts/engine/linux-arm64-release",
         "strip-components": 0,
         "only-arches": [
@@ -2664,8 +2586,8 @@
     },
     {
         "type": "file",
-        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/42d3d75a56efe1a2e9902f52dc8006099c45d937/engine_stamp.json",
-        "sha256": "525b1b6b40d7796534904f027a6225ce5fe5739e5b0a528ba42d9acd9f6c6752",
+        "url": "https://storage.googleapis.com/flutter_infra_release/flutter/4c525dac5ebe5971c5708ef73558ed8edcf4a362/engine_stamp.json",
+        "sha256": "822d1ab5b6d6673b542fab63dca3a119ae6786dce23547400b473be2849a3dc0",
         "dest": "flutter/bin/cache"
     }
 ]
