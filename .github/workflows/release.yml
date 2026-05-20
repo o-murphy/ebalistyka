@@ -7,9 +7,6 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+-*'      # v1.2.3-beta  → prerelease
   workflow_dispatch:
 
-env:
-  FLUTTER_VERSION: "3.41.6"
-
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: true
@@ -149,40 +146,12 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - uses: dart-lang/setup-dart@v1
+      - uses: o-murphy/flutpak/.github/actions/pin-manifest@main
         with:
-          sdk: stable
-
-      - name: Read Flutter version
-        id: flutter-ver
-        run: echo "version=$(cat flatpak/flutter.version)" >> $GITHUB_OUTPUT
-
-      - name: Install Flutter ${{ steps.flutter-ver.outputs.version }}
-        run: |
-          FLUTTER_DIR="$RUNNER_TEMP/flutter"
-          git clone --depth 1 \
-            --branch "${{ steps.flutter-ver.outputs.version }}" \
-            https://github.com/flutter/flutter.git \
-            "$FLUTTER_DIR"
-          echo "$FLUTTER_DIR/bin" >> $GITHUB_PATH
-          echo "FLUTTER_ROOT=$FLUTTER_DIR" >> $GITHUB_ENV
-
-      - name: Get dependencies
-        run: flutter pub get
-
-      - name: Resolve flutter_tools pubspec.lock
-        run: |
-          FLUTTER_TOOLS_LOCK="$FLUTTER_ROOT/packages/flutter_tools/pubspec.lock"
-          if [ ! -f "$FLUTTER_TOOLS_LOCK" ]; then
-            (cd "$FLUTTER_ROOT/packages/flutter_tools" && dart pub get --no-example 2>&1)
-          fi
-
-      - name: Generate sources and pin manifest to ${{ github.ref_name }}
-        run: |
-          dart run flutpak prepare \
-            --tag "${{ github.ref_name }}" \
-            --commit "${{ github.sha }}" \
-            --sdk "$FLUTTER_ROOT"
+          tag_name: ${{ github.ref_name }}
+          commit: ${{ github.sha }}
+          flutter_version_file: flatpak/flutter.version
+          validate: 'false'
 
       - name: Commit pinned flatpak files
         run: |
@@ -318,17 +287,14 @@ jobs:
           VERSION="${{ needs.prepare-version.outputs.version }}"
           V_RE="${VERSION//./\\.}"
 
-          # Try version-specific section first (e.g. "## v1.2.3-beta.1" or "## v1.2.3 (date)")
           awk "/^## v?${V_RE}([[:space:]]|\$)/{found=1;next} /^\[!\[/{next} /^---$/{next} /^## /{if(found)exit} found{print}" \
             CHANGELOG.md | sed -e '/./,$!d' -e 's/[[:space:]]*$//' > /tmp/release_notes.md
 
-          # Fall back to Unreleased if section not found or empty
           if [ ! -s /tmp/release_notes.md ]; then
             awk '/^## Unreleased/{found=1;next} /^\[!\[/{next} /^---$/{next} /^## /{if(found)exit} found{print}' \
               CHANGELOG.md | sed -e '/./,$!d' -e 's/[[:space:]]*$//' > /tmp/release_notes.md
           fi
 
-          # Append compare link (previous tag → current tag)
           PREV_TAG=$(git tag --sort=-version:refname | grep -v "^${{ github.ref_name }}$" | head -1)
           if [ -n "$PREV_TAG" ]; then
             echo "" >> /tmp/release_notes.md

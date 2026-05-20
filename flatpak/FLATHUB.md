@@ -164,7 +164,7 @@ flatpak install --user flathub \
 ### Build and install
 
 ```bash
-cd /path/to/ebalistyka-app
+cd /path/to/ebalistyka
 
 flatpak-builder --sandbox --user --install --install-deps-from=flathub --force-clean \
   --repo=.flatpak-repo --state-dir=.flatpak-builder \

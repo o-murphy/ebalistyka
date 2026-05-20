@@ -58,7 +58,7 @@ modules:
       - install -Dm644 flatpak/io.github.o_murphy.ebalistyka.metainfo.xml /app/share/metainfo/io.github.o_murphy.ebalistyka.metainfo.xml
     sources:
       - type: git
-        url: https://github.com/o-murphy/ebalistyka-app.git
+        url: https://github.com/o-murphy/ebalistyka.git
         tag: v0.1.15
         commit: 1ae72c0471fa5db6a0956c78f79849ba71155e51
         disable-submodules: true

@@ -54,14 +54,14 @@ fi
 install -Dm644 "$ICON" "$SRC/usr/share/icons/hicolor/512x512/apps/${APP_ID}.png"
 
 # Desktop entry
-install -Dm644 "flatpak/${APP_ID}.desktop" \
+install -Dm644 "packaging/${APP_ID}.desktop" \
   "$SRC/usr/share/applications/${APP_ID}.desktop"
 
 # AppStream metainfo (stamp version + date)
 TODAY=$(date +%Y-%m-%d)
 mkdir -p "$SRC/usr/share/metainfo"
 sed "s|<release version=\"[^\"]*\" date=\"[^\"]*\"/>|<release version=\"${BUILD_NAME}\" date=\"${TODAY}\"/>|" \
-  "flatpak/${APP_ID}.metainfo.xml" > "$SRC/usr/share/metainfo/${APP_ID}.metainfo.xml"
+  "packaging/${APP_ID}.metainfo.xml" > "$SRC/usr/share/metainfo/${APP_ID}.metainfo.xml"
 
 echo "✓ Sources prepared (version: ${RPM_VERSION}, release: ${RPM_RELEASE}, arch: ${RPM_ARCH})"
 

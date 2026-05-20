@@ -12,8 +12,8 @@
     </p>
   </description>
 
-  <url type="homepage">https://github.com/o-murphy/ebalistyka-app</url>
-  <url type="bugtracker">https://github.com/o-murphy/ebalistyka-app/issues</url>
+  <url type="homepage">https://github.com/o-murphy/ebalistyka</url>
+  <url type="bugtracker">https://github.com/o-murphy/ebalistyka/issues</url>
 
   <metadata_license>MIT</metadata_license>
   <project_license>GPL-3.0-only</project_license>

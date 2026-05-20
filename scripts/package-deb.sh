@@ -45,14 +45,14 @@ fi
 install -Dm644 "$ICON" "$PKG_DIR/usr/share/icons/hicolor/512x512/apps/${APP_ID}.png"
 
 # Desktop entry
-install -Dm644 "flatpak/${APP_ID}.desktop" \
+install -Dm644 "packaging/${APP_ID}.desktop" \
   "$PKG_DIR/usr/share/applications/${APP_ID}.desktop"
 
 # AppStream metainfo (stamp version + date)
 TODAY=$(date +%Y-%m-%d)
 mkdir -p "$PKG_DIR/usr/share/metainfo"
 sed "s|<release version=\"[^\"]*\" date=\"[^\"]*\"/>|<release version=\"${BUILD_NAME}\" date=\"${TODAY}\"/>|" \
-  "flatpak/${APP_ID}.metainfo.xml" > "$PKG_DIR/usr/share/metainfo/${APP_ID}.metainfo.xml"
+  "packaging/${APP_ID}.metainfo.xml" > "$PKG_DIR/usr/share/metainfo/${APP_ID}.metainfo.xml"
 
 # ── DEBIAN/control ────────────────────────────────────────────────────────────
 INSTALLED_SIZE=$(du -sk "$PKG_DIR" | cut -f1)

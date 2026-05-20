@@ -139,11 +139,21 @@ jobs:
           path: flatpak/generated-sources.json
           retention-days: 2
 
-      - name: Cache Flatpak runtimes
+      - name: Install flatpak and appstream
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y flatpak appstream
+
+      - name: Validate metainfo
+        run: |
+          appstreamcli validate --explain --no-net \
+            flatpak/io.github.o_murphy.ebalistyka.metainfo.xml
+
+      - name: Cache Flatpak installation (org.flatpak.Builder + runtimes)
         uses: actions/cache@v5
         with:
           path: ~/.local/share/flatpak
-          key: flatpak-runtimes-25.08-llvm20-${{ runner.arch }}
+          key: flatpak-builder-25.08-llvm20-${{ runner.arch }}-v1
 
       - name: Cache flatpak-builder downloads
         uses: actions/cache@v5
@@ -152,16 +162,21 @@ jobs:
           key: flatpak-dl-${{ steps.meta.outputs.arch_suffix }}-${{ hashFiles('flatpak/io.github.o_murphy.ebalistyka.yml', 'pubspec.lock', 'flatpak/flutter.version') }}
           restore-keys: flatpak-dl-${{ steps.meta.outputs.arch_suffix }}-
 
-      - name: Install flatpak and flatpak-builder
+      - name: Install org.flatpak.Builder
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y flatpak flatpak-builder
           flatpak remote-add --user --if-not-exists flathub \
-            https://flathub.org/repo/flathub.flatpakrepo
-          flatpak install --user -y --noninteractive flathub \
-            org.freedesktop.Platform//25.08 \
-            org.freedesktop.Sdk//25.08 \
-            org.freedesktop.Sdk.Extension.llvm20//25.08
+            https://dl.flathub.org/repo/flathub.flatpakrepo
+          dbus-run-session flatpak install --user -y --noninteractive flathub \
+            org.flatpak.Builder
+
+      - name: Lint manifest
+        run: |
+          dbus-run-session flatpak run \
+            --filesystem=host \
+            --command=flatpak-builder-lint \
+            org.flatpak.Builder \
+            --exceptions \
+            manifest flatpak/io.github.o_murphy.ebalistyka.yml
 
       - name: Configure GitHub token for flatpak-builder
         run: |
@@ -170,27 +185,25 @@ jobs:
 
       - name: Build Flatpak
         run: |
-          flatpak-builder \
-            --sandbox \
-            --user \
-            --install-deps-from=flathub \
-            --force-clean \
-            --disable-rofiles-fuse \
-            --default-branch=stable \
-            --repo=.flatpak-repo \
-            --state-dir=.flatpak-builder \
-            --arch="${{ steps.meta.outputs.arch_suffix }}" \
-            .flatpak-build \
+          dbus-run-session flatpak run --command=flathub-build org.flatpak.Builder \
             flatpak/io.github.o_murphy.ebalistyka.yml
+
+      - name: Lint Flatpak repo
+        run: |
+          dbus-run-session flatpak run \
+            --filesystem=host \
+            --command=flatpak-builder-lint \
+            org.flatpak.Builder \
+            --exceptions \
+            repo repo
 
       - name: Export .flatpak bundle
         run: |
           flatpak build-bundle \
             --arch="${{ steps.meta.outputs.arch_suffix }}" \
-            .flatpak-repo \
+            repo \
             "${{ steps.meta.outputs.bundle }}" \
-            io.github.o_murphy.ebalistyka \
-            stable
+            io.github.o_murphy.ebalistyka
 
       - name: Upload artifact
         id: upload

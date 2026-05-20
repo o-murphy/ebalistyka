@@ -80,7 +80,7 @@ dev_dependencies:
   flutter_native_splash: ^2.4.4
   flutter_launcher_icons: ^0.14.3
   msix: ^3.16.13
-  flutpak: ^0.1.1
+  flutpak: ^0.2.6
   custom_lint: ^0.8.1
 
 # For information on the generic Dart part of this file, see the
@@ -162,7 +162,7 @@ msix_config:
   install_certificate: false
 
 flutpak:
-  output: flatpak/generated-sources.json
+  output: flatpak
   flutter_version_file: flatpak/flutter.version
 
   pub:
@@ -183,7 +183,7 @@ flutpak:
     sdk_extensions:
       - org.freedesktop.Sdk.Extension.llvm20
     command: ebalistyka
-    repo_url: https://github.com/o-murphy/ebalistyka-app.git
+    repo_url: https://github.com/o-murphy/ebalistyka.git
     finish_args:
       - --share=ipc
       - --socket=fallback-x11
@@ -196,12 +196,6 @@ flutpak:
     icons:
       - size: 512x512
         path: assets/icon_512x512.png
-    screenshots:
-      - path: docs/screenshots/home.png
-      - path: docs/screenshots/conditions.png
-      - path: docs/screenshots/tables_trajectory.png
-      - path: docs/screenshots/tables_details.png
-      - path: docs/screenshots/convertors.png
     extra_sources:
       - type: archive
         only-arches:
@@ -219,4 +213,13 @@ flutpak:
         strip-components: 0
     metainfo:
       path: flatpak/io.github.o_murphy.ebalistyka.metainfo.xml
-      repo_slug: o-murphy/ebalistyka-app
+      repo_slug: o-murphy/ebalistyka
+      developer:
+        id: io.github.o_murphy
+        name: o-murphy
+      screenshots:
+        - path: docs/screenshots/home.png
+        - path: docs/screenshots/conditions.png
+        - path: docs/screenshots/tables_trajectory.png
+        - path: docs/screenshots/tables_details.png
+        - path: docs/screenshots/convertors.png

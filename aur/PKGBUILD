@@ -5,7 +5,7 @@ pkgver="${_pkgver//-/.}"
 pkgrel=1
 pkgdesc="Ballistic trajectory calculator"
 arch=('x86_64' 'aarch64')
-url="https://github.com/o-murphy/ebalistyka-app"
+url="https://github.com/o-murphy/ebalistyka"
 license=('GPL-3.0-only')
 depends=('gtk3' 'glib2')
 provides=('ebalistyka')
@@ -14,17 +14,17 @@ options=('!strip')
 
 _app_id="io.github.o_murphy.ebalistyka"
 _tag="v${_pkgver}"
-_relurl="https://github.com/o-murphy/ebalistyka-app/releases/download/${_tag}"
-_rawurl="https://raw.githubusercontent.com/o-murphy/ebalistyka-app/${_tag}"
+_relurl="https://github.com/o-murphy/ebalistyka/releases/download/${_tag}"
+_rawurl="https://raw.githubusercontent.com/o-murphy/ebalistyka/${_tag}"
 
 noextract=(
     "ebalistyka-x86_64.tar.gz"
     "ebalistyka-aarch64.tar.gz"
 )
 source=(
-    "ebalistyka.desktop::${_rawurl}/flatpak/${_app_id}.desktop"
+    "ebalistyka.desktop::${_rawurl}/packaging/${_app_id}.desktop"
     "icon.png::${_rawurl}/assets/icon_512x512.png"
-    "${_app_id}.metainfo.xml::${_rawurl}/flatpak/${_app_id}.metainfo.xml"
+    "${_app_id}.metainfo.xml::${_rawurl}/packaging/${_app_id}.metainfo.xml"
 )
 source_x86_64=("ebalistyka-x86_64.tar.gz::${_relurl}/ebalistyka_linux_x86_64.tar.gz")
 source_aarch64=("ebalistyka-aarch64.tar.gz::${_relurl}/ebalistyka_linux_aarch64.tar.gz")

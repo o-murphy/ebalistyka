@@ -434,26 +434,26 @@ Initial alpha release — first functional build of the ballistic trajectory cal
 - `OBJECTBOX_MIGRATION.md`: migration details
 
 
-[Unreleased]: https://github.com/o-murphy/ebalistyka-app/compare/v0.1.15..HEAD
-[v0.1.15]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.15
-[v0.1.14]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.14
-[v0.1.13]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.13
-[v0.1.12]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.12
-[v0.1.11-dev]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.11-dev
-[v0.1.10-dev]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.10-dev
-[v0.1.9-dev]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.9-dev
-[v0.1.8]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.8
-[v0.1.7]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.7
-[v0.1.6]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.6
-[v0.1.5]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.5
-[v0.1.4]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.4
-[v0.1.3]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.3
-[v0.1.2]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.2
-[v0.1.1]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.1
-[v0.1.0+9]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.0+9
-[v0.1.0+8]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.0+8
-[v0.1.0+7]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.0+7
-[v0.1.0-alpha]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.0-alpha
+[Unreleased]: https://github.com/o-murphy/ebalistyka/compare/v0.1.15..HEAD
+[v0.1.15]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.15
+[v0.1.14]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.14
+[v0.1.13]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.13
+[v0.1.12]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.12
+[v0.1.11-dev]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.11-dev
+[v0.1.10-dev]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.10-dev
+[v0.1.9-dev]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.9-dev
+[v0.1.8]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.8
+[v0.1.7]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.7
+[v0.1.6]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.6
+[v0.1.5]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.5
+[v0.1.4]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.4
+[v0.1.3]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.3
+[v0.1.2]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.2
+[v0.1.1]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.1
+[v0.1.0+9]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.0+9
+[v0.1.0+8]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.0+8
+[v0.1.0+7]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.0+7
+[v0.1.0-alpha]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.0-alpha
 
 [GitHubFav]: https://github.githubassets.com/favicons/favicon-dark.svg
 [GitHubBadge]: https://img.shields.io/badge/GitHub-grey?logo=github
