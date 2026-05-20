@@ -28,7 +28,7 @@ jobs:
           tag_name: ${{ inputs.tag_name }}
           flutter_version_file: flatpak/flutter.version
           validate: 'false'
-          flutpak_ref: flutpak-desktop-entry-pnKsB
+          flutpak_ref: 0.2.7
 
       - name: Commit and push pinned flatpak files
         run: |

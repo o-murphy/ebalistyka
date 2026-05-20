@@ -93,6 +93,30 @@ jobs:
           echo "bundle=ebalistyka_linux_${ARCH_SUFFIX}.flatpak" >> $GITHUB_OUTPUT
           echo "artifact_name=ebalistyka-flatpak-${ARCH_SUFFIX}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
 
+      - name: Determine tag or branch
+        id: resolve-ref
+        shell: bash
+        run: |
+          # Якщо inputs.tag_name передано і це реальний тег
+          if [[ -n "${{ inputs.tag_name }}" ]] && git rev-parse --verify "refs/tags/${{ inputs.tag_name }}" 2>/dev/null; then
+            echo "ref_type=tag" >> $GITHUB_OUTPUT
+            echo "ref_value=${{ inputs.tag_name }}" >> $GITHUB_OUTPUT
+            echo "✅ Using existing tag: ${{ inputs.tag_name }}"
+          else
+            # Якщо тегу немає - використовуємо branch
+            BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME#refs/heads/}}"
+            echo "ref_type=branch" >> $GITHUB_OUTPUT
+            echo "ref_value=$BRANCH" >> $GITHUB_OUTPUT
+            echo "⚠️ Tag not found, using branch: $BRANCH"
+          fi
+
+      - uses: o-murphy/flutpak/.github/actions/prepare@v0.2.7
+        with:
+          tag_name: ${{ steps.resolve-ref.outputs.ref_value }}
+          flutter_version_file: flatpak/flutter.version
+          validate: 'false'
+          flutpak_ref: 0.2.7
+
       - name: Verify Flatpak manifest is pinned
         uses: o-murphy/flutpak/.github/actions/verify@v0.2.7
         with:
