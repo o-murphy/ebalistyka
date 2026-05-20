@@ -93,21 +93,6 @@ jobs:
           echo "bundle=ebalistyka_linux_${ARCH_SUFFIX}.flatpak" >> $GITHUB_OUTPUT
           echo "artifact_name=ebalistyka-flatpak-${ARCH_SUFFIX}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
 
-      - name: Determine tag or commit
-        id: resolve-ref
-        shell: bash
-        run: |
-          if [[ -n "${{ inputs.tag_name }}" ]] && git rev-parse --verify "refs/tags/${{ inputs.tag_name }}" 2>/dev/null; then
-            echo "ref_type=tag" >> $GITHUB_OUTPUT
-            echo "ref_value=${{ inputs.tag_name }}" >> $GITHUB_OUTPUT
-            echo "✅ Using existing tag: ${{ inputs.tag_name }}"
-          else
-            COMMIT_HASH=$(git rev-parse HEAD)
-            echo "ref_type=commit" >> $GITHUB_OUTPUT
-            echo "ref_value=$COMMIT_HASH" >> $GITHUB_OUTPUT
-            echo "⚠️ Tag not found, using commit: $COMMIT_HASH"
-          fi
-
       - name: Read Flutter version
         id: flutter-ver
         run: echo "version=$(cat flatpak/flutter.version)" >> $GITHUB_OUTPUT
@@ -125,11 +110,27 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      - name: Determine tag or PR
+        id: resolve-ref
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == refs/tags/* ]]; then
+            TAG="${{ github.ref_name }}"
+            echo "ref_type=tag" >> $GITHUB_OUTPUT
+            echo "ref_value=$TAG" >> $GITHUB_OUTPUT
+            echo "✅ Tag trigger: $TAG"
+          else
+            COMMIT_HASH=$(git rev-parse HEAD)
+            echo "ref_type=commit" >> $GITHUB_OUTPUT
+            echo "ref_value=$COMMIT_HASH" >> $GITHUB_OUTPUT
+            echo "⚠️ PR/commit trigger: $COMMIT_HASH"
+          fi
+
       - name: Flutpak prepare
         run: | 
           dart run flutpak prepare \
             --tag "${{ steps.resolve-ref.outputs.ref_value }}" \
-            --commit "${{ steps.meta.outputs.commit }}" \  
+            --commit "$(git rev-parse HEAD)" \  
             --sdk "$FLUTTER_ROOT"
 
       - name: Remove useless file (dirty trick)
