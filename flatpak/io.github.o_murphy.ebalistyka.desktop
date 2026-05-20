@@ -5,6 +5,5 @@ Name=eBalistyka
 Comment=Ballistic calculator
 Exec=ebalistyka
 Icon=io.github.o_murphy.ebalistyka
-Type=Application
 Categories=Utility;Science;
 StartupWMClass=ebalistyka
