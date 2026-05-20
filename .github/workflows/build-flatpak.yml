@@ -116,21 +116,15 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Prepare Flatpak sources and manifest
+      - name: Verify Flatpak manifest is pinned
         run: |
-          FLUTTER_TOOLS_DIR="$FLUTTER_ROOT/packages/flutter_tools"
-          FLUTTER_TOOLS_LOCK="$FLUTTER_TOOLS_DIR/pubspec.lock"
-          if [ ! -f "$FLUTTER_TOOLS_LOCK" ]; then
-            (cd "$FLUTTER_TOOLS_DIR" && dart pub get --no-example 2>&1)
-          fi
-          if [ ! -f "$FLUTTER_TOOLS_LOCK" ]; then
-            echo "ERROR: could not resolve $FLUTTER_TOOLS_LOCK"
+          MANIFEST=flatpak/io.github.o_murphy.ebalistyka.yml
+          if grep -q '__FLATPAK_COMMIT__\|__FLATPAK_TAG__' "$MANIFEST"; then
+            echo "ERROR: flatpak manifest still contains unresolved placeholders."
+            echo "Run 'flutpak prepare --tag <tag> --commit <sha>' locally and commit the result."
             exit 1
           fi
-          dart run flutpak prepare \
-            --tag "${{ steps.meta.outputs.tag }}" \
-            --commit "${{ steps.meta.outputs.commit }}" \
-            --sdk "$FLUTTER_ROOT"
+          echo "✓ flatpak manifest is pinned"
 
       - name: Upload generated sources as artifact
         uses: actions/upload-artifact@v7
