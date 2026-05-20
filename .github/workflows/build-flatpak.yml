@@ -117,6 +117,15 @@ jobs:
           validate: 'false'
           flutpak_ref: v0.2.7
 
+      - name: Restore original files
+        if: always()  # Важливо: виконати навіть якщо збірка не вдалася
+        shell: bash
+        run: |
+          # Відновлюємо оригінальні файли з git
+          git restore flatpak/io.github.o_murphy.ebalistyka.metainfo.xml
+          git restore flatpak/io.github.o_murphy.ebalistyka.desktop          
+          echo "✅ Restored original flatpak files"
+
       # - name: Verify Flatpak manifest is pinned
       #   uses: o-murphy/flutpak/.github/actions/verify@v0.2.7
       #   with:
