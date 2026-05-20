@@ -87,17 +87,16 @@ jobs:
           BUILD_NUMBER=$(git rev-list --count --first-parent HEAD)
           ARCH="${{ matrix.arch }}"
           if [ "$ARCH" = "amd64" ]; then ARCH_SUFFIX="x86_64"; else ARCH_SUFFIX="aarch64"; fi
-          COMMIT=$(git rev-parse HEAD)
-          REF_TYPE="${{ github.ref_type }}"
-          TAG="${{ github.ref_name }}"
-          if [ "$REF_TYPE" != "tag" ]; then TAG=""; fi
           echo "build_name=$BUILD_NAME"     >> $GITHUB_OUTPUT
           echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
           echo "arch_suffix=$ARCH_SUFFIX"   >> $GITHUB_OUTPUT
-          echo "commit=$COMMIT"             >> $GITHUB_OUTPUT
-          echo "tag=$TAG"                   >> $GITHUB_OUTPUT
           echo "bundle=ebalistyka_linux_${ARCH_SUFFIX}.flatpak" >> $GITHUB_OUTPUT
           echo "artifact_name=ebalistyka-flatpak-${ARCH_SUFFIX}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
+
+      - name: Verify Flatpak manifest is pinned
+        uses: o-murphy/flutpak/.github/actions/verify@main
+        with:
+          manifest: flatpak/io.github.o_murphy.ebalistyka.yml
 
       - name: Read Flutter version
         id: flutter-ver
@@ -115,16 +114,6 @@ jobs:
 
       - name: Get dependencies
         run: flutter pub get
-
-      - name: Verify Flatpak manifest is pinned
-        run: |
-          MANIFEST=flatpak/io.github.o_murphy.ebalistyka.yml
-          if grep -q '__FLATPAK_COMMIT__\|__FLATPAK_TAG__' "$MANIFEST"; then
-            echo "ERROR: flatpak manifest still contains unresolved placeholders."
-            echo "Run 'flutpak prepare --tag <tag> --commit <sha>' locally and commit the result."
-            exit 1
-          fi
-          echo "✓ flatpak manifest is pinned"
 
       - name: Upload generated sources as artifact
         uses: actions/upload-artifact@v7
