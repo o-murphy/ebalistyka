@@ -115,7 +115,7 @@ jobs:
           tag_name: ${{ steps.resolve-ref.outputs.ref_value }}
           flutter_version_file: flatpak/flutter.version
           validate: 'false'
-          flutpak_ref: 0.2.7
+          flutpak_ref: v0.2.7
 
       - name: Verify Flatpak manifest is pinned
         uses: o-murphy/flutpak/.github/actions/verify@v0.2.7
