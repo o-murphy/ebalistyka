@@ -94,10 +94,10 @@ jobs:
           echo "artifact_name=ebalistyka-flatpak-${ARCH_SUFFIX}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
 
       - name: Verify Flatpak manifest is pinned
-        uses: o-murphy/flutpak/.github/actions/verify@claude/flutpak-desktop-entry-pnKsB
+        uses: o-murphy/flutpak/.github/actions/verify@v0.2.7
         with:
           manifest: flatpak/io.github.o_murphy.ebalistyka.yml
-          flutpak_ref: claude/flutpak-desktop-entry-pnKsB
+          flutpak_ref: v0.2.7
 
       - name: Read Flutter version
         id: flutter-ver

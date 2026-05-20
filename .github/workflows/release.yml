@@ -143,12 +143,12 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: o-murphy/flutpak/.github/actions/verify@claude/flutpak-desktop-entry-pnKsB
+      - uses: o-murphy/flutpak/.github/actions/verify@v0.2.7
         with:
           tag_name: ${{ github.ref_name }}
           commit: ${{ github.sha }}
           manifest: flatpak/io.github.o_murphy.ebalistyka.yml
-          flutpak_ref: claude/flutpak-desktop-entry-pnKsB
+          flutpak_ref: v0.2.7
 
   build-flatpak-amd64:
     needs: [prepare-version, verify-flatpak-manifest]
