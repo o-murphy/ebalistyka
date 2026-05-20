@@ -22,9 +22,9 @@ noextract=(
     "ebalistyka-aarch64.tar.gz"
 )
 source=(
-    "ebalistyka.desktop::${_rawurl}/packaging/${_app_id}.desktop"
-    "icon.png::${_rawurl}/assets/icon_512x512.png"
-    "${_app_id}.metainfo.xml::${_rawurl}/packaging/${_app_id}.metainfo.xml"
+    "ebalistyka.desktop::${_rawurl}/app/share/applications/${_app_id}.desktop"
+    "icon.png::${_rawurl}/app/share/icons/hicolor/512x512/apps/${_app_id}.png"
+    "${_app_id}.metainfo.xml::${_rawurl}/app/share/metainfo/${_app_id}.metainfo.xml"
 )
 source_x86_64=("ebalistyka-x86_64.tar.gz::${_relurl}/ebalistyka_linux_x86_64.tar.gz")
 source_aarch64=("ebalistyka-aarch64.tar.gz::${_relurl}/ebalistyka_linux_aarch64.tar.gz")
