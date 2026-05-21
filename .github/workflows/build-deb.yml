@@ -4,14 +4,13 @@ on:
   # pull_request:
   #   branches: [ main, develop ]
   #   paths:
+  #     - "app/**"
   #     - "lib/**"
   #     - "linux/**"
   #     - "external/**"
   #     - "packages/bclibc_ffi/**"
   #     - "pubspec.yaml"
   #     - "deb/**"
-  #     - "flatpak/*.desktop"
-  #     - "flatpak/*.metainfo.xml"
   #     - ".github/workflows/build-deb.yml"
   #     - ".github/workflows/build.yml"
   workflow_call:

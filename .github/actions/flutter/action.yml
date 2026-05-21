@@ -3,7 +3,7 @@ description: "Install Flutter SDK with caching support for Linux/Windows amd64/a
 
 inputs:
   flutter-version:
-    description: 'Flutter SDK version (e.g., "3.41.6", "stable", "beta", "main")'
+    description: 'Flutter SDK version (e.g., "3.44.0", "stable", "beta", "main")'
     required: false
     default: "stable"
   cache:
@@ -45,15 +45,36 @@ runs:
             ;;
         esac
 
+    - name: Get commit hash for version tag
+      id: get-commit
+      shell: bash
+      run: |
+        VERSION="${{ inputs.flutter-version }}"
+        case "$VERSION" in
+          stable|beta|latest|main|master)
+            # Для гілок отримуємо актуальний commit
+            BRANCH="${VERSION/latest/stable}"
+            BRANCH="${BRANCH/master/main}"
+            COMMIT=$(git ls-remote https://github.com/flutter/flutter.git "refs/heads/$BRANCH" | cut -f1)
+            echo "commit=$COMMIT" >> $GITHUB_OUTPUT
+            ;;
+          *)
+            COMMIT=$(git ls-remote https://github.com/flutter/flutter.git "refs/tags/$VERSION" | cut -f1)
+            if [ -z "$COMMIT" ]; then
+              # Якщо тег не знайдено, можливо це повний hash
+              COMMIT="$VERSION"
+            fi
+            echo "commit=$COMMIT" >> $GITHUB_OUTPUT
+            ;;
+        esac
+
     - name: Cache Flutter SDK
       if: inputs.cache == 'true'
       id: cache-flutter
       uses: actions/cache@v5
       with:
         path: ${{ steps.get-path.outputs.flutter-path }}
-        key: flutter-${{ runner.os }}-${{ runner.arch }}-${{ steps.resolve-version.outputs.branch }}
-        restore-keys: |
-          flutter-${{ runner.os }}-${{ runner.arch }}-
+        key: flutter-${{ runner.os }}-${{ runner.arch }}-${{ inputs.flutter-version }}-${{ steps.get-commit.outputs.commit }}
 
     - name: Install system dependencies (Linux)
       if: runner.os == 'Linux'
@@ -70,6 +91,11 @@ runs:
       shell: bash
       run: |
         TARGET_DIR="${{ steps.get-path.outputs.flutter-path }}"
+
+        if [ -d "$TARGET_DIR" ]; then
+          echo "Removing existing directory: $TARGET_DIR"
+          rm -rf "$TARGET_DIR"
+        fi
 
         echo "Creating directory: $TARGET_DIR"
         mkdir -p "$TARGET_DIR"

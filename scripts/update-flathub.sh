@@ -40,11 +40,11 @@ lines = open(path).readlines()
 out = []
 i = 0
 
-# Pass 1: update app source tag + commit (lines following ebalistyka-app.git URL)
+# Pass 1: update app source tag + commit (lines following ebalistyka.git URL)
 in_app_source = False
 while i < len(lines):
     line = lines[i]
-    if 'github.com/o-murphy/ebalistyka-app.git' in line:
+    if 'github.com/o-murphy/ebalistyka.git' in line:
         in_app_source = True
         out.append(line)
     elif in_app_source and line.lstrip().startswith('tag:'):

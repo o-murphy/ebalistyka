@@ -3,12 +3,9 @@ name: Release
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'        # v1.2.3       → full release
-      - 'v[0-9]+.[0-9]+.[0-9]+-*'      # v1.2.3-beta  → prerelease
+      - "v[0-9]+.[0-9]+.[0-9]+" # v1.2.3       → full release
+      - "v[0-9]+.[0-9]+.[0-9]+-*" # v1.2.3-beta  → prerelease
   workflow_dispatch:
-
-env:
-  FLUTTER_VERSION: "3.41.6"
 
 concurrency:
   group: release-${{ github.ref }}
@@ -70,10 +67,10 @@ jobs:
       build_type: release
       retention_days: 2
     secrets:
-      ANDROID_KEYSTORE_BASE64:   ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
       ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-      ANDROID_KEY_ALIAS:         ${{ secrets.ANDROID_KEY_ALIAS }}
-      ANDROID_KEY_PASSWORD:      ${{ secrets.ANDROID_KEY_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
   build-android-aab:
     needs: prepare-version
@@ -86,10 +83,10 @@ jobs:
       build_type: release
       retention_days: 2
     secrets:
-      ANDROID_KEYSTORE_BASE64:   ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
       ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-      ANDROID_KEY_ALIAS:         ${{ secrets.ANDROID_KEY_ALIAS }}
-      ANDROID_KEY_PASSWORD:      ${{ secrets.ANDROID_KEY_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
   build-snap-amd64:
     needs: prepare-version
@@ -137,85 +134,45 @@ jobs:
       retention_days: 2
       bundle_artifact_name: ${{ needs.build-portable-arm64.outputs.artifact_name }}
 
-  pin-flatpak-manifest:
-    if: github.ref_type == 'tag'
-    needs: [prepare-version]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: main
-          fetch-depth: 0
+  # # Verify that the committed flatpak manifest is already pinned to this
+  # # exact tag and commit. Fails if 'flutpak prepare --tag' was not run
+  # # and committed before pushing the release tag.
+  # verify-flatpak-manifest:
+  #   if: github.ref_type == 'tag'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v6
 
-      - uses: dart-lang/setup-dart@v1
-        with:
-          sdk: stable
+  #     - uses: o-murphy/flutpak/.github/actions/verify@v0.2.7
+  #       with:
+  #         tag_name: ${{ github.ref_name }}
+  #         commit: ${{ github.sha }}
+  #         manifest: flatpak/io.github.o_murphy.ebalistyka.yml
+  #         flutpak_ref: v0.2.7
 
-      - name: Read Flutter version
-        id: flutter-ver
-        run: echo "version=$(cat flatpak/flutter.version)" >> $GITHUB_OUTPUT
+  # build-flatpak-amd64:
+  #   needs: [prepare-version, verify-flatpak-manifest]
+  #   if: always() && needs.prepare-version.result == 'success' && (needs.verify-flatpak-manifest.result == 'success' || needs.verify-flatpak-manifest.result == 'skipped')
+  #   permissions:
+  #     issues: write
+  #     pull-requests: write
+  #   uses: ./.github/workflows/build-flatpak.yml
+  #   with:
+  #     arch: amd64
+  #     build_name: ${{ needs.prepare-version.outputs.version }}
+  #     retention_days: 2
 
-      - name: Install Flutter ${{ steps.flutter-ver.outputs.version }}
-        run: |
-          FLUTTER_DIR="$RUNNER_TEMP/flutter"
-          git clone --depth 1 \
-            --branch "${{ steps.flutter-ver.outputs.version }}" \
-            https://github.com/flutter/flutter.git \
-            "$FLUTTER_DIR"
-          echo "$FLUTTER_DIR/bin" >> $GITHUB_PATH
-          echo "FLUTTER_ROOT=$FLUTTER_DIR" >> $GITHUB_ENV
-
-      - name: Get dependencies
-        run: flutter pub get
-
-      - name: Resolve flutter_tools pubspec.lock
-        run: |
-          FLUTTER_TOOLS_LOCK="$FLUTTER_ROOT/packages/flutter_tools/pubspec.lock"
-          if [ ! -f "$FLUTTER_TOOLS_LOCK" ]; then
-            (cd "$FLUTTER_ROOT/packages/flutter_tools" && dart pub get --no-example 2>&1)
-          fi
-
-      - name: Generate sources and pin manifest to ${{ github.ref_name }}
-        run: |
-          dart run flutpak prepare \
-            --tag "${{ github.ref_name }}" \
-            --commit "${{ github.sha }}" \
-            --sdk "$FLUTTER_ROOT"
-
-      - name: Commit pinned flatpak files
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add flatpak/io.github.o_murphy.ebalistyka.yml \
-                  flatpak/io.github.o_murphy.ebalistyka.metainfo.xml \
-                  flatpak/generated-sources.json
-          git diff --cached --quiet || \
-            git commit -m "chore: pin flatpak manifest and sources to ${{ github.ref_name }}"
-          git push origin main
-
-  build-flatpak-amd64:
-    needs: [prepare-version]
-    permissions:
-      issues: write
-      pull-requests: write
-    uses: ./.github/workflows/build-flatpak.yml
-    with:
-      arch: amd64
-      build_name: ${{ needs.prepare-version.outputs.version }}
-      retention_days: 2
-
-  build-flatpak-arm64:
-    needs: [prepare-version]
-    permissions:
-      issues: write
-      pull-requests: write
-    uses: ./.github/workflows/build-flatpak.yml
-    with:
-      arch: arm64
-      build_name: ${{ needs.prepare-version.outputs.version }}
-      retention_days: 2
+  # build-flatpak-arm64:
+  #   needs: [prepare-version, verify-flatpak-manifest]
+  #   if: always() && needs.prepare-version.result == 'success' && (needs.verify-flatpak-manifest.result == 'success' || needs.verify-flatpak-manifest.result == 'skipped')
+  #   permissions:
+  #     issues: write
+  #     pull-requests: write
+  #   uses: ./.github/workflows/build-flatpak.yml
+  #   with:
+  #     arch: arm64
+  #     build_name: ${{ needs.prepare-version.outputs.version }}
+  #     retention_days: 2
 
   build-deb-amd64:
     needs: [prepare-version, build-portable-amd64]
@@ -266,7 +223,24 @@ jobs:
       bundle_artifact_name: ${{ needs.build-portable-arm64.outputs.artifact_name }}
 
   release:
-    needs: [prepare-version, build-portable-amd64, build-portable-arm64, build-windows-amd64, build-android, build-android-aab, build-snap-amd64, build-snap-arm64, build-appimage-amd64, build-appimage-arm64, build-flatpak-amd64, build-flatpak-arm64, build-deb-amd64, build-deb-arm64, build-rpm-amd64, build-rpm-arm64]
+    needs: [
+        prepare-version,
+        build-portable-amd64,
+        build-portable-arm64,
+        build-windows-amd64,
+        build-android,
+        build-android-aab,
+        build-snap-amd64,
+        build-snap-arm64,
+        build-appimage-amd64,
+        build-appimage-arm64,
+        # build-flatpak-amd64,
+        # build-flatpak-arm64,
+        build-deb-amd64,
+        build-deb-arm64,
+        build-rpm-amd64,
+        build-rpm-arm64,
+      ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -309,7 +283,7 @@ jobs:
         uses: ./.github/actions/gpg-sign
         with:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase:  ${{ secrets.GPG_PASSPHRASE }}
+          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
           path: release/
 
       - name: Extract changelog
@@ -318,17 +292,14 @@ jobs:
           VERSION="${{ needs.prepare-version.outputs.version }}"
           V_RE="${VERSION//./\\.}"
 
-          # Try version-specific section first (e.g. "## v1.2.3-beta.1" or "## v1.2.3 (date)")
           awk "/^## v?${V_RE}([[:space:]]|\$)/{found=1;next} /^\[!\[/{next} /^---$/{next} /^## /{if(found)exit} found{print}" \
             CHANGELOG.md | sed -e '/./,$!d' -e 's/[[:space:]]*$//' > /tmp/release_notes.md
 
-          # Fall back to Unreleased if section not found or empty
           if [ ! -s /tmp/release_notes.md ]; then
             awk '/^## Unreleased/{found=1;next} /^\[!\[/{next} /^---$/{next} /^## /{if(found)exit} found{print}' \
               CHANGELOG.md | sed -e '/./,$!d' -e 's/[[:space:]]*$//' > /tmp/release_notes.md
           fi
 
-          # Append compare link (previous tag → current tag)
           PREV_TAG=$(git tag --sort=-version:refname | grep -v "^${{ github.ref_name }}$" | head -1)
           if [ -n "$PREV_TAG" ]; then
             echo "" >> /tmp/release_notes.md
@@ -366,13 +337,13 @@ jobs:
       tag_name: ${{ github.ref_name }}
     secrets: inherit
 
-  publish-flatpak-repo:
-    if: github.ref_type == 'tag'
-    needs: [prepare-version, release]
-    uses: ./.github/workflows/publish-flatpak-repo.yml
-    with:
-      tag_name: ${{ github.ref_name }}
-    secrets: inherit
+  # publish-flatpak-repo:
+  #   if: github.ref_type == 'tag'
+  #   needs: [prepare-version, release]
+  #   uses: ./.github/workflows/publish-flatpak-repo.yml
+  #   with:
+  #     tag_name: ${{ github.ref_name }}
+  #   secrets: inherit
 
   publish-winget:
     if: github.ref_type == 'tag' && !contains(github.ref_name, '-')

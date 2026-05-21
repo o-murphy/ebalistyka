@@ -34,39 +34,19 @@ mkdir -p artifacts/appimage
 APPDIR=".appimage-build/AppDir"
 rm -rf "$APPDIR"
 mkdir -p "$APPDIR/usr/share/ebalistyka"
-mkdir -p "$APPDIR/usr/share/applications"
-mkdir -p "$APPDIR/usr/share/icons/hicolor/256x256/apps"
 
 cp -a "${BUNDLE_DIR}/." "$APPDIR/usr/share/ebalistyka/"
 
 # Icon
-ICON_SOURCE=""
-if [ -f "assets/icon_512x512.png" ]; then
-  ICON_SOURCE="assets/icon_512x512.png"
-elif [ -f "assets/icon.png" ]; then
-  ICON_SOURCE="assets/icon.png"
-fi
+install -Dm644 "app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png" \
+  "$APPDIR/usr/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png"
 
-if [ -n "$ICON_SOURCE" ]; then
-  cp "$ICON_SOURCE" "$APPDIR/usr/share/icons/hicolor/256x256/apps/ebalistyka.png"
-  echo "✓ Icon: $ICON_SOURCE"
-else
-  echo "❌ No icon found" >&2; exit 1
-fi
+# Desktop entry
+install -Dm644 "app/share/applications/io.github.o_murphy.ebalistyka.desktop" \
+  "$APPDIR/usr/share/applications/io.github.o_murphy.ebalistyka.desktop"
 
-install -Dm644 /dev/stdin "$APPDIR/usr/share/applications/ebalistyka.desktop" <<'EOF'
-[Desktop Entry]
-Name=eBalistyka
-Comment=Ballistic calculator
-Exec=ebalistyka
-Icon=ebalistyka
-Type=Application
-Categories=Utility;Science;
-StartupWMClass=ebalistyka
-EOF
-
-ln -sf usr/share/applications/ebalistyka.desktop "$APPDIR/ebalistyka.desktop"
-ln -sf usr/share/icons/hicolor/256x256/apps/ebalistyka.png "$APPDIR/ebalistyka.png"
+ln -sf "usr/share/applications/io.github.o_murphy.ebalistyka.desktop" "$APPDIR/io.github.o_murphy.ebalistyka.desktop"
+ln -sf "usr/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png" "$APPDIR/io.github.o_murphy.ebalistyka.png"
 
 install -m755 /dev/stdin "$APPDIR/AppRun" <<'EOF'
 #!/bin/sh

@@ -2,8 +2,8 @@ name: Build Flatpak
 
 on:
   pull_request:
-    branches: [ main, develop ]
     paths:
+      - "app/**"
       - "lib/**"
       - "linux/**"
       - "external/**"
@@ -87,63 +87,81 @@ jobs:
           BUILD_NUMBER=$(git rev-list --count --first-parent HEAD)
           ARCH="${{ matrix.arch }}"
           if [ "$ARCH" = "amd64" ]; then ARCH_SUFFIX="x86_64"; else ARCH_SUFFIX="aarch64"; fi
-          COMMIT=$(git rev-parse HEAD)
-          REF_TYPE="${{ github.ref_type }}"
-          TAG="${{ github.ref_name }}"
-          if [ "$REF_TYPE" != "tag" ]; then TAG=""; fi
           echo "build_name=$BUILD_NAME"     >> $GITHUB_OUTPUT
           echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
           echo "arch_suffix=$ARCH_SUFFIX"   >> $GITHUB_OUTPUT
-          echo "commit=$COMMIT"             >> $GITHUB_OUTPUT
-          echo "tag=$TAG"                   >> $GITHUB_OUTPUT
           echo "bundle=ebalistyka_linux_${ARCH_SUFFIX}.flatpak" >> $GITHUB_OUTPUT
           echo "artifact_name=ebalistyka-flatpak-${ARCH_SUFFIX}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
+
+      - name: Determine tag or PR
+        id: resolve-ref
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == refs/tags/* ]]; then
+            TAG="${{ github.ref_name }}"
+            echo "ref_type=tag" >> $GITHUB_OUTPUT
+            echo "ref_value=$TAG" >> $GITHUB_OUTPUT
+            echo "✅ Tag trigger: $TAG"
+          else
+            COMMIT_HASH=$(git rev-parse HEAD)
+            echo "ref_type=commit" >> $GITHUB_OUTPUT
+            echo "ref_value=$COMMIT_HASH" >> $GITHUB_OUTPUT
+            echo "⚠️ PR/commit trigger: $COMMIT_HASH"
+          fi
 
       - name: Read Flutter version
         id: flutter-ver
         run: echo "version=$(cat flatpak/flutter.version)" >> $GITHUB_OUTPUT
 
       - name: Install Flutter ${{ steps.flutter-ver.outputs.version }}
-        run: |
-          FLUTTER_DIR="$RUNNER_TEMP/flutter"
-          git clone --depth 1 \
-            --branch "${{ steps.flutter-ver.outputs.version }}" \
-            https://github.com/flutter/flutter.git \
-            "$FLUTTER_DIR"
-          echo "$FLUTTER_DIR/bin" >> $GITHUB_PATH
-          echo "FLUTTER_ROOT=$FLUTTER_DIR" >> $GITHUB_ENV
+        id: flutter 
+        uses: o-murphy/flutpak/.github/actions/flutter@v0.3.0
+        with:
+          flutter-version: ${{ steps.flutter-ver.outputs.version }}
+          cache: true
+
+      - name: Set FLUTTER_ROOT
+        run: echo "FLUTTER_ROOT=${{ steps.flutter.outputs.flutter-path }}" >> $GITHUB_ENV
 
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Prepare Flatpak sources and manifest
-        run: |
-          FLUTTER_TOOLS_DIR="$FLUTTER_ROOT/packages/flutter_tools"
-          FLUTTER_TOOLS_LOCK="$FLUTTER_TOOLS_DIR/pubspec.lock"
-          if [ ! -f "$FLUTTER_TOOLS_LOCK" ]; then
-            (cd "$FLUTTER_TOOLS_DIR" && dart pub get --no-example 2>&1)
-          fi
-          if [ ! -f "$FLUTTER_TOOLS_LOCK" ]; then
-            echo "ERROR: could not resolve $FLUTTER_TOOLS_LOCK"
-            exit 1
-          fi
-          dart run flutpak prepare \
-            --tag "${{ steps.meta.outputs.tag }}" \
-            --commit "${{ steps.meta.outputs.commit }}" \
+      - name: Install flutpak
+        uses: o-murphy/flutpak/.github/actions/setup-flutpak@v0.3.0
+
+      - name: Flutpak prepare
+        run: | 
+          flutpak prepare \
+            --tag "${{ steps.resolve-ref.outputs.ref_value }}" \
+            --commit "$(git rev-parse HEAD)" \
             --sdk "$FLUTTER_ROOT"
 
-      - name: Upload generated sources as artifact
+      - name: Upload submission artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: generated-sources-${{ steps.meta.outputs.arch_suffix }}
-          path: flatpak/generated-sources.json
+          name: flutpak-artifacts-${{ steps.meta.outputs.arch_suffix }}
+          path: |
+            flatpak/io.github.o_murphy.ebalistyka.yml
+            flatpak/generated-sources.json
+            flatpak/patches
+            flatpak/flathub.json
           retention-days: 2
 
-      - name: Cache Flatpak runtimes
+      - name: Install flatpak and appstream
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y flatpak appstream
+
+      - name: Validate metainfo
+        run: |
+          appstreamcli validate --explain --no-net \
+            app/share/metainfo/io.github.o_murphy.ebalistyka.metainfo.xml
+
+      - name: Cache Flatpak installation (org.flatpak.Builder + runtimes)
         uses: actions/cache@v5
         with:
           path: ~/.local/share/flatpak
-          key: flatpak-runtimes-25.08-llvm20-${{ runner.arch }}
+          key: flatpak-builder-25.08-llvm20-${{ runner.arch }}-v1
 
       - name: Cache flatpak-builder downloads
         uses: actions/cache@v5
@@ -152,16 +170,21 @@ jobs:
           key: flatpak-dl-${{ steps.meta.outputs.arch_suffix }}-${{ hashFiles('flatpak/io.github.o_murphy.ebalistyka.yml', 'pubspec.lock', 'flatpak/flutter.version') }}
           restore-keys: flatpak-dl-${{ steps.meta.outputs.arch_suffix }}-
 
-      - name: Install flatpak and flatpak-builder
+      - name: Install org.flatpak.Builder
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y flatpak flatpak-builder
           flatpak remote-add --user --if-not-exists flathub \
-            https://flathub.org/repo/flathub.flatpakrepo
-          flatpak install --user -y --noninteractive flathub \
-            org.freedesktop.Platform//25.08 \
-            org.freedesktop.Sdk//25.08 \
-            org.freedesktop.Sdk.Extension.llvm20//25.08
+            https://dl.flathub.org/repo/flathub.flatpakrepo
+          dbus-run-session flatpak install --user -y --noninteractive flathub \
+            org.flatpak.Builder
+
+      - name: Lint manifest
+        run: |
+          dbus-run-session flatpak run \
+            --filesystem=host \
+            --command=flatpak-builder-lint \
+            org.flatpak.Builder \
+            --exceptions \
+            manifest flatpak/io.github.o_murphy.ebalistyka.yml
 
       - name: Configure GitHub token for flatpak-builder
         run: |
@@ -170,27 +193,25 @@ jobs:
 
       - name: Build Flatpak
         run: |
-          flatpak-builder \
-            --sandbox \
-            --user \
-            --install-deps-from=flathub \
-            --force-clean \
-            --disable-rofiles-fuse \
-            --default-branch=stable \
-            --repo=.flatpak-repo \
-            --state-dir=.flatpak-builder \
-            --arch="${{ steps.meta.outputs.arch_suffix }}" \
-            .flatpak-build \
+          dbus-run-session flatpak run --command=flathub-build org.flatpak.Builder \
             flatpak/io.github.o_murphy.ebalistyka.yml
+
+      - name: Lint Flatpak repo
+        run: |
+          dbus-run-session flatpak run \
+            --filesystem=host \
+            --command=flatpak-builder-lint \
+            org.flatpak.Builder \
+            --exceptions \
+            repo repo
 
       - name: Export .flatpak bundle
         run: |
           flatpak build-bundle \
             --arch="${{ steps.meta.outputs.arch_suffix }}" \
-            .flatpak-repo \
+            repo \
             "${{ steps.meta.outputs.bundle }}" \
-            io.github.o_murphy.ebalistyka \
-            stable
+            io.github.o_murphy.ebalistyka
 
       - name: Upload artifact
         id: upload

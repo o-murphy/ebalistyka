@@ -3,7 +3,7 @@ Version:        VERSION_PLACEHOLDER
 Release:        RELEASE_PLACEHOLDER%{?dist}
 Summary:        Ballistic trajectory calculator
 License:        GPL-3.0
-URL:            https://github.com/o-murphy/ebalistyka-app
+URL:            https://github.com/o-murphy/ebalistyka
 BuildArch:      ARCH_PLACEHOLDER
 AutoReq:        no
 Requires:       gtk3, glib2

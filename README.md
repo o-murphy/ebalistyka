@@ -24,14 +24,14 @@ A high performance cross-platform ballistic calculator
 <!-- <a href='https://snapcraft.io/ebalistyka'><img width='182' alt='Get it on Snap Store' src='https://snapcraft.io/static/images/badges/en/snap-store-black.svg'/></a> -->
 <!-- <a href='https://flathub.org/apps/com.o.murphy.ebalistyka'><img width='200' alt='Get it on Flathub' src='https://flathub.org/api/badge?svg?locale=en&light'/></a> -->
 
-[![Build (Android)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-apk.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-apk.yml)
-[![Build (Windows)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-exe.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-exe.yml)
-[![Build (Linux portable)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-portable.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-portable.yml)
-[![Build (Linux AppImage)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-appimage.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-appimage.yml)
-[![Build (Linux Snap)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-snap.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-snap.yml)
-[![Build (Linux Flatpak)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-flatpak.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-flatpak.yml)
-[![Build (Linux deb)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-deb.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-deb.yml)
-[![Build (Linux rpm)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-rpm.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-rpm.yml)
+[![Build (Android)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-apk.yml/badge.svg)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-apk.yml)
+[![Build (Windows)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-exe.yml/badge.svg)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-exe.yml)
+[![Build (Linux portable)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-portable.yml/badge.svg)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-portable.yml)
+[![Build (Linux AppImage)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-appimage.yml/badge.svg)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-appimage.yml)
+[![Build (Linux Snap)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-snap.yml/badge.svg)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-snap.yml)
+[![Build (Linux Flatpak)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-flatpak.yml/badge.svg)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-flatpak.yml)
+[![Build (Linux deb)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-deb.yml/badge.svg)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-deb.yml)
+[![Build (Linux rpm)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-rpm.yml/badge.svg)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-rpm.yml)
 
 
 > [!WARNING]
@@ -291,7 +291,7 @@ Download the APK for your device ABI from the release and open it to install —
 ## Architecture
 
 ```
-ebalistyka-app/
+ebalistyka/
 ├── lib/
 │   ├── features/              # Screen-level feature modules
 │   │   ├── home/              # Main screen: profiles, shot, reticle, chart, tables
@@ -342,8 +342,8 @@ ebalistyka-app/
 ### Clone
 
 ```bash
-git clone --recurse-submodules https://github.com/o-murphy/ebalistyka-app.git
-cd ebalistyka-app
+git clone --recurse-submodules https://github.com/o-murphy/ebalistyka.git
+cd ebalistyka
 ```
 
 ### Linux
@@ -387,18 +387,18 @@ Output: `build/app/outputs/flutter-apk/app-release.apk`
 
 GitHub Actions workflows publish a GitHub Release on every push to `main`:
 
-| Workflow             | Artifact                                    |
-| -------------------- | ------------------------------------------- |
-| `build-portable.yml` | Linux portable tar.gz (x86_64 + aarch64)    |
-| `build-appimage.yml` | Linux AppImage (x86_64 + aarch64)           |
-| `build-snap.yml`     | Linux Snap (x86_64 + aarch64)               |
-| `build-flatpak.yml`  | Linux Flatpak (x86_64 + aarch64)            |
-| `build-deb.yml`      | Linux deb (x86_64 + aarch64)               |
-| `build-rpm.yml`      | Linux rpm (x86_64 + aarch64)               |
-| `build-exe.yml`      | Windows MSIX installer                      |
-| `build-apk.yml`      | Android APK (arm64 + armv7 + x86_64)        |
-| `build.yml`          | Reusable build workflow called by the above |
-| `publish.yml`        | Publishes to Snap Store on GitHub Release   |
+| Workflow                | Artifact                                                      |
+| ----------------------- | ------------------------------------------------------------- |
+| `build-portable.yml`    | Linux portable tar.gz (x86_64 + aarch64)                      |
+| `build-appimage.yml`    | Linux AppImage (x86_64 + aarch64)                             |
+| `build-snap.yml`        | Linux Snap (x86_64 + aarch64)                                 |
+| `build-flatpak.yml`     | Linux Flatpak (x86_64 + aarch64)                              |
+| `build-deb.yml`         | Linux deb (x86_64 + aarch64)                                  |
+| `build-rpm.yml`         | Linux rpm (x86_64 + aarch64)                                  |
+| `build-exe.yml`         | Windows MSIX installer                                        |
+| `build-apk.yml`         | Android APK (arm64 + armv7 + x86_64)                          |
+| `build.yml`             | Reusable build workflow called by the above                   |
+| `publish.yml`           | Publishes to Snap Store on GitHub Release                     |
 | `scripts/update-aur.sh` | Updates `aur/PKGBUILD` checksums (run manually after release) |
 
 ---
@@ -427,19 +427,20 @@ On Android, `file_picker` cannot filter by custom extensions (`.ebcp`, `.a7p`) b
 
 ### App (`ebalistyka`)
 
-| Package                                                                 | Role                                          |
-| ----------------------------------------------------------------------- | --------------------------------------------- |
-| [flutter_riverpod](https://pub.dev/packages/flutter_riverpod)           | State management                              |
-| [go_router](https://pub.dev/packages/go_router)                         | Navigation                                    |
-| [flutter_localizations](https://pub.dev/packages/flutter_localizations) | EN + UA localisation                          |
-| [flutter_svg](https://pub.dev/packages/flutter_svg)                     | SVG reticle & target rendering                |
-| [window_manager](https://pub.dev/packages/window_manager)               | Desktop window size / title / icon            |
-| [file_picker](https://pub.dev/packages/file_picker)                     | Import file picker                            |
-| [share_plus](https://pub.dev/packages/share_plus)                       | Export / share files                          |
-| [url_launcher](https://pub.dev/packages/url_launcher)                   | External links                                |
-| [package_info_plus](https://pub.dev/packages/package_info_plus)         | App version info                              |
-| [flutter_markdown_plus](https://pub.dev/packages/flutter_markdown_plus) | App help widgets                              |
-| [ota_update](https://pub.dev/packages/ota_update)                       | autoupdate for Android sideload installations |
+| Package                                                                 | Role                                                 |
+| ----------------------------------------------------------------------- | ---------------------------------------------------- |
+| [flutter_riverpod](https://pub.dev/packages/flutter_riverpod)           | State management                                     |
+| [go_router](https://pub.dev/packages/go_router)                         | Navigation                                           |
+| [flutter_localizations](https://pub.dev/packages/flutter_localizations) | EN + UA localisation                                 |
+| [flutter_svg](https://pub.dev/packages/flutter_svg)                     | SVG reticle & target rendering                       |
+| [window_manager](https://pub.dev/packages/window_manager)               | Desktop window size / title / icon                   |
+| [file_picker](https://pub.dev/packages/file_picker)                     | Import file picker                                   |
+| [share_plus](https://pub.dev/packages/share_plus)                       | Export / share files                                 |
+| [url_launcher](https://pub.dev/packages/url_launcher)                   | External links                                       |
+| [package_info_plus](https://pub.dev/packages/package_info_plus)         | App version info                                     |
+| [flutter_markdown_plus](https://pub.dev/packages/flutter_markdown_plus) | App help widgets                                     |
+| [ota_update](https://pub.dev/packages/ota_update)                       | Autoupdate for Android sideload installations        |
+| [flutpak](https://pub.dev/packages/flutpak) (dev)                       | Manage flatpak/flathub manifest for sandboxed builds |
 
 ### `packages/bclibc_ffi`
 
@@ -497,11 +498,11 @@ See [LICENSE](LICENSE) for the full text. See [CHANGELOG](CHANGELOG.md) for rele
 [Flutter Shield]: https://img.shields.io/badge/Flutter-3.41.7-02569B?logo=flutter
 [Flutter]: https://flutter.dev
 
-[Release]: https://img.shields.io/github/v/release/o-murphy/ebalistyka-app?logo=github&cacheSeconds=0
-[GitHub Release Latest]: https://github.com/o-murphy/ebalistyka-app/releases/latest
+[Release]: https://img.shields.io/github/v/release/o-murphy/ebalistyka?logo=github&cacheSeconds=0
+[GitHub Release Latest]: https://github.com/o-murphy/ebalistyka/releases/latest
 
-[Prerelease]: https://img.shields.io/github/v/release/o-murphy/ebalistyka-app?include_prereleases&logo=github&cacheSeconds=0
-[GitHub Releases]: https://github.com/o-murphy/ebalistyka-app/releases
+[Prerelease]: https://img.shields.io/github/v/release/o-murphy/ebalistyka?include_prereleases&logo=github&cacheSeconds=0
+[GitHub Releases]: https://github.com/o-murphy/ebalistyka/releases
 
 [License]: https://img.shields.io/badge/License-GPL%20v3-blue.svg
 [Status]: https://img.shields.io/badge/status-alpha-orange
@@ -525,24 +526,24 @@ See [LICENSE](LICENSE) for the full text. See [CHANGELOG](CHANGELOG.md) for rele
 [Google Play Internal Test]: https://docs.google.com/forms/d/e/1FAIpQLSdMKHwnBLuwSo9BkqPXRPx4eZwio6RiaNxWEyrvyEpK0dLcuA/viewform?usp=dialog
 
 <!-- DOWNLOADS -->
-[DownloadAppImageAmd64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_x86_64.AppImage
-[DownloadLinuxArchiveAmd64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_x86_64.tar.gz
-[DownloadLinuxSnapAmd64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_x86_64.snap
-[DownloadAppImageArm64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_aarch64.AppImage
-[DownloadLinuxArchiveArm64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_aarch64.tar.gz
-[DownloadLinuxSnapArm64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_aarch64.snap
-[DownloadLinuxFlatpakAmd64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_x86_64.flatpak
-[DownloadLinuxFlatpakArm64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_aarch64.flatpak
-[DownloadLinuxDebAmd64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_x86_64.deb
-[DownloadLinuxDebArm64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_aarch64.deb
-[DownloadLinuxRpmAmd64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_x86_64.rpm
-[DownloadLinuxRpmArm64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_linux_aarch64.rpm
-[DownloadWindowsMsixAmd64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_windows_x86_64.msix
-[DownloadWindowsMsixCer]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_cert.cer
-[DownloadWindowsArchiveAmd64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_windows_x86_64.zip
-[DownloadAndroidApkArm64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_android_arm64.apk
-[DownloadAndroidApkARMv7]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_android_armeabi_v7a.apk
-[DownloadAndroidApkAmd64]: https://github.com/o-murphy/ebalistyka-app/releases/latest/download/ebalistyka_android_x86_64.apk
+[DownloadAppImageAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_x86_64.AppImage
+[DownloadLinuxArchiveAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_x86_64.tar.gz
+[DownloadLinuxSnapAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_x86_64.snap
+[DownloadAppImageArm64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_aarch64.AppImage
+[DownloadLinuxArchiveArm64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_aarch64.tar.gz
+[DownloadLinuxSnapArm64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_aarch64.snap
+[DownloadLinuxFlatpakAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_x86_64.flatpak
+[DownloadLinuxFlatpakArm64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_aarch64.flatpak
+[DownloadLinuxDebAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_x86_64.deb
+[DownloadLinuxDebArm64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_aarch64.deb
+[DownloadLinuxRpmAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_x86_64.rpm
+[DownloadLinuxRpmArm64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_aarch64.rpm
+[DownloadWindowsMsixAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_windows_x86_64.msix
+[DownloadWindowsMsixCer]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_cert.cer
+[DownloadWindowsArchiveAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_windows_x86_64.zip
+[DownloadAndroidApkArm64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_android_arm64.apk
+[DownloadAndroidApkARMv7]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_android_armeabi_v7a.apk
+[DownloadAndroidApkAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_android_x86_64.apk
 
 
 <!-- EXTRA -->

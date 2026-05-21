@@ -21,7 +21,7 @@ builds are identical.
 ```
 flatpak/
 ├── io.github.o_murphy.ebalistyka.yml        # Flatpak manifest (source build)
-├── flutter.version                          # pinned Flutter version (e.g. 3.41.9)
+├── flutter.version                          # pinned Flutter version (e.g. 3.44.0)
 ├── ebalistyka-wrapper.sh                    # /app/bin/ebalistyka launcher script
 ├── io.github.o_murphy.ebalistyka.desktop    # .desktop file
 ├── io.github.o_murphy.ebalistyka.metainfo.xml
@@ -58,7 +58,7 @@ Sources applied in order:
 
 ```
 1. App source          git @ <tag>            → /run/build/ebalistyka/
-2. Flutter SDK         git @ 3.41.9           → /run/build/ebalistyka/flutter/
+2. Flutter SDK         git @ 3.44.0           → /run/build/ebalistyka/flutter/
    + engine artifacts  ~17 archives           → flutter/bin/cache/artifacts/...
    + shared.sh.patch                          → patches pub upgrade → pub get --offline
    + setup-flutter.sh script
@@ -164,7 +164,7 @@ flatpak install --user flathub \
 ### Build and install
 
 ```bash
-cd /path/to/ebalistyka-app
+cd /path/to/ebalistyka
 
 flatpak-builder --sandbox --user --install --install-deps-from=flathub --force-clean \
   --repo=.flatpak-repo --state-dir=.flatpak-builder \
@@ -240,7 +240,7 @@ Flathub CI triggers automatically.
 
 ## Flutter version upgrade
 
-When bumping Flutter (e.g. `3.41.9` → `3.42.0`):
+When bumping Flutter (e.g. `3.44.0` → `3.42.0`):
 
 ### 1. Update `flatpak/flutter.version`
 
