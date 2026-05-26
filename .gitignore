@@ -83,3 +83,6 @@ aur/src/
 aur/pkg/
 aur/*.pkg.tar.*
 aur/*.tar.gz
+
+# pre-compiled flutpak util
+flutpak

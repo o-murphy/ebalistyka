@@ -40,7 +40,7 @@ echo "sha256 desktop:  ${SUM_DT}"
 echo "sha256 icon:     ${SUM_IC}"
 echo "sha256 metainfo: ${SUM_MT}"
 
-PKGBUILD="aur/PKGBUILD"
+PKGBUILD="packaging/aur/PKGBUILD"
 sed -i \
     -e "s/_pkgver=\"[^\"]*\"/_pkgver=\"${VERSION}\"/" \
     -e "s/sha256sums=('[^']*' '[^']*' '[^']*')/sha256sums=('${SUM_DT}' '${SUM_IC}' '${SUM_MT}')/" \
@@ -59,4 +59,4 @@ fi
 
 echo ""
 echo "Next: push to AUR git repo:"
-echo "  cd /path/to/aur-clone && cp /path/to/repo/aur/PKGBUILD aur/.SRCINFO . && git add -A && git commit -m 'upgpkg: ebalistyka-bin ${VERSION}' && git push"
+echo "  cd /path/to/aur-clone && cp /path/to/repo/packaging/aur/PKGBUILD aur/.SRCINFO . && git add -A && git commit -m 'upgpkg: ebalistyka-bin ${VERSION}' && git push"

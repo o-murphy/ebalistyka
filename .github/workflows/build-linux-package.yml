@@ -1,20 +1,12 @@
-name: Build rpm
+name: Build Linux Package
 
 on:
-  # pull_request:
-  #   branches: [ main, develop ]
-  #   paths:
-  #     - "app/**"
-  #     - "lib/**"
-  #     - "linux/**"
-  #     - "external/**"
-  #     - "packages/bclibc_ffi/**"
-  #     - "pubspec.yaml"
-  #     - "rpm/**"
-  #     - ".github/workflows/build-rpm.yml"
-  #     - ".github/workflows/build.yml"
   workflow_call:
     inputs:
+      format:
+        description: "Package format"
+        required: true
+        type: string   # deb | rpm | appimage
       arch:
         description: "Target architecture"
         required: true
@@ -34,6 +26,11 @@ on:
         required: false
         type: string
         default: ""
+    secrets:
+      GPG_PRIVATE_KEY:
+        required: false
+      GPG_PASSPHRASE:
+        required: false
     outputs:
       artifact_name:
         description: "Name of the uploaded artifact"
@@ -43,6 +40,12 @@ on:
         value: ${{ jobs.package.outputs.artifact_url }}
   workflow_dispatch:
     inputs:
+      format:
+        description: "Package format"
+        required: true
+        default: "deb"
+        type: choice
+        options: [ deb, rpm, appimage ]
       arch:
         description: "Target architecture"
         required: true
@@ -56,7 +59,7 @@ on:
         type: string
 
 concurrency:
-  group: build-rpm-${{ github.ref }}-${{ inputs.arch || 'amd64' }}
+  group: build-linux-pkg-${{ github.ref }}-${{ inputs.format }}-${{ inputs.arch || 'amd64' }}
   cancel-in-progress: true
 
 jobs:
@@ -73,7 +76,7 @@ jobs:
   package:
     needs: build-bundle
     if: always() && (needs.build-bundle.result == 'success' || needs.build-bundle.result == 'skipped')
-    name: rpm-${{ inputs.arch || 'amd64' }}
+    name: ${{ inputs.format }}-${{ inputs.arch || 'amd64' }}
     runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     permissions:
       pull-requests: write
@@ -90,22 +93,15 @@ jobs:
 
       - name: Set build metadata
         id: meta
+        shell: bash
+        env:
+          INPUT_BUILD_NAME: ${{ inputs.build_name }}
+          INPUT_ARCH: ${{ inputs.arch || 'amd64' }}
+          PR_NUMBER: ${{ github.event.number }}
         run: |
-          BUILD_NAME="${{ inputs.build_name }}"
-          if [ -z "$BUILD_NAME" ]; then
-            BUILD_NAME=$(grep '^version:' pubspec.yaml | sed 's/version:[[:space:]]*//' | sed 's/+.*//')
-          fi
-          BUILD_NAME="${BUILD_NAME#v}"
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            BUILD_NAME="${BUILD_NAME%%-*}-pr.${{ github.event.number }}"
-          fi
-          BUILD_NUMBER=$(git rev-list --count --first-parent HEAD)
-          ARCH="${{ inputs.arch || 'amd64' }}"
-          if [ "$ARCH" = "amd64" ]; then ARCH_SUFFIX="x86_64"; else ARCH_SUFFIX="aarch64"; fi
-          echo "build_name=$BUILD_NAME"     >> $GITHUB_OUTPUT
-          echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
-          echo "arch_suffix=$ARCH_SUFFIX"   >> $GITHUB_OUTPUT
-          echo "artifact_name=ebalistyka-rpm-${ARCH_SUFFIX}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
+          set -euo pipefail
+          source scripts/ci-common.sh
+          set_build_metadata "ebalistyka-${{ inputs.format }}"
 
       - name: Download bundle artifact
         uses: actions/download-artifact@v8
@@ -115,17 +111,44 @@ jobs:
 
       - name: Extract bundle
         run: |
-          ARCH_SUFFIX="${{ steps.meta.outputs.arch_suffix }}"
-          mkdir -p bundle
-          tar -xzf "dl/portable/ebalistyka_linux_${ARCH_SUFFIX}.tar.gz" -C bundle/
+          set -euo pipefail
+          source scripts/ci-common.sh
+          extract_bundle "${{ steps.meta.outputs.arch_suffix }}"
+
+      - name: Import GPG key for AppImage signing
+        if: inputs.format == 'appimage'
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          if [ -z "$GPG_PRIVATE_KEY" ]; then
+            echo "No GPG key — AppImage will not be signed"
+            exit 0
+          fi
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+          GPG_KEY_ID=$(gpg --list-secret-keys --keyid-format=long \
+            | grep '^sec' | head -1 | awk '{print $2}' | cut -d/ -f2)
+          echo "GPG_KEY_ID=$GPG_KEY_ID" >> $GITHUB_ENV
+          mkdir -p ~/.gnupg && chmod 700 ~/.gnupg
+          echo "allow-preset-passphrase" >> ~/.gnupg/gpg-agent.conf
+          gpgconf --reload gpg-agent
+          LIBEXEC=$(gpgconf --list-dirs libexecdir)
+          gpg --with-keygrip --list-secret-keys "$GPG_KEY_ID" \
+            | grep 'Keygrip' | awk '{print $3}' \
+            | while read -r KEYGRIP; do
+                echo "$GPG_PASSPHRASE" | "${LIBEXEC}/gpg-preset-passphrase" --preset "$KEYGRIP"
+              done
 
       - name: Install packaging tools
-        run: sudo apt-get install -y --no-install-recommends rpm
-
-      - name: Package rpm
         run: |
-          bash scripts/package-rpm.sh \
-            bundle \
+          source scripts/ci-common.sh
+          install_package_deps "${{ inputs.format }}"
+
+      - name: Package ${{ inputs.format }}
+        run: |
+          set -euo pipefail
+          source scripts/ci-common.sh
+          run_packager "${{ inputs.format }}" bundle \
             "${{ steps.meta.outputs.arch_suffix }}" \
             "${{ steps.meta.outputs.build_name }}" \
             "${{ steps.meta.outputs.build_number }}"
@@ -135,7 +158,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.meta.outputs.artifact_name }}
-          path: artifacts/rpm/
+          path: artifacts/${{ inputs.format }}/
           retention-days: ${{ inputs.retention_days || 2 }}
           if-no-files-found: error
 
@@ -143,7 +166,7 @@ jobs:
         if: always() && github.event_name == 'pull_request'
         uses: ./.github/actions/pr-summary
         with:
-          platform: Linux rpm (${{ inputs.arch || 'amd64' }})
+          platform: Linux ${{ inputs.format }} (${{ inputs.arch || 'amd64' }})
           build_result: ${{ job.status }}
           artifact_name: ${{ steps.meta.outputs.artifact_name }}
           artifact_url: ${{ steps.upload.outputs.artifact-url }}

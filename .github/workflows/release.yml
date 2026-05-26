@@ -61,8 +61,9 @@ jobs:
     permissions:
       issues: write
       pull-requests: write
-    uses: ./.github/workflows/build-apk.yml
+    uses: ./.github/workflows/build-android.yml
     with:
+      format: apk
       build_name: ${{ needs.prepare-version.outputs.version }}
       build_type: release
       retention_days: 2
@@ -77,8 +78,9 @@ jobs:
     permissions:
       issues: write
       pull-requests: write
-    uses: ./.github/workflows/build-aab.yml
+    uses: ./.github/workflows/build-android.yml
     with:
+      format: aab
       build_name: ${{ needs.prepare-version.outputs.version }}
       build_type: release
       retention_days: 2
@@ -115,8 +117,9 @@ jobs:
     permissions:
       issues: write
       pull-requests: write
-    uses: ./.github/workflows/build-appimage.yml
+    uses: ./.github/workflows/build-linux-package.yml
     with:
+      format: appimage
       arch: amd64
       build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 2
@@ -127,60 +130,46 @@ jobs:
     permissions:
       issues: write
       pull-requests: write
-    uses: ./.github/workflows/build-appimage.yml
+    uses: ./.github/workflows/build-linux-package.yml
     with:
+      format: appimage
       arch: arm64
       build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 2
       bundle_artifact_name: ${{ needs.build-portable-arm64.outputs.artifact_name }}
 
-  # # Verify that the committed flatpak manifest is already pinned to this
-  # # exact tag and commit. Fails if 'flutpak prepare --tag' was not run
-  # # and committed before pushing the release tag.
-  # verify-flatpak-manifest:
-  #   if: github.ref_type == 'tag'
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v6
+  build-flatpak-amd64:
+    needs: [prepare-version]
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/build-flatpak.yml
+    with:
+      tag: ${{ github.ref_name }}
+      arch: amd64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 2
 
-  #     - uses: o-murphy/flutpak/.github/actions/verify@v0.2.7
-  #       with:
-  #         tag_name: ${{ github.ref_name }}
-  #         commit: ${{ github.sha }}
-  #         manifest: flatpak/io.github.o_murphy.ebalistyka.yml
-  #         flutpak_ref: v0.2.7
-
-  # build-flatpak-amd64:
-  #   needs: [prepare-version, verify-flatpak-manifest]
-  #   if: always() && needs.prepare-version.result == 'success' && (needs.verify-flatpak-manifest.result == 'success' || needs.verify-flatpak-manifest.result == 'skipped')
-  #   permissions:
-  #     issues: write
-  #     pull-requests: write
-  #   uses: ./.github/workflows/build-flatpak.yml
-  #   with:
-  #     arch: amd64
-  #     build_name: ${{ needs.prepare-version.outputs.version }}
-  #     retention_days: 2
-
-  # build-flatpak-arm64:
-  #   needs: [prepare-version, verify-flatpak-manifest]
-  #   if: always() && needs.prepare-version.result == 'success' && (needs.verify-flatpak-manifest.result == 'success' || needs.verify-flatpak-manifest.result == 'skipped')
-  #   permissions:
-  #     issues: write
-  #     pull-requests: write
-  #   uses: ./.github/workflows/build-flatpak.yml
-  #   with:
-  #     arch: arm64
-  #     build_name: ${{ needs.prepare-version.outputs.version }}
-  #     retention_days: 2
+  build-flatpak-arm64:
+    needs: [prepare-version]
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/build-flatpak.yml
+    with:
+      tag: ${{ github.ref_name }}
+      arch: arm64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 2
 
   build-deb-amd64:
     needs: [prepare-version, build-portable-amd64]
     permissions:
       issues: write
       pull-requests: write
-    uses: ./.github/workflows/build-deb.yml
+    uses: ./.github/workflows/build-linux-package.yml
     with:
+      format: deb
       arch: amd64
       build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 2
@@ -191,8 +180,9 @@ jobs:
     permissions:
       issues: write
       pull-requests: write
-    uses: ./.github/workflows/build-deb.yml
+    uses: ./.github/workflows/build-linux-package.yml
     with:
+      format: deb
       arch: arm64
       build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 2
@@ -203,8 +193,9 @@ jobs:
     permissions:
       issues: write
       pull-requests: write
-    uses: ./.github/workflows/build-rpm.yml
+    uses: ./.github/workflows/build-linux-package.yml
     with:
+      format: rpm
       arch: amd64
       build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 2
@@ -215,8 +206,9 @@ jobs:
     permissions:
       issues: write
       pull-requests: write
-    uses: ./.github/workflows/build-rpm.yml
+    uses: ./.github/workflows/build-linux-package.yml
     with:
+      format: rpm
       arch: arm64
       build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 2
@@ -234,8 +226,8 @@ jobs:
         build-snap-arm64,
         build-appimage-amd64,
         build-appimage-arm64,
-        # build-flatpak-amd64,
-        # build-flatpak-arm64,
+        build-flatpak-amd64,
+        build-flatpak-arm64,
         build-deb-amd64,
         build-deb-arm64,
         build-rpm-amd64,
@@ -337,13 +329,13 @@ jobs:
       tag_name: ${{ github.ref_name }}
     secrets: inherit
 
-  # publish-flatpak-repo:
-  #   if: github.ref_type == 'tag'
-  #   needs: [prepare-version, release]
-  #   uses: ./.github/workflows/publish-flatpak-repo.yml
-  #   with:
-  #     tag_name: ${{ github.ref_name }}
-  #   secrets: inherit
+  publish-flatpak-repo:
+    if: github.ref_type == 'tag'
+    needs: [prepare-version, release]
+    uses: ./.github/workflows/publish-flatpak-repo.yml
+    with:
+      tag_name: ${{ github.ref_name }}
+    secrets: inherit
 
   publish-winget:
     if: github.ref_type == 'tag' && !contains(github.ref_name, '-')

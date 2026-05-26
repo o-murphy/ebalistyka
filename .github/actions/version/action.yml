@@ -9,14 +9,9 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - id: resolve
+    - name: Resolve version
+      id: resolve
       shell: bash
       run: |
-        if [[ "${{ github.ref_type }}" == "tag" ]]; then
-          VERSION="${{ github.ref_name }}"
-          [[ "${VERSION}" == v* ]] && VERSION="${VERSION:1}"
-        else
-          VERSION=$(grep '^version:' pubspec.yaml | sed 's/version:[[:space:]]*//' | sed 's/+.*//')
-        fi
-        echo "version=${VERSION}" >> $GITHUB_OUTPUT
-        echo "Resolved version: ${VERSION}"
+        source scripts/ci-common.sh
+        resolve_version "${{ github.ref_type }}" "${{ github.ref_name }}"

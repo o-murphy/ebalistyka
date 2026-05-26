@@ -1,10 +1,27 @@
-name: Build Android AAB
+name: Build Android
 
 on:
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - "app/**"
+      - "lib/**"
+      - "android/**"
+      - "external/**"
+      - "packages/bclibc_ffi/**"
+      - "pubspec.yaml"
+      - "scripts/ci-common.sh"
+      - "scripts/build-android.sh"
+      - "scripts/build-android-aab.sh"
+      - ".github/workflows/build-android.yml"
   workflow_call:
     inputs:
+      format:
+        description: "Build format"
+        required: true
+        type: string   # apk | aab
       build_name:
-        description: "Version name (e.g. v1.2.3)"
+        description: "Version name override (leave empty to use pubspec.yaml)"
         required: false
         type: string
         default: ""
@@ -20,16 +37,12 @@ on:
         default: 2
     secrets:
       ANDROID_KEYSTORE_BASE64:
-        description: "Base64-encoded Android keystore (.jks / .p12)"
         required: false
       ANDROID_KEYSTORE_PASSWORD:
-        description: "Keystore store password"
         required: false
       ANDROID_KEY_ALIAS:
-        description: "Key alias inside the keystore"
         required: false
       ANDROID_KEY_PASSWORD:
-        description: "Key password"
         required: false
     outputs:
       artifact_name:
@@ -38,9 +51,14 @@ on:
       artifact_url:
         description: "URL to the artifact"
         value: ${{ jobs.build.outputs.artifact_url }}
-
   workflow_dispatch:
     inputs:
+      format:
+        description: "Build format"
+        required: true
+        default: "apk"
+        type: choice
+        options: [ apk, aab ]
       build_name:
         description: "Version name override (leave empty to use pubspec.yaml)"
         required: false
@@ -53,40 +71,20 @@ on:
         type: choice
         options: [ release, debug ]
 
-  pull_request:
-    branches: [ main, develop ]
-    paths:
-      - "app/**"
-      - "lib/**"
-      - "android/**"
-      - "external/**"
-      - "packages/bclibc_ffi/**"
-      - "pubspec.yaml"
-      - "scripts/build-android-aab.sh"
-      - ".github/workflows/build-aab.yml"
-
 env:
   FLUTTER_VERSION: "3.44.0"
 
 concurrency:
-  group: build-aab-${{ github.ref }}
+  group: build-android-${{ github.ref }}-${{ inputs.format || 'all' }}
   cancel-in-progress: true
 
 jobs:
-  prepare-version:
-    runs-on: ubuntu-latest
-    if: github.event_name != 'workflow_call'
-    outputs:
-      version: ${{ steps.v.outputs.version }}
-    steps:
-      - uses: actions/checkout@v6
-      - id: v
-        uses: ./.github/actions/version
-
   build:
-    needs: [ prepare-version ]
-    if: always()
-    name: Android AAB (${{ inputs.build_type || 'release' }})
+    name: android-${{ matrix.format }} (${{ inputs.build_type || 'release' }})
+    strategy:
+      fail-fast: false
+      matrix:
+        format: ${{ github.event_name == 'pull_request' && fromJSON('["apk","aab"]') || fromJSON(format('["{0}"]', inputs.format || 'apk')) }}
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -100,6 +98,13 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          source scripts/ci-common.sh
+          resolve_version "${{ github.ref_type }}" "${{ github.ref_name }}"
 
       - uses: actions/setup-java@v5
         with:
@@ -118,20 +123,16 @@ jobs:
       - name: Set build metadata
         id: meta
         shell: bash
+        env:
+          INPUT_BUILD_NAME: ${{ inputs.build_name }}
+          VERSION: ${{ steps.version.outputs.version }}
+          INPUT_BUILD_TYPE: ${{ inputs.build_type }}
+          PR_NUMBER: ${{ github.event.number }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: |
-          BUILD_NAME="${{ inputs.build_name || needs.prepare-version.outputs.version }}"
-          BUILD_NAME="${BUILD_NAME#v}"
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            BUILD_NAME="${BUILD_NAME%%-*}-pr.${{ github.event.number }}"
-          fi
-          BUILD_NUMBER=$(git rev-list --count --first-parent HEAD)
-          BCLIBC_HASH=$(git -C external/bclibc rev-parse HEAD)
-          BCLIBC_FFI_HASH=$(git log -1 --format='%H' -- packages/bclibc_ffi 2>/dev/null || echo "unknown")
-          echo "build_name=$BUILD_NAME"           >> $GITHUB_OUTPUT
-          echo "build_number=$BUILD_NUMBER"       >> $GITHUB_OUTPUT
-          echo "bclibc_hash=$BCLIBC_HASH"         >> $GITHUB_OUTPUT
-          echo "bclibc_ffi_hash=$BCLIBC_FFI_HASH" >> $GITHUB_OUTPUT
-          echo "artifact_name=ebalistyka-android-aab-${{ inputs.build_type || 'release' }}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
+          set -euo pipefail
+          source scripts/ci-common.sh
+          set_build_metadata "ebalistyka-android-${{ matrix.format }}" "${INPUT_BUILD_TYPE:-release}" true
 
       - name: Cache pub packages
         uses: actions/cache@v5
@@ -163,22 +164,22 @@ jobs:
 
       - name: Set pubspec version
         run: |
-          BUILD_NAME="${{ steps.meta.outputs.build_name }}"
-          NUM="${{ steps.meta.outputs.build_number }}"
-          sed -i "s/^version:.*/version: ${BUILD_NAME}+${NUM}/" pubspec.yaml
-          echo "pubspec version → ${BUILD_NAME}+${NUM}"
+          source scripts/ci-common.sh
+          set_pubspec_version "${{ steps.meta.outputs.build_name }}" "${{ steps.meta.outputs.build_number }}"
 
       - name: Get Flutter dependencies
         run: flutter pub get
 
-      - name: Build & sign AAB
+      - name: Build & sign ${{ matrix.format }}
         env:
           ANDROID_KEYSTORE_BASE64:   ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS:         ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD:      ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          bash scripts/build-android-aab.sh \
+          set -euo pipefail
+          source scripts/ci-common.sh
+          build_android "${{ matrix.format }}" \
             "${{ steps.meta.outputs.build_name }}" \
             "${{ steps.meta.outputs.build_number }}"
 
@@ -195,7 +196,7 @@ jobs:
         if: always() && github.event_name == 'pull_request'
         uses: ./.github/actions/pr-summary
         with:
-          platform: Android AAB
+          platform: Android ${{ matrix.format }}
           build_result: ${{ job.status }}
           artifact_name: ${{ steps.meta.outputs.artifact_name }}
           artifact_url: ${{ steps.upload.outputs.artifact-url }}

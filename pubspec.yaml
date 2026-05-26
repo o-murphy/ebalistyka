@@ -80,7 +80,7 @@ dev_dependencies:
   flutter_native_splash: ^2.4.4
   flutter_launcher_icons: ^0.14.3
   msix: ^3.16.13
-  flutpak: ^0.3.0
+  flutpak: ^0.4.0-beta.1
   custom_lint: ^0.8.1
 
 # For information on the generic Dart part of this file, see the
@@ -162,9 +162,6 @@ msix_config:
   install_certificate: false
 
 flutpak:
-  output: flatpak
-  flutter_version_file: flatpak/flutter.version
-
   pub:
     locks:
       - pubspec.lock
@@ -179,11 +176,22 @@ flutpak:
 
   manifest:
     app_id: io.github.o_murphy.ebalistyka
+    icons:
+    - size: 16x16
+      path: app/share/icons/hicolor/16x16/apps/io.github.o_murphy.ebalistyka.png
+    - size: 32x32
+      path: app/share/icons/hicolor/32x32/apps/io.github.o_murphy.ebalistyka.png
+    - size: 64x64
+      path: app/share/icons/hicolor/64x64/apps/io.github.o_murphy.ebalistyka.png
+    - size: 128x128
+      path: app/share/icons/hicolor/128x128/apps/io.github.o_murphy.ebalistyka.png
+    - size: 256x256
+      path: app/share/icons/hicolor/256x256/apps/io.github.o_murphy.ebalistyka.png
+    - size: 512x512
+      path: app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png
     runtime_version: "25.08"
     sdk_extensions:
       - org.freedesktop.Sdk.Extension.llvm20
-    command: ebalistyka
-    repo_url: https://github.com/o-murphy/ebalistyka.git
     finish_args:
       - --share=ipc
       - --socket=fallback-x11

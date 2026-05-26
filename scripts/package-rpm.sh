@@ -64,7 +64,7 @@ sed \
   -e "s/VERSION_PLACEHOLDER/${RPM_VERSION}/" \
   -e "s/RELEASE_PLACEHOLDER/${RPM_RELEASE}/" \
   -e "s/ARCH_PLACEHOLDER/${RPM_ARCH}/" \
-  rpm/ebalistyka.spec > "$BUILD_ROOT/SPECS/ebalistyka.spec"
+  packaging/rpm/ebalistyka.spec > "$BUILD_ROOT/SPECS/ebalistyka.spec"
 
 # ── Build .rpm ────────────────────────────────────────────────────────────────
 rpmbuild \

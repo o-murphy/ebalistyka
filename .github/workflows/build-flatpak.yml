@@ -10,6 +10,8 @@ on:
       - "packages/bclibc_ffi/**"
       - "pubspec.yaml"
       - "flatpak/**"
+      - "scripts/ci-common.sh"
+      - "scripts/package-flatpak.sh"
       - ".github/workflows/build-flatpak.yml"
   workflow_call:
     inputs:
@@ -27,6 +29,11 @@ on:
         required: false
         type: number
         default: 2
+      tag:
+        description: "Git tag to build"
+        required: false
+        type: string
+        default: ""
     outputs:
       artifact_name:
         description: "Name of the uploaded artifact"
@@ -44,6 +51,11 @@ on:
         options: [ amd64, arm64 ]
       build_name:
         description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        default: ""
+        type: string
+      tag:
+        description: "Git tag to build"
         required: false
         default: ""
         type: string
@@ -72,42 +84,21 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-
+    
       - name: Set build metadata
         id: meta
-        run: |
-          BUILD_NAME="${{ inputs.build_name }}"
-          if [ -z "$BUILD_NAME" ]; then
-            BUILD_NAME=$(grep '^version:' pubspec.yaml | sed 's/version:[[:space:]]*//' | sed 's/+.*//')
-          fi
-          BUILD_NAME="${BUILD_NAME#v}"
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            BUILD_NAME="${BUILD_NAME%%-*}-pr.${{ github.event.number }}"
-          fi
-          BUILD_NUMBER=$(git rev-list --count --first-parent HEAD)
-          ARCH="${{ matrix.arch }}"
-          if [ "$ARCH" = "amd64" ]; then ARCH_SUFFIX="x86_64"; else ARCH_SUFFIX="aarch64"; fi
-          echo "build_name=$BUILD_NAME"     >> $GITHUB_OUTPUT
-          echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
-          echo "arch_suffix=$ARCH_SUFFIX"   >> $GITHUB_OUTPUT
-          echo "bundle=ebalistyka_linux_${ARCH_SUFFIX}.flatpak" >> $GITHUB_OUTPUT
-          echo "artifact_name=ebalistyka-flatpak-${ARCH_SUFFIX}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
-
-      - name: Determine tag or PR
-        id: resolve-ref
         shell: bash
+        env:
+          INPUT_BUILD_NAME: ${{ inputs.build_name }}
+          MATRIX_ARCH: ${{ matrix.arch }}
+          PR_NUMBER: ${{ github.event.number }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: |
-          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == refs/tags/* ]]; then
-            TAG="${{ github.ref_name }}"
-            echo "ref_type=tag" >> $GITHUB_OUTPUT
-            echo "ref_value=$TAG" >> $GITHUB_OUTPUT
-            echo "✅ Tag trigger: $TAG"
-          else
-            COMMIT_HASH=$(git rev-parse HEAD)
-            echo "ref_type=commit" >> $GITHUB_OUTPUT
-            echo "ref_value=$COMMIT_HASH" >> $GITHUB_OUTPUT
-            echo "⚠️ PR/commit trigger: $COMMIT_HASH"
-          fi
+          set -euo pipefail
+          source scripts/ci-common.sh
+          source scripts/package-flatpak.sh
+          set_build_metadata "ebalistyka-flatpak"
+          set_flatpak_bundle_output
 
       - name: Read Flutter version
         id: flutter-ver
@@ -115,7 +106,7 @@ jobs:
 
       - name: Install Flutter ${{ steps.flutter-ver.outputs.version }}
         id: flutter 
-        uses: o-murphy/flutpak/.github/actions/flutter@v0.3.0
+        uses: o-murphy/flutpak/.github/actions/flutter@v0.4.0-beta.2
         with:
           flutter-version: ${{ steps.flutter-ver.outputs.version }}
           cache: true
@@ -127,13 +118,23 @@ jobs:
         run: flutter pub get
 
       - name: Install flutpak
-        uses: o-murphy/flutpak/.github/actions/setup-flutpak@v0.3.0
+        uses: o-murphy/flutpak/.github/actions/setup-flutpak@v0.4.0-beta.2
 
-      - name: Flutpak prepare
-        run: | 
-          flutpak prepare \
-            --tag "${{ steps.resolve-ref.outputs.ref_value }}" \
-            --commit "$(git rev-parse HEAD)" \
+      - name: Set ref type
+        id: ref
+        run: |
+          if [ -n "${{ inputs.tag }}" ]; then
+            echo "flag=--tag" >> $GITHUB_OUTPUT
+            echo "value=${{ inputs.tag }}" >> $GITHUB_OUTPUT
+          else
+            echo "flag=--commit" >> $GITHUB_OUTPUT
+            echo "value=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Flutpak generate
+        run: |
+          flutpak generate \
+            ${{ steps.ref.outputs.flag }} "${{ steps.ref.outputs.value }}" \
             --sdk "$FLUTTER_ROOT"
 
       - name: Upload submission artifacts
@@ -141,21 +142,25 @@ jobs:
         with:
           name: flutpak-artifacts-${{ steps.meta.outputs.arch_suffix }}
           path: |
-            flatpak/io.github.o_murphy.ebalistyka.yml
-            flatpak/generated-sources.json
-            flatpak/patches
-            flatpak/flathub.json
+            flatpak/generated/io.github.o_murphy.ebalistyka.yml
+            flatpak/generated/generated-sources.json
+            flatpak/generated/patches
+            flatpak/generated/flathub.json
           retention-days: 2
 
       - name: Install flatpak and appstream
+        shell: bash
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y flatpak appstream
-
+          set -euo pipefail
+          source scripts/package-flatpak.sh
+          install_flatpak_and_appstream
+      
       - name: Validate metainfo
+        shell: bash
         run: |
-          appstreamcli validate --explain --no-net \
-            app/share/metainfo/io.github.o_murphy.ebalistyka.metainfo.xml
+          set -euo pipefail
+          source scripts/package-flatpak.sh
+          validate_metainfo app/share/metainfo/io.github.o_murphy.ebalistyka.metainfo.xml
 
       - name: Cache Flatpak installation (org.flatpak.Builder + runtimes)
         uses: actions/cache@v5
@@ -167,24 +172,22 @@ jobs:
         uses: actions/cache@v5
         with:
           path: .flatpak-builder/downloads
-          key: flatpak-dl-${{ steps.meta.outputs.arch_suffix }}-${{ hashFiles('flatpak/io.github.o_murphy.ebalistyka.yml', 'pubspec.lock', 'flatpak/flutter.version') }}
+          key: flatpak-dl-${{ steps.meta.outputs.arch_suffix }}-${{ hashFiles('flatpak/generated/io.github.o_murphy.ebalistyka.yml', 'pubspec.lock', 'flatpak/flutter.version') }}
           restore-keys: flatpak-dl-${{ steps.meta.outputs.arch_suffix }}-
 
       - name: Install org.flatpak.Builder
+        shell: bash
         run: |
-          flatpak remote-add --user --if-not-exists flathub \
-            https://dl.flathub.org/repo/flathub.flatpakrepo
-          dbus-run-session flatpak install --user -y --noninteractive flathub \
-            org.flatpak.Builder
+          set -euo pipefail
+          source scripts/package-flatpak.sh
+          install_flatpak_builder
 
       - name: Lint manifest
+        shell: bash
         run: |
-          dbus-run-session flatpak run \
-            --filesystem=host \
-            --command=flatpak-builder-lint \
-            org.flatpak.Builder \
-            --exceptions \
-            manifest flatpak/io.github.o_murphy.ebalistyka.yml
+          set -euo pipefail
+          source scripts/package-flatpak.sh
+          lint_flatpak_manifest flatpak/generated/io.github.o_murphy.ebalistyka.yml
 
       - name: Configure GitHub token for flatpak-builder
         run: |
@@ -192,23 +195,26 @@ jobs:
           chmod 600 ~/.netrc
 
       - name: Build Flatpak
+        shell: bash
         run: |
-          dbus-run-session flatpak run --command=flathub-build org.flatpak.Builder \
-            flatpak/io.github.o_murphy.ebalistyka.yml
-
+          set -euo pipefail
+          source scripts/package-flatpak.sh
+          build_flatpak flatpak/generated/io.github.o_murphy.ebalistyka.yml
+      
       - name: Lint Flatpak repo
+        shell: bash
         run: |
-          dbus-run-session flatpak run \
-            --filesystem=host \
-            --command=flatpak-builder-lint \
-            org.flatpak.Builder \
-            --exceptions \
-            repo repo
+          set -euo pipefail
+          source scripts/package-flatpak.sh
+          lint_flatpak_repo repo
 
       - name: Export .flatpak bundle
+        shell: bash
         run: |
-          flatpak build-bundle \
-            --arch="${{ steps.meta.outputs.arch_suffix }}" \
+          set -euo pipefail
+          source scripts/package-flatpak.sh
+          export_flatpak_bundle \
+            "${{ steps.meta.outputs.arch_suffix }}" \
             repo \
             "${{ steps.meta.outputs.bundle }}" \
             io.github.o_murphy.ebalistyka

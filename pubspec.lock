@@ -306,10 +306,10 @@ packages:
     dependency: "direct dev"
     description:
       name: flutpak
-      sha256: "13101a664aed3d8250ca6f7eb18c354b51d0467e839ef9750d4652e5a4747555"
+      sha256: "3c88094c2a49dcadfa90f128d679f3f4121a3573fa8230bd8b04ac5365a6ee92"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.0"
+    version: "0.4.0-beta.1"
   flutter:
     dependency: "direct main"
     description: flutter

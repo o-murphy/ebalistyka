@@ -55,7 +55,7 @@ sed \
   -e "s/VERSION_PLACEHOLDER/${BUILD_NAME}/" \
   -e "s/ARCH_PLACEHOLDER/${DEB_ARCH}/" \
   -e "s/INSTALLED_SIZE_PLACEHOLDER/${INSTALLED_SIZE}/" \
-  deb/control > "$PKG_DIR/DEBIAN/control"
+  packaging/deb/control > "$PKG_DIR/DEBIAN/control"
 
 echo "✓ Package prepared (version: ${BUILD_NAME}, arch: ${DEB_ARCH})"
 

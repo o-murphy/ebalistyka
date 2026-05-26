@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 - **App repo name** — slug changed from `o-murphy/ebalistyka-app` to `o-murphy/ebalistyka` to unify the app ID across all packaging formats
 - **Flutter** — default version bumped to 3.44.0 across all workflows
-- **flutpak** — bumped to `v0.3.0`; generates Flathub-compatible manifest and `generated-sources.json`
+- **flutpak** — bumped to `v0.4.0-beta.2`; generates Flathub-compatible manifest and `generated-sources.json`
 - **App icons** — regenerated; icon and shared assets (`metainfo`, `desktop`, `icons`) moved to `app/share/` and reused across all packaging tools (AUR, deb, RPM, AppImage, Flatpak, Snap)
 
 ### CI / Distribution
