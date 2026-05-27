@@ -9,6 +9,7 @@ on:
   #     - "external/**"
   #     - "packages/bclibc_ffi/**"
   #     - "pubspec.yaml"
+  #     - "scripts/ci-common.sh"
   #     - ".github/workflows/build-portable.yml"
   #     - ".github/workflows/build.yml"
   workflow_call:

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2026 Dmytro Yaroshenko (o-murphy) -->
+<component type="desktop-application">
+ <id>io.github.o_murphy.ebalistyka</id>
+ <metadata_license>CC0-1.0</metadata_license>
+ <project_license>GPL-3.0-only</project_license>
+ <name>eBalistyka</name>
+ <summary>Ballistic calculator</summary>
+ <summary xml:lang="uk">Балістичний калькулятор</summary>
+ <description>
+   <p>eBalistyka is a professional ballistic calculator for shooters. Supports trajectory calculation, wind drift, multiple ammo profiles, and custom reticle overlays.</p>
+   <p xml:lang="uk">eBalistyka — професійний балістичний калькулятор для стрільців. Підтримує розрахунок траєкторії, знос від вітру, кілька профілів набоїв та накладення прицільних сіток.</p>
+ </description>
+ <developer id="io.github.o_murphy">
+   <name>o-murphy</name>
+ </developer>
+ <categories>
+   <category>Utility</category>
+   <category>Science</category>
+ </categories>
+ <url type="homepage">https://github.com/o-murphy/ebalistyka</url>
+ <url type="bugtracker">https://github.com/o-murphy/ebalistyka/issues</url>
+ <url type="vcs-browser">https://github.com/o-murphy/ebalistyka</url>
+ <launchable type="desktop-id">io.github.o_murphy.ebalistyka.desktop</launchable>
+ <branding>
+   <color type="primary" scheme_preference="light">#1565c0</color>
+   <color type="primary" scheme_preference="dark">#0d1228</color>
+ </branding>
+ <screenshots>
+   <screenshot type="default">
+     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.15/docs/screenshots/home.png</image>
+     <caption>Current shot screen</caption>
+     <caption xml:lang="uk">Екран поточного пострілу</caption>
+   </screenshot>
+   <screenshot>
+     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.15/docs/screenshots/conditions.png</image>
+     <caption>Shooting conditions</caption>
+     <caption xml:lang="uk">Умови стрільби</caption>
+   </screenshot>
+   <screenshot>
+     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.15/docs/screenshots/tables_trajectory.png</image>
+     <caption>Trajectory table</caption>
+     <caption xml:lang="uk">Таблиця траєкторії</caption>
+   </screenshot>
+   <screenshot>
+     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.15/docs/screenshots/tables_details.png</image>
+     <caption>Trajectory details</caption>
+     <caption xml:lang="uk">Деталі траєкторії</caption>
+   </screenshot>
+   <screenshot>
+     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.15/docs/screenshots/convertors.png</image>
+     <caption>Unit converters</caption>
+     <caption xml:lang="uk">Конвертори одиниць</caption>
+   </screenshot>
+ </screenshots>
+ <supports>
+   <control>pointing</control>
+   <control>keyboard</control>
+   <control>touch</control>
+ </supports>
+ <requires>
+   <display_length compare="ge">360</display_length>
+ </requires>
+ <releases>
+   <release version="0.1.15" date="2026-05-19"/>
+   <release version="0.1.14" date="2026-05-12"/>
+   <release version="0.1.13" date="2026-05-11"/>
+ </releases>
+ <content_rating type="oars-1.1">
+   <content_attribute id="violence-realistic">none</content_attribute>
+ </content_rating>
+</component>

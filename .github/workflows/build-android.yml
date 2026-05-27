@@ -1,0 +1,201 @@
+name: Build Android
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - "app/**"
+      - "lib/**"
+      - "android/**"
+      - "external/**"
+      - "packages/bclibc_ffi/**"
+      - "pubspec.yaml"
+      - "scripts/ci-common.sh"
+      - "scripts/build-android.sh"
+      - ".github/workflows/build-android.yml"
+  workflow_call:
+    inputs:
+      format:
+        description: "Build format"
+        required: true
+        type: string   # apk | aab
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        type: string
+        default: ""
+      build_type:
+        description: "Build type"
+        required: false
+        type: string
+        default: "release"
+      retention_days:
+        description: "Artifact retention in days"
+        required: false
+        type: number
+        default: 2
+    secrets:
+      ANDROID_KEYSTORE_BASE64:
+        required: false
+      ANDROID_KEYSTORE_PASSWORD:
+        required: false
+      ANDROID_KEY_ALIAS:
+        required: false
+      ANDROID_KEY_PASSWORD:
+        required: false
+    outputs:
+      artifact_name:
+        description: "Name of the uploaded artifact"
+        value: ${{ jobs.build.outputs.artifact_name }}
+      artifact_url:
+        description: "URL to the artifact"
+        value: ${{ jobs.build.outputs.artifact_url }}
+  workflow_dispatch:
+    inputs:
+      format:
+        description: "Build format"
+        required: true
+        default: "apk"
+        type: choice
+        options: [ apk, aab ]
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        default: ""
+        type: string
+      build_type:
+        description: "Build type"
+        required: false
+        default: "release"
+        type: choice
+        options: [ release, debug ]
+
+env:
+  FLUTTER_VERSION: "3.44.0"
+
+concurrency:
+  group: build-android-${{ github.ref }}-${{ inputs.format || 'all' }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: android-${{ matrix.format }} (${{ inputs.build_type || 'release' }})
+    strategy:
+      fail-fast: false
+      matrix:
+        format: ${{ github.event_name == 'pull_request' && fromJSON('["apk","aab"]') || fromJSON(format('["{0}"]', inputs.format || 'apk')) }}
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+    outputs:
+      artifact_name: ${{ steps.meta.outputs.artifact_name }}
+      artifact_url:  ${{ steps.upload.outputs.artifact-url }}
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          source scripts/ci-common.sh
+          resolve_version "${{ github.ref_type }}" "${{ github.ref_name }}"
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Flutter
+        uses: ./.github/actions/flutter
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Accept Android licenses
+        run: yes | flutter doctor --android-licenses || true
+
+      - name: Set build metadata
+        id: meta
+        shell: bash
+        env:
+          INPUT_BUILD_NAME: ${{ inputs.build_name }}
+          VERSION: ${{ steps.version.outputs.version }}
+          INPUT_BUILD_TYPE: ${{ inputs.build_type }}
+          PR_NUMBER: ${{ github.event.number }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          source scripts/ci-common.sh
+          set_build_metadata "ebalistyka-android-${{ matrix.format }}" "${INPUT_BUILD_TYPE:-release}" true
+
+      - name: Cache pub packages
+        uses: actions/cache@v5
+        with:
+          path: ${{ runner.temp }}/pub-cache
+          key: pub-android-${{ hashFiles('pubspec.lock') }}
+          restore-keys: pub-android-
+
+      - name: Cache Gradle
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ hashFiles('android/app/build.gradle.kts', 'android/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: gradle-
+
+      - name: Cache bclibc NDK build
+        uses: actions/cache@v5
+        with:
+          path: packages/bclibc_ffi/android/.cxx
+          key: bclibc-android-${{ steps.meta.outputs.bclibc_hash }}-${{ steps.meta.outputs.bclibc_ffi_hash }}
+          restore-keys: |
+            bclibc-android-${{ steps.meta.outputs.bclibc_hash }}-
+            bclibc-android-
+
+      - name: Install Flutter dependencies
+        run: flutter clean
+
+      - name: Set pubspec version
+        run: |
+          source scripts/ci-common.sh
+          set_pubspec_version "${{ steps.meta.outputs.build_name }}" "${{ steps.meta.outputs.build_number }}"
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      - name: Build & sign ${{ matrix.format }}
+        env:
+          ANDROID_KEYSTORE_BASE64:   ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS:         ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD:      ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          source scripts/ci-common.sh
+          build_android "${{ matrix.format }}" \
+            "${{ steps.meta.outputs.build_name }}" \
+            "${{ steps.meta.outputs.build_number }}"
+
+      - name: Upload artifact
+        id: upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.meta.outputs.artifact_name }}
+          path: artifacts/
+          retention-days: ${{ inputs.retention_days || 2 }}
+          if-no-files-found: error
+
+      - name: Post PR summary
+        if: always() && github.event_name == 'pull_request'
+        uses: ./.github/actions/pr-summary
+        with:
+          platform: Android ${{ matrix.format }}
+          build_result: ${{ job.status }}
+          artifact_name: ${{ steps.meta.outputs.artifact_name }}
+          artifact_url: ${{ steps.upload.outputs.artifact-url }}

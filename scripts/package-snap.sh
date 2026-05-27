@@ -18,12 +18,19 @@ BUILD_NAME="${1:-local}"
 # versions are strings, so the build number is appended only when not 'local'.
 BUILD_NUMBER="${2:-0}"
 
-YAML="snap/snapcraft.yaml"
+SRC="packaging/snap"
+SNAP_DIR="snap"
 
-if [ ! -f "$YAML" ]; then
-  echo "❌ $YAML not found — run from the project root" >&2
+if [ ! -f "$SRC/snapcraft.yaml" ]; then
+  echo "❌ $SRC/snapcraft.yaml not found — run from the project root" >&2
   exit 1
 fi
+
+# Mirror what CI does: copy packaging/snap → snap/ so snapcraft finds it
+cp -r "$SRC" "$SNAP_DIR"
+trap 'rm -rf "$SNAP_DIR"' EXIT
+
+YAML="$SNAP_DIR/snapcraft.yaml"
 
 # Snap version: strip '+' (not allowed), keep '-prerelease' suffix
 VERSION="${BUILD_NAME%%+*}"
@@ -40,14 +47,11 @@ sed -i "s/^grade: .*/grade: ${GRADE}/" "$YAML"
 echo "✓ Set snap version: ${VERSION} (grade: ${GRADE})"
 
 # Copy icon into snap/gui so snapcraft picks it up
-if [ -f "assets/icon.png" ]; then
-  cp "assets/icon.png" "snap/gui/ebalistyka.png"
+if [ -f "app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png" ]; then
+  cp "app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png" "$SNAP_DIR/gui/ebalistyka.png"
   echo "✓ Icon copied"
-elif [ -f "assets/icon.svg" ] && command -v convert &>/dev/null; then
-  convert "assets/icon.svg" -resize 256x256 "snap/gui/ebalistyka.png"
-  echo "✓ Icon converted from SVG"
 else
-  echo "❌ No icon found (assets/icon.png or assets/icon.svg with ImageMagick)" >&2
+  echo "❌ No icon found" >&2
   exit 1
 fi
 
@@ -64,7 +68,7 @@ else
 fi
 
 echo "Building snap (${BUILD_FLAGS})..."
-snapcraft pack $BUILD_FLAGS
+snapcraft pack "$SNAP_DIR" $BUILD_FLAGS
 
 SNAP_FILE=$(ls ebalistyka_*.snap 2>/dev/null | head -1)
 if [ -z "$SNAP_FILE" ]; then

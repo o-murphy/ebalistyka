@@ -2,14 +2,15 @@ name: Build Snap
 
 on:
   pull_request:
-    branches: [ main, develop ]
     paths:
+      - "app/**"
       - "lib/**"
       - "linux/**"
       - "external/**"
       - "packages/bclibc_ffi/**"
       - "pubspec.yaml"
-      - "snap/**"
+      - "scripts/ci-common.sh"
+      - "packaging/snap/**"
       - ".github/workflows/build-snap.yml"
   workflow_call:
     inputs:
@@ -76,21 +77,16 @@ jobs:
 
       - name: Set build metadata
         id: meta
+        shell: bash
+        env:
+          INPUT_BUILD_NAME: ${{ inputs.build_name }}
+          MATRIX_ARCH: ${{ matrix.arch }}
+          PR_NUMBER: ${{ github.event.number }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: |
-          BUILD_NAME="${{ inputs.build_name }}"
-          if [ -z "$BUILD_NAME" ]; then
-            BUILD_NAME=$(grep '^version:' pubspec.yaml | sed 's/version:[[:space:]]*//' | sed 's/+.*//')
-          fi
-          BUILD_NAME="${BUILD_NAME#v}"
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            BUILD_NAME="${BUILD_NAME%%-*}-pr.${{ github.event.number }}"
-          fi
-          BUILD_NUMBER=$(git rev-list --count --first-parent HEAD)
-          ARCH_SUFFIX=${{ matrix.arch == 'amd64' && 'x86_64' || 'aarch64' }}
-          echo "build_name=$BUILD_NAME"     >> $GITHUB_OUTPUT
-          echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
-          echo "arch_suffix=$ARCH_SUFFIX"   >> $GITHUB_OUTPUT
-          echo "artifact_name=ebalistyka-snap-${ARCH_SUFFIX}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
+          set -euo pipefail
+          source scripts/ci-common.sh
+          set_build_metadata "ebalistyka-snap"
 
       - name: Cache LXD base image
         uses: actions/cache@v5
@@ -99,18 +95,23 @@ jobs:
           key: lxd-core22-${{ runner.arch }}
           restore-keys: lxd-core22-
 
+      - name: Copy snap project to repo root
+        run: cp -r packaging/snap snap
+
       - name: Prepare snap sources
         run: |
           VERSION="${{ steps.meta.outputs.build_name }}"
           if [[ "$VERSION" == *-* ]]; then GRADE="devel"; else GRADE="stable"; fi
           sed -i "s/^version: .*/version: '${VERSION}'/" snap/snapcraft.yaml
           sed -i "s/^grade: .*/grade: ${GRADE}/" snap/snapcraft.yaml
-          [ -f "assets/icon.png" ] && cp "assets/icon.png" "snap/gui/ebalistyka.png"
+          cp "app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png" "snap/gui/ebalistyka.png"
           echo "✓ snap version: ${VERSION} (grade: ${GRADE})"
 
       - name: Build snap
         uses: snapcore/action-build@v1
         id: snapcraft
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Collect snap artifact
         run: |

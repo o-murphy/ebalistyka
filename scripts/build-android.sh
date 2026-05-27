@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
-# Build Flutter Android APKs (per-ABI split + universal fat) and place them in artifacts/.
+# Build Flutter Android artifacts (APK split/universal or AAB) and place them in artifacts/.
 #
 # Usage:
-#   build-android.sh <build_name> <build_number>
+#   build-android.sh [--target apk|aab] <build_name> <build_number>
+#
+# Options:
+#   --target apk   Per-ABI split APKs + universal fat APK  (default)
+#   --target aab   App Bundle for Google Play
 #
 # Arguments:
 #   build_name    Version string, e.g. "1.2.3" or "1.2.3-beta.1".  "v" prefix is stripped.
-#                 Pre-release suffix is preserved as Android versionName.
-#   build_number  Integer build number (git rev-list --count --first-parent HEAD — monotonically increasing).
+#   build_number  Integer build number (git rev-list --count --first-parent HEAD).
 #
 # Signing (optional — falls back to debug key if not set):
 #   ANDROID_KEYSTORE_BASE64      Base64-encoded .jks/.p12 keystore file.
@@ -15,19 +18,46 @@
 #   ANDROID_KEY_ALIAS            Key alias inside the keystore.
 #   ANDROID_KEY_PASSWORD         Key password.
 #
-# Outputs:
+# Outputs (apk):
 #   artifacts/ebalistyka_android_arm64.apk
 #   artifacts/ebalistyka_android_armeabi_v7a.apk
 #   artifacts/ebalistyka_android_x86_64.apk
 #   artifacts/ebalistyka_android_universal.apk
+#
+# Outputs (aab):
+#   artifacts/ebalistyka_android.aab
 
 set -euo pipefail
 
+# ── Argument parsing ─────────────────────────────────────────────────────────
+TARGET="apk"
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --target)
+            TARGET="$2"
+            shift 2
+            ;;
+        --target=*)
+            TARGET="${1#--target=}"
+            shift
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
 BUILD_NAME="${1:-0.1.0-dev}"
 BUILD_NUMBER="${2:-0}"
-
-# Strip leading 'v'
 BUILD_NAME="${BUILD_NAME#v}"
+
+if [[ "$TARGET" != "apk" && "$TARGET" != "aab" ]]; then
+    echo "Error: --target must be 'apk' or 'aab' (got: '$TARGET')" >&2
+    exit 1
+fi
+
+echo "Target: $TARGET | Version: $BUILD_NAME ($BUILD_NUMBER)"
 
 # ── Cleanup trap ─────────────────────────────────────────────────────────────
 cleanup() {
@@ -50,24 +80,34 @@ else
     echo "ANDROID_KEYSTORE_BASE64 not set — using debug signing"
 fi
 
-# ── Build per-ABI split APKs ─────────────────────────────────────────────────
-flutter build apk --release --flavor sideload --split-per-abi \
-  --build-name="$BUILD_NAME" \
-  --build-number="$BUILD_NUMBER"
-
-# Copy split APKs immediately — Gradle stale-output cleanup in the next build
-# may remove files produced by a differently-configured assembleRelease run.
 mkdir -p artifacts
-cp build/app/outputs/flutter-apk/app-arm64-v8a-sideload-release.apk   artifacts/ebalistyka_android_arm64.apk
-cp build/app/outputs/flutter-apk/app-armeabi-v7a-sideload-release.apk artifacts/ebalistyka_android_armeabi_v7a.apk
-cp build/app/outputs/flutter-apk/app-x86_64-sideload-release.apk      artifacts/ebalistyka_android_x86_64.apk
 
-# ── Build universal (fat) APK ────────────────────────────────────────────────
-flutter build apk --release --flavor sideload \
-  --build-name="$BUILD_NAME" \
-  --build-number="$BUILD_NUMBER"
+# ── Build ────────────────────────────────────────────────────────────────────
+if [[ "$TARGET" == "aab" ]]; then
+    flutter build appbundle --release --flavor googlePlay \
+        --build-name="$BUILD_NAME" \
+        --build-number="$BUILD_NUMBER"
 
-cp build/app/outputs/flutter-apk/app-sideload-release.apk artifacts/ebalistyka_android_universal.apk
+    cp build/app/outputs/bundle/googlePlayRelease/app-googlePlay-release.aab \
+        artifacts/ebalistyka_android.aab
 
-echo "=== APK artifacts ==="
+else
+    # Split per-ABI first
+    flutter build apk --release --flavor sideload --split-per-abi \
+        --build-name="$BUILD_NAME" \
+        --build-number="$BUILD_NUMBER"
+
+    cp build/app/outputs/flutter-apk/app-arm64-v8a-sideload-release.apk   artifacts/ebalistyka_android_arm64.apk
+    cp build/app/outputs/flutter-apk/app-armeabi-v7a-sideload-release.apk artifacts/ebalistyka_android_armeabi_v7a.apk
+    cp build/app/outputs/flutter-apk/app-x86_64-sideload-release.apk      artifacts/ebalistyka_android_x86_64.apk
+
+    # Universal (fat) APK — окремий запуск, бо --split-per-abi і fat несумісні
+    flutter build apk --release --flavor sideload \
+        --build-name="$BUILD_NAME" \
+        --build-number="$BUILD_NUMBER"
+
+    cp build/app/outputs/flutter-apk/app-sideload-release.apk artifacts/ebalistyka_android_universal.apk
+fi
+
+echo "=== Artifacts ==="
 ls -lh artifacts/

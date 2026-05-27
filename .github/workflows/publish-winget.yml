@@ -62,6 +62,6 @@ jobs:
         run: |
           wingetcreate update "o-murphy.ebalistyka" `
             --version "${{ inputs.version }}.0" `
-            --urls "https://github.com/o-murphy/ebalistyka-app/releases/download/${{ inputs.tag_name }}/ebalistyka_windows_x86_64.zip" `
+            --urls "https://github.com/o-murphy/ebalistyka/releases/download/${{ inputs.tag_name }}/ebalistyka_windows_x86_64.zip" `
             --token "${{ secrets.WINGET_TOKEN }}" `
             --submit

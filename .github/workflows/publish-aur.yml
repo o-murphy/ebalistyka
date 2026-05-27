@@ -80,7 +80,7 @@ jobs:
           GIT_SSH_COMMAND="ssh -i /root/.ssh/aur -v" \
             git clone ssh://aur@aur.archlinux.org/ebalistyka-bin.git /tmp/aur-repo
 
-          cp "$GITHUB_WORKSPACE/aur/PKGBUILD" /tmp/aur-repo/
+          cp "$GITHUB_WORKSPACE/packaging/aur/PKGBUILD" /tmp/aur-repo/
           chown -R builder:builder /tmp/aur-repo
           su builder -c "cd /tmp/aur-repo && makepkg --printsrcinfo > .SRCINFO"
 

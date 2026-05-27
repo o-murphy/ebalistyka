@@ -11,7 +11,7 @@ const String collectionFile = 'collection.json';
 const int checkIntervalHours = 24;
 
 // GitHub URLs
-const String repoSlug = 'o-murphy/ebalistyka-app';
+const String repoSlug = 'o-murphy/ebalistyka';
 const String defaultBranch = 'main';
 const String remoteUrl = 'https://github.com';
 const String remoteRawContent = 'https://raw.githubusercontent.com';

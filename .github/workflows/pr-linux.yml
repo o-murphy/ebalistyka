@@ -3,19 +3,18 @@ name: PR Linux Builds
 on:
   pull_request:
     paths:
+      - "app/**"
       - "lib/**"
       - "linux/**"
       - "external/**"
       - "packages/bclibc_ffi/**"
       - "pubspec.yaml"
-      - "deb/**"
-      - "rpm/**"
+      - "packaging/**"
+      - "scripts/ci-common.sh"
       - ".github/workflows/pr-linux.yml"
       - ".github/workflows/build.yml"
       - ".github/workflows/build-portable.yml"
-      - ".github/workflows/build-appimage.yml"
-      - ".github/workflows/build-deb.yml"
-      - ".github/workflows/build-rpm.yml"
+      - ".github/workflows/build-linux-package.yml"
 
 concurrency:
   group: pr-linux-${{ github.ref }}
@@ -35,6 +34,7 @@ jobs:
         with:
           filters: |
             core:
+              - "app/**"
               - "lib/**"
               - "linux/**"
               - "external/**"
@@ -44,17 +44,16 @@ jobs:
               - ".github/workflows/build-portable.yml"
               - ".github/workflows/pr-linux.yml"
             appimage:
-              - ".github/workflows/build-appimage.yml"
+              - "app/**"
+              - ".github/workflows/build-linux-package.yml"
             deb:
-              - "deb/**"
-              - "flatpak/*.desktop"
-              - "flatpak/*.metainfo.xml"
-              - ".github/workflows/build-deb.yml"
+              - "app/**"
+              - "packaging/deb/**"
+              - ".github/workflows/build-linux-package.yml"
             rpm:
-              - "rpm/**"
-              - "flatpak/*.desktop"
-              - "flatpak/*.metainfo.xml"
-              - ".github/workflows/build-rpm.yml"
+              - "app/**"
+              - "packaging/rpm/**"
+              - ".github/workflows/build-linux-package.yml"
 
   build-bundle-amd64:
     needs: changes
@@ -95,12 +94,13 @@ jobs:
     permissions:
       pull-requests: write
       issues: write
-    uses: ./.github/workflows/build-appimage.yml
+    uses: ./.github/workflows/build-linux-package.yml
     with:
+      format: appimage
       arch: amd64
       retention_days: 2
       bundle_artifact_name: ${{ needs.build-bundle-amd64.outputs.artifact_name }}
-    
+
   build-appimage-arm64:
     needs: [changes, build-bundle-arm64]
     if: |
@@ -110,8 +110,9 @@ jobs:
     permissions:
       pull-requests: write
       issues: write
-    uses: ./.github/workflows/build-appimage.yml
+    uses: ./.github/workflows/build-linux-package.yml
     with:
+      format: appimage
       arch: arm64
       retention_days: 2
       bundle_artifact_name: ${{ needs.build-bundle-arm64.outputs.artifact_name }}
@@ -125,8 +126,9 @@ jobs:
     permissions:
       pull-requests: write
       issues: write
-    uses: ./.github/workflows/build-deb.yml
+    uses: ./.github/workflows/build-linux-package.yml
     with:
+      format: deb
       arch: amd64
       retention_days: 2
       bundle_artifact_name: ${{ needs.build-bundle-amd64.outputs.artifact_name }}
@@ -140,8 +142,9 @@ jobs:
     permissions:
       pull-requests: write
       issues: write
-    uses: ./.github/workflows/build-deb.yml
+    uses: ./.github/workflows/build-linux-package.yml
     with:
+      format: deb
       arch: arm64
       retention_days: 2
       bundle_artifact_name: ${{ needs.build-bundle-arm64.outputs.artifact_name }}
@@ -155,8 +158,9 @@ jobs:
     permissions:
       pull-requests: write
       issues: write
-    uses: ./.github/workflows/build-rpm.yml
+    uses: ./.github/workflows/build-linux-package.yml
     with:
+      format: rpm
       arch: amd64
       retention_days: 2
       bundle_artifact_name: ${{ needs.build-bundle-amd64.outputs.artifact_name }}
@@ -170,8 +174,9 @@ jobs:
     permissions:
       pull-requests: write
       issues: write
-    uses: ./.github/workflows/build-rpm.yml
+    uses: ./.github/workflows/build-linux-package.yml
     with:
+      format: rpm
       arch: arm64
       retention_days: 2
       bundle_artifact_name: ${{ needs.build-bundle-arm64.outputs.artifact_name }}

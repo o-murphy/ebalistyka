@@ -22,6 +22,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.tag_name }}
+
+      - name: Read Flutter version
+        id: flutter-ver
+        run: echo "version=$(cat flatpak/flutter.version)" >> $GITHUB_OUTPUT
+
+      - name: Install Flutter ${{ steps.flutter-ver.outputs.version }}
+        id: flutter
+        uses: o-murphy/flutpak/.github/actions/flutter@v0.4.0-beta.3
+        with:
+          flutter-version: ${{ steps.flutter-ver.outputs.version }}
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Install flutpak
+        uses: o-murphy/flutpak/.github/actions/setup-flutpak@v0.4.0-beta.3
+
+      - name: Generate Flathub manifest
+        run: |
+          flutpak generate \
+            --tag "${{ inputs.tag_name }}" \
+            --sdk "${{ steps.flutter.outputs.flutter-path }}"
 
       - name: Clone Flathub repo
         env:
@@ -31,11 +56,13 @@ jobs:
             "https://x-access-token:${FLATHUB_TOKEN}@github.com/flathub/io.github.o_murphy.ebalistyka.git" \
             /tmp/flathub-repo
 
-      - name: Update Flathub repo
+      - name: Copy generated files to Flathub repo
         run: |
-          bash scripts/update-flathub.sh \
-            "${{ inputs.tag_name }}" \
-            /tmp/flathub-repo
+          cp flatpak/generated/io.github.o_murphy.ebalistyka.yml /tmp/flathub-repo/
+          cp flatpak/generated/generated-sources.json             /tmp/flathub-repo/
+          cp -r flatpak/generated/patches                         /tmp/flathub-repo/
+          [ -f flatpak/generated/flathub.json ] && \
+            cp flatpak/generated/flathub.json /tmp/flathub-repo/ || true
 
       - name: Commit and push
         env:

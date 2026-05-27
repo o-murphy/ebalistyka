@@ -1,0 +1,172 @@
+name: Build Linux Package
+
+on:
+  workflow_call:
+    inputs:
+      format:
+        description: "Package format"
+        required: true
+        type: string   # deb | rpm | appimage
+      arch:
+        description: "Target architecture"
+        required: true
+        type: string   # amd64 | arm64
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        type: string
+        default: ""
+      retention_days:
+        description: "Artifact retention in days"
+        required: false
+        type: number
+        default: 2
+      bundle_artifact_name:
+        description: "Pre-built bundle artifact name (skips build-bundle job)"
+        required: false
+        type: string
+        default: ""
+    secrets:
+      GPG_PRIVATE_KEY:
+        required: false
+      GPG_PASSPHRASE:
+        required: false
+    outputs:
+      artifact_name:
+        description: "Name of the uploaded artifact"
+        value: ${{ jobs.package.outputs.artifact_name }}
+      artifact_url:
+        description: "URL to download the artifact"
+        value: ${{ jobs.package.outputs.artifact_url }}
+  workflow_dispatch:
+    inputs:
+      format:
+        description: "Package format"
+        required: true
+        default: "deb"
+        type: choice
+        options: [ deb, rpm, appimage ]
+      arch:
+        description: "Target architecture"
+        required: true
+        default: "amd64"
+        type: choice
+        options: [ amd64, arm64 ]
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        default: ""
+        type: string
+
+concurrency:
+  group: build-linux-pkg-${{ github.ref }}-${{ inputs.format }}-${{ inputs.arch || 'amd64' }}
+  cancel-in-progress: true
+
+jobs:
+  build-bundle:
+    if: inputs.bundle_artifact_name == ''
+    uses: ./.github/workflows/build.yml
+    with:
+      platform: linux
+      arch: ${{ inputs.arch || 'amd64' }}
+      build_type: release
+      build_name: ${{ inputs.build_name || '' }}
+      retention_days: 2
+
+  package:
+    needs: build-bundle
+    if: always() && (needs.build-bundle.result == 'success' || needs.build-bundle.result == 'skipped')
+    name: ${{ inputs.format }}-${{ inputs.arch || 'amd64' }}
+    runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    permissions:
+      pull-requests: write
+      issues: write
+
+    outputs:
+      artifact_name: ${{ steps.meta.outputs.artifact_name }}
+      artifact_url:  ${{ steps.upload.outputs.artifact-url }}
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set build metadata
+        id: meta
+        shell: bash
+        env:
+          INPUT_BUILD_NAME: ${{ inputs.build_name }}
+          INPUT_ARCH: ${{ inputs.arch || 'amd64' }}
+          PR_NUMBER: ${{ github.event.number }}
+        run: |
+          set -euo pipefail
+          source scripts/ci-common.sh
+          set_build_metadata "ebalistyka-${{ inputs.format }}"
+
+      - name: Download bundle artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ inputs.bundle_artifact_name || needs.build-bundle.outputs.artifact_name }}
+          path: dl
+
+      - name: Extract bundle
+        run: |
+          set -euo pipefail
+          source scripts/ci-common.sh
+          extract_bundle "${{ steps.meta.outputs.arch_suffix }}"
+
+      - name: Import GPG key for AppImage signing
+        if: inputs.format == 'appimage'
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          if [ -z "$GPG_PRIVATE_KEY" ]; then
+            echo "No GPG key — AppImage will not be signed"
+            exit 0
+          fi
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+          GPG_KEY_ID=$(gpg --list-secret-keys --keyid-format=long \
+            | grep '^sec' | head -1 | awk '{print $2}' | cut -d/ -f2)
+          echo "GPG_KEY_ID=$GPG_KEY_ID" >> $GITHUB_ENV
+          mkdir -p ~/.gnupg && chmod 700 ~/.gnupg
+          echo "allow-preset-passphrase" >> ~/.gnupg/gpg-agent.conf
+          gpgconf --reload gpg-agent
+          LIBEXEC=$(gpgconf --list-dirs libexecdir)
+          gpg --with-keygrip --list-secret-keys "$GPG_KEY_ID" \
+            | grep 'Keygrip' | awk '{print $3}' \
+            | while read -r KEYGRIP; do
+                echo "$GPG_PASSPHRASE" | "${LIBEXEC}/gpg-preset-passphrase" --preset "$KEYGRIP"
+              done
+
+      - name: Install packaging tools
+        run: |
+          source scripts/ci-common.sh
+          install_package_deps "${{ inputs.format }}"
+
+      - name: Package ${{ inputs.format }}
+        run: |
+          set -euo pipefail
+          source scripts/ci-common.sh
+          run_packager "${{ inputs.format }}" bundle \
+            "${{ steps.meta.outputs.arch_suffix }}" \
+            "${{ steps.meta.outputs.build_name }}" \
+            "${{ steps.meta.outputs.build_number }}"
+
+      - name: Upload artifact
+        id: upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.meta.outputs.artifact_name }}
+          path: artifacts/${{ inputs.format }}/
+          retention-days: ${{ inputs.retention_days || 2 }}
+          if-no-files-found: error
+
+      - name: Post PR summary
+        if: always() && github.event_name == 'pull_request'
+        uses: ./.github/actions/pr-summary
+        with:
+          platform: Linux ${{ inputs.format }} (${{ inputs.arch || 'amd64' }})
+          build_result: ${{ job.status }}
+          artifact_name: ${{ steps.meta.outputs.artifact_name }}
+          artifact_url: ${{ steps.upload.outputs.artifact-url }}

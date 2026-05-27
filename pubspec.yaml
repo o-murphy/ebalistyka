@@ -80,7 +80,7 @@ dev_dependencies:
   flutter_native_splash: ^2.4.4
   flutter_launcher_icons: ^0.14.3
   msix: ^3.16.13
-  flutpak: ^0.1.1
+  flutpak: ^0.4.0-beta.3
   custom_lint: ^0.8.1
 
 # For information on the generic Dart part of this file, see the
@@ -141,14 +141,14 @@ flutter_native_splash:
   image: assets/splash_logo.png
 
 flutter_launcher_icons:
-  image_path: "assets/icon.png"
+  image_path: "app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png"
   android: true
   ios: true
   remove_alpha_ios: true
   windows:
     generate: true
-    image_path: "assets/icon.png"
-    icon_size: 256
+    image_path: "app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png"
+    icon_size: 512
   macos:
     generate: true
 
@@ -157,14 +157,11 @@ msix_config:
   publisher_display_name: o-murphy
   identity_name: com.o.murphy.ebalistyka
   publisher: CN=o-murphy
-  logo_path: assets/icon.png
+  logo_path: "app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png"
   sign_msix: true
   install_certificate: false
 
 flutpak:
-  output: flatpak/generated-sources.json
-  flutter_version_file: flatpak/flutter.version
-
   pub:
     locks:
       - pubspec.lock
@@ -179,11 +176,22 @@ flutpak:
 
   manifest:
     app_id: io.github.o_murphy.ebalistyka
+    icons:
+    - size: 16x16
+      path: app/share/icons/hicolor/16x16/apps/io.github.o_murphy.ebalistyka.png
+    - size: 32x32
+      path: app/share/icons/hicolor/32x32/apps/io.github.o_murphy.ebalistyka.png
+    - size: 64x64
+      path: app/share/icons/hicolor/64x64/apps/io.github.o_murphy.ebalistyka.png
+    - size: 128x128
+      path: app/share/icons/hicolor/128x128/apps/io.github.o_murphy.ebalistyka.png
+    - size: 256x256
+      path: app/share/icons/hicolor/256x256/apps/io.github.o_murphy.ebalistyka.png
+    - size: 512x512
+      path: app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png
     runtime_version: "25.08"
     sdk_extensions:
       - org.freedesktop.Sdk.Extension.llvm20
-    command: ebalistyka
-    repo_url: https://github.com/o-murphy/ebalistyka-app.git
     finish_args:
       - --share=ipc
       - --socket=fallback-x11
@@ -193,15 +201,6 @@ flutpak:
       - flatpak/modules/bclibc.yml
     env:
       OBJECTBOX_PREBUILT_DIR: /run/build/ebalistyka/objectbox-c
-    icons:
-      - size: 512x512
-        path: assets/icon_512x512.png
-    screenshots:
-      - path: docs/screenshots/home.png
-      - path: docs/screenshots/conditions.png
-      - path: docs/screenshots/tables_trajectory.png
-      - path: docs/screenshots/tables_details.png
-      - path: docs/screenshots/convertors.png
     extra_sources:
       - type: archive
         only-arches:
@@ -217,6 +216,3 @@ flutpak:
         sha256: 948fe456904b8b0ae6b22a26a9f460734dc3c2ec58750df3a329ccae1ebe035d
         dest: objectbox-c
         strip-components: 0
-    metainfo:
-      path: flatpak/io.github.o_murphy.ebalistyka.metainfo.xml
-      repo_slug: o-murphy/ebalistyka-app

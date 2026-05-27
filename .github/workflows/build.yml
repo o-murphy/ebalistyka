@@ -67,7 +67,7 @@ on:
         type: string
 
 env:
-  FLUTTER_VERSION: "3.41.6"
+  FLUTTER_VERSION: "3.44.0"
 
 jobs:
   build:
@@ -97,43 +97,25 @@ jobs:
       - name: Install Linux build dependencies
         if: inputs.platform == 'linux'
         shell: bash
-        run: ./scripts/setup-linux-deps.sh
+        run: |
+          source scripts/ci-common.sh
+          setup_linux_build_deps
 
       - name: Set build metadata
         id: meta
         shell: bash
+        env:
+          INPUT_ARCH: ${{ inputs.arch }}
+          INPUT_PLATFORM: ${{ inputs.platform }}
+          INPUT_BUILD_NAME: ${{ inputs.build_name }}
+          INPUT_BUILD_TYPE: ${{ inputs.build_type }}
+          MATRIX_ARCH: ${{ matrix.arch }}
+          PR_NUMBER: ${{ github.event.number }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: |
-          ARCH_SUFFIX=${{ inputs.arch == 'amd64' && 'x86_64' || 'aarch64' }}
-          FLUTTER_ARCH=${{ inputs.arch == 'amd64' && 'x64' || 'arm64' }}
-          echo "arch_suffix=$ARCH_SUFFIX"   >> $GITHUB_OUTPUT
-          echo "flutter_arch=$FLUTTER_ARCH" >> $GITHUB_OUTPUT
-
-          BCLIBC_HASH=$(git -C external/bclibc rev-parse HEAD)
-          echo "bclibc_hash=$BCLIBC_HASH" >> $GITHUB_OUTPUT
-
-          BCLIBC_FFI_HASH=$(git log -1 --format='%H' -- packages/bclibc_ffi 2>/dev/null || echo "unknown")
-          echo "bclibc_ffi_hash=$BCLIBC_FFI_HASH" >> $GITHUB_OUTPUT
-
-          BUILD_NAME="${{ inputs.build_name }}"
-          if [ -z "$BUILD_NAME" ]; then
-            BUILD_NAME=$(grep '^version:' pubspec.yaml | sed 's/version:[[:space:]]*//' | sed 's/+.*//')
-          fi
-          BUILD_NAME="${BUILD_NAME#v}"
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            BUILD_NAME="${BUILD_NAME%%-*}-pr.${{ github.event.number }}"
-          fi
-          BUILD_NUMBER=$(git rev-list --count --first-parent HEAD)
-          echo "build_name=$BUILD_NAME"     >> $GITHUB_OUTPUT
-          echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
-
-          if [ "${{ inputs.platform }}" = "linux" ]; then
-            echo "bundle_dir=build/linux/${FLUTTER_ARCH}/${{ inputs.build_type }}/bundle" >> $GITHUB_OUTPUT
-          else
-            BUILD_SUBDIR=${{ inputs.build_type == 'release' && 'Release' || 'Debug' }}
-            echo "bundle_dir=build/windows/x64/runner/${BUILD_SUBDIR}" >> $GITHUB_OUTPUT
-          fi
-
-          echo "artifact_name=ebalistyka-${{ inputs.platform }}-${ARCH_SUFFIX}-${{ inputs.build_type }}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
+          set -euo pipefail
+          source scripts/ci-common.sh
+          set_build_metadata "ebalistyka-${INPUT_PLATFORM}" "${INPUT_BUILD_TYPE:-release}" true
 
       - name: Cache pub packages (Linux)
         if: inputs.platform == 'linux'
@@ -171,10 +153,8 @@ jobs:
       - name: Set pubspec version
         shell: bash
         run: |
-          BUILD_NAME="${{ steps.meta.outputs.build_name }}"
-          NUM="${{ steps.meta.outputs.build_number }}"
-          sed -i "s/^version:.*/version: ${BUILD_NAME}+${NUM}/" pubspec.yaml
-          echo "pubspec version → ${BUILD_NAME}+${NUM}"
+          source scripts/ci-common.sh
+          set_pubspec_version "${{ steps.meta.outputs.build_name }}" "${{ steps.meta.outputs.build_number }}"
 
       - name: Get Flutter dependencies
         shell: bash

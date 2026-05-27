@@ -59,7 +59,7 @@ abstract final class A7pService {
     _setPayloadOffsets(profile, payload);
     final bytes = A7pFile.encode(payload);
     final name =
-        '${EbcpService.sanitizeName(profile.name).replaceFirst(RegExp(r'^\.'),'')}.a7p';
+        '${EbcpService.sanitizeName(profile.name).replaceFirst(RegExp(r'^\.'), '')}.a7p';
 
     if (Platform.isAndroid || Platform.isIOS) {
       final tmp = await getTemporaryDirectory();

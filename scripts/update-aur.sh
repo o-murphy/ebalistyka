@@ -8,7 +8,7 @@ set -euo pipefail
 
 VERSION="${1:?Usage: update-aur.sh <version>}"
 TAG="v${VERSION}"
-REPO="o-murphy/ebalistyka-app"
+REPO="o-murphy/ebalistyka"
 APP_ID="io.github.o_murphy.ebalistyka"
 
 echo "Updating AUR PKGBUILD → ${VERSION} (${TAG})"
@@ -24,9 +24,9 @@ curl -fsSL "${BASE_REL}/ebalistyka_linux_x86_64.tar.gz"  -o "${TMP}/x86_64.tar.g
 curl -fsSL "${BASE_REL}/ebalistyka_linux_aarch64.tar.gz" -o "${TMP}/aarch64.tar.gz"
 
 echo "Downloading metadata files..."
-curl -fsSL "${BASE_RAW}/flatpak/${APP_ID}.desktop"      -o "${TMP}/desktop"
-curl -fsSL "${BASE_RAW}/assets/icon_512x512.png"        -o "${TMP}/icon"
-curl -fsSL "${BASE_RAW}/flatpak/${APP_ID}.metainfo.xml" -o "${TMP}/metainfo"
+curl -fsSL "${BASE_RAW}/app/share/applications/${APP_ID}.desktop" -o "${TMP}/desktop"
+curl -fsSL "${BASE_RAW}/app/share/icons/hicolor/512x512/apps/${APP_ID}.png" -o "${TMP}/icon"
+curl -fsSL "${BASE_RAW}/app/share/metainfo/${APP_ID}.metainfo.xml" -o "${TMP}/metainfo"
 
 SUM_X86=$(sha256sum "${TMP}/x86_64.tar.gz"  | cut -d' ' -f1)
 SUM_A64=$(sha256sum "${TMP}/aarch64.tar.gz" | cut -d' ' -f1)
@@ -40,7 +40,7 @@ echo "sha256 desktop:  ${SUM_DT}"
 echo "sha256 icon:     ${SUM_IC}"
 echo "sha256 metainfo: ${SUM_MT}"
 
-PKGBUILD="aur/PKGBUILD"
+PKGBUILD="packaging/aur/PKGBUILD"
 sed -i \
     -e "s/_pkgver=\"[^\"]*\"/_pkgver=\"${VERSION}\"/" \
     -e "s/sha256sums=('[^']*' '[^']*' '[^']*')/sha256sums=('${SUM_DT}' '${SUM_IC}' '${SUM_MT}')/" \
@@ -59,4 +59,4 @@ fi
 
 echo ""
 echo "Next: push to AUR git repo:"
-echo "  cd /path/to/aur-clone && cp /path/to/repo/aur/PKGBUILD aur/.SRCINFO . && git add -A && git commit -m 'upgpkg: ebalistyka-bin ${VERSION}' && git push"
+echo "  cd /path/to/aur-clone && cp /path/to/repo/packaging/aur/PKGBUILD aur/.SRCINFO . && git add -A && git commit -m 'upgpkg: ebalistyka-bin ${VERSION}' && git push"

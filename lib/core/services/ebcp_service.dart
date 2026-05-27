@@ -16,7 +16,7 @@ abstract final class EbcpService {
   static Future<void> shareFile(EbcpFile file, String fileName) async {
     final bytes = file.toEbcp();
     final name =
-        '${EbcpService.sanitizeName(fileName).replaceFirst(RegExp(r'^\.'),'')}.ebcp';
+        '${EbcpService.sanitizeName(fileName).replaceFirst(RegExp(r'^\.'), '')}.ebcp';
 
     if (Platform.isAndroid || Platform.isIOS) {
       final tmp = await getTemporaryDirectory();
