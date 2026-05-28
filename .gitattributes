@@ -50,3 +50,4 @@ CMakeLists.txt  text eol=lf
 *.exe           binary
 *.a             binary
 *.lib           binary
+

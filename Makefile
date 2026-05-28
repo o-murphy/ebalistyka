@@ -5,6 +5,7 @@
 		build-bclibc ffigen \
 		proto-setup \
         objectbox-generate objectbox-setup objectbox-clean \
+		objectbox-get-sha \
 		generate-localization \
 		generate-collection \
 		test format clean run run-clean
@@ -84,6 +85,13 @@ objectbox-clean:
 
 objectbox-admin:
 	cd packages/ebalistyka_db && ./admin.sh
+
+objectbox-get-sha:
+	wget https://github.com/objectbox/objectbox-c/releases/download/v5.3.2/objectbox-linux-x64.tar.gz
+	wget https://github.com/objectbox/objectbox-c/releases/download/v5.3.2/objectbox-linux-aarch64.tar.gz
+	sha256sum objectbox-linux-x64.tar.gz
+	sha256sum objectbox-linux-aarch64.tar.gz
+	rm objectbox-linux-*.tar.gz
 
 generate-collection:
 	python3 scripts/merge_collections.py \

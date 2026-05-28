@@ -15,15 +15,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## v0.1.16 (2026-05-26)
 
 ### Changed
-- **App repo name** — slug changed from `o-murphy/ebalistyka-app` to `o-murphy/ebalistyka` to unify the app ID across all packaging formats
+- **App repo name** — slug changed from `o-murphy/ebalistyka-app` to `o-murphy/ebalistyka` to unify the app ID across all packaging formats; updated `repoSlug` constant in `lib/shared/constants/app_info.dart` and all workflow / CHANGELOG links
 - **Flutter** — default version bumped to 3.44.0 across all workflows
-- **flutpak** — bumped to `v0.4.0-beta.3`; generates Flathub-compatible manifest and `generated-sources.json`
-- **App icons** — regenerated; icon and shared assets (`metainfo`, `desktop`, `icons`) moved to `app/share/` and reused across all packaging tools (AUR, deb, RPM, AppImage, Flatpak, Snap)
+- **flutpak** — bumped to `v0.4.0-beta.4`; generates Flathub-compatible manifest and `generated-sources.json`; icon config in `pubspec.yaml` updated to reference `app/share/icons/` at all sizes (16 → 1024 px)
+- **App icons** — regenerated; icon and shared assets (`metainfo`, `desktop`, icons) moved to `app/share/` and reused across all packaging tools (AUR, deb, RPM, AppImage, Flatpak, Snap); Android launcher icons, Android/iOS/macOS/web splash images all regenerated from the new source
+- **objectbox** — `objectbox_flutter_libs` bumped to 5.3.2; Flatpak manifest, patch, and flutpak config updated accordingly; CRLF line endings in the 5.3.2 pub.dev archive handled via `strip_trailing_cr: true` (injects a `sed -i 's/\r//'` step before patching)
+
+### Added
+- **`app/share/`** — canonical location for FreeDesktop assets shared by all packaging formats:
+  - `app/share/applications/io.github.o_murphy.ebalistyka.desktop` (moved from `flatpak/`)
+  - `app/share/metainfo/io.github.o_murphy.ebalistyka.metainfo.xml` (moved from `flatpak/` and `aur/`)
+  - `app/share/icons/hicolor/{16,32,64,128,256,512,1024}x.../io.github.o_murphy.ebalistyka.png`
+- **`scripts/ci-common.sh`** — shared CI helpers: `set_build_metadata`, `set_arch_suffix`, artifact-name derivation; sourced by all build workflows
+- **`scripts/copy-icons.sh`** — copies icons from `app/share/icons/` into package staging directories; eliminates duplicate icon copies in `aur/`, `deb/`, etc.
+- **`scripts/package-flatpak.sh`** — new Flatpak packaging script exposing reusable shell functions (`install_flatpak_builder`, `lint_flatpak_manifest`, `lint_flatpak_repo`, `export_flatpak_bundle`) and a `local_build` entry point for full local reproduce of the CI pipeline
+- **`flatpak/flathub.json`** — Flathub submission metadata
+- **`flatpak/patches/flutter/shared.sh.patch`** — Flutter SDK patch applied by `flatpak-builder` at build time
+- **`flatpak/.gitignore`** — ignores `flatpak/generated/` and `builddir/`/`repo/` build artifacts
+
+### Removed
+- **`scripts/build-android-aab.sh`** — merged into `build-android.sh` (`--target aab|apk`)
+- **`scripts/setup-linux-deps.sh`** — no longer needed; deps handled per-workflow
+- **`scripts/update-flathub.sh`**, **`scripts/update-sources.sh`** — replaced by `flutpak generate`
+- **`flatpak/generated-sources.json`** — now generated at build time by `flutpak generate`; not committed
+- **`flatpak/io.github.o_murphy.ebalistyka.metainfo.xml`** — canonical copy moved to `app/share/metainfo/`
+- **`aur/ebalistyka.desktop`**, **`aur/icon.png`**, **`aur/io.github.o_murphy.ebalistyka.metainfo.xml`** — assets now sourced from `app/share/`
+
+### Packaging layout
+- `aur/`, `deb/`, `rpm/`, `snap/`, `winget/` file trees moved under `packaging/` (e.g. `packaging/aur/PKGBUILD`, `packaging/snap/snapcraft.yaml`, `packaging/winget/*.yaml`)
+- All packaging scripts updated to pull icons and metadata from `app/share/` instead of format-specific copies
 
 ### CI / Distribution
-- **Flatpak** — reworked CI: no `--privileged` containers; builds directly via `flatpak-builder --sandbox --user`; amd64 + arm64 matrix on every PR; Flatpak releases temporarily disabled until the build pipeline is fully verified
-- **PR summary** — replaced inline scripts with a composite action
-- **Build pipeline** — begin to be more shell driven
+- **Android** — `build-aab.yml` + `build-apk.yml` merged into `build-android.yml`; target selected via `--target aab|apk` flag in `scripts/build-android.sh`
+- **Linux packages** — `build-appimage.yml` renamed to `build-linux-package.yml`; `build-deb.yml` and `build-rpm.yml` folded in as matrix jobs; reduces workflow count and consolidates Linux packaging triggers
+- **Flatpak** — reworked CI using `o-murphy/flutpak` composite actions:
+  - `generate` job separated from `build` job; manifest + sources uploaded as artifact and shared between matrix `build` jobs
+  - `build` job uses `o-murphy/flutpak/.github/actions/build-flatpak@…` composite action (no more inline `--privileged` container); supports amd64 + arm64 matrix on every PR
+  - `download-artifact` upgraded `@v4 → @v8`; `upload-artifact` upgraded `@v4 → @v7`
+  - Artifact names include arch suffix to avoid collision when triggered via `workflow_call`
+  - Flatpak release publishing temporarily disabled until pipeline is fully verified
+- **`pin-flatpak-manifest.yml`** — deleted; manifest generation is now fully automated by `flutpak generate`
+- **`publish-flathub.yml`** — updated to use `flutpak generate`; no longer commits `generated-sources.json`
+- **PR summary** — replaced per-workflow inline summary scripts with a shared `.github/actions/pr-summary` composite action
+- **`release.yml`** — reworked to call `build-android.yml`, `build-linux-package.yml`, `build-flatpak.yml`, `build-snap.yml`, `build-portable.yml` as `workflow_call` with consistent `arch`/`tag`/`retention_days` inputs
+
+### Fixed
+- **Flatpak — objectbox 5.3.2 patch** — `objectbox_flutter_libs` 5.3.2 ships `linux/CMakeLists.txt` with CRLF line endings; `patch(1)` failed even with `--ignore-whitespace`; fixed by using `strip_trailing_cr: true` in the flutpak config, which strips `\r` via `sed` before applying the patch
+- **Flatpak — correct HEAD SHA in PR builds** — use `github.event.pull_request.head.sha` instead of `github.sha` (which points to the synthetic merge commit) so `flutpak generate --commit` pins the actual feature branch tip
+- **Flatpak — artifact name collision** — `workflow_call` from `release.yml` now passes `arch` to `build-flatpak.yml`; artifact name includes arch suffix, preventing overwrite when both amd64 and arm64 are built
+- **Flatpak local build — `dbus-run-session` conflict** — `_dbus_run` helper skips `dbus-run-session` when `DBUS_SESSION_BUS_ADDRESS` is already set (desktop session), preventing FUSE document-portal mount conflict
+- **Flatpak local build — `FLATPAK_USER_DIR` in sandbox** — all `flatpak run org.flatpak.Builder` invocations now pass `--env=FLATPAK_USER_DIR=$HOME/.local/share/flatpak` so `flatpak-builder-lint` inside the sandbox finds the user-installed flathub remote instead of the empty per-app data dir
+- **Flatpak local build — `rofiles-fuse` failure** — local `flatpak-builder` invocation uses `--disable-rofiles-fuse`; `flathub-build` wrapper does not support this flag and was replaced with a direct `flatpak run --command=flatpak-builder` call
+- **Flatpak local build — non-fatal manifest lint** — manifest lint failure (e.g. flathub user refs not yet populated) prints a warning but does not abort the build; real manifest errors surface at `flatpak-builder` time
+- **Flatpak local build — non-fatal repo lint** — repo lint failures (`appstream-external-screenshot-url`, `appstream-screenshots-not-mirrored-in-ostree`) are Flathub CDN requirements irrelevant for local dev builds; made non-fatal with a clear warning
 
 
 ## v0.1.15 (2026-05-19)

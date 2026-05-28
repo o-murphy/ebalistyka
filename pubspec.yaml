@@ -16,7 +16,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 0.1.15
+version: 0.1.16
 
 environment:
   sdk: ^3.11.1
@@ -80,7 +80,7 @@ dev_dependencies:
   flutter_native_splash: ^2.4.4
   flutter_launcher_icons: ^0.14.3
   msix: ^3.16.13
-  flutpak: ^0.4.0-beta.3
+  flutpak: ^0.4.0-beta.4
   custom_lint: ^0.8.1
 
 # For information on the generic Dart part of this file, see the
@@ -173,6 +173,7 @@ flutpak:
   patches:
     - package: objectbox_flutter_libs
       path: flatpak/patches/objectbox_flutter_libs/CMakeLists.txt.patch
+      strip_trailing_cr: true
 
   manifest:
     app_id: io.github.o_murphy.ebalistyka
@@ -205,14 +206,14 @@ flutpak:
       - type: archive
         only-arches:
           - x86_64
-        url: https://github.com/objectbox/objectbox-c/releases/download/v5.3.1/objectbox-linux-x64.tar.gz
-        sha256: d1a22f5a43e8aa438c987524c2ef97f5d179acb991b0f63ab03a30c33b882368
+        url: https://github.com/objectbox/objectbox-c/releases/download/v5.3.2/objectbox-linux-x64.tar.gz
+        sha256: 6dbb5450c36dd11ee9074f16ecc61e79b45ff43c2082934601f3166b39c8a613
         dest: objectbox-c
         strip-components: 0
       - type: archive
         only-arches:
           - aarch64
-        url: https://github.com/objectbox/objectbox-c/releases/download/v5.3.1/objectbox-linux-aarch64.tar.gz
-        sha256: 948fe456904b8b0ae6b22a26a9f460734dc3c2ec58750df3a329ccae1ebe035d
+        url: https://github.com/objectbox/objectbox-c/releases/download/v5.3.2/objectbox-linux-aarch64.tar.gz
+        sha256: bdfbfbf4971057e11018ca6645697d8a40ebc7df56ccde63397cbb0e0609c0e8
         dest: objectbox-c
         strip-components: 0
