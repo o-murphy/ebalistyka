@@ -1,12 +1,12 @@
 // ignore_for_file: dangling_library_doc_comments
 /// Thin Dart wrapper over the bclibc C FFI layer.
 ///
-/// API mirrors the WASM bindings:
-///   findApex, findMaxRange, findZeroAngle, integrate, integrateAt
+/// API:
+///   findApexShot, findMaxRangeShot, findZeroAngleShot, integrateShot, integrateAtShot
 ///
 /// Usage:
 ///   final bc = BcLibC.open();
-///   final hit = bc.integrate(props, request);
+///   final hit = bc.integrateShot(shot, request);
 
 import 'dart:ffi' as ffi;
 import 'dart:io';
@@ -21,9 +21,15 @@ import 'bclibc_bindings.g.dart';
 
 ffi.DynamicLibrary _openLibrary() {
   String lib(String name) {
-    // During development / dart test: check local cmake build dir first.
     final env = Platform.environment['BCLIBC_FFI_PATH'];
     if (env != null && env.isNotEmpty) return env;
+    // Prefer the Flutter-built bundle so tests use the same binary as the app.
+    // Falls back to the standalone cmake build (make build-bclibc) for CI /
+    // fresh checkouts where flutter build hasn't run yet.
+    for (final mode in const ['debug', 'profile', 'release']) {
+      final p = 'build/linux/x64/$mode/bundle/lib/$name';
+      if (File(p).existsSync()) return p;
+    }
     final devPath = 'build/bclibc/$name';
     if (File(devPath).existsSync()) return devPath;
     return name; // bundled app (RPATH / system lookup)
@@ -41,7 +47,7 @@ ffi.DynamicLibrary _openLibrary() {
 }
 
 // ============================================================================
-// Dart-side value types (mirrors WASM JS plain-objects)
+// Dart-side value types
 // ============================================================================
 
 class BcConfig {
@@ -61,44 +67,6 @@ class BcConfig {
     this.maxIterations = 50,
     this.gravityConstant = -32.17405,
     this.minimumAltitude = -1000.0,
-  });
-}
-
-class BcAtmosphere {
-  final double t0;
-  final double a0;
-  final double p0;
-  final double mach;
-  final double densityRatio;
-  final double cLowestTempC;
-
-  const BcAtmosphere({
-    required this.t0,
-    required this.a0,
-    required this.p0,
-    required this.mach,
-    required this.densityRatio,
-    required this.cLowestTempC,
-  });
-}
-
-class BcCoriolis {
-  final double sinLat, cosLat, sinAz, cosAz;
-  final double rangeEast, rangeNorth, crossEast, crossNorth;
-  final bool flatFireOnly;
-  final double muzzleVelocityFps;
-
-  const BcCoriolis({
-    this.sinLat = 0,
-    this.cosLat = 1,
-    this.sinAz = 0,
-    this.cosAz = 1,
-    this.rangeEast = 0,
-    this.rangeNorth = 0,
-    this.crossEast = 0,
-    this.crossNorth = 0,
-    this.flatFireOnly = true,
-    this.muzzleVelocityFps = 0,
   });
 }
 
@@ -122,46 +90,63 @@ class BcDragPoint {
   const BcDragPoint(this.mach, this.cd);
 }
 
-class BcShotProps {
+/// Shot descriptor in natural units.
+///
+/// All physics conversions (atmosphere density, Coriolis trig, PCHIP drag
+/// curve, cant sin/cos) are performed inside C++ by BCLIBC_Shot::to_shot_props().
+///
+/// [latitudeDeg] / [azimuthDeg]: pass double.nan to disable Coriolis (flat-fire only).
+/// [pressureHpa] == 0: vacuum (zero drag).
+class BcShot {
   final double bc;
-  final double lookAngleRad;
-  final double twistInch;
-  final double lengthInch;
-  final double diameterInch;
   final double weightGrain;
-  final double barrelElevationRad;
-  final double barrelAzimuthRad;
-  final double sightHeightFt;
-  final double cantAngleRad;
-  final double alt0Ft;
+  final double diameterInch;
+  final double lengthInch;
   final double muzzleVelocityFps;
-  final BcAtmosphere atmo;
-  final BcCoriolis coriolis;
-  final BcConfig config;
+  final double sightHeightFt;
+  final double twistInch;
 
-  final BCIntegrationMethod method;
+  final double tempC;
+  final double pressureHpa;
+  final double altitudeFt;
+  final double humidity;
+
   final List<BcDragPoint> dragTable;
   final List<BcWind> winds;
 
-  const BcShotProps({
+  final double lookAngleRad;
+  final double barrelElevationRad;
+  final double barrelAzimuthRad;
+  final double cantAngleRad;
+
+  final double latitudeDeg;
+  final double azimuthDeg;
+
+  final BcConfig config;
+  final BCLIBCFFI_IntegrationMethod method;
+
+  const BcShot({
     required this.bc,
-    required this.lookAngleRad,
-    required this.twistInch,
-    required this.lengthInch,
-    required this.diameterInch,
     required this.weightGrain,
-    required this.barrelElevationRad,
-    required this.barrelAzimuthRad,
-    required this.sightHeightFt,
-    this.cantAngleRad = 0.0,
-    required this.alt0Ft,
+    required this.diameterInch,
+    required this.lengthInch,
     required this.muzzleVelocityFps,
-    required this.atmo,
-    required this.coriolis,
-    this.config = const BcConfig(),
-    this.method = BCIntegrationMethod.BC_INTEGRATION_RK4,
+    required this.sightHeightFt,
+    required this.twistInch,
+    required this.tempC,
+    required this.pressureHpa,
+    required this.altitudeFt,
+    this.humidity = 0.0,
     required this.dragTable,
     this.winds = const [],
+    required this.lookAngleRad,
+    required this.barrelElevationRad,
+    this.barrelAzimuthRad = 0.0,
+    this.cantAngleRad = 0.0,
+    this.latitudeDeg = double.nan,
+    this.azimuthDeg = double.nan,
+    this.config = const BcConfig(),
+    this.method = BCLIBCFFI_IntegrationMethod.BCLIBCFFI_INTEGRATION_RK4,
   });
 }
 
@@ -170,14 +155,14 @@ class BcTrajectoryRequest {
   final double rangeStepFt;
   final double timeStep;
 
-  /// BCTrajFlag bitmask (may combine multiple flags via bitwise OR)
+  /// BCLIBCFFI_TrajFlag bitmask (may combine multiple flags via bitwise OR)
   final int filterFlags;
 
   const BcTrajectoryRequest({
     required this.rangeLimitFt,
     required this.rangeStepFt,
     this.timeStep = 0.0,
-    this.filterFlags = 8, // BCTrajFlag.BC_TRAJ_FLAG_RANGE
+    this.filterFlags = 8, // BCLIBCFFI_TrajFlag.BCLIBCFFI_TRAJ_FLAG_RANGE
   });
 }
 
@@ -192,7 +177,7 @@ class BcTrajectoryData {
   final double slantDistanceFt, angleRad;
   final double densityRatio, drag;
   final double energyFtLb, ogwLb;
-  final int flag; // BCTrajFlag
+  final int flag; // BCLIBCFFI_TrajFlag
 
   const BcTrajectoryData({
     required this.time,
@@ -213,24 +198,25 @@ class BcTrajectoryData {
     required this.flag,
   });
 
-  factory BcTrajectoryData._fromNative(BCTrajectoryData s) => BcTrajectoryData(
-    time: s.time,
-    distanceFt: s.distance_ft,
-    velocityFps: s.velocity_fps,
-    mach: s.mach,
-    heightFt: s.height_ft,
-    slantHeightFt: s.slant_height_ft,
-    dropAngleRad: s.drop_angle_rad,
-    windageFt: s.windage_ft,
-    windageAngleRad: s.windage_angle_rad,
-    slantDistanceFt: s.slant_distance_ft,
-    angleRad: s.angle_rad,
-    densityRatio: s.density_ratio,
-    drag: s.drag,
-    energyFtLb: s.energy_ft_lb,
-    ogwLb: s.ogw_lb,
-    flag: s.flag,
-  );
+  factory BcTrajectoryData._fromNative(BCLIBCFFI_TrajectoryData s) =>
+      BcTrajectoryData(
+        time: s.time,
+        distanceFt: s.distance_ft,
+        velocityFps: s.velocity_fps,
+        mach: s.mach,
+        heightFt: s.height_ft,
+        slantHeightFt: s.slant_height_ft,
+        dropAngleRad: s.drop_angle_rad,
+        windageFt: s.windage_ft,
+        windageAngleRad: s.windage_angle_rad,
+        slantDistanceFt: s.slant_distance_ft,
+        angleRad: s.angle_rad,
+        densityRatio: s.density_ratio,
+        drag: s.drag,
+        energyFtLb: s.energy_ft_lb,
+        ogwLb: s.ogw_lb,
+        flag: s.flag,
+      );
 }
 
 class BcBaseTrajData {
@@ -246,16 +232,17 @@ class BcBaseTrajData {
     required this.mach,
   });
 
-  factory BcBaseTrajData._fromNative(BCBaseTrajData s) => BcBaseTrajData(
-    time: s.time,
-    px: s.px,
-    py: s.py,
-    pz: s.pz,
-    vx: s.vx,
-    vy: s.vy,
-    vz: s.vz,
-    mach: s.mach,
-  );
+  factory BcBaseTrajData._fromNative(BCLIBCFFI_BaseTrajData s) =>
+      BcBaseTrajData(
+        time: s.time,
+        px: s.px,
+        py: s.py,
+        pz: s.pz,
+        vx: s.vx,
+        vy: s.vy,
+        vz: s.vz,
+        mach: s.mach,
+      );
 }
 
 class BcMaxRangeResult {
@@ -266,7 +253,7 @@ class BcMaxRangeResult {
 
 class BcHitResult {
   final List<BcTrajectoryData> trajectory;
-  final BCTerminationReason reason;
+  final BCLIBCFFI_TerminationReason reason;
   const BcHitResult(this.trajectory, this.reason);
 }
 
@@ -281,7 +268,7 @@ class BcInterception {
 // ============================================================================
 
 class BcException implements Exception {
-  final int code; // BCFFIStatus
+  final int code; // BCLIBCFFI_Status
   final String message;
   // OutOfRange extras
   final double? requestedDistanceFt, maxRangeFt, lookAngleRad;
@@ -315,9 +302,9 @@ String _charArrayToString(ffi.Array<ffi.Char> arr, int maxLen) {
   return String.fromCharCodes(codes);
 }
 
-Never _throwFromError(BCLIBCFFIError err) {
+Never _throwFromError(BCLIBCFFI_Error err) {
   final msg = _charArrayToString(err.message, 512);
-  if (err.code == BCLIBCFFIStatus.BCLIBCFFI_ERR_OUT_OF_RANGE.value) {
+  if (err.code == BCLIBCFFI_Status.BCLIBCFFI_ERR_OUT_OF_RANGE.value) {
     throw BcException(
       code: err.code,
       message: msg,
@@ -326,7 +313,7 @@ Never _throwFromError(BCLIBCFFIError err) {
       lookAngleRad: err.f64_2,
     );
   }
-  if (err.code == BCLIBCFFIStatus.BCLIBCFFI_ERR_ZERO_FINDING.value) {
+  if (err.code == BCLIBCFFI_Status.BCLIBCFFI_ERR_ZERO_FINDING.value) {
     throw BcException(
       code: err.code,
       message: msg,
@@ -342,39 +329,26 @@ Never _throwFromError(BCLIBCFFIError err) {
 // Native struct fill helper
 // ============================================================================
 
-extension _FillNative on BcShotProps {
-  void _fill(BCShotProps p, Arena arena) {
+extension _FillNativeShot on BcShot {
+  void _fill(BCLIBCFFI_Shot p, Arena arena) {
     p.bc = bc;
-    p.look_angle_rad = lookAngleRad;
-    p.twist_inch = twistInch;
-    p.length_inch = lengthInch;
-    p.diameter_inch = diameterInch;
     p.weight_grain = weightGrain;
+    p.diameter_inch = diameterInch;
+    p.length_inch = lengthInch;
+    p.muzzle_velocity_fps = muzzleVelocityFps;
+    p.sight_height_ft = sightHeightFt;
+    p.twist_inch = twistInch;
+    p.temp_c = tempC;
+    p.pressure_hpa = pressureHpa;
+    p.altitude_ft = altitudeFt;
+    p.humidity = humidity;
+    p.look_angle_rad = lookAngleRad;
     p.barrel_elevation_rad = barrelElevationRad;
     p.barrel_azimuth_rad = barrelAzimuthRad;
-    p.sight_height_ft = sightHeightFt;
     p.cant_angle_rad = cantAngleRad;
-    p.alt0_ft = alt0Ft;
-    p.muzzle_velocity_fps = muzzleVelocityFps;
+    p.latitude_deg = latitudeDeg;
+    p.azimuth_deg = azimuthDeg;
     p.methodAsInt = method.value;
-
-    p.atmo.t0 = atmo.t0;
-    p.atmo.a0 = atmo.a0;
-    p.atmo.p0 = atmo.p0;
-    p.atmo.mach = atmo.mach;
-    p.atmo.density_ratio = atmo.densityRatio;
-    p.atmo.cLowestTempC = atmo.cLowestTempC;
-
-    p.coriolis.sin_lat = coriolis.sinLat;
-    p.coriolis.cos_lat = coriolis.cosLat;
-    p.coriolis.sin_az = coriolis.sinAz;
-    p.coriolis.cos_az = coriolis.cosAz;
-    p.coriolis.range_east = coriolis.rangeEast;
-    p.coriolis.range_north = coriolis.rangeNorth;
-    p.coriolis.cross_east = coriolis.crossEast;
-    p.coriolis.cross_north = coriolis.crossNorth;
-    p.coriolis.flat_fire_only = coriolis.flatFireOnly ? 1 : 0;
-    p.coriolis.muzzle_velocity_fps = coriolis.muzzleVelocityFps;
 
     p.config.cStepMultiplier = config.stepMultiplier;
     p.config.cZeroFindingAccuracy = config.zeroFindingAccuracy;
@@ -384,19 +358,27 @@ extension _FillNative on BcShotProps {
     p.config.cGravityConstant = config.gravityConstant;
     p.config.cMinimumAltitude = config.minimumAltitude;
 
-    final dt = arena<BCDragPoint>(dragTable.length);
-    for (var i = 0; i < dragTable.length; i++) {
-      dt[i].Mach = dragTable[i].mach;
-      dt[i].CD = dragTable[i].cd;
+    if (dragTable.isEmpty) {
+      p.mach_data = ffi.nullptr;
+      p.cd_data = ffi.nullptr;
+      p.drag_table_size = 0;
+    } else {
+      final mach = arena<ffi.Double>(dragTable.length);
+      final cd = arena<ffi.Double>(dragTable.length);
+      for (var i = 0; i < dragTable.length; i++) {
+        mach[i] = dragTable[i].mach;
+        cd[i] = dragTable[i].cd;
+      }
+      p.mach_data = mach;
+      p.cd_data = cd;
+      p.drag_table_size = dragTable.length;
     }
-    p.drag_table = dt;
-    p.drag_table_count = dragTable.length;
 
     if (winds.isEmpty) {
       p.winds = ffi.nullptr;
       p.wind_count = 0;
     } else {
-      final ws = arena<BCWind>(winds.length);
+      final ws = arena<BCLIBCFFI_Wind>(winds.length);
       for (var i = 0; i < winds.length; i++) {
         ws[i].velocity_fps = winds[i].velocityFps;
         ws[i].direction_from_rad = winds[i].directionFromRad;
@@ -421,26 +403,39 @@ class BcLibC {
   /// Open the native library. Call once per isolate.
   factory BcLibC.open() => BcLibC._(BcLibCFFIBindings(_openLibrary()));
 
-  BcTrajectoryData findApex(BcShotProps props) => using((arena) {
-    final p = arena<BCShotProps>();
-    final out = arena<BCTrajectoryData>();
-    final err = arena<BCLIBCFFIError>();
-    props._fill(p.ref, arena);
-    final st = _b.BCLIBCFFI_find_apex(p, out, err);
+  // ── Utility functions ──────────────────────────────────────────────────────
+
+  double getCorrection(double distanceFt, double offsetFt) =>
+      _b.BCLIBCFFI_get_correction(distanceFt, offsetFt);
+
+  double calculateEnergy(double bulletWeightGrain, double velocityFps) =>
+      _b.BCLIBCFFI_calculate_energy(bulletWeightGrain, velocityFps);
+
+  double calculateOgw(double bulletWeightGrain, double velocityFps) =>
+      _b.BCLIBCFFI_calculate_ogw(bulletWeightGrain, velocityFps);
+
+  // ── BcShot-based API (all physics conversion in C++) ──────────────────────
+
+  BcTrajectoryData findApexShot(BcShot shot) => using((arena) {
+    final p = arena<BCLIBCFFI_Shot>();
+    final out = arena<BCLIBCFFI_TrajectoryData>();
+    final err = arena<BCLIBCFFI_Error>();
+    shot._fill(p.ref, arena);
+    final st = _b.BCLIBCFFI_find_apex_shot(p, out, err);
     if (st != 0) _throwFromError(err.ref);
     return BcTrajectoryData._fromNative(out.ref);
   });
 
-  BcMaxRangeResult findMaxRange(
-    BcShotProps props, {
+  BcMaxRangeResult findMaxRangeShot(
+    BcShot shot, {
     double lowAngleDeg = 0.0,
     double highAngleDeg = 45.0,
   }) => using((arena) {
-    final p = arena<BCShotProps>();
-    final out = arena<BCMaxRangeResult>();
-    final err = arena<BCLIBCFFIError>();
-    props._fill(p.ref, arena);
-    final st = _b.BCLIBCFFI_find_max_range(
+    final p = arena<BCLIBCFFI_Shot>();
+    final out = arena<BCLIBCFFI_MaxRangeResult>();
+    final err = arena<BCLIBCFFI_Error>();
+    shot._fill(p.ref, arena);
+    final st = _b.BCLIBCFFI_find_max_range_shot(
       p,
       lowAngleDeg,
       highAngleDeg,
@@ -451,71 +446,71 @@ class BcLibC {
     return BcMaxRangeResult(out.ref.max_range_ft, out.ref.angle_at_max_rad);
   });
 
-  double findZeroAngle(BcShotProps props, double distanceFt) => using((arena) {
-    final p = arena<BCShotProps>();
+  double findZeroAngleShot(BcShot shot, double distanceFt) => using((arena) {
+    final p = arena<BCLIBCFFI_Shot>();
     final outAngle = arena<ffi.Double>();
-    final err = arena<BCLIBCFFIError>();
-    props._fill(p.ref, arena);
-    final st = _b.BCLIBCFFI_find_zero_angle(p, distanceFt, outAngle, err);
+    final err = arena<BCLIBCFFI_Error>();
+    shot._fill(p.ref, arena);
+    final st = _b.BCLIBCFFI_find_zero_angle_shot(p, distanceFt, outAngle, err);
     if (st != 0) _throwFromError(err.ref);
     return outAngle.value;
   });
 
-  BcHitResult integrate(BcShotProps props, BcTrajectoryRequest request) =>
-      using((arena) {
-        final p = arena<BCShotProps>();
-        final req = arena<BCTrajectoryRequest>();
-        final pPtr = arena<ffi.Pointer<BCTrajectoryData>>();
-        final pCount = arena<ffi.Int32>();
-        final pReason = arena<ffi.Int32>();
-        final err = arena<BCLIBCFFIError>();
+  BcHitResult integrateShot(BcShot shot, BcTrajectoryRequest request) => using((
+    arena,
+  ) {
+    final p = arena<BCLIBCFFI_Shot>();
+    final req = arena<BCLIBCFFI_TrajectoryRequest>();
+    final pPtr = arena<ffi.Pointer<BCLIBCFFI_TrajectoryData>>();
+    final pCount = arena<ffi.Int32>();
+    final pReason = arena<ffi.Int32>();
+    final err = arena<BCLIBCFFI_Error>();
 
-        props._fill(p.ref, arena);
-        req.ref.range_limit_ft = request.rangeLimitFt;
-        req.ref.range_step_ft = request.rangeStepFt;
-        req.ref.time_step = request.timeStep;
-        req.ref.filter_flags = request.filterFlags;
+    shot._fill(p.ref, arena);
+    req.ref.range_limit_ft = request.rangeLimitFt;
+    req.ref.range_step_ft = request.rangeStepFt;
+    req.ref.time_step = request.timeStep;
+    req.ref.filter_flags = request.filterFlags;
 
-        final st = _b.BCLIBCFFI_integrate(p, req, pPtr, pCount, pReason, err);
-        if (st != 0) _throwFromError(err.ref);
+    final st = _b.BCLIBCFFI_integrate_shot(p, req, pPtr, pCount, pReason, err);
+    if (st != 0) _throwFromError(err.ref);
 
-        final count = pCount.value;
-        final rawPtr = pPtr.value;
-        final records = List<BcTrajectoryData>.generate(
-          count,
-          (i) => BcTrajectoryData._fromNative(rawPtr[i]),
-        );
-        if (count > 0) _b.BCLIBCFFI_free_trajectory(rawPtr);
+    final count = pCount.value;
+    final rawPtr = pPtr.value;
+    try {
+      final records = List<BcTrajectoryData>.generate(
+        count,
+        (i) => BcTrajectoryData._fromNative(rawPtr[i]),
+      );
+      return BcHitResult(
+        records,
+        BCLIBCFFI_TerminationReason.fromValue(pReason.value),
+      );
+    } finally {
+      if (count > 0) _b.BCLIBCFFI_free_trajectory(rawPtr);
+    }
+  });
 
-        return BcHitResult(
-          records,
-          BCTerminationReason.fromValue(pReason.value),
-        );
-      });
-
-  BcInterception integrateAt(
-    BcShotProps props,
-    BCBaseTrajInterpKey key,
+  BcInterception integrateAtShot(
+    BcShot shot,
+    BCLIBCFFI_BaseTrajInterpKey key,
     double targetValue,
   ) => using((arena) {
-    final p = arena<BCShotProps>();
-    final out = arena<BCInterception>();
-    final err = arena<BCLIBCFFIError>();
-    props._fill(p.ref, arena);
-    final st = _b.BCLIBCFFI_integrate_at(p, key.value, targetValue, out, err);
+    final p = arena<BCLIBCFFI_Shot>();
+    final out = arena<BCLIBCFFI_Interception>();
+    final err = arena<BCLIBCFFI_Error>();
+    shot._fill(p.ref, arena);
+    final st = _b.BCLIBCFFI_integrate_at_shot(
+      p,
+      key.value,
+      targetValue,
+      out,
+      err,
+    );
     if (st != 0) _throwFromError(err.ref);
     return BcInterception(
       BcBaseTrajData._fromNative(out.ref.raw_data),
       BcTrajectoryData._fromNative(out.ref.full_data),
     );
   });
-
-  double getCorrection(double distanceFt, double offsetFt) =>
-      _b.BCLIBCFFI_get_correction(distanceFt, offsetFt);
-
-  double calculateEnergy(double bulletWeightGrain, double velocityFps) =>
-      _b.BCLIBCFFI_calculate_energy(bulletWeightGrain, velocityFps);
-
-  double calculateOgw(double bulletWeightGrain, double velocityFps) =>
-      _b.BCLIBCFFI_calculate_ogw(bulletWeightGrain, velocityFps);
 }

@@ -39,3 +39,4 @@ analyzer:
     - "lib/**/*.g.dart"
     - "lib/**/*.freezed.dart"
     - "lib/l10n/app_localizations.dart"
+    - "packages/reticle_gen/**"

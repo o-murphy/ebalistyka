@@ -65,9 +65,13 @@ abstract final class A7pService {
       final tmp = await getTemporaryDirectory();
       final path = '${tmp.path}/$name';
       await File(path).writeAsBytes(bytes);
-      await Share.shareXFiles([
-        XFile(path, mimeType: 'application/octet-stream', name: name),
-      ]);
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [
+            XFile(path, mimeType: 'application/octet-stream', name: name),
+          ],
+        ),
+      );
     } else {
       final savePath = await FilePicker.saveFile(
         fileName: name,

@@ -44,9 +44,9 @@ class BcLibCFFIBindings {
   /// Find the apex (highest point) of the trajectory.
   /// @return BCLIBCFFI_OK on success, error code otherwise (fills *err).
   int BCLIBCFFI_find_apex(
-    ffi.Pointer<BCShotProps> props,
-    ffi.Pointer<BCTrajectoryData> out,
-    ffi.Pointer<BCLIBCFFIError> err,
+    ffi.Pointer<BCLIBCFFI_ShotProps> props,
+    ffi.Pointer<BCLIBCFFI_TrajectoryData> out,
+    ffi.Pointer<BCLIBCFFI_Error> err,
   ) {
     return _BCLIBCFFI_find_apex(props, out, err);
   }
@@ -55,18 +55,18 @@ class BcLibCFFIBindings {
       _lookup<
         ffi.NativeFunction<
           ffi.Int32 Function(
-            ffi.Pointer<BCShotProps>,
-            ffi.Pointer<BCTrajectoryData>,
-            ffi.Pointer<BCLIBCFFIError>,
+            ffi.Pointer<BCLIBCFFI_ShotProps>,
+            ffi.Pointer<BCLIBCFFI_TrajectoryData>,
+            ffi.Pointer<BCLIBCFFI_Error>,
           )
         >
       >('BCLIBCFFI_find_apex');
   late final _BCLIBCFFI_find_apex =
       _BCLIBCFFI_find_apexPtr.asFunction<
         int Function(
-          ffi.Pointer<BCShotProps>,
-          ffi.Pointer<BCTrajectoryData>,
-          ffi.Pointer<BCLIBCFFIError>,
+          ffi.Pointer<BCLIBCFFI_ShotProps>,
+          ffi.Pointer<BCLIBCFFI_TrajectoryData>,
+          ffi.Pointer<BCLIBCFFI_Error>,
         )
       >();
 
@@ -74,11 +74,11 @@ class BcLibCFFIBindings {
   /// @param low_angle_deg   Lower search bound (degrees).
   /// @param high_angle_deg  Upper search bound (degrees).
   int BCLIBCFFI_find_max_range(
-    ffi.Pointer<BCShotProps> props,
+    ffi.Pointer<BCLIBCFFI_ShotProps> props,
     double low_angle_deg,
     double high_angle_deg,
-    ffi.Pointer<BCMaxRangeResult> out,
-    ffi.Pointer<BCLIBCFFIError> err,
+    ffi.Pointer<BCLIBCFFI_MaxRangeResult> out,
+    ffi.Pointer<BCLIBCFFI_Error> err,
   ) {
     return _BCLIBCFFI_find_max_range(
       props,
@@ -93,22 +93,22 @@ class BcLibCFFIBindings {
       _lookup<
         ffi.NativeFunction<
           ffi.Int32 Function(
-            ffi.Pointer<BCShotProps>,
+            ffi.Pointer<BCLIBCFFI_ShotProps>,
             ffi.Double,
             ffi.Double,
-            ffi.Pointer<BCMaxRangeResult>,
-            ffi.Pointer<BCLIBCFFIError>,
+            ffi.Pointer<BCLIBCFFI_MaxRangeResult>,
+            ffi.Pointer<BCLIBCFFI_Error>,
           )
         >
       >('BCLIBCFFI_find_max_range');
   late final _BCLIBCFFI_find_max_range =
       _BCLIBCFFI_find_max_rangePtr.asFunction<
         int Function(
-          ffi.Pointer<BCShotProps>,
+          ffi.Pointer<BCLIBCFFI_ShotProps>,
           double,
           double,
-          ffi.Pointer<BCMaxRangeResult>,
-          ffi.Pointer<BCLIBCFFIError>,
+          ffi.Pointer<BCLIBCFFI_MaxRangeResult>,
+          ffi.Pointer<BCLIBCFFI_Error>,
         )
       >();
 
@@ -116,10 +116,10 @@ class BcLibCFFIBindings {
   /// @param distance_ft     Slant distance to target (ft).
   /// @param out_angle_rad   Output: barrel elevation (radians).
   int BCLIBCFFI_find_zero_angle(
-    ffi.Pointer<BCShotProps> props,
+    ffi.Pointer<BCLIBCFFI_ShotProps> props,
     double distance_ft,
     ffi.Pointer<ffi.Double> out_angle_rad,
-    ffi.Pointer<BCLIBCFFIError> err,
+    ffi.Pointer<BCLIBCFFI_Error> err,
   ) {
     return _BCLIBCFFI_find_zero_angle(props, distance_ft, out_angle_rad, err);
   }
@@ -128,34 +128,34 @@ class BcLibCFFIBindings {
       _lookup<
         ffi.NativeFunction<
           ffi.Int32 Function(
-            ffi.Pointer<BCShotProps>,
+            ffi.Pointer<BCLIBCFFI_ShotProps>,
             ffi.Double,
             ffi.Pointer<ffi.Double>,
-            ffi.Pointer<BCLIBCFFIError>,
+            ffi.Pointer<BCLIBCFFI_Error>,
           )
         >
       >('BCLIBCFFI_find_zero_angle');
   late final _BCLIBCFFI_find_zero_angle =
       _BCLIBCFFI_find_zero_anglePtr.asFunction<
         int Function(
-          ffi.Pointer<BCShotProps>,
+          ffi.Pointer<BCLIBCFFI_ShotProps>,
           double,
           ffi.Pointer<ffi.Double>,
-          ffi.Pointer<BCLIBCFFIError>,
+          ffi.Pointer<BCLIBCFFI_Error>,
         )
       >();
 
   /// Integrate trajectory and return filtered records.
   ///
-  /// On success *out_records points to a heap-allocated BCTrajectoryData array
+  /// On success *out_records points to a heap-allocated BCLIBCFFI_TrajectoryData array
   /// of length *out_count.  Call BCLIBCFFI_free_trajectory() to release it.
   int BCLIBCFFI_integrate(
-    ffi.Pointer<BCShotProps> props,
-    ffi.Pointer<BCTrajectoryRequest> request,
-    ffi.Pointer<ffi.Pointer<BCTrajectoryData>> out_records,
+    ffi.Pointer<BCLIBCFFI_ShotProps> props,
+    ffi.Pointer<BCLIBCFFI_TrajectoryRequest> request,
+    ffi.Pointer<ffi.Pointer<BCLIBCFFI_TrajectoryData>> out_records,
     ffi.Pointer<ffi.Int32> out_count,
     ffi.Pointer<ffi.Int32> out_reason,
-    ffi.Pointer<BCLIBCFFIError> err,
+    ffi.Pointer<BCLIBCFFI_Error> err,
   ) {
     return _BCLIBCFFI_integrate(
       props,
@@ -171,51 +171,55 @@ class BcLibCFFIBindings {
       _lookup<
         ffi.NativeFunction<
           ffi.Int32 Function(
-            ffi.Pointer<BCShotProps>,
-            ffi.Pointer<BCTrajectoryRequest>,
-            ffi.Pointer<ffi.Pointer<BCTrajectoryData>>,
+            ffi.Pointer<BCLIBCFFI_ShotProps>,
+            ffi.Pointer<BCLIBCFFI_TrajectoryRequest>,
+            ffi.Pointer<ffi.Pointer<BCLIBCFFI_TrajectoryData>>,
             ffi.Pointer<ffi.Int32>,
             ffi.Pointer<ffi.Int32>,
-            ffi.Pointer<BCLIBCFFIError>,
+            ffi.Pointer<BCLIBCFFI_Error>,
           )
         >
       >('BCLIBCFFI_integrate');
   late final _BCLIBCFFI_integrate =
       _BCLIBCFFI_integratePtr.asFunction<
         int Function(
-          ffi.Pointer<BCShotProps>,
-          ffi.Pointer<BCTrajectoryRequest>,
-          ffi.Pointer<ffi.Pointer<BCTrajectoryData>>,
+          ffi.Pointer<BCLIBCFFI_ShotProps>,
+          ffi.Pointer<BCLIBCFFI_TrajectoryRequest>,
+          ffi.Pointer<ffi.Pointer<BCLIBCFFI_TrajectoryData>>,
           ffi.Pointer<ffi.Int32>,
           ffi.Pointer<ffi.Int32>,
-          ffi.Pointer<BCLIBCFFIError>,
+          ffi.Pointer<BCLIBCFFI_Error>,
         )
       >();
 
   /// Free a trajectory array allocated by BCLIBCFFI_integrate().
-  void BCLIBCFFI_free_trajectory(ffi.Pointer<BCTrajectoryData> records) {
+  void BCLIBCFFI_free_trajectory(
+    ffi.Pointer<BCLIBCFFI_TrajectoryData> records,
+  ) {
     return _BCLIBCFFI_free_trajectory(records);
   }
 
   late final _BCLIBCFFI_free_trajectoryPtr =
       _lookup<
-        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<BCTrajectoryData>)>
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<BCLIBCFFI_TrajectoryData>)
+        >
       >('BCLIBCFFI_free_trajectory');
   late final _BCLIBCFFI_free_trajectory =
       _BCLIBCFFI_free_trajectoryPtr.asFunction<
-        void Function(ffi.Pointer<BCTrajectoryData>)
+        void Function(ffi.Pointer<BCLIBCFFI_TrajectoryData>)
       >();
 
   /// Integrate and interpolate the single point where a key field reaches
   /// the target value.
-  /// @param key          BCBaseTrajInterpKey
+  /// @param key          BCLIBCFFI_BaseTrajInterpKey
   /// @param target_value Value the key field must reach.
   int BCLIBCFFI_integrate_at(
-    ffi.Pointer<BCShotProps> props,
+    ffi.Pointer<BCLIBCFFI_ShotProps> props,
     int key,
     double target_value,
-    ffi.Pointer<BCInterception> out,
-    ffi.Pointer<BCLIBCFFIError> err,
+    ffi.Pointer<BCLIBCFFI_Interception> out,
+    ffi.Pointer<BCLIBCFFI_Error> err,
   ) {
     return _BCLIBCFFI_integrate_at(props, key, target_value, out, err);
   }
@@ -224,22 +228,201 @@ class BcLibCFFIBindings {
       _lookup<
         ffi.NativeFunction<
           ffi.Int32 Function(
-            ffi.Pointer<BCShotProps>,
+            ffi.Pointer<BCLIBCFFI_ShotProps>,
             ffi.Int32,
             ffi.Double,
-            ffi.Pointer<BCInterception>,
-            ffi.Pointer<BCLIBCFFIError>,
+            ffi.Pointer<BCLIBCFFI_Interception>,
+            ffi.Pointer<BCLIBCFFI_Error>,
           )
         >
       >('BCLIBCFFI_integrate_at');
   late final _BCLIBCFFI_integrate_at =
       _BCLIBCFFI_integrate_atPtr.asFunction<
         int Function(
-          ffi.Pointer<BCShotProps>,
+          ffi.Pointer<BCLIBCFFI_ShotProps>,
           int,
           double,
-          ffi.Pointer<BCInterception>,
-          ffi.Pointer<BCLIBCFFIError>,
+          ffi.Pointer<BCLIBCFFI_Interception>,
+          ffi.Pointer<BCLIBCFFI_Error>,
+        )
+      >();
+
+  /// Find the apex of the trajectory.
+  /// All physics/unit conversion is performed inside C++ via BCLIBCFFI_Shot::to_shot_props().
+  int BCLIBCFFI_find_apex_shot(
+    ffi.Pointer<BCLIBCFFI_Shot> shot,
+    ffi.Pointer<BCLIBCFFI_TrajectoryData> out,
+    ffi.Pointer<BCLIBCFFI_Error> err,
+  ) {
+    return _BCLIBCFFI_find_apex_shot(shot, out, err);
+  }
+
+  late final _BCLIBCFFI_find_apex_shotPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int32 Function(
+            ffi.Pointer<BCLIBCFFI_Shot>,
+            ffi.Pointer<BCLIBCFFI_TrajectoryData>,
+            ffi.Pointer<BCLIBCFFI_Error>,
+          )
+        >
+      >('BCLIBCFFI_find_apex_shot');
+  late final _BCLIBCFFI_find_apex_shot =
+      _BCLIBCFFI_find_apex_shotPtr.asFunction<
+        int Function(
+          ffi.Pointer<BCLIBCFFI_Shot>,
+          ffi.Pointer<BCLIBCFFI_TrajectoryData>,
+          ffi.Pointer<BCLIBCFFI_Error>,
+        )
+      >();
+
+  int BCLIBCFFI_find_max_range_shot(
+    ffi.Pointer<BCLIBCFFI_Shot> shot,
+    double low_angle_deg,
+    double high_angle_deg,
+    ffi.Pointer<BCLIBCFFI_MaxRangeResult> out,
+    ffi.Pointer<BCLIBCFFI_Error> err,
+  ) {
+    return _BCLIBCFFI_find_max_range_shot(
+      shot,
+      low_angle_deg,
+      high_angle_deg,
+      out,
+      err,
+    );
+  }
+
+  late final _BCLIBCFFI_find_max_range_shotPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int32 Function(
+            ffi.Pointer<BCLIBCFFI_Shot>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Pointer<BCLIBCFFI_MaxRangeResult>,
+            ffi.Pointer<BCLIBCFFI_Error>,
+          )
+        >
+      >('BCLIBCFFI_find_max_range_shot');
+  late final _BCLIBCFFI_find_max_range_shot =
+      _BCLIBCFFI_find_max_range_shotPtr.asFunction<
+        int Function(
+          ffi.Pointer<BCLIBCFFI_Shot>,
+          double,
+          double,
+          ffi.Pointer<BCLIBCFFI_MaxRangeResult>,
+          ffi.Pointer<BCLIBCFFI_Error>,
+        )
+      >();
+
+  int BCLIBCFFI_find_zero_angle_shot(
+    ffi.Pointer<BCLIBCFFI_Shot> shot,
+    double distance_ft,
+    ffi.Pointer<ffi.Double> out_angle_rad,
+    ffi.Pointer<BCLIBCFFI_Error> err,
+  ) {
+    return _BCLIBCFFI_find_zero_angle_shot(
+      shot,
+      distance_ft,
+      out_angle_rad,
+      err,
+    );
+  }
+
+  late final _BCLIBCFFI_find_zero_angle_shotPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int32 Function(
+            ffi.Pointer<BCLIBCFFI_Shot>,
+            ffi.Double,
+            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<BCLIBCFFI_Error>,
+          )
+        >
+      >('BCLIBCFFI_find_zero_angle_shot');
+  late final _BCLIBCFFI_find_zero_angle_shot =
+      _BCLIBCFFI_find_zero_angle_shotPtr.asFunction<
+        int Function(
+          ffi.Pointer<BCLIBCFFI_Shot>,
+          double,
+          ffi.Pointer<ffi.Double>,
+          ffi.Pointer<BCLIBCFFI_Error>,
+        )
+      >();
+
+  int BCLIBCFFI_integrate_shot(
+    ffi.Pointer<BCLIBCFFI_Shot> shot,
+    ffi.Pointer<BCLIBCFFI_TrajectoryRequest> request,
+    ffi.Pointer<ffi.Pointer<BCLIBCFFI_TrajectoryData>> out_records,
+    ffi.Pointer<ffi.Int32> out_count,
+    ffi.Pointer<ffi.Int32> out_reason,
+    ffi.Pointer<BCLIBCFFI_Error> err,
+  ) {
+    return _BCLIBCFFI_integrate_shot(
+      shot,
+      request,
+      out_records,
+      out_count,
+      out_reason,
+      err,
+    );
+  }
+
+  late final _BCLIBCFFI_integrate_shotPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int32 Function(
+            ffi.Pointer<BCLIBCFFI_Shot>,
+            ffi.Pointer<BCLIBCFFI_TrajectoryRequest>,
+            ffi.Pointer<ffi.Pointer<BCLIBCFFI_TrajectoryData>>,
+            ffi.Pointer<ffi.Int32>,
+            ffi.Pointer<ffi.Int32>,
+            ffi.Pointer<BCLIBCFFI_Error>,
+          )
+        >
+      >('BCLIBCFFI_integrate_shot');
+  late final _BCLIBCFFI_integrate_shot =
+      _BCLIBCFFI_integrate_shotPtr.asFunction<
+        int Function(
+          ffi.Pointer<BCLIBCFFI_Shot>,
+          ffi.Pointer<BCLIBCFFI_TrajectoryRequest>,
+          ffi.Pointer<ffi.Pointer<BCLIBCFFI_TrajectoryData>>,
+          ffi.Pointer<ffi.Int32>,
+          ffi.Pointer<ffi.Int32>,
+          ffi.Pointer<BCLIBCFFI_Error>,
+        )
+      >();
+
+  int BCLIBCFFI_integrate_at_shot(
+    ffi.Pointer<BCLIBCFFI_Shot> shot,
+    int key,
+    double target_value,
+    ffi.Pointer<BCLIBCFFI_Interception> out,
+    ffi.Pointer<BCLIBCFFI_Error> err,
+  ) {
+    return _BCLIBCFFI_integrate_at_shot(shot, key, target_value, out, err);
+  }
+
+  late final _BCLIBCFFI_integrate_at_shotPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int32 Function(
+            ffi.Pointer<BCLIBCFFI_Shot>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Pointer<BCLIBCFFI_Interception>,
+            ffi.Pointer<BCLIBCFFI_Error>,
+          )
+        >
+      >('BCLIBCFFI_integrate_at_shot');
+  late final _BCLIBCFFI_integrate_at_shot =
+      _BCLIBCFFI_integrate_at_shotPtr.asFunction<
+        int Function(
+          ffi.Pointer<BCLIBCFFI_Shot>,
+          int,
+          double,
+          ffi.Pointer<BCLIBCFFI_Interception>,
+          ffi.Pointer<BCLIBCFFI_Error>,
         )
       >();
 
@@ -290,7 +473,7 @@ class BcLibCFFIBindings {
       _BCLIBCFFI_calculate_ogwPtr.asFunction<double Function(double, double)>();
 }
 
-enum BCLIBCFFIStatus {
+enum BCLIBCFFI_Status {
   BCLIBCFFI_OK(0),
   BCLIBCFFI_ERR_SOLVER_RUNTIME(1),
   BCLIBCFFI_ERR_OUT_OF_RANGE(2),
@@ -299,22 +482,22 @@ enum BCLIBCFFIStatus {
   BCLIBCFFI_ERR_GENERIC(5);
 
   final int value;
-  const BCLIBCFFIStatus(this.value);
+  const BCLIBCFFI_Status(this.value);
 
-  static BCLIBCFFIStatus fromValue(int value) => switch (value) {
+  static BCLIBCFFI_Status fromValue(int value) => switch (value) {
     0 => BCLIBCFFI_OK,
     1 => BCLIBCFFI_ERR_SOLVER_RUNTIME,
     2 => BCLIBCFFI_ERR_OUT_OF_RANGE,
     3 => BCLIBCFFI_ERR_ZERO_FINDING,
     4 => BCLIBCFFI_ERR_INTERCEPTION,
     5 => BCLIBCFFI_ERR_GENERIC,
-    _ => throw ArgumentError('Unknown value for BCLIBCFFIStatus: $value'),
+    _ => throw ArgumentError('Unknown value for BCLIBCFFI_Status: $value'),
   };
 }
 
 /// Error output struct – filled by every function on failure.
-final class BCLIBCFFIError extends ffi.Struct {
-  /// < BCLIBCFFIStatus
+final class BCLIBCFFI_Error extends ffi.Struct {
+  /// < BCLIBCFFI_Status
   @ffi.Int32()
   external int code;
 
@@ -339,98 +522,104 @@ final class BCLIBCFFIError extends ffi.Struct {
   external int i32_0;
 }
 
-enum BCTrajFlag {
-  BC_TRAJ_FLAG_NONE(0),
-  BC_TRAJ_FLAG_ZERO_UP(1),
-  BC_TRAJ_FLAG_ZERO_DOWN(2),
-  BC_TRAJ_FLAG_ZERO(3),
-  BC_TRAJ_FLAG_MACH(4),
-  BC_TRAJ_FLAG_RANGE(8),
-  BC_TRAJ_FLAG_APEX(16),
-  BC_TRAJ_FLAG_ALL(31),
-  BC_TRAJ_FLAG_MRT(32);
+enum BCLIBCFFI_TrajFlag {
+  BCLIBCFFI_TRAJ_FLAG_NONE(0),
+  BCLIBCFFI_TRAJ_FLAG_ZERO_UP(1),
+  BCLIBCFFI_TRAJ_FLAG_ZERO_DOWN(2),
+  BCLIBCFFI_TRAJ_FLAG_ZERO(3),
+  BCLIBCFFI_TRAJ_FLAG_MACH(4),
+  BCLIBCFFI_TRAJ_FLAG_RANGE(8),
+  BCLIBCFFI_TRAJ_FLAG_APEX(16),
+  BCLIBCFFI_TRAJ_FLAG_ALL(31),
+  BCLIBCFFI_TRAJ_FLAG_MRT(32);
 
   final int value;
-  const BCTrajFlag(this.value);
+  const BCLIBCFFI_TrajFlag(this.value);
 
-  static BCTrajFlag fromValue(int value) => switch (value) {
-    0 => BC_TRAJ_FLAG_NONE,
-    1 => BC_TRAJ_FLAG_ZERO_UP,
-    2 => BC_TRAJ_FLAG_ZERO_DOWN,
-    3 => BC_TRAJ_FLAG_ZERO,
-    4 => BC_TRAJ_FLAG_MACH,
-    8 => BC_TRAJ_FLAG_RANGE,
-    16 => BC_TRAJ_FLAG_APEX,
-    31 => BC_TRAJ_FLAG_ALL,
-    32 => BC_TRAJ_FLAG_MRT,
-    _ => throw ArgumentError('Unknown value for BCTrajFlag: $value'),
+  static BCLIBCFFI_TrajFlag fromValue(int value) => switch (value) {
+    0 => BCLIBCFFI_TRAJ_FLAG_NONE,
+    1 => BCLIBCFFI_TRAJ_FLAG_ZERO_UP,
+    2 => BCLIBCFFI_TRAJ_FLAG_ZERO_DOWN,
+    3 => BCLIBCFFI_TRAJ_FLAG_ZERO,
+    4 => BCLIBCFFI_TRAJ_FLAG_MACH,
+    8 => BCLIBCFFI_TRAJ_FLAG_RANGE,
+    16 => BCLIBCFFI_TRAJ_FLAG_APEX,
+    31 => BCLIBCFFI_TRAJ_FLAG_ALL,
+    32 => BCLIBCFFI_TRAJ_FLAG_MRT,
+    _ => throw ArgumentError('Unknown value for BCLIBCFFI_TrajFlag: $value'),
   };
 }
 
-enum BCTerminationReason {
-  BC_TERM_NO_TERMINATE(0),
-  BC_TERM_TARGET_RANGE_REACHED(1),
-  BC_TERM_MINIMUM_VELOCITY_REACHED(2),
-  BC_TERM_MAXIMUM_DROP_REACHED(3),
-  BC_TERM_MINIMUM_ALTITUDE_REACHED(4),
-  BC_TERM_HANDLER_REQUESTED_STOP(5);
+enum BCLIBCFFI_TerminationReason {
+  BCLIBCFFI_TERM_NO_TERMINATE(0),
+  BCLIBCFFI_TERM_TARGET_RANGE_REACHED(1),
+  BCLIBCFFI_TERM_MINIMUM_VELOCITY_REACHED(2),
+  BCLIBCFFI_TERM_MAXIMUM_DROP_REACHED(3),
+  BCLIBCFFI_TERM_MINIMUM_ALTITUDE_REACHED(4),
+  BCLIBCFFI_TERM_HANDLER_REQUESTED_STOP(5);
 
   final int value;
-  const BCTerminationReason(this.value);
+  const BCLIBCFFI_TerminationReason(this.value);
 
-  static BCTerminationReason fromValue(int value) => switch (value) {
-    0 => BC_TERM_NO_TERMINATE,
-    1 => BC_TERM_TARGET_RANGE_REACHED,
-    2 => BC_TERM_MINIMUM_VELOCITY_REACHED,
-    3 => BC_TERM_MAXIMUM_DROP_REACHED,
-    4 => BC_TERM_MINIMUM_ALTITUDE_REACHED,
-    5 => BC_TERM_HANDLER_REQUESTED_STOP,
-    _ => throw ArgumentError('Unknown value for BCTerminationReason: $value'),
+  static BCLIBCFFI_TerminationReason fromValue(int value) => switch (value) {
+    0 => BCLIBCFFI_TERM_NO_TERMINATE,
+    1 => BCLIBCFFI_TERM_TARGET_RANGE_REACHED,
+    2 => BCLIBCFFI_TERM_MINIMUM_VELOCITY_REACHED,
+    3 => BCLIBCFFI_TERM_MAXIMUM_DROP_REACHED,
+    4 => BCLIBCFFI_TERM_MINIMUM_ALTITUDE_REACHED,
+    5 => BCLIBCFFI_TERM_HANDLER_REQUESTED_STOP,
+    _ => throw ArgumentError(
+      'Unknown value for BCLIBCFFI_TerminationReason: $value',
+    ),
   };
 }
 
 /// Interpolation key for BCLIBC_BaseTrajData fields.
-enum BCBaseTrajInterpKey {
-  BC_INTERP_KEY_TIME(0),
-  BC_INTERP_KEY_MACH(1),
-  BC_INTERP_KEY_POS_X(2),
-  BC_INTERP_KEY_POS_Y(3),
-  BC_INTERP_KEY_POS_Z(4),
-  BC_INTERP_KEY_VEL_X(5),
-  BC_INTERP_KEY_VEL_Y(6),
-  BC_INTERP_KEY_VEL_Z(7);
+enum BCLIBCFFI_BaseTrajInterpKey {
+  BCLIBCFFI_INTERP_KEY_TIME(0),
+  BCLIBCFFI_INTERP_KEY_MACH(1),
+  BCLIBCFFI_INTERP_KEY_POS_X(2),
+  BCLIBCFFI_INTERP_KEY_POS_Y(3),
+  BCLIBCFFI_INTERP_KEY_POS_Z(4),
+  BCLIBCFFI_INTERP_KEY_VEL_X(5),
+  BCLIBCFFI_INTERP_KEY_VEL_Y(6),
+  BCLIBCFFI_INTERP_KEY_VEL_Z(7);
 
   final int value;
-  const BCBaseTrajInterpKey(this.value);
+  const BCLIBCFFI_BaseTrajInterpKey(this.value);
 
-  static BCBaseTrajInterpKey fromValue(int value) => switch (value) {
-    0 => BC_INTERP_KEY_TIME,
-    1 => BC_INTERP_KEY_MACH,
-    2 => BC_INTERP_KEY_POS_X,
-    3 => BC_INTERP_KEY_POS_Y,
-    4 => BC_INTERP_KEY_POS_Z,
-    5 => BC_INTERP_KEY_VEL_X,
-    6 => BC_INTERP_KEY_VEL_Y,
-    7 => BC_INTERP_KEY_VEL_Z,
-    _ => throw ArgumentError('Unknown value for BCBaseTrajInterpKey: $value'),
+  static BCLIBCFFI_BaseTrajInterpKey fromValue(int value) => switch (value) {
+    0 => BCLIBCFFI_INTERP_KEY_TIME,
+    1 => BCLIBCFFI_INTERP_KEY_MACH,
+    2 => BCLIBCFFI_INTERP_KEY_POS_X,
+    3 => BCLIBCFFI_INTERP_KEY_POS_Y,
+    4 => BCLIBCFFI_INTERP_KEY_POS_Z,
+    5 => BCLIBCFFI_INTERP_KEY_VEL_X,
+    6 => BCLIBCFFI_INTERP_KEY_VEL_Y,
+    7 => BCLIBCFFI_INTERP_KEY_VEL_Z,
+    _ => throw ArgumentError(
+      'Unknown value for BCLIBCFFI_BaseTrajInterpKey: $value',
+    ),
   };
 }
 
-enum BCIntegrationMethod {
-  BC_INTEGRATION_RK4(0),
-  BC_INTEGRATION_EULER(1);
+enum BCLIBCFFI_IntegrationMethod {
+  BCLIBCFFI_INTEGRATION_RK4(0),
+  BCLIBCFFI_INTEGRATION_EULER(1);
 
   final int value;
-  const BCIntegrationMethod(this.value);
+  const BCLIBCFFI_IntegrationMethod(this.value);
 
-  static BCIntegrationMethod fromValue(int value) => switch (value) {
-    0 => BC_INTEGRATION_RK4,
-    1 => BC_INTEGRATION_EULER,
-    _ => throw ArgumentError('Unknown value for BCIntegrationMethod: $value'),
+  static BCLIBCFFI_IntegrationMethod fromValue(int value) => switch (value) {
+    0 => BCLIBCFFI_INTEGRATION_RK4,
+    1 => BCLIBCFFI_INTEGRATION_EULER,
+    _ => throw ArgumentError(
+      'Unknown value for BCLIBCFFI_IntegrationMethod: $value',
+    ),
   };
 }
 
-final class BCConfig extends ffi.Struct {
+final class BCLIBCFFI_Config extends ffi.Struct {
   @ffi.Double()
   external double cStepMultiplier;
 
@@ -453,7 +642,7 @@ final class BCConfig extends ffi.Struct {
   external double cMinimumAltitude;
 }
 
-final class BCAtmosphere extends ffi.Struct {
+final class BCLIBCFFI_Atmosphere extends ffi.Struct {
   /// < Temperature at base altitude (°F)
   @ffi.Double()
   external double t0;
@@ -479,7 +668,7 @@ final class BCAtmosphere extends ffi.Struct {
   external double cLowestTempC;
 }
 
-final class BCCoriolis extends ffi.Struct {
+final class BCLIBCFFI_Coriolis extends ffi.Struct {
   @ffi.Double()
   external double sin_lat;
 
@@ -512,7 +701,7 @@ final class BCCoriolis extends ffi.Struct {
   external double muzzle_velocity_fps;
 }
 
-final class BCWind extends ffi.Struct {
+final class BCLIBCFFI_Wind extends ffi.Struct {
   @ffi.Double()
   external double velocity_fps;
 
@@ -527,7 +716,7 @@ final class BCWind extends ffi.Struct {
   external double max_distance_ft;
 }
 
-final class BCDragPoint extends ffi.Struct {
+final class BCLIBCFFI_DragPoint extends ffi.Struct {
   @ffi.Double()
   external double Mach;
 
@@ -536,7 +725,7 @@ final class BCDragPoint extends ffi.Struct {
 }
 
 /// Flat shot properties passed to every engine function.
-final class BCShotProps extends ffi.Struct {
+final class BCLIBCFFI_ShotProps extends ffi.Struct {
   @ffi.Double()
   external double bc;
 
@@ -573,31 +762,121 @@ final class BCShotProps extends ffi.Struct {
   @ffi.Double()
   external double muzzle_velocity_fps;
 
-  external BCAtmosphere atmo;
+  external BCLIBCFFI_Atmosphere atmo;
 
-  external BCCoriolis coriolis;
+  external BCLIBCFFI_Coriolis coriolis;
 
-  external BCConfig config;
+  external BCLIBCFFI_Config config;
 
   @ffi.UnsignedInt()
   external int methodAsInt;
 
-  BCIntegrationMethod get method => BCIntegrationMethod.fromValue(methodAsInt);
+  BCLIBCFFI_IntegrationMethod get method =>
+      BCLIBCFFI_IntegrationMethod.fromValue(methodAsInt);
 
   /// Drag table – pointer must remain valid for the duration of the call.
-  external ffi.Pointer<BCDragPoint> drag_table;
+  external ffi.Pointer<BCLIBCFFI_DragPoint> drag_table;
 
   @ffi.Int32()
   external int drag_table_count;
 
   /// Wind list – pointer must remain valid for the duration of the call.
-  external ffi.Pointer<BCWind> winds;
+  external ffi.Pointer<BCLIBCFFI_Wind> winds;
 
   @ffi.Int32()
   external int wind_count;
 }
 
-final class BCTrajectoryRequest extends ffi.Struct {
+/// User-facing shot descriptor in natural units.
+///
+/// Preferred input for BCLIBCFFI_*_shot() functions.  All physics conversions
+/// (CIPM-2007 atmosphere density, Coriolis trig, PCHIP drag curve, cant sin/cos)
+/// are performed inside C++ by BCLIBC_Shot::to_shot_props().
+///
+/// latitude_deg / azimuth_deg: pass NaN to disable Coriolis / flat-fire-only.
+/// pressure_hpa == 0          : vacuum (zero drag).
+///
+/// All pointers must remain valid for the duration of the call.
+/// Drag table is passed as two parallel arrays (mach_data / cd_data) matching
+/// the BCLIBC_Shot layout — no interleaved struct needed.
+final class BCLIBCFFI_Shot extends ffi.Struct {
+  @ffi.Double()
+  external double bc;
+
+  @ffi.Double()
+  external double weight_grain;
+
+  @ffi.Double()
+  external double diameter_inch;
+
+  @ffi.Double()
+  external double length_inch;
+
+  @ffi.Double()
+  external double muzzle_velocity_fps;
+
+  @ffi.Double()
+  external double sight_height_ft;
+
+  @ffi.Double()
+  external double twist_inch;
+
+  @ffi.Double()
+  external double temp_c;
+
+  /// < 0 = vacuum
+  @ffi.Double()
+  external double pressure_hpa;
+
+  @ffi.Double()
+  external double altitude_ft;
+
+  /// < 0.0 – 1.0
+  @ffi.Double()
+  external double humidity;
+
+  /// Parallel Mach / CD arrays – must remain valid for the duration of the call.
+  external ffi.Pointer<ffi.Double> mach_data;
+
+  external ffi.Pointer<ffi.Double> cd_data;
+
+  @ffi.Int32()
+  external int drag_table_size;
+
+  /// Wind list – must remain valid for the duration of the call.
+  external ffi.Pointer<BCLIBCFFI_Wind> winds;
+
+  @ffi.Int32()
+  external int wind_count;
+
+  @ffi.Double()
+  external double look_angle_rad;
+
+  @ffi.Double()
+  external double barrel_elevation_rad;
+
+  @ffi.Double()
+  external double barrel_azimuth_rad;
+
+  @ffi.Double()
+  external double cant_angle_rad;
+
+  @ffi.Double()
+  external double latitude_deg;
+
+  @ffi.Double()
+  external double azimuth_deg;
+
+  external BCLIBCFFI_Config config;
+
+  @ffi.UnsignedInt()
+  external int methodAsInt;
+
+  BCLIBCFFI_IntegrationMethod get method =>
+      BCLIBCFFI_IntegrationMethod.fromValue(methodAsInt);
+}
+
+final class BCLIBCFFI_TrajectoryRequest extends ffi.Struct {
   @ffi.Double()
   external double range_limit_ft;
 
@@ -607,12 +886,12 @@ final class BCTrajectoryRequest extends ffi.Struct {
   @ffi.Double()
   external double time_step;
 
-  /// < BCTrajFlag bitmask
+  /// < BCLIBCFFI_TrajFlag bitmask
   @ffi.Int32()
   external int filter_flags;
 }
 
-final class BCBaseTrajData extends ffi.Struct {
+final class BCLIBCFFI_BaseTrajData extends ffi.Struct {
   @ffi.Double()
   external double time;
 
@@ -644,7 +923,7 @@ final class BCBaseTrajData extends ffi.Struct {
   external double mach;
 }
 
-final class BCTrajectoryData extends ffi.Struct {
+final class BCLIBCFFI_TrajectoryData extends ffi.Struct {
   @ffi.Double()
   external double time;
 
@@ -690,12 +969,12 @@ final class BCTrajectoryData extends ffi.Struct {
   @ffi.Double()
   external double ogw_lb;
 
-  /// < BCTrajFlag
+  /// < BCLIBCFFI_TrajFlag
   @ffi.Int32()
   external int flag;
 }
 
-final class BCMaxRangeResult extends ffi.Struct {
+final class BCLIBCFFI_MaxRangeResult extends ffi.Struct {
   @ffi.Double()
   external double max_range_ft;
 
@@ -703,8 +982,8 @@ final class BCMaxRangeResult extends ffi.Struct {
   external double angle_at_max_rad;
 }
 
-final class BCInterception extends ffi.Struct {
-  external BCBaseTrajData raw_data;
+final class BCLIBCFFI_Interception extends ffi.Struct {
+  external BCLIBCFFI_BaseTrajData raw_data;
 
-  external BCTrajectoryData full_data;
+  external BCLIBCFFI_TrajectoryData full_data;
 }

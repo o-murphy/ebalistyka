@@ -258,22 +258,25 @@ class MilReticleSVGCanvas {
     final double minX = -milWidth / 2;
     final double minY = -milHeight / 2;
 
-    _svgElement = XmlElement(XmlName('svg'), [
-      XmlAttribute(XmlName('xmlns'), 'http://www.w3.org/2000/svg'),
-      XmlAttribute(XmlName('width'), _fmtNum(milWidth * factor)),
-      XmlAttribute(XmlName('height'), _fmtNum(milHeight * factor)),
+    _svgElement = XmlElement(XmlName.parts('svg'), [
+      XmlAttribute(XmlName.parts('xmlns'), 'http://www.w3.org/2000/svg'),
+      XmlAttribute(XmlName.parts('width'), _fmtNum(milWidth * factor)),
+      XmlAttribute(XmlName.parts('height'), _fmtNum(milHeight * factor)),
       XmlAttribute(
-        XmlName('viewBox'),
+        XmlName.parts('viewBox'),
         '${_fmtNum(minX)} ${_fmtNum(minY)} ${_fmtNum(milWidth)} ${_fmtNum(milHeight)}',
       ),
-      XmlAttribute(XmlName('shape-rendering'), 'geometricPrecision'),
+      XmlAttribute(XmlName.parts('shape-rendering'), 'geometricPrecision'),
     ]);
     _idCounters.clear();
     _clipCounter = 0;
 
     if (unitScale != 1.0) {
-      final scaleGroup = XmlElement(XmlName('g'), [
-        XmlAttribute(XmlName('transform'), 'scale(${_fmtNum(unitScale)})'),
+      final scaleGroup = XmlElement(XmlName.parts('g'), [
+        XmlAttribute(
+          XmlName.parts('transform'),
+          'scale(${_fmtNum(unitScale)})',
+        ),
       ]);
       _svgElement.children.add(scaleGroup);
       _contentRoot = scaleGroup;
@@ -314,21 +317,21 @@ class MilReticleSVGCanvas {
     }
 
     _target.children.add(
-      XmlElement(XmlName('line'), [
-        XmlAttribute(XmlName('id'), nextId('line')),
-        XmlAttribute(XmlName('x1'), _fmtNum(x1)),
-        XmlAttribute(XmlName('y1'), _fmtNum(y1)),
-        XmlAttribute(XmlName('x2'), _fmtNum(x2)),
-        XmlAttribute(XmlName('y2'), _fmtNum(y2)),
-        XmlAttribute(XmlName('stroke'), stroke),
-        XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
+      XmlElement(XmlName.parts('line'), [
+        XmlAttribute(XmlName.parts('id'), nextId('line')),
+        XmlAttribute(XmlName.parts('x1'), _fmtNum(x1)),
+        XmlAttribute(XmlName.parts('y1'), _fmtNum(y1)),
+        XmlAttribute(XmlName.parts('x2'), _fmtNum(x2)),
+        XmlAttribute(XmlName.parts('y2'), _fmtNum(y2)),
+        XmlAttribute(XmlName.parts('stroke'), stroke),
+        XmlAttribute(XmlName.parts('stroke-width'), _fmtNum(strokeWidth)),
         if (strokeLineJoin != null)
-          XmlAttribute(XmlName('stroke-linejoin'), strokeLineJoin),
+          XmlAttribute(XmlName.parts('stroke-linejoin'), strokeLineJoin),
         if (strokeLineCap != null)
-          XmlAttribute(XmlName('stroke-linecap'), strokeLineCap),
+          XmlAttribute(XmlName.parts('stroke-linecap'), strokeLineCap),
         if (actualDash != null && actualGap != null)
           XmlAttribute(
-            XmlName('stroke-dasharray'),
+            XmlName.parts('stroke-dasharray'),
             '${_fmtNum(actualDash)} ${_fmtNum(actualGap)}',
           ),
       ]),
@@ -345,16 +348,16 @@ class MilReticleSVGCanvas {
     double? strokeWidth,
   }) {
     _target.children.add(
-      XmlElement(XmlName('rect'), [
-        XmlAttribute(XmlName('id'), nextId('rect')),
-        XmlAttribute(XmlName('x'), _fmtNum(x)),
-        XmlAttribute(XmlName('y'), _fmtNum(y)),
-        XmlAttribute(XmlName('width'), _fmtNum(w)),
-        XmlAttribute(XmlName('height'), _fmtNum(h)),
-        XmlAttribute(XmlName('fill'), fill),
-        if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
+      XmlElement(XmlName.parts('rect'), [
+        XmlAttribute(XmlName.parts('id'), nextId('rect')),
+        XmlAttribute(XmlName.parts('x'), _fmtNum(x)),
+        XmlAttribute(XmlName.parts('y'), _fmtNum(y)),
+        XmlAttribute(XmlName.parts('width'), _fmtNum(w)),
+        XmlAttribute(XmlName.parts('height'), _fmtNum(h)),
+        XmlAttribute(XmlName.parts('fill'), fill),
+        if (stroke != null) XmlAttribute(XmlName.parts('stroke'), stroke),
         if (strokeWidth != null)
-          XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
+          XmlAttribute(XmlName.parts('stroke-width'), _fmtNum(strokeWidth)),
       ]),
     );
   }
@@ -398,15 +401,15 @@ class MilReticleSVGCanvas {
         break;
       case CirclesBatchMode.none:
         _target.children.add(
-          XmlElement(XmlName('circle'), [
-            XmlAttribute(XmlName('id'), nextId('circle')),
-            XmlAttribute(XmlName('cx'), _fmtNum(cx)),
-            XmlAttribute(XmlName('cy'), _fmtNum(cy)),
-            XmlAttribute(XmlName('r'), _fmtNum(r)),
-            XmlAttribute(XmlName('fill'), fill ?? "none"),
-            if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
+          XmlElement(XmlName.parts('circle'), [
+            XmlAttribute(XmlName.parts('id'), nextId('circle')),
+            XmlAttribute(XmlName.parts('cx'), _fmtNum(cx)),
+            XmlAttribute(XmlName.parts('cy'), _fmtNum(cy)),
+            XmlAttribute(XmlName.parts('r'), _fmtNum(r)),
+            XmlAttribute(XmlName.parts('fill'), fill ?? "none"),
+            if (stroke != null) XmlAttribute(XmlName.parts('stroke'), stroke),
             if (strokeWidth != null)
-              XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
+              XmlAttribute(XmlName.parts('stroke-width'), _fmtNum(strokeWidth)),
           ]),
         );
     }
@@ -421,17 +424,17 @@ class MilReticleSVGCanvas {
     String? strokeLineCap = 'miter',
   }) {
     _target.children.add(
-      XmlElement(XmlName('path'), [
-        XmlAttribute(XmlName('id'), nextId('path')),
-        XmlAttribute(XmlName('d'), d),
-        if (fill != null) XmlAttribute(XmlName('fill'), fill),
-        if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
+      XmlElement(XmlName.parts('path'), [
+        XmlAttribute(XmlName.parts('id'), nextId('path')),
+        XmlAttribute(XmlName.parts('d'), d),
+        if (fill != null) XmlAttribute(XmlName.parts('fill'), fill),
+        if (stroke != null) XmlAttribute(XmlName.parts('stroke'), stroke),
         if (strokeWidth != null)
-          XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
+          XmlAttribute(XmlName.parts('stroke-width'), _fmtNum(strokeWidth)),
         if (strokeLineJoin != null)
-          XmlAttribute(XmlName('stroke-linejoin'), strokeLineJoin),
+          XmlAttribute(XmlName.parts('stroke-linejoin'), strokeLineJoin),
         if (strokeLineCap != null)
-          XmlAttribute(XmlName('stroke-linecap'), strokeLineCap),
+          XmlAttribute(XmlName.parts('stroke-linecap'), strokeLineCap),
       ]),
     );
   }
@@ -446,17 +449,17 @@ class MilReticleSVGCanvas {
   }) {
     _target.children.add(
       XmlElement(
-        XmlName('text'),
+        XmlName.parts('text'),
         [
-          XmlAttribute(XmlName('id'), nextId('text')),
-          XmlAttribute(XmlName('x'), _fmtNum(x)),
-          XmlAttribute(XmlName('y'), _fmtNum(y)),
-          XmlAttribute(XmlName('fill'), fill),
+          XmlAttribute(XmlName.parts('id'), nextId('text')),
+          XmlAttribute(XmlName.parts('x'), _fmtNum(x)),
+          XmlAttribute(XmlName.parts('y'), _fmtNum(y)),
+          XmlAttribute(XmlName.parts('fill'), fill),
           XmlAttribute(
-            XmlName('font-size'),
+            XmlName.parts('font-size'),
             _fmtNum(fontSize / _capHeightRatio),
           ),
-          XmlAttribute(XmlName('text-anchor'), textAnchor),
+          XmlAttribute(XmlName.parts('text-anchor'), textAnchor),
         ],
         [XmlText(content)],
       ),
@@ -524,8 +527,8 @@ class MilReticleSVGCanvas {
   }) {
     final clipId = 'clip${_clipCounter++}';
 
-    final clipPathEl = XmlElement(XmlName('clipPath'), [
-      XmlAttribute(XmlName('id'), clipId),
+    final clipPathEl = XmlElement(XmlName.parts('clipPath'), [
+      XmlAttribute(XmlName.parts('id'), clipId),
     ]);
     final prevTarget = _target;
     _target = clipPathEl;
@@ -533,9 +536,9 @@ class MilReticleSVGCanvas {
     _target = prevTarget;
     _contentRoot.children.add(clipPathEl);
 
-    final groupEl = XmlElement(XmlName('g'), [
-      XmlAttribute(XmlName('id'), nextId('clipgroup')),
-      XmlAttribute(XmlName('clip-path'), 'url(#$clipId)'),
+    final groupEl = XmlElement(XmlName.parts('g'), [
+      XmlAttribute(XmlName.parts('id'), nextId('clipgroup')),
+      XmlAttribute(XmlName.parts('clip-path'), 'url(#$clipId)'),
     ]);
     _target = groupEl;
     draw(this);

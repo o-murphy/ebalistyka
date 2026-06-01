@@ -50,8 +50,8 @@ _TableCalcResult _runTableCalculation(_TableCalcArgs args) {
       trajectoryRange: Distance(FC.targetDistance.maxRaw, Unit.meter),
       trajectoryStep: Distance.meter(stepM),
       filterFlags:
-          bclibc.BCTrajFlag.BC_TRAJ_FLAG_RANGE.value |
-          bclibc.BCTrajFlag.BC_TRAJ_FLAG_ZERO.value,
+          bclibc.BCLIBCFFI_TrajFlag.BCLIBCFFI_TRAJ_FLAG_RANGE.value |
+          bclibc.BCLIBCFFI_TrajFlag.BCLIBCFFI_TRAJ_FLAG_ZERO.value,
     );
     return (result, freshZeroElevRad);
   } catch (e, st) {
@@ -140,8 +140,8 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
       trajectoryRange: Distance.meter(trajectoryEndM),
       trajectoryStep: Distance.meter(internalStepM),
       filterFlags:
-          bclibc.BCTrajFlag.BC_TRAJ_FLAG_RANGE.value |
-          bclibc.BCTrajFlag.BC_TRAJ_FLAG_ZERO.value,
+          bclibc.BCLIBCFFI_TrajFlag.BCLIBCFFI_TRAJ_FLAG_RANGE.value |
+          bclibc.BCLIBCFFI_TrajFlag.BCLIBCFFI_TRAJ_FLAG_ZERO.value,
     );
     return (result, freshZeroElevRad, holdRad, tableHolds);
   } catch (e, st) {

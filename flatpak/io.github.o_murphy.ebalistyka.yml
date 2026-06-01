@@ -4,8 +4,7 @@
 # Run "flutpak generate" on every build to produce the final output in generated/.
 #
 # SAFE TO EDIT   finish-args, build-commands, build-options, sdk-extensions, modules
-# DO NOT REMOVE  __FLATPAK_TAG__ and __FLATPAK_COMMIT__ placeholders — required by generate
-# AUTO-INJECTED  patch sources are appended after generated-sources.json by generate
+# AUTO-INJECTED  tag, commit, modules, manifest.sources, generated-sources.json, and patches are set/appended by generate
 app-id: io.github.o_murphy.ebalistyka
 runtime: org.freedesktop.Platform
 runtime-version: '25.08'
@@ -13,23 +12,14 @@ sdk: org.freedesktop.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.llvm20
 command: ebalistyka
-# Sandbox permissions — add or remove as your app requires.
+# Sandbox permissions — review and adjust for your app.
 finish-args:
   - --share=ipc
   - --socket=fallback-x11
   - --socket=wayland
   - --device=dri
+  - --share=network
 modules:
-  - name: bclibc
-    buildsystem: cmake-ninja
-    config-opts:
-      - -DCMAKE_BUILD_TYPE=Release
-      - -DBCLIBC_BUILD_TESTS=OFF
-    sources:
-      - type: git
-        url: https://github.com/ballistics-lab/bclibc.git
-        tag: v1.0.6
-        commit: 26cb17bca86a52d58a05dff07ddfb62ce98445e2
   - name: ebalistyka
     buildsystem: simple
     build-options:
@@ -44,7 +34,7 @@ modules:
       prepend-ld-library-path: /usr/lib/sdk/llvm20/lib
       env:
         PUB_CACHE: /run/build/ebalistyka/.pub-cache
-        OBJECTBOX_PREBUILT_DIR: /run/build/ebalistyka/objectbox-c
+        OBJECTBOX_PREBUILT_DIR: /app
     # Build steps — review and customise for your project.
     build-commands:
       - cp flutter/bin/internal/engine.version flutter/bin/cache/engine-dart-sdk.stamp
@@ -67,26 +57,7 @@ modules:
       - install -Dm644 app/share/icons/hicolor/128x128/apps/io.github.o_murphy.ebalistyka.png /app/share/icons/hicolor/128x128/apps/io.github.o_murphy.ebalistyka.png
       - install -Dm644 app/share/icons/hicolor/256x256/apps/io.github.o_murphy.ebalistyka.png /app/share/icons/hicolor/256x256/apps/io.github.o_murphy.ebalistyka.png
       - install -Dm644 app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png /app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png
-    # Sources — do not remove __FLATPAK_TAG__ / __FLATPAK_COMMIT__.
     sources:
       - type: git
-        url: https://github.com/o-murphy/ebalistyka
-        tag: __FLATPAK_TAG__
-        commit: __FLATPAK_COMMIT__
+        url: https://github.com/o-murphy/ebalistyka-app
         disable-submodules: true
-      - type: archive
-        only-arches:
-          - x86_64
-        url: https://github.com/objectbox/objectbox-c/releases/download/v5.3.2/objectbox-linux-x64.tar.gz
-        sha256: 6dbb5450c36dd11ee9074f16ecc61e79b45ff43c2082934601f3166b39c8a613
-        dest: objectbox-c
-        strip-components: 0
-      - type: archive
-        only-arches:
-          - aarch64
-        url: https://github.com/objectbox/objectbox-c/releases/download/v5.3.2/objectbox-linux-aarch64.tar.gz
-        sha256: bdfbfbf4971057e11018ca6645697d8a40ebc7df56ccde63397cbb0e0609c0e8
-        dest: objectbox-c
-        strip-components: 0
-      # "flutpak generate" injects patch sources after this line.
-      - generated-sources.json

@@ -11,13 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+### Changed
+- `packages/bclibc_ffi` (`calculator.dart`): `Calculator._toBcShotProps()` replaced with thin field mapper `_toBcShot()` — Coriolis trig (`_toCoriolis`: sin/cos lat/az, range/cross offsets) and atmosphere density (`_toAtmo`) removed from Dart; all physics conversion delegated to `BCLIBC_Shot::to_shot_props()` in C++ (Step 3a of bclibc-wrapper-consolidation)
+- `packages/bclibc_ffi` (`bclibc_ffi.dart`): added `BcShot` Dart value class, `_FillNativeShot` extension, and `BcLibC.*Shot()` API methods (`findApexShot`, `findMaxRangeShot`, `findZeroAngleShot`, `integrateShot`, `integrateAtShot`)
+- `packages/bclibc_ffi` (`bclibc_bindings.g.dart`): added `BCShot` native struct and `BCLIBCFFI_*_shot` lookup bindings (manually updated; regenerate with `dart run ffigen --config ffigen.yaml` after building bclibc)
+- `external/bclibc` submodule bumped to `caf42e0` — adds `BCShot` C struct and `BCLIBCFFI_*_shot()` entry points to `bclibc_ffi.h`; `BcShotProps` / `BCLIBCFFI_*` retained for backwards compatibility; `Vacuum` handled correctly (`pressure_hpa == 0` → zero density, no drag)
+
 
 ## v0.1.16 (2026-05-26)
 
 ### Changed
 - **App repo name** — slug changed from `o-murphy/ebalistyka-app` to `o-murphy/ebalistyka` to unify the app ID across all packaging formats; updated `repoSlug` constant in `lib/shared/constants/app_info.dart` and all workflow / CHANGELOG links
 - **Flutter** — default version bumped to 3.44.0 across all workflows
-- **flutpak** — bumped to `v0.4.0-beta.4`; generates Flathub-compatible manifest and `generated-sources.json`; icon config in `pubspec.yaml` updated to reference `app/share/icons/` at all sizes (16 → 1024 px)
+- **flutpak** — bumped to `v0.4.0-rc.2`; generates Flathub-compatible manifest and `generated-sources.json`; icon config in `pubspec.yaml` updated to reference `app/share/icons/` at all sizes (16 → 1024 px)
 - **App icons** — regenerated; icon and shared assets (`metainfo`, `desktop`, icons) moved to `app/share/` and reused across all packaging tools (AUR, deb, RPM, AppImage, Flatpak, Snap); Android launcher icons, Android/iOS/macOS/web splash images all regenerated from the new source
 - **objectbox** — `objectbox_flutter_libs` bumped to 5.3.2; Flatpak manifest, patch, and flutpak config updated accordingly; CRLF line endings in the 5.3.2 pub.dev archive handled via `strip_trailing_cr: true` (injects a `sed -i 's/\r//'` step before patching)
 

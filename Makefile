@@ -30,9 +30,11 @@ else
   endif
 endif
 
-# Build the native shared library via CMake (still builds from external/bclibc)
+# Build the native shared library via CMake directly (used by generate/ffigen).
+# For running tests use `make test` which goes through `flutter build linux`.
+BCLIBC_BUILD_TYPE ?= Debug
 build-bclibc:
-	cmake -S external/bclibc -B build/bclibc -DCMAKE_BUILD_TYPE=Release
+	cmake -S external/bclibc -B build/bclibc -DCMAKE_BUILD_TYPE=$(BCLIBC_BUILD_TYPE)
 	cmake --build build/bclibc --parallel $(NPROC)
 
 # Re-generate Dart FFI bindings from the C header (now in the package)
@@ -107,7 +109,9 @@ generate: build-bclibc ffigen \
 	generate-reticles generate-icons \
 	generate-collection
 
-# Run all tests (native must be built first)
+# Run all tests (native must be built first via cmake).
+# Use `flutter build linux --debug` manually beforehand if you want
+# tests to run against the Flutter-bundled library instead.
 test: build-bclibc
 	flutter analyze && flutter test 2>&1
 

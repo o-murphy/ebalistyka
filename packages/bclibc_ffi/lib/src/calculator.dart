@@ -9,8 +9,6 @@
 //   calc.setWeaponZero(shot, Distance.meter(100));
 //   final result = calc.fire(shot: shot, trajectoryRange: Distance.meter(1000));
 
-import 'dart:math' as math;
-
 import 'package:bclibc_ffi/ffi/bclibc_bindings.g.dart';
 import 'package:bclibc_ffi/ffi/bclibc_ffi.dart';
 import 'package:bclibc_ffi/src/conditions.dart';
@@ -46,13 +44,13 @@ const BcConfig defaultConfig = BcConfig(
 // ---------------------------------------------------------------------------
 
 class Calculator {
-  final BCIntegrationMethod method;
+  final BCLIBCFFI_IntegrationMethod method;
   final BcConfig config;
 
   late final BcLibC _engine;
 
   Calculator({
-    this.method = BCIntegrationMethod.BC_INTEGRATION_RK4,
+    this.method = BCLIBCFFI_IntegrationMethod.BCLIBCFFI_INTEGRATION_RK4,
     BcConfig? config,
   }) : config = config ?? defaultConfig {
     _engine = BcLibC.open();
@@ -64,8 +62,8 @@ class Calculator {
   /// a target at [targetDistance].
   Angular barrelElevationForTarget(Shot shot, Distance targetDistance) {
     final distFt = _toFeet(targetDistance);
-    final props = _toBcShotProps(shot);
-    final totalRad = _engine.findZeroAngle(props, distFt);
+    final bcShot = _toBcShot(shot);
+    final totalRad = _engine.findZeroAngleShot(bcShot, distFt);
     return Angular(totalRad - shot.lookAngle.in_(Unit.radian), Unit.radian);
   }
 
@@ -91,7 +89,7 @@ class Calculator {
     required Distance trajectoryRange,
     Distance? trajectoryStep,
     double timeStep = 0.0,
-    int filterFlags = 8, // BCTrajFlag.BC_TRAJ_FLAG_RANGE
+    int filterFlags = 8, // BCLIBCFFI_TrajFlag.BCLIBCFFI_TRAJ_FLAG_RANGE
     bool raiseRangeError = true,
   }) {
     final rangeFt = _toFeet(trajectoryRange);
@@ -106,7 +104,7 @@ class Calculator {
 
     late BcHitResult bcResult;
     try {
-      bcResult = _engine.integrate(_toBcShotProps(shot), request);
+      bcResult = _engine.integrateShot(_toBcShot(shot), request);
     } on BcException catch (e) {
       if (raiseRangeError) rethrow;
       return HitResult(shot, [], filterFlags: filterFlags, error: e);
@@ -120,44 +118,41 @@ class Calculator {
 
   static double _toFeet(Distance d) => d.in_(Unit.foot);
 
-  /// Converts [Shot] + calculator settings to the flat C struct expected by BcLibC.
-  BcShotProps _toBcShotProps(Shot shot) {
+  /// Thin field mapper: copies [Shot] fields into [BcShot].
+  /// All physics/unit conversions (atmosphere density, Coriolis trig,
+  /// PCHIP drag curve, cant sin/cos) are performed inside C++ via
+  /// BCLIBC_Shot::to_shot_props().
+  BcShot _toBcShot(Shot shot) {
     final mvFps = shot.ammo
         .getVelocityForTemp(shot.atmo.powderTemp)
         .in_(Unit.fps);
 
-    return BcShotProps(
+    return BcShot(
       bc: shot.ammo.dm.bc,
-      lookAngleRad: shot.lookAngle.in_(Unit.radian),
-      twistInch: shot.weapon.twist.in_(Unit.inch),
-      lengthInch: shot.ammo.dm.length.in_(Unit.inch),
-      diameterInch: shot.ammo.dm.diameter.in_(Unit.inch),
       weightGrain: shot.ammo.dm.weight.in_(Unit.grain),
-      barrelElevationRad: shot.barrelElevation.in_(Unit.radian),
-      barrelAzimuthRad: shot.barrelAzimuth.in_(Unit.radian),
-      sightHeightFt: shot.weapon.sightHeight.in_(Unit.foot),
-      cantAngleRad: shot.cantAngle.in_(Unit.radian),
-      alt0Ft: shot.atmo.altitude.in_(Unit.foot),
+      diameterInch: shot.ammo.dm.diameter.in_(Unit.inch),
+      lengthInch: shot.ammo.dm.length.in_(Unit.inch),
       muzzleVelocityFps: mvFps,
-      atmo: _toAtmo(shot.atmo),
-      coriolis: _toCoriolis(shot, mvFps),
-      config: config,
-      method: method,
+      sightHeightFt: shot.weapon.sightHeight.in_(Unit.foot),
+      twistInch: shot.weapon.twist.in_(Unit.inch),
+      tempC: shot.atmo.temperature.in_(Unit.celsius),
+      pressureHpa: shot.atmo.pressure.in_(Unit.hPa),
+      altitudeFt: shot.atmo.altitude.in_(Unit.foot),
+      humidity: shot.atmo.humidity,
       dragTable: shot.ammo.dm.dragTable
           .map((p) => BcDragPoint(p.mach, p.cd))
           .toList(),
       winds: shot.winds.map(_toWind).toList(),
+      lookAngleRad: shot.lookAngle.in_(Unit.radian),
+      barrelElevationRad: shot.barrelElevation.in_(Unit.radian),
+      barrelAzimuthRad: shot.barrelAzimuth.in_(Unit.radian),
+      cantAngleRad: shot.cantAngle.in_(Unit.radian),
+      latitudeDeg: shot.latitudeDeg ?? double.nan,
+      azimuthDeg: shot.azimuthDeg ?? double.nan,
+      config: config,
+      method: method,
     );
   }
-
-  static BcAtmosphere _toAtmo(Atmo a) => BcAtmosphere(
-    t0: a.temperature.in_(Unit.celsius),
-    a0: a.altitude.in_(Unit.foot),
-    p0: a.pressure.in_(Unit.hPa),
-    mach: a.mach.in_(Unit.fps),
-    densityRatio: a.densityRatio,
-    cLowestTempC: Atmo.cLowestTempC,
-  );
 
   static BcWind _toWind(Wind w) => BcWind(
     velocityFps: w.velocity.in_(Unit.fps),
@@ -165,47 +160,6 @@ class Calculator {
     untilDistanceFt: w.untilDistance.in_(Unit.foot),
     maxDistanceFt: Wind.maxDistanceFeet,
   );
-
-  /// Mirrors the TypeScript Coriolis constructor logic.
-  static BcCoriolis _toCoriolis(Shot shot, double mvFps) {
-    final lat = shot.latitudeDeg;
-    if (lat == null) {
-      // No Coriolis
-      return BcCoriolis(muzzleVelocityFps: mvFps);
-    }
-
-    final latRad = lat * math.pi / 180.0;
-    final sinLat = math.sin(latRad);
-    final cosLat = math.cos(latRad);
-
-    final az = shot.azimuthDeg;
-    if (az == null) {
-      // Flat-fire approximation
-      return BcCoriolis(
-        sinLat: sinLat,
-        cosLat: cosLat,
-        flatFireOnly: true,
-        muzzleVelocityFps: mvFps,
-      );
-    }
-
-    // Full 3D Coriolis
-    final azRad = az * math.pi / 180.0;
-    final sinAz = math.sin(azRad);
-    final cosAz = math.cos(azRad);
-    return BcCoriolis(
-      sinLat: sinLat,
-      cosLat: cosLat,
-      sinAz: sinAz,
-      cosAz: cosAz,
-      rangeEast: sinAz,
-      rangeNorth: cosAz,
-      crossEast: cosAz,
-      crossNorth: -sinAz,
-      flatFireOnly: false,
-      muzzleVelocityFps: mvFps,
-    );
-  }
 
   // ── Result conversion ──────────────────────────────────────────────────────
 

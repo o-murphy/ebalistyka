@@ -32,17 +32,19 @@ class TableHtmlExporter {
     await file.writeAsString(html, flush: true);
 
     if (Platform.isAndroid || Platform.isIOS) {
-      await Share.shareXFiles(
-        [
-          XFile(
-            file.path,
-            mimeType: 'text/html',
-            name: 'trajectory_table.html',
-          ),
-        ],
-        subject: details != null
-            ? '${details.weaponName} — ${l10n.tabTrajectory}'
-            : l10n.tabTrajectory,
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [
+            XFile(
+              file.path,
+              mimeType: 'text/html',
+              name: 'trajectory_table.html',
+            ),
+          ],
+          subject: details != null
+              ? '${details.weaponName} — ${l10n.tabTrajectory}'
+              : l10n.tabTrajectory,
+        ),
       );
     } else {
       // Desktop: open HTML in the default browser

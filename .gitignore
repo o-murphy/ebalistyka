@@ -87,3 +87,6 @@ aur/*.tar.gz
 
 # pre-compiled flutpak util
 flutpak
+
+# objectbox downloads
+download/objectbox*

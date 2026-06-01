@@ -2,10 +2,10 @@
 //
 // Build the native library first:
 //   make native
-//   dart test test/ffi_test.dart
+//   dart test test/core/solver/ffi_test.dart
 //
 // Or point to a custom build:
-//   BCLIBC_FFI_PATH=/path/to/libbclibc_ffi.so dart test test/ffi_test.dart
+//   BCLIBC_FFI_PATH=/path/to/libbclibc_ffi.so dart test test/core/solver/ffi_test.dart
 
 import 'package:bclibc_ffi/bclibc.dart';
 import 'package:test/test.dart';
@@ -62,43 +62,30 @@ final _g7Table = [
 ];
 
 // ---------------------------------------------------------------------------
-// Standard sea-level atmosphere (ICAO)
-// ---------------------------------------------------------------------------
-
-const _atmo = BcAtmosphere(
-  t0: 15.0, // °C
-  a0: 0.0, // ft (sea level)
-  p0: 1013.25, // hPa
-  mach: 1126.0, // fps (~340 m/s at 15 °C)
-  densityRatio: 1.0,
-  cLowestTempC: -89.2,
-);
-
-const _coriolis = BcCoriolis(); // no coriolis
-
-// ---------------------------------------------------------------------------
 // Typical long-range .338 Lapua Magnum shot
+// ICAO standard sea-level atmosphere: 15 °C, 1013.25 hPa, 0 ft
 // ---------------------------------------------------------------------------
 
-BcShotProps _makeShotProps({
+BcShot _makeShot({
   double barrelElevationRad = 0.0,
-  BCIntegrationMethod method = BCIntegrationMethod.BC_INTEGRATION_RK4,
-}) => BcShotProps(
-  bc: 0.279, // G7 BC
-  lookAngleRad: 0.0,
-  twistInch: 10.0,
-  lengthInch: 1.3,
-  diameterInch: 0.338,
+  BCLIBCFFI_IntegrationMethod method =
+      BCLIBCFFI_IntegrationMethod.BCLIBCFFI_INTEGRATION_RK4,
+}) => BcShot(
+  bc: 0.279,
   weightGrain: 300.0,
-  barrelElevationRad: barrelElevationRad,
-  barrelAzimuthRad: 0.0,
-  sightHeightFt: 0.21 / 3.28084, // 21 cm in feet
-  cantAngleRad: 0.0,
-  alt0Ft: 0.0,
+  diameterInch: 0.338,
+  lengthInch: 1.3,
   muzzleVelocityFps: 2750.0,
-  atmo: _atmo,
-  coriolis: _coriolis,
+  sightHeightFt: 0.21 / 3.28084, // 21 cm in feet
+  twistInch: 10.0,
+  tempC: 15.0,
+  pressureHpa: 1013.25,
+  altitudeFt: 0.0,
+  humidity: 0.0,
   dragTable: _g7Table,
+  lookAngleRad: 0.0,
+  barrelElevationRad: barrelElevationRad,
+  method: method,
 );
 
 void main() {
@@ -142,67 +129,66 @@ void main() {
     });
   });
 
-  // ── findZeroAngle ────────────────────────────────────────────────────────
+  // ── findZeroAngleShot ────────────────────────────────────────────────────
 
-  group('findZeroAngle', () {
+  group('findZeroAngleShot', () {
     test('returns non-zero elevation for 1000 ft zero', () {
-      final props = _makeShotProps();
-      final angle = bc.findZeroAngle(props, 1000.0);
-      // Should be a small upward angle (positive radians)
+      final shot = _makeShot();
+      final angle = bc.findZeroAngleShot(shot, 1000.0);
       expect(angle, greaterThan(0.0));
       expect(angle, lessThan(0.1)); // sanity: < ~5.7°
     });
 
     test('zero angle increases with distance', () {
-      final props = _makeShotProps();
-      final a100 = bc.findZeroAngle(props, 100.0 * 3.28084);
-      final a500 = bc.findZeroAngle(props, 500.0 * 3.28084);
-      final a1000 = bc.findZeroAngle(props, 1000.0 * 3.28084);
+      final shot = _makeShot();
+      final a100 = bc.findZeroAngleShot(shot, 100.0 * 3.28084);
+      final a500 = bc.findZeroAngleShot(shot, 500.0 * 3.28084);
+      final a1000 = bc.findZeroAngleShot(shot, 1000.0 * 3.28084);
       expect(a500, greaterThan(a100));
       expect(a1000, greaterThan(a500));
     });
   });
 
-  // ── findApex ─────────────────────────────────────────────────────────────
+  // ── findApexShot ─────────────────────────────────────────────────────────
 
-  group('findApex', () {
+  group('findApexShot', () {
     test('returns apex above muzzle height', () {
-      // 45° up shot
-      final props = _makeShotProps(barrelElevationRad: 0.785398);
-      final apex = bc.findApex(props);
+      final shot = _makeShot(barrelElevationRad: 0.785398); // 45°
+      final apex = bc.findApexShot(shot);
       expect(apex.heightFt, greaterThan(0.0));
       expect(apex.distanceFt, greaterThan(0.0));
     });
   });
 
-  // ── integrate ────────────────────────────────────────────────────────────
+  // ── integrateShot ────────────────────────────────────────────────────────
 
-  group('integrate', () {
+  group('integrateShot', () {
     test('returns trajectory records with RANGE flag', () {
-      final props = _makeShotProps();
+      final shot = _makeShot();
       final request = BcTrajectoryRequest(
-        rangeLimitFt: 1000.0 * 3.28084, // 1 km
-        rangeStepFt: 100.0 * 3.28084, // every 100 m
-        filterFlags: BCTrajFlag.BC_TRAJ_FLAG_RANGE.value,
+        rangeLimitFt: 1000.0 * 3.28084,
+        rangeStepFt: 100.0 * 3.28084,
+        filterFlags: BCLIBCFFI_TrajFlag.BCLIBCFFI_TRAJ_FLAG_RANGE.value,
       );
-      final result = bc.integrate(props, request);
+      final result = bc.integrateShot(shot, request);
       expect(result.trajectory, isNotEmpty);
-      // All records should carry the RANGE flag
       for (final p in result.trajectory) {
-        expect(p.flag & BCTrajFlag.BC_TRAJ_FLAG_RANGE.value, isNot(0));
+        expect(
+          p.flag & BCLIBCFFI_TrajFlag.BCLIBCFFI_TRAJ_FLAG_RANGE.value,
+          isNot(0),
+        );
       }
     });
 
     test('velocity decreases monotonically', () {
-      final props = _makeShotProps();
+      final shot = _makeShot();
       final request = BcTrajectoryRequest(
         rangeLimitFt: 1000.0 * 3.28084,
         rangeStepFt: 50.0 * 3.28084,
-        filterFlags: BCTrajFlag.BC_TRAJ_FLAG_RANGE.value,
+        filterFlags: BCLIBCFFI_TrajFlag.BCLIBCFFI_TRAJ_FLAG_RANGE.value,
       );
-      final result = bc.integrate(props, request);
+      final result = bc.integrateShot(shot, request);
       expect(result.trajectory.length, greaterThan(1));
-
       for (var i = 1; i < result.trajectory.length; i++) {
         expect(
           result.trajectory[i].velocityFps,
@@ -212,14 +198,13 @@ void main() {
     });
 
     test('distance increases monotonically', () {
-      final props = _makeShotProps();
+      final shot = _makeShot();
       final request = BcTrajectoryRequest(
         rangeLimitFt: 500.0 * 3.28084,
         rangeStepFt: 50.0 * 3.28084,
-        filterFlags: BCTrajFlag.BC_TRAJ_FLAG_RANGE.value,
+        filterFlags: BCLIBCFFI_TrajFlag.BCLIBCFFI_TRAJ_FLAG_RANGE.value,
       );
-      final result = bc.integrate(props, request);
-
+      final result = bc.integrateShot(shot, request);
       for (var i = 1; i < result.trajectory.length; i++) {
         expect(
           result.trajectory[i].distanceFt,
@@ -229,31 +214,30 @@ void main() {
     });
 
     test('EULER method also produces a trajectory', () {
-      final props = _makeShotProps(
-        method: BCIntegrationMethod.BC_INTEGRATION_EULER,
+      final shot = _makeShot(
+        method: BCLIBCFFI_IntegrationMethod.BCLIBCFFI_INTEGRATION_EULER,
       );
       final request = BcTrajectoryRequest(
         rangeLimitFt: 500.0 * 3.28084,
         rangeStepFt: 100.0 * 3.28084,
-        filterFlags: BCTrajFlag.BC_TRAJ_FLAG_RANGE.value,
+        filterFlags: BCLIBCFFI_TrajFlag.BCLIBCFFI_TRAJ_FLAG_RANGE.value,
       );
-      final result = bc.integrate(props, request);
+      final result = bc.integrateShot(shot, request);
       expect(result.trajectory, isNotEmpty);
     });
   });
 
-  // ── integrateAt ──────────────────────────────────────────────────────────
+  // ── integrateAtShot ──────────────────────────────────────────────────────
 
-  group('integrateAt', () {
+  group('integrateAtShot', () {
     test('returns interception at a specific distance', () {
-      final props = _makeShotProps();
+      final shot = _makeShot();
       final targetFt = 500.0 * 3.28084;
-      final intercept = bc.integrateAt(
-        props,
-        BCBaseTrajInterpKey.BC_INTERP_KEY_POS_X, // POS_X = down-range distance
+      final intercept = bc.integrateAtShot(
+        shot,
+        BCLIBCFFI_BaseTrajInterpKey.BCLIBCFFI_INTERP_KEY_POS_X,
         targetFt,
       );
-      // The interception distance should be close to the requested distance
       expect(intercept.fullData.distanceFt, closeTo(targetFt, targetFt * 0.01));
     });
   });
