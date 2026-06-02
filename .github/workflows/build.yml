@@ -181,17 +181,6 @@ jobs:
             "${{ steps.meta.outputs.build_name }}" \
             "${{ steps.meta.outputs.build_number }}"
 
-      - name: Package Windows artifacts
-        if: inputs.platform == 'windows'
-        shell: pwsh
-        run: |
-          .\scripts\package-windows.ps1 `
-            -BundleDir "${{ steps.meta.outputs.bundle_dir }}" `
-            -BuildName "${{ steps.meta.outputs.build_name }}" `
-            -BuildNumber "${{ steps.meta.outputs.build_number }}" `
-            -BuildType "${{ inputs.build_type }}" `
-            -Arch "${{ steps.meta.outputs.arch_suffix }}"
-
       - name: Decode certificate
         if: inputs.platform == 'windows'
         shell: pwsh
@@ -205,6 +194,41 @@ jobs:
           $bytes = [System.Convert]::FromBase64String($env:CERTIFICATE_BASE64)
           [System.IO.File]::WriteAllBytes("$env:RUNNER_TEMP\ebalistyka_cert.pfx", $bytes)
           Write-Host "Certificate decoded to $env:RUNNER_TEMP\ebalistyka_cert.pfx"
+
+      - name: Sign Windows EXE
+        if: inputs.platform == 'windows'
+        shell: pwsh
+        env:
+          CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+        run: |
+          $certPath = "$env:RUNNER_TEMP\ebalistyka_cert.pfx"
+          if (-not (Test-Path $certPath)) {
+            Write-Host "No certificate found — skipping EXE signing"
+            exit 0
+          }
+          $signtool = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin" `
+            -Recurse -Filter signtool.exe |
+            Where-Object FullName -match x64 |
+            Sort-Object FullName -Descending |
+            Select-Object -First 1 -ExpandProperty FullName
+          if (-not $signtool) { throw "signtool.exe not found in Windows Kits" }
+          Write-Host "signtool: $signtool"
+
+          $exePath = "${{ steps.meta.outputs.bundle_dir }}\ebalistyka.exe"
+          & $signtool sign /fd SHA256 /f $certPath /p $env:CERTIFICATE_PASSWORD `
+            /tr http://timestamp.digicert.com /td SHA256 $exePath
+          Write-Host "✓ Signed $exePath"
+
+      - name: Package Windows artifacts
+        if: inputs.platform == 'windows'
+        shell: pwsh
+        run: |
+          .\scripts\package-windows.ps1 `
+            -BundleDir "${{ steps.meta.outputs.bundle_dir }}" `
+            -BuildName "${{ steps.meta.outputs.build_name }}" `
+            -BuildNumber "${{ steps.meta.outputs.build_number }}" `
+            -BuildType "${{ inputs.build_type }}" `
+            -Arch "${{ steps.meta.outputs.arch_suffix }}"
 
       - name: Package MSIX artifacts
         if: inputs.platform == 'windows'

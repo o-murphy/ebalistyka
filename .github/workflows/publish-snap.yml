@@ -30,7 +30,14 @@ permissions:
   contents: read
 
 jobs:
+  approve:
+    runs-on: ubuntu-latest
+    environment: publish
+    steps:
+      - run: echo "Approved"
+
   snap:
+    needs: approve
     strategy:
       fail-fast: false
       matrix:

@@ -16,10 +16,16 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.v.outputs.version }}
+      build_number: ${{ steps.bn.outputs.build_number }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - id: v
         uses: ./.github/actions/version
+      - id: bn
+        shell: bash
+        run: echo "build_number=$(git rev-list --count --first-parent HEAD)" >> $GITHUB_OUTPUT
 
   build-portable-amd64:
     needs: prepare-version
@@ -343,5 +349,14 @@ jobs:
     uses: ./.github/workflows/publish-winget.yml
     with:
       tag_name: ${{ github.ref_name }}
-      version: ${{ needs.prepare-version.outputs.version }}
+      version: ${{ needs.prepare-version.outputs.version }}.${{ needs.prepare-version.outputs.build_number }}
+    secrets: inherit
+
+  publish-google-play:
+    if: github.ref_type == 'tag'
+    needs: [release]
+    uses: ./.github/workflows/publish-google-play.yml
+    with:
+      tag_name: ${{ github.ref_name }}
+      track: internal
     secrets: inherit

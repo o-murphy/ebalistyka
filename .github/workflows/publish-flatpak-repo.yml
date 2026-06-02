@@ -19,6 +19,7 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment: publish
     steps:
       - uses: o-murphy/flatpak-repo/.github/actions/publish@main
         with:

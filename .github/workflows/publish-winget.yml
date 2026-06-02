@@ -28,6 +28,7 @@ permissions:
 jobs:
   winget:
     runs-on: windows-latest
+    environment: publish
     steps:
       - name: Check winget availability
         id: check_winget
@@ -61,7 +62,7 @@ jobs:
         shell: pwsh
         run: |
           wingetcreate update "o-murphy.ebalistyka" `
-            --version "${{ inputs.version }}.0" `
+            --version "${{ inputs.version }}" `
             --urls "https://github.com/o-murphy/ebalistyka/releases/download/${{ inputs.tag_name }}/ebalistyka_windows_x86_64.zip" `
             --token "${{ secrets.WINGET_TOKEN }}" `
             --submit
