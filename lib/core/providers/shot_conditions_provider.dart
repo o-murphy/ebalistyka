@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
@@ -13,7 +15,7 @@ class ShotConditionsNotifier extends AsyncNotifier<ShootingConditions> {
     final ownerId = _ownerId;
 
     final subscription = _repo.watchShootingConditions(ownerId).listen((_) {
-      _repo.loadOrCreateShootingConditions(ownerId).then((s) => state = AsyncData(s));
+      unawaited(_repo.loadOrCreateShootingConditions(ownerId).then((s) => state = AsyncData(s)));
     });
     ref.onDispose(subscription.cancel);
 

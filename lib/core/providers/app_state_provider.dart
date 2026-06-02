@@ -50,7 +50,6 @@ class AppState {
 
 class AppStateNotifier extends AsyncNotifier<AppState> {
   IAppRepository get _repo => ref.read(appRepositoryProvider);
-  Owner get _owner => ref.read(ownerProvider);
   int get _ownerId => ref.read(ownerIdProvider);
 
   @override
@@ -58,7 +57,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
     final ownerId = _ownerId;
 
     void reload() {
-      _load().then((s) => state = AsyncData(s));
+      unawaited(_load().then((s) => state = AsyncData(s)));
     }
 
     final subs = [

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bclibc_ffi/bclibc.dart';
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
@@ -18,7 +20,7 @@ class SettingsNotifier extends AsyncNotifier<GeneralSettings> {
     final ownerId = _ownerId;
 
     void reload() {
-      _repo.loadOrCreateGeneralSettings(ownerId).then((s) => state = AsyncData(s));
+      unawaited(_repo.loadOrCreateGeneralSettings(ownerId).then((s) => state = AsyncData(s)));
     }
 
     final subscription =
@@ -117,7 +119,7 @@ class UnitSettingsNotifier extends AsyncNotifier<UnitSettings> {
     final ownerId = _ownerId;
 
     void reload() {
-      _repo.loadOrCreateUnitSettings(ownerId).then((s) => state = AsyncData(s));
+      unawaited(_repo.loadOrCreateUnitSettings(ownerId).then((s) => state = AsyncData(s)));
     }
 
     final subscription =
@@ -189,9 +191,9 @@ class TablesSettingsNotifier extends AsyncNotifier<TablesSettings> {
     final ownerId = _ownerId;
 
     void reload() {
-      _repo
+      unawaited(_repo
           .loadOrCreateTablesSettings(ownerId)
-          .then((s) => state = AsyncData(s));
+          .then((s) => state = AsyncData(s)));
     }
 
     final subscription =
@@ -243,9 +245,9 @@ class ReticleSettingsNotifier extends AsyncNotifier<ReticleSettings> {
     final ownerId = _ownerId;
 
     void reload() {
-      _repo
+      unawaited(_repo
           .loadOrCreateReticleSettings(ownerId)
-          .then((s) => state = AsyncData(s));
+          .then((s) => state = AsyncData(s)));
     }
 
     final subscription =

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bclibc_ffi/bclibc.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
@@ -13,7 +15,7 @@ class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
     final ownerId = _ownerId;
 
     final subscription = _repo.watchConvertorsState(ownerId).listen((_) {
-      _repo.loadOrCreateConvertorsState(ownerId).then((s) => state = AsyncData(s));
+      unawaited(_repo.loadOrCreateConvertorsState(ownerId).then((s) => state = AsyncData(s)));
     });
     ref.onDispose(subscription.cancel);
 

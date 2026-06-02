@@ -35,33 +35,6 @@ Future<(Store, bool)> _openObjectBoxStore(String directory) async {
   }
 }
 
-Future<List<Override>> _initObjectBox(String supportDir) async {
-  final (store, dbWasReset) = await _openObjectBoxStore(supportDir);
-  final appRepo = ObjectBoxAppRepository(store);
-  final settingsRepo = ObjectBoxSettingsRepository(store);
-  final owner = await appRepo.ensureOwner('local');
-  return [
-    dbProvider.overrideWithValue(store),
-    dbWasResetProvider.overrideWithValue(dbWasReset),
-    appRepositoryProvider.overrideWithValue(appRepo),
-    settingsRepositoryProvider.overrideWithValue(settingsRepo),
-    ownerProvider.overrideWithValue(owner),
-  ];
-}
-
-Future<List<Override>> _initSembast(String supportDir) async {
-  final dbPath = '$supportDir/ebalistyka.db';
-  final db = await databaseFactoryIo.openDatabase(dbPath);
-  final appRepo = SembastAppRepository(db);
-  final settingsRepo = SembastSettingsRepository(db);
-  final owner = await appRepo.ensureOwner('local');
-  return [
-    appRepositoryProvider.overrideWithValue(appRepo),
-    settingsRepositoryProvider.overrideWithValue(settingsRepo),
-    ownerProvider.overrideWithValue(owner),
-  ];
-}
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -95,16 +68,46 @@ void main() async {
 
   debugAppInfoConstants();
 
-  final overrides = kStorageBackend == StorageBackend.sembast
-      ? await _initSembast(appSupport.path)
-      : await _initObjectBox(appSupport.path);
+  late final IAppRepository appRepo;
+  late final ISettingsRepository settingsRepo;
+  late final Owner owner;
+  var dbWasReset = false;
 
-  runApp(
-    ProviderScope(
-      overrides: overrides,
-      child: const MyApp(),
-    ),
-  );
+  if (kStorageBackend == StorageBackend.sembast) {
+    final db = await databaseFactoryIo
+        .openDatabase('${appSupport.path}/ebalistyka.db');
+    appRepo = SembastAppRepository(db);
+    settingsRepo = SembastSettingsRepository(db);
+    owner = await appRepo.ensureOwner('local');
+    runApp(
+      ProviderScope(
+        overrides: [
+          appRepositoryProvider.overrideWithValue(appRepo),
+          settingsRepositoryProvider.overrideWithValue(settingsRepo),
+          ownerProvider.overrideWithValue(owner),
+        ],
+        child: const MyApp(),
+      ),
+    );
+  } else {
+    final (store, reset) = await _openObjectBoxStore(appSupport.path);
+    dbWasReset = reset;
+    appRepo = ObjectBoxAppRepository(store);
+    settingsRepo = ObjectBoxSettingsRepository(store);
+    owner = await appRepo.ensureOwner('local');
+    runApp(
+      ProviderScope(
+        overrides: [
+          dbProvider.overrideWithValue(store),
+          dbWasResetProvider.overrideWithValue(dbWasReset),
+          appRepositoryProvider.overrideWithValue(appRepo),
+          settingsRepositoryProvider.overrideWithValue(settingsRepo),
+          ownerProvider.overrideWithValue(owner),
+        ],
+        child: const MyApp(),
+      ),
+    );
+  }
 }
 
 class _AppScrollBehavior extends MaterialScrollBehavior {

@@ -6,11 +6,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:ebalistyka_db/ebalistyka_db.dart';
-import 'package:ebalistyka_db/src/export/ammo_export.dart';
-import 'package:ebalistyka_db/src/export/profile_export.dart';
-import 'package:ebalistyka_db/src/export/sight_export.dart';
-import 'package:ebalistyka_db/src/export/weapon_export.dart';
-import 'package:ebalistyka_db/src/sembast/sembast_app_repository.dart';
 import 'package:sembast/sembast_memory.dart';
 import 'package:test/test.dart';
 

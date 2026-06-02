@@ -6,7 +6,6 @@ import 'package:ebalistyka_db/src/export/conditions_export.dart';
 import 'package:ebalistyka_db/src/export/general_settings_export.dart';
 import 'package:ebalistyka_db/src/export/unit_settings_export.dart';
 import 'package:ebalistyka_db/src/export/tables_settings_export.dart';
-import 'package:ebalistyka_db/src/export/reticle_settings_export.dart';
 
 abstract interface class IAppRepository {
   Future<Owner> ensureOwner(String token);

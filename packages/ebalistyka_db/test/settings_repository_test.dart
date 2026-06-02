@@ -4,13 +4,6 @@
 import 'dart:io';
 
 import 'package:ebalistyka_db/ebalistyka_db.dart';
-import 'package:ebalistyka_db/src/export/conditions_export.dart';
-import 'package:ebalistyka_db/src/export/general_settings_export.dart';
-import 'package:ebalistyka_db/src/export/reticle_settings_export.dart';
-import 'package:ebalistyka_db/src/export/tables_settings_export.dart';
-import 'package:ebalistyka_db/src/export/unit_settings_export.dart';
-import 'package:ebalistyka_db/src/sembast/sembast_app_repository.dart';
-import 'package:ebalistyka_db/src/sembast/sembast_settings_repository.dart';
 import 'package:sembast/sembast_memory.dart';
 import 'package:test/test.dart';
 
