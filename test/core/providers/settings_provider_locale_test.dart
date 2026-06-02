@@ -13,6 +13,7 @@ void main() {
   late TestWidgetsFlutterBinding binding;
   late Store store;
   late Directory tmpDir;
+  late Owner owner;
 
   setUpAll(() {
     binding = TestWidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +22,7 @@ void main() {
   setUp(() async {
     tmpDir = await Directory.systemTemp.createTemp('settings_locale_test_');
     store = await initObjectBox(directory: tmpDir.path);
+    owner = await ObjectBoxAppRepository(store).ensureOwner('local');
   });
 
   tearDown(() {
@@ -29,8 +31,11 @@ void main() {
     tmpDir.deleteSync(recursive: true);
   });
 
-  ProviderContainer makeContainer() =>
-      ProviderContainer(overrides: [dbProvider.overrideWithValue(store)]);
+  ProviderContainer makeContainer() => ProviderContainer(overrides: [
+    settingsRepositoryProvider
+        .overrideWithValue(ObjectBoxSettingsRepository(store)),
+    ownerProvider.overrideWithValue(owner),
+  ]);
 
   Future<GeneralSettings> waitForSettings(ProviderContainer c) =>
       c.read(settingsProvider.future);
