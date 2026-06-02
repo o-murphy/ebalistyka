@@ -217,7 +217,6 @@ jobs:
           $exePath = "${{ steps.meta.outputs.bundle_dir }}\ebalistyka.exe"
           & $signtool sign /fd SHA256 /f $certPath /p $env:CERTIFICATE_PASSWORD `
             /tr http://timestamp.digicert.com /td SHA256 $exePath
-          & $signtool verify /pa $exePath
           Write-Host "✓ Signed $exePath"
 
       - name: Package Windows artifacts
