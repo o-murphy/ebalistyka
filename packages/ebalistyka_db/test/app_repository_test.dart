@@ -248,6 +248,38 @@ void runAppRepositoryContract(String label, RepoFactory factory) {
         expect(all.first.bcG7, closeTo(0.310, 1e-6));
       });
 
+      test('saveAmmo: Float64List null → set on update', () async {
+        final ammo = _makeAmmo();
+        final id = await repo.saveAmmo(ammo, owner.id);
+
+        ammo.useMultiBcG7 = true;
+        ammo.multiBcTableG7VMps = Float64List.fromList([900.0, 800.0]);
+        ammo.multiBcTableG7Bc = Float64List.fromList([0.30, 0.29]);
+        await repo.saveAmmo(ammo, owner.id);
+
+        final updated = (await repo.getAmmo(id))!;
+        expect(updated.multiBcTableG7VMps, [900.0, 800.0]);
+        expect(updated.multiBcTableG7Bc, [0.30, 0.29]);
+      });
+
+      test('saveAmmo: Float64List set → null on update', () async {
+        final ammo = _makeAmmo()
+          ..useMultiBcG7 = true
+          ..multiBcTableG7VMps = Float64List.fromList([900.0, 800.0])
+          ..multiBcTableG7Bc = Float64List.fromList([0.30, 0.29]);
+        final id = await repo.saveAmmo(ammo, owner.id);
+
+        ammo.useMultiBcG7 = false;
+        ammo.multiBcTableG7VMps = null;
+        ammo.multiBcTableG7Bc = null;
+        await repo.saveAmmo(ammo, owner.id);
+
+        final updated = (await repo.getAmmo(id))!;
+        expect(updated.useMultiBcG7, isFalse);
+        expect(updated.multiBcTableG7VMps, isNull);
+        expect(updated.multiBcTableG7Bc, isNull);
+      });
+
       test('deleteAmmo removes from list', () async {
         final ammo = _makeAmmo();
         final id = await repo.saveAmmo(ammo, owner.id);
@@ -273,6 +305,35 @@ void runAppRepositoryContract(String label, RepoFactory factory) {
         final profiles = await repo.loadProfiles(owner.id);
         expect(profiles.first.ammo.targetId, 0);
         expect(profiles.first.sight.targetId, sightId); // sight untouched
+      });
+
+      test('deleteAmmo when profile has no ammo does not throw', () async {
+        final ammo = _makeAmmo();
+        final ammoId = await repo.saveAmmo(ammo, owner.id);
+
+        // profile with no ammo linked
+        await repo.createProfile('P', _makeWeapon(), owner.id);
+
+        await expectLater(repo.deleteAmmo(ammoId), completes);
+        expect(await repo.loadAmmo(owner.id), isEmpty);
+      });
+
+      test('after deleteAmmo new ammo can be linked to profile', () async {
+        final ammo1 = _makeAmmo(name: 'Ammo1');
+        final ammoId1 = await repo.saveAmmo(ammo1, owner.id);
+        final weapon = _makeWeapon();
+        final profileId = await repo.createProfile('P', weapon, owner.id);
+        await repo.setProfileAmmo(profileId, ammoId1);
+        await repo.deleteAmmo(ammoId1);
+
+        // link new ammo after deletion
+        final ammo2 = _makeAmmo(name: 'Ammo2');
+        final ammoId2 = await repo.saveAmmo(ammo2, owner.id);
+        await repo.setProfileAmmo(profileId, ammoId2);
+
+        final profiles = await repo.loadProfiles(owner.id);
+        expect(profiles.first.ammo.targetId, ammoId2);
+        expect(profiles.first.ammo.target?.name, 'Ammo2');
       });
 
       test('duplicateAmmo creates independent copy', () async {
@@ -446,6 +507,36 @@ void runAppRepositoryContract(String label, RepoFactory factory) {
         expect(profiles.first.ammo.target?.name, 'Test Ammo');
       });
 
+      test('setProfileAmmo replaces existing ammo (ammo1 → ammo2)', () async {
+        final weapon = _makeWeapon();
+        final profileId = await repo.createProfile('P', weapon, owner.id);
+
+        final ammo1 = _makeAmmo(name: 'Ammo1');
+        final ammoId1 = await repo.saveAmmo(ammo1, owner.id);
+        await repo.setProfileAmmo(profileId, ammoId1);
+
+        final ammo2 = _makeAmmo(name: 'Ammo2');
+        final ammoId2 = await repo.saveAmmo(ammo2, owner.id);
+        await repo.setProfileAmmo(profileId, ammoId2);
+
+        final profiles = await repo.loadProfiles(owner.id);
+        expect(profiles.first.ammo.targetId, ammoId2);
+        expect(profiles.first.ammo.target?.name, 'Ammo2');
+      });
+
+      test('setProfileAmmo can clear ammo (set to 0)', () async {
+        final weapon = _makeWeapon();
+        final profileId = await repo.createProfile('P', weapon, owner.id);
+        final ammo = _makeAmmo();
+        final ammoId = await repo.saveAmmo(ammo, owner.id);
+        await repo.setProfileAmmo(profileId, ammoId);
+        await repo.setProfileAmmo(profileId, 0);
+
+        final profiles = await repo.loadProfiles(owner.id);
+        expect(profiles.first.ammo.targetId, 0);
+        expect(profiles.first.ammo.target, isNull);
+      });
+
       test('setProfileSight links sight to profile', () async {
         final weapon = _makeWeapon();
         final profileId = await repo.createProfile('P', weapon, owner.id);
@@ -457,6 +548,36 @@ void runAppRepositoryContract(String label, RepoFactory factory) {
         final profiles = await repo.loadProfiles(owner.id);
         expect(profiles.first.sight.targetId, sightId);
         expect(profiles.first.sight.target?.name, 'Test Scope');
+      });
+
+      test('setProfileSight replaces existing sight (sight1 → sight2)', () async {
+        final weapon = _makeWeapon();
+        final profileId = await repo.createProfile('P', weapon, owner.id);
+
+        final sight1 = _makeSight(name: 'Scope1');
+        final sightId1 = await repo.saveSight(sight1, owner.id);
+        await repo.setProfileSight(profileId, sightId1);
+
+        final sight2 = _makeSight(name: 'Scope2');
+        final sightId2 = await repo.saveSight(sight2, owner.id);
+        await repo.setProfileSight(profileId, sightId2);
+
+        final profiles = await repo.loadProfiles(owner.id);
+        expect(profiles.first.sight.targetId, sightId2);
+        expect(profiles.first.sight.target?.name, 'Scope2');
+      });
+
+      test('setProfileSight can clear sight (set to 0)', () async {
+        final weapon = _makeWeapon();
+        final profileId = await repo.createProfile('P', weapon, owner.id);
+        final sight = _makeSight();
+        final sightId = await repo.saveSight(sight, owner.id);
+        await repo.setProfileSight(profileId, sightId);
+        await repo.setProfileSight(profileId, 0);
+
+        final profiles = await repo.loadProfiles(owner.id);
+        expect(profiles.first.sight.targetId, 0);
+        expect(profiles.first.sight.target, isNull);
       });
 
       test('getProfile returns stitched relations', () async {
