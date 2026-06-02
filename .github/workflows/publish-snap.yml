@@ -32,7 +32,7 @@ permissions:
 jobs:
   approve:
     runs-on: ubuntu-latest
-    environment: publish-snap
+    environment: publish
     steps:
       - run: echo "Approved"
 

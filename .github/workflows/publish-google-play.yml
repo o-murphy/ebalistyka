@@ -34,7 +34,7 @@ permissions:
 jobs:
   google-play:
     runs-on: ubuntu-latest
-    environment: publish-google-play
+    environment: publish
     steps:
       - name: Download AAB from release
         run: |

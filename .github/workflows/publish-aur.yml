@@ -20,7 +20,7 @@ permissions:
 jobs:
   aur:
     runs-on: ubuntu-latest
-    environment: publish-aur
+    environment: publish
     container: archlinux:latest
     steps:
       - name: Install dependencies

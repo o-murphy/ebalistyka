@@ -28,7 +28,7 @@ permissions:
 jobs:
   winget:
     runs-on: windows-latest
-    environment: publish-winget
+    environment: publish
     steps:
       - name: Check winget availability
         id: check_winget
