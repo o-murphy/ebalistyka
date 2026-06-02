@@ -1,0 +1,55 @@
+name: Publish Google Play
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Release tag to publish (e.g. v0.1.16)"
+        required: true
+        type: string
+      track:
+        description: "Google Play track"
+        required: false
+        type: choice
+        options: [internal, alpha, beta, production]
+        default: internal
+  workflow_call:
+    inputs:
+      tag_name:
+        description: "Release tag to publish"
+        required: true
+        type: string
+      track:
+        description: "Google Play track"
+        required: false
+        type: string
+        default: internal
+    secrets:
+      GOOGLE_PLAY_SERVICE_ACCOUNT:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  google-play:
+    runs-on: ubuntu-latest
+    environment: publish-google-play
+    steps:
+      - name: Download AAB from release
+        run: |
+          gh release download "${{ inputs.tag_name }}" \
+            --pattern "ebalistyka_android.aab" \
+            --dir aab \
+            --repo "${{ github.repository }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload to Google Play
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
+          packageName: com.o.murphy.ebalistyka
+          releaseFiles: aab/ebalistyka_android.aab
+          tracks: ${{ inputs.track }}
+          status: completed
