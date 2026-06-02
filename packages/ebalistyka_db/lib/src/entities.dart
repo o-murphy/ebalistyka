@@ -335,7 +335,7 @@ class GeneralSettings with Cloneable<GeneralSettings> {
   @Id()
   int id = 0;
 
-  String languageCode = "en";
+  String languageCode = "";
   String themeMode = "system";
 
   String adjustmentDisplayFormatValue = "arrows";

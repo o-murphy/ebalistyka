@@ -32,7 +32,7 @@ void runSettingsRepositoryContract(String label, SettingsRepoFactory factory) {
     group('GeneralSettings', () {
       test('loadOrCreate returns entity with defaults', () async {
         final s = await repo.loadOrCreateGeneralSettings(ownerId);
-        expect(s.languageCode, isNotEmpty);
+        expect(s.languageCode, isEmpty);
         expect(s.themeMode, isNotEmpty);
       });
 
@@ -41,7 +41,7 @@ void runSettingsRepositoryContract(String label, SettingsRepoFactory factory) {
         await repo.loadOrCreateGeneralSettings(ownerId);
         // second call must not throw and must return same data
         final s = await repo.loadOrCreateGeneralSettings(ownerId);
-        expect(s.languageCode, isNotEmpty);
+        expect(s.languageCode, isEmpty);
       });
 
       test('save and reload persists all fields', () async {
