@@ -1,6 +1,11 @@
 import 'dart:io';
 import 'objectbox.g.dart';
 
+export 'src/repository.dart';
+export 'src/objectbox_app_repository.dart';
+export 'src/objectbox_settings_repository.dart';
+export 'src/sembast/sembast_app_repository.dart';
+export 'src/sembast/sembast_settings_repository.dart';
 export 'src/entities.dart';
 export 'src/export/ammo_export.dart';
 export 'src/export/conditions_export.dart';

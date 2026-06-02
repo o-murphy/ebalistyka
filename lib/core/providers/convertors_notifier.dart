@@ -5,58 +5,37 @@ import 'package:ebalistyka/core/providers/db_provider.dart';
 import 'package:riverpod/riverpod.dart';
 
 class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
-  Store get _store => ref.read(dbProvider);
-  Owner get _owner => ref.read(ownerProvider);
+  ISettingsRepository get _repo => ref.read(settingsRepositoryProvider);
+  int get _ownerId => ref.read(ownerIdProvider);
 
   @override
   Future<ConvertorsState> build() async {
-    final owner = _owner;
-    final s = _loadOrCreate(owner);
+    final ownerId = _ownerId;
 
-    final subscription = _store
-        .box<ConvertorsState>()
-        .query(ConvertorsState_.owner.equals(owner.id))
-        .watch(triggerImmediately: false)
-        .listen((query) {
-          final updated = query.findFirst();
-          if (updated != null) state = AsyncData(updated);
-        });
+    final subscription = _repo.watchConvertorsState(ownerId).listen((_) {
+      _repo.loadOrCreateConvertorsState(ownerId).then((s) => state = AsyncData(s));
+    });
     ref.onDispose(subscription.cancel);
 
-    return s;
+    return _repo.loadOrCreateConvertorsState(ownerId);
   }
-
-  ConvertorsState _loadOrCreate(Owner owner) {
-    final existing = _store
-        .box<ConvertorsState>()
-        .query(ConvertorsState_.owner.equals(owner.id))
-        .build()
-        .findFirst();
-    if (existing != null) return existing;
-    final s = ConvertorsState()..owner.target = owner;
-    _store.box<ConvertorsState>().put(s);
-    return s;
-  }
-
-  ConvertorsState _load() => _loadOrCreate(_owner);
 
   Future<void> _save(ConvertorsState s) async {
-    _store.box<ConvertorsState>().put(s);
-    final fresh = _store.box<ConvertorsState>().get(s.id);
-    if (fresh != null) state = AsyncData(fresh);
+    await _repo.saveConvertorsState(s, _ownerId);
+    state = AsyncData(s);
   }
 
   // ── Length ────────────────────────────────────────────────────────────────────
 
   Future<void> updateLengthValue(double? valueInInches) async {
     if (valueInInches == null || valueInInches < 0) return;
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.lengthValueInch = valueInInches;
     await _save(s);
   }
 
   Future<void> updateLengthUnit(Unit unit) async {
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.lengthUnit = unit;
     await _save(s);
   }
@@ -65,13 +44,13 @@ class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
 
   Future<void> updateWeightValue(double? valueInGrains) async {
     if (valueInGrains == null || valueInGrains < 0) return;
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.weightValueGrain = valueInGrains;
     await _save(s);
   }
 
   Future<void> updateWeightUnit(Unit unit) async {
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.weightUnit = unit;
     await _save(s);
   }
@@ -80,13 +59,13 @@ class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
 
   Future<void> updatePressureValue(double? valueInMmHg) async {
     if (valueInMmHg == null || valueInMmHg < 0) return;
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.pressureValueMmHg = valueInMmHg;
     await _save(s);
   }
 
   Future<void> updatePressureUnit(Unit unit) async {
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.pressureUnit = unit;
     await _save(s);
   }
@@ -95,13 +74,13 @@ class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
 
   Future<void> updateTemperatureValue(double? valueInFahrenheit) async {
     if (valueInFahrenheit == null) return;
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.temperatureValueF = valueInFahrenheit;
     await _save(s);
   }
 
   Future<void> updateTemperatureUnit(Unit unit) async {
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.temperatureUnit = unit;
     await _save(s);
   }
@@ -110,13 +89,13 @@ class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
 
   Future<void> updateTorqueValue(double? valueInNewtonMeter) async {
     if (valueInNewtonMeter == null || valueInNewtonMeter < 0) return;
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.torqueValueNewtonMeter = valueInNewtonMeter;
     await _save(s);
   }
 
   Future<void> updateTorqueUnit(Unit unit) async {
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.torqueUnit = unit;
     await _save(s);
   }
@@ -125,49 +104,49 @@ class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
 
   Future<void> updateVelocityValue(double? valueInMps) async {
     if (valueInMps == null || valueInMps < 0) return;
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.velocityValue = Velocity.mps(valueInMps);
     await _save(s);
   }
 
   Future<void> updateVelocityUnit(Unit unit) async {
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.velocityUnit = unit;
     await _save(s);
   }
 
   Future<void> updateVelocityMachInputValue(double mach) async {
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.velocityMachInputValue = mach;
     await _save(s);
   }
 
   Future<void> updateVelocityMachUseCustomAtmo(bool value) async {
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.velocityMachUseCustomAtmo = value;
     await _save(s);
   }
 
   Future<void> updateVelocityAtmoTemperature(Temperature value) async {
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.velocityAtmoTemperature = value;
     await _save(s);
   }
 
   Future<void> updateVelocityAtmoPressure(Pressure value) async {
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.velocityAtmoPressure = value;
     await _save(s);
   }
 
   Future<void> updateVelocityAtmoHumidityFrac(double valueFrac) async {
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.velocityAtmoHumidityFrac = valueFrac;
     await _save(s);
   }
 
   Future<void> updateVelocityAtmoAltitude(Distance value) async {
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.velocityAtmoAltitude = value;
     await _save(s);
   }
@@ -176,26 +155,26 @@ class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
 
   Future<void> updateDistanceConvTargetSize(double? valueInInches) async {
     if (valueInInches == null || valueInInches < 0) return;
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.distanceConvTargetSizeInch = valueInInches;
     await _save(s);
   }
 
   Future<void> updateDistanceConvTargetSizeUnit(Unit unit) async {
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.distanceConvTargetSizeUnitValue = unit;
     await _save(s);
   }
 
   Future<void> updateDistanceConvTargetSizeAngular(double? valueInMil) async {
     if (valueInMil == null || valueInMil <= 0) return;
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.distanceConvTargetSizeAngularMil = valueInMil;
     await _save(s);
   }
 
   Future<void> updateDistanceConvTargetSizeAngularUnit(Unit unit) async {
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.distanceConvTargetSizeAngularUnitValue = unit;
     await _save(s);
   }
@@ -204,32 +183,32 @@ class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
 
   Future<void> updateAnglesConvDistanceValue(double? valueInMeters) async {
     if (valueInMeters == null || valueInMeters < 0) return;
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.anglesConvDistanceValueMeter = valueInMeters;
     await _save(s);
   }
 
   Future<void> updateAnglesConvDistanceUnit(Unit unit) async {
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.anglesConvDistanceUnit = unit;
     await _save(s);
   }
 
   Future<void> updateAnglesConvAngularValue(double? valueInMil) async {
     if (valueInMil == null || valueInMil < 0) return;
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.anglesConvAngularValueMil = valueInMil;
     await _save(s);
   }
 
   Future<void> updateAnglesConvAngularUnit(Unit unit) async {
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.anglesConvAngularUnit = unit;
     await _save(s);
   }
 
   Future<void> updateAnglesConvOutputUnit(Unit unit) async {
-    final s = state.value ?? _load();
+    final s = state.value ?? await _repo.loadOrCreateConvertorsState(_ownerId);
     s.anglesConvOutputUnit = unit;
     await _save(s);
   }

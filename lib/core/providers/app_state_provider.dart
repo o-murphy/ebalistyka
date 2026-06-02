@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
@@ -50,41 +49,24 @@ class AppState {
 // ── AppStateNotifier ──────────────────────────────────────────────────────────
 
 class AppStateNotifier extends AsyncNotifier<AppState> {
-  Store get _store => ref.read(dbProvider);
+  IAppRepository get _repo => ref.read(appRepositoryProvider);
   Owner get _owner => ref.read(ownerProvider);
+  int get _ownerId => ref.read(ownerIdProvider);
 
   @override
   Future<AppState> build() async {
-    final owner = _owner;
+    final ownerId = _ownerId;
 
-    void reload() => state = AsyncData(_load());
+    void reload() {
+      _load().then((s) => state = AsyncData(s));
+    }
 
     final subs = [
-      _store
-          .box<Owner>()
-          .query(Owner_.id.equals(owner.id))
-          .watch(triggerImmediately: false)
-          .listen((_) => reload()),
-      _store
-          .box<Weapon>()
-          .query(Weapon_.owner.equals(owner.id))
-          .watch(triggerImmediately: false)
-          .listen((_) => reload()),
-      _store
-          .box<Ammo>()
-          .query(Ammo_.owner.equals(owner.id))
-          .watch(triggerImmediately: false)
-          .listen((_) => reload()),
-      _store
-          .box<Sight>()
-          .query(Sight_.owner.equals(owner.id))
-          .watch(triggerImmediately: false)
-          .listen((_) => reload()),
-      _store
-          .box<Profile>()
-          .query(Profile_.owner.equals(owner.id))
-          .watch(triggerImmediately: false)
-          .listen((_) => reload()),
+      _repo.watchOwner(ownerId).listen((_) => reload()),
+      _repo.watchWeapons(ownerId).listen((_) => reload()),
+      _repo.watchAmmo(ownerId).listen((_) => reload()),
+      _repo.watchSights(ownerId).listen((_) => reload()),
+      _repo.watchProfiles(ownerId).listen((_) => reload()),
     ];
     ref.onDispose(() {
       for (final s in subs) {
@@ -95,60 +77,24 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
     return _load();
   }
 
-  AppState _load() {
-    final owner = _owner;
+  Future<AppState> _load() async {
+    final ownerId = _ownerId;
 
-    var weapons = _store
-        .box<Weapon>()
-        .query(Weapon_.owner.equals(owner.id))
-        .build()
-        .find();
-    var ammo = _store
-        .box<Ammo>()
-        .query(Ammo_.owner.equals(owner.id))
-        .build()
-        .find();
-    var sights = _store
-        .box<Sight>()
-        .query(Sight_.owner.equals(owner.id))
-        .build()
-        .find();
-    var profiles = _store
-        .box<Profile>()
-        .query(Profile_.owner.equals(owner.id))
-        .build()
-        .find();
+    var weapons = await _repo.loadWeapons(ownerId);
+    var ammo = await _repo.loadAmmo(ownerId);
+    var sights = await _repo.loadSights(ownerId);
+    var profiles = await _repo.loadProfiles(ownerId);
 
-    // ── Seed on first run ──────────────────────────────────────────────────────
-    if (weapons.isEmpty && ammo.isEmpty && sights.isEmpty && profiles.isEmpty) {
+    if (await _repo.needsSeed(ownerId)) {
       debugPrint('AppStateNotifier: seeding initial data...');
-      _seed(owner);
-      weapons = _store
-          .box<Weapon>()
-          .query(Weapon_.owner.equals(owner.id))
-          .build()
-          .find();
-      ammo = _store
-          .box<Ammo>()
-          .query(Ammo_.owner.equals(owner.id))
-          .build()
-          .find();
-      sights = _store
-          .box<Sight>()
-          .query(Sight_.owner.equals(owner.id))
-          .build()
-          .find();
-      profiles = _store
-          .box<Profile>()
-          .query(Profile_.owner.equals(owner.id))
-          .build()
-          .find();
+      await _seed(ownerId);
+      weapons = await _repo.loadWeapons(ownerId);
+      ammo = await _repo.loadAmmo(ownerId);
+      sights = await _repo.loadSights(ownerId);
+      profiles = await _repo.loadProfiles(ownerId);
     }
 
-    // Use targetId (just the ID, no cached entity) then find the fresh
-    // entity from the just-loaded profiles list so Riverpod always sees
-    // a new object reference and notifies downstream providers.
-    final activeId = owner.activeProfile.targetId;
+    final activeId = await _repo.getActiveProfileId(ownerId);
     final activeProfile = activeId != 0
         ? profiles.where((p) => p.id == activeId).firstOrNull
         : (profiles.isNotEmpty ? profiles.first : null);
@@ -167,354 +113,139 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
     );
   }
 
-  void _seed(Owner owner) {
-    _store.runInTransaction(TxMode.write, () {
-      final sight = Sight()
-        ..name = 'Nightforce ATACR 7-35x56 F1 ZeroS 0.1 MIL DigIllum PTL'
-        ..vendor = 'Nightforce'
-        ..sightHeight = Distance.inch(1.575)
-        ..minMagnification = 7
-        ..maxMagnification = 35
-        ..focalPlane = FocalPlane.ffp
-        ..verticalClick = 0.1
-        ..horizontalClick = 0.1
-        ..verticalClickUnitValue = Unit.mil
-        ..horizontalClickUnitValue = Unit.mil
-        ..owner.target = owner;
-      _store.box<Sight>().put(sight);
+  Future<void> _seed(int ownerId) async {
+    final sight = Sight()
+      ..name = 'Nightforce ATACR 7-35x56 F1 ZeroS 0.1 MIL DigIllum PTL'
+      ..vendor = 'Nightforce'
+      ..sightHeight = Distance.inch(1.575)
+      ..minMagnification = 7
+      ..maxMagnification = 35
+      ..focalPlane = FocalPlane.ffp
+      ..verticalClick = 0.1
+      ..horizontalClick = 0.1
+      ..verticalClickUnitValue = Unit.mil
+      ..horizontalClickUnitValue = Unit.mil;
+    final sightId = await _repo.saveSight(sight, ownerId);
+    sight.id = sightId;
 
-      final ammos = [
-        Ammo()
-          ..name = 'Hornady 285GR ELD-M'
-          ..vendor = 'Hornady'
-          ..dragType = DragType.g7
-          ..weight = Weight.grain(285.0)
-          ..caliber = Distance.inch(0.338)
-          ..length = Distance.inch(1.746)
-          ..bcG7 = 0.397
-          ..bcG1 = 0.791
-          ..mv = Velocity.mps(827.0)
-          ..mvTemperature = Temperature.celsius(15.0)
-          ..powderSensitivity = Ratio.fraction(0.0144)
-          ..zeroDistance = Distance.meter(100.0)
-          ..owner.target = owner,
-      ];
-      _store.box<Ammo>().putMany(ammos);
+    final ammo = Ammo()
+      ..name = 'Hornady 285GR ELD-M'
+      ..vendor = 'Hornady'
+      ..dragType = DragType.g7
+      ..weight = Weight.grain(285.0)
+      ..caliber = Distance.inch(0.338)
+      ..length = Distance.inch(1.746)
+      ..bcG7 = 0.397
+      ..bcG1 = 0.791
+      ..mv = Velocity.mps(827.0)
+      ..mvTemperature = Temperature.celsius(15.0)
+      ..powderSensitivity = Ratio.fraction(0.0144)
+      ..zeroDistance = Distance.meter(100.0);
+    final ammoId = await _repo.saveAmmo(ammo, ownerId);
+    ammo.id = ammoId;
 
-      for (var i = 0; i < ammos.length; i++) {
-        final weapon = Weapon()
-          ..name = 'Cadex Defence Kraken CDX-MC'
-          ..vendor = 'Cadex'
-          ..caliber = Distance.inch(0.338)
-          ..caliberName = '338 Lapua Magnum'
-          ..twist = Distance.inch(9.5)
-          ..barrelLength = Distance.inch(26.0)
-          ..owner.target = owner;
-        _store.box<Weapon>().put(weapon);
+    final weapon = Weapon()
+      ..name = 'Cadex Defence Kraken CDX-MC'
+      ..vendor = 'Cadex'
+      ..caliber = Distance.inch(0.338)
+      ..caliberName = '338 Lapua Magnum'
+      ..twist = Distance.inch(9.5)
+      ..barrelLength = Distance.inch(26.0);
+    final weaponId = await _repo.saveWeapon(weapon, ownerId);
+    weapon.id = weaponId;
 
-        final profile = Profile()
-          ..name = weapon.name
-          ..weapon.target = weapon
-          ..sight.target = sight
-          ..ammo.target = ammos[i]
-          ..owner.target = owner;
-        _store.box<Profile>().put(profile);
-      }
-    });
+    final profile = Profile()
+      ..name = weapon.name
+      ..weapon.target = weapon
+      ..sight.target = sight
+      ..ammo.target = ammo;
+    await _repo.saveProfile(profile, ownerId);
   }
 
-  // ── Active profile ────────────────────────────────────────────────────────────
+  // ── Active profile ─────────────────────────────────────────────────────────
 
   Future<void> setActiveProfile(Profile profile) async {
-    final owner = _owner;
-    owner.activeProfile.target = profile;
-    _store.box<Owner>().put(owner);
-    // Owner stream triggers reload.
+    await _repo.setActiveProfileId(_ownerId, profile.id);
   }
 
-  // ── Ammo CRUD ─────────────────────────────────────────────────────────────────
+  // ── Ammo CRUD ──────────────────────────────────────────────────────────────
 
   Future<void> saveAmmo(Ammo ammo) async {
-    ammo.owner.target = _owner;
-    _store.box<Ammo>().put(ammo);
-    // Ammo stream triggers reload.
+    await _repo.saveAmmo(ammo, _ownerId);
   }
 
   Future<int> duplicateAmmo(int id, String newName) async {
-    final original = _store.box<Ammo>().get(id);
-    if (original == null) return 0;
-    final copy = Ammo()
-      ..name = newName
-      ..caliberInch = original.caliberInch
-      ..weightGrain = original.weightGrain
-      ..lengthInch = original.lengthInch
-      ..dragTypeValue = original.dragTypeValue
-      ..bcG1 = original.bcG1
-      ..bcG7 = original.bcG7
-      ..useMultiBcG1 = original.useMultiBcG1
-      ..useMultiBcG7 = original.useMultiBcG7
-      ..muzzleVelocityMps = original.muzzleVelocityMps
-      ..muzzleVelocityTemperatureC = original.muzzleVelocityTemperatureC
-      ..powderSensitivityFrac = original.powderSensitivityFrac
-      ..usePowderSensitivity = original.usePowderSensitivity
-      ..powderSensitivityTC = original.powderSensitivityTC != null
-          ? Float64List.fromList(original.powderSensitivityTC!)
-          : null
-      ..powderSensitivityVMps = original.powderSensitivityVMps != null
-          ? Float64List.fromList(original.powderSensitivityVMps!)
-          : null
-      ..multiBcTableG1VMps = original.multiBcTableG1VMps != null
-          ? Float64List.fromList(original.multiBcTableG1VMps!)
-          : null
-      ..multiBcTableG1Bc = original.multiBcTableG1Bc != null
-          ? Float64List.fromList(original.multiBcTableG1Bc!)
-          : null
-      ..multiBcTableG7VMps = original.multiBcTableG7VMps != null
-          ? Float64List.fromList(original.multiBcTableG7VMps!)
-          : null
-      ..multiBcTableG7Bc = original.multiBcTableG7Bc != null
-          ? Float64List.fromList(original.multiBcTableG7Bc!)
-          : null
-      ..customDragTableMach = original.customDragTableMach != null
-          ? Float64List.fromList(original.customDragTableMach!)
-          : null
-      ..customDragTableCd = original.customDragTableCd != null
-          ? Float64List.fromList(original.customDragTableCd!)
-          : null
-      ..zeroDistanceMeter = original.zeroDistanceMeter
-      ..zeroLookAngleRad = original.zeroLookAngleRad
-      ..zeroAltitudeMeter = original.zeroAltitudeMeter
-      ..zeroTemperatureC = original.zeroTemperatureC
-      ..zeroPressurehPa = original.zeroPressurehPa
-      ..zeroHumidityFrac = original.zeroHumidityFrac
-      ..zeroPowderTemperatureC = original.zeroPowderTemperatureC
-      ..zeroUseDiffPowderTemperature = original.zeroUseDiffPowderTemperature
-      ..zeroUseCoriolis = original.zeroUseCoriolis
-      ..zeroLatitudeDeg = original.zeroLatitudeDeg
-      ..zeroAzimuthDeg = original.zeroAzimuthDeg
-      ..zeroOffsetX = original.zeroOffsetX
-      ..zeroOffsetY = original.zeroOffsetY
-      ..zeroOffsetXUnit = original.zeroOffsetXUnit
-      ..zeroOffsetYUnit = original.zeroOffsetYUnit
-      ..projectileName = original.projectileName
-      ..vendor = original.vendor
-      ..owner.target = _owner;
-    return _store.box<Ammo>().put(copy);
-    // Ammo stream triggers reload.
+    return _repo.duplicateAmmo(id, newName, _ownerId);
   }
 
   Future<void> deleteAmmo(int id) async {
-    _store.runInTransaction(TxMode.write, () {
-      final linked = _store
-          .box<Profile>()
-          .query(Profile_.ammo.equals(id))
-          .build()
-          .find();
-      for (final p in linked) {
-        p.ammo.targetId = 0;
-        _store.box<Profile>().put(p);
-      }
-      _store.box<Ammo>().remove(id);
-    });
-    // Ammo + Profile streams trigger reload.
+    await _repo.deleteAmmo(id);
   }
 
-  // ── Weapon CRUD ───────────────────────────────────────────────────────────────
+  // ── Weapon CRUD ────────────────────────────────────────────────────────────
 
   Future<void> saveWeapon(Weapon weapon) async {
-    weapon.owner.target = _owner;
-    _store.box<Weapon>().put(weapon);
-    // Weapon stream triggers reload.
+    await _repo.saveWeapon(weapon, _ownerId);
   }
 
-  // ── Sight CRUD ────────────────────────────────────────────────────────────────
+  // ── Sight CRUD ─────────────────────────────────────────────────────────────
 
   Future<int> duplicateSight(int id, String newName) async {
-    final original = _store.box<Sight>().get(id);
-    if (original == null) return 0;
-    final copy = Sight()
-      ..name = newName
-      ..focalPlaneValue = original.focalPlaneValue
-      ..sightHeightInch = original.sightHeightInch
-      ..sightHorizontalOffsetInch = original.sightHorizontalOffsetInch
-      ..verticalClick = original.verticalClick
-      ..horizontalClick = original.horizontalClick
-      ..verticalClickUnit = original.verticalClickUnit
-      ..horizontalClickUnit = original.horizontalClickUnit
-      ..minMagnification = original.minMagnification
-      ..maxMagnification = original.maxMagnification
-      ..reticleImage = original.reticleImage
-      ..vendor = original.vendor
-      ..notes = original.notes
-      ..owner.target = _owner;
-    return _store.box<Sight>().put(copy);
-    // Sight stream triggers reload.
+    return _repo.duplicateSight(id, newName, _ownerId);
   }
 
   Future<void> saveSight(Sight sight) async {
-    sight.owner.target = _owner;
-    _store.box<Sight>().put(sight);
-    // Sight stream triggers reload.
+    await _repo.saveSight(sight, _ownerId);
   }
 
   Future<void> deleteSight(int id) async {
-    _store.runInTransaction(TxMode.write, () {
-      final linked = _store
-          .box<Profile>()
-          .query(Profile_.sight.equals(id))
-          .build()
-          .find();
-      for (final p in linked) {
-        p.sight.targetId = 0;
-        _store.box<Profile>().put(p);
-      }
-      _store.box<Sight>().remove(id);
-    });
-    // Sight + Profile streams trigger reload.
+    await _repo.deleteSight(id);
   }
 
-  // ── Profile CRUD ──────────────────────────────────────────────────────────────
+  // ── Profile CRUD ───────────────────────────────────────────────────────────
 
   Future<void> setProfileAmmo(String profileId, int ammoId) async {
     final id = int.tryParse(profileId);
     if (id == null) return;
-    final profile = _store.box<Profile>().get(id);
-    if (profile == null) return;
-    profile.ammo.targetId = ammoId;
-    await saveProfile(profile);
+    await _repo.setProfileAmmo(id, ammoId);
   }
 
   Future<void> setProfileSight(String profileId, int sightId) async {
     final id = int.tryParse(profileId);
     if (id == null) return;
-    final profile = _store.box<Profile>().get(id);
-    if (profile == null) return;
-    profile.sight.targetId = sightId;
-    await saveProfile(profile);
+    await _repo.setProfileSight(id, sightId);
   }
 
   Future<int> createProfile(String name, Weapon weapon) async {
-    int profileId = 0;
-    final owner = _owner;
-    _store.runInTransaction(TxMode.write, () {
-      weapon.owner.target = owner;
-      _store.box<Weapon>().put(weapon);
-
-      final profile = Profile()
-        ..name = name
-        ..weapon.target = weapon
-        ..owner.target = owner;
-      profileId = _store.box<Profile>().put(profile);
-    });
-    // Weapon + Profile streams trigger reload.
-    return profileId;
+    return _repo.createProfile(name, weapon, _ownerId);
   }
 
   Future<int> duplicateProfile(int id, String newName) async {
-    int newProfileId = 0;
-    final owner = _owner;
-    _store.runInTransaction(TxMode.write, () {
-      final original = _store.box<Profile>().get(id);
-      if (original == null) return;
-
-      final originalWeapon = _store.box<Weapon>().get(original.weapon.targetId);
-      if (originalWeapon == null) return;
-
-      final weaponCopy = Weapon()
-        ..name = originalWeapon.name
-        ..caliberInch = originalWeapon.caliberInch
-        ..caliberName = originalWeapon.caliberName
-        ..twistInch = originalWeapon.twistInch
-        ..barrelLengthInch = originalWeapon.barrelLengthInch
-        ..zeroElevationRad = originalWeapon.zeroElevationRad
-        ..vendor = originalWeapon.vendor
-        ..image = originalWeapon.image
-        ..owner.target = owner;
-      _store.box<Weapon>().put(weaponCopy);
-
-      final profile = Profile()
-        ..name = newName
-        ..weapon.target = weaponCopy
-        ..ammo.targetId = original.ammo.targetId
-        ..sight.targetId = original.sight.targetId
-        ..owner.target = owner;
-      newProfileId = _store.box<Profile>().put(profile);
-    });
-    // Weapon + Profile streams trigger reload.
-    return newProfileId;
+    return _repo.duplicateProfile(id, newName, _ownerId);
   }
 
   Future<void> saveProfile(Profile profile) async {
-    profile.owner.target = _owner;
-    _store.box<Profile>().put(profile);
-    // Profile stream triggers reload.
+    await _repo.saveProfile(profile, _ownerId);
   }
 
   Future<int> importProfile(ProfileExport export) async {
-    int profileId = 0;
-    final owner = _owner;
-    final (profileData, weaponData, ammoData, sightData) = export.toEntities();
-    _store.runInTransaction(TxMode.write, () {
-      weaponData.owner.target = owner;
-      _store.box<Weapon>().put(weaponData);
-
-      if (ammoData != null) {
-        ammoData.owner.target = owner;
-        _store.box<Ammo>().put(ammoData);
-      }
-      if (sightData != null) {
-        sightData.owner.target = owner;
-        _store.box<Sight>().put(sightData);
-      }
-
-      profileData
-        ..weapon.target = weaponData
-        ..ammo.target = ammoData
-        ..sight.target = sightData
-        ..owner.target = owner;
-      profileId = _store.box<Profile>().put(profileData);
-    });
-    return profileId;
+    return _repo.importProfile(export, _ownerId);
   }
 
   Future<int> importAmmo(AmmoExport export) async {
-    final ammo = export.toEntity()..owner.target = _owner;
-    return _store.box<Ammo>().put(ammo);
+    return _repo.importAmmo(export, _ownerId);
   }
 
   Future<int> importSight(SightExport export) async {
-    final sight = export.toEntity()..owner.target = _owner;
-    return _store.box<Sight>().put(sight);
+    return _repo.importSight(export, _ownerId);
   }
 
   Future<void> deleteProfile(int id) async {
     final wasActive = state.value?.activeProfile?.id == id;
-    _store.runInTransaction(TxMode.write, () {
-      final profile = _store.box<Profile>().get(id);
-      final weaponId = profile?.weapon.targetId ?? 0;
-
-      _store.box<Profile>().remove(id);
-
-      // Delete the weapon if no other profile references it.
-      if (weaponId != 0) {
-        final stillLinked = _store
-            .box<Profile>()
-            .query(Profile_.weapon.equals(weaponId))
-            .build()
-            .count();
-        if (stillLinked == 0) {
-          _store.box<Weapon>().remove(weaponId);
-        }
-      }
-
-      // If deleted profile was active — reset Owner so _load() picks profiles.first.
-      if (wasActive) {
-        final owner = _owner;
-        owner.activeProfile.targetId = 0;
-        _store.box<Owner>().put(owner);
-      }
-    });
-    // Profile + Owner streams trigger reload; _load() picks profiles.first if activeId == 0.
+    await _repo.deleteProfile(id, _ownerId);
+    if (wasActive) {
+      await _repo.setActiveProfileId(_ownerId, 0);
+    }
   }
 }
 

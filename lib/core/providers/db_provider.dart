@@ -1,16 +1,8 @@
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Holds the open ObjectBox [Store].
-///
-/// Must be overridden before [runApp]:
-/// ```dart
-/// final store = await initObjectBox();
-/// runApp(ProviderScope(
-///   overrides: [dbProvider.overrideWithValue(store)],
-///   child: MyApp(),
-/// ));
-/// ```
+/// Holds the open ObjectBox [Store]. Only used when kStorageBackend == objectBox.
+/// Must be overridden before [runApp] when using ObjectBox.
 final dbProvider = Provider<Store>((ref) {
   throw UnimplementedError('dbProvider must be overridden with an open Store');
 });
@@ -18,18 +10,23 @@ final dbProvider = Provider<Store>((ref) {
 /// Set to [true] when the store was corrupted on startup and had to be reset.
 final dbWasResetProvider = Provider<bool>((_) => false);
 
-/// Returns the singleton local [Owner] (token = "local").
-///
-/// Creates it on first run. All local entities are linked to this owner —
-/// ready for a future remote-repository swap without changing query logic.
-final ownerProvider = Provider<Owner>((ref) {
-  final store = ref.watch(dbProvider);
-  final box = store.box<Owner>();
-
-  final existing = box.query(Owner_.token.equals('local')).build().findFirst();
-  if (existing != null) return existing;
-
-  final owner = Owner()..token = 'local';
-  box.put(owner);
-  return owner;
+/// Repository for main app data (weapons, ammo, sights, profiles, owner).
+/// Must be overridden before [runApp].
+final appRepositoryProvider = Provider<IAppRepository>((ref) {
+  throw UnimplementedError('appRepositoryProvider must be overridden');
 });
+
+/// Repository for all settings entities.
+/// Must be overridden before [runApp].
+final settingsRepositoryProvider = Provider<ISettingsRepository>((ref) {
+  throw UnimplementedError('settingsRepositoryProvider must be overridden');
+});
+
+/// The singleton local [Owner] (token = "local").
+/// Must be overridden before [runApp] — initialised in main() after repo setup.
+final ownerProvider = Provider<Owner>((ref) {
+  throw UnimplementedError('ownerProvider must be overridden');
+});
+
+/// Convenience provider — the local owner's int id.
+final ownerIdProvider = Provider<int>((ref) => ref.watch(ownerProvider).id);

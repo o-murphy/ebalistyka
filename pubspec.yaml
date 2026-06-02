@@ -63,6 +63,7 @@ dependencies:
   http: ^1.2.2
   flutter_markdown_plus: ^1.0.7
   ota_update: ^7.1.0
+  sembast: ^3.9.5
 
 
 dev_dependencies:
