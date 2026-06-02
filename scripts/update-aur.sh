@@ -42,7 +42,7 @@ echo "sha256 metainfo: ${SUM_MT}"
 
 PKGBUILD="packaging/aur/PKGBUILD"
 sed -i \
-    -e "s/_pkgver='[^']*'/_pkgver='${VERSION}'/" \
+    -e "s/_pkgver=\"[^\"]*\"/_pkgver=\"${VERSION}\"/" \
     -e "s/sha256sums=('[^']*' '[^']*' '[^']*')/sha256sums=('${SUM_DT}' '${SUM_IC}' '${SUM_MT}')/" \
     -e "s/sha256sums_x86_64=('[^']*')/sha256sums_x86_64=('${SUM_X86}')/" \
     -e "s/sha256sums_aarch64=('[^']*')/sha256sums_aarch64=('${SUM_A64}')/" \
