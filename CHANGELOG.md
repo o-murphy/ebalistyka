@@ -11,7 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+### Added
+- **Sembast dual-backend** (`packages/ebalistyka_db`) — pure-Dart `SembastAppRepository` and `SembastSettingsRepository` implement the same `IAppRepository` / `ISettingsRepository` interfaces as their ObjectBox counterparts; activated by setting `kStorageBackend = StorageBackend.sembast` in `lib/core/storage_backend.dart`; enables Flutter Web and any platform where ObjectBox's native C++ library is unavailable
+- **`IAppRepository` / `ISettingsRepository` interfaces** (`packages/ebalistyka_db/lib/src/repository.dart`) — storage-agnostic contracts covering all CRUD, watch streams, `ensureOwner`, and import/restore operations; all providers now depend on the interface, not the concrete class
+- **`systemLocaleProvider`** (`lib/core/providers/db_provider.dart`) — injectable `Provider<Locale>` wrapping `WidgetsBinding.instance.platformDispatcher.locale`; override in tests to inject a fake locale without touching the platform dispatcher
+- **Contract test suite** (`packages/ebalistyka_db/test/`) — `app_repository_test.dart` and `settings_repository_test.dart` run the same assertions against both ObjectBox and Sembast backends
+
 ### Changed
+- `lib/main.dart` — initialisation splits on `kStorageBackend`: ObjectBox path opens the native store and registers `dbProvider`; Sembast path opens a single `.db` file via `databaseFactoryIo`; both paths build identical `ProviderScope` overrides (`appRepositoryProvider`, `settingsRepositoryProvider`, `ownerProvider`)
+- `lib/core/providers/` — all notifiers (`AppStateNotifier`, `SettingsNotifier`, `UnitSettingsNotifier`, `TablesSettingsNotifier`, `ReticleSettingsNotifier`, `ShotConditionsNotifier`, `ConvertorsNotifier`) now read `appRepositoryProvider` / `settingsRepositoryProvider` instead of `dbProvider`; fire-and-forget `.then()` calls wrapped in `unawaited()` from `dart:async`
+- `packages/ebalistyka_db` — `GeneralSettings.languageCode` default changed from `"en"` to `""` so that `SettingsNotifier.build()` correctly detects first launch and auto-resolves the language from the system locale; `"en"` was a silent bug: the first-launch branch was never entered and every new installation was hard-coded to English
 - `packages/bclibc_ffi` (`calculator.dart`): `Calculator._toBcShotProps()` replaced with thin field mapper `_toBcShot()` — Coriolis trig (`_toCoriolis`: sin/cos lat/az, range/cross offsets) and atmosphere density (`_toAtmo`) removed from Dart; all physics conversion delegated to `BCLIBC_Shot::to_shot_props()` in C++ (Step 3a of bclibc-wrapper-consolidation)
 - `packages/bclibc_ffi` (`bclibc_ffi.dart`): added `BcShot` Dart value class, `_FillNativeShot` extension, and `BcLibC.*Shot()` API methods (`findApexShot`, `findMaxRangeShot`, `findZeroAngleShot`, `integrateShot`, `integrateAtShot`)
 - `packages/bclibc_ffi` (`bclibc_bindings.g.dart`): added `BCShot` native struct and `BCLIBCFFI_*_shot` lookup bindings (manually updated; regenerate with `dart run ffigen --config ffigen.yaml` after building bclibc)
