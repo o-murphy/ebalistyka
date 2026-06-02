@@ -29,8 +29,7 @@ class SettingsNotifier extends AsyncNotifier<GeneralSettings> {
 
     final s = await _repo.loadOrCreateGeneralSettings(ownerId);
     if (s.languageCode.isEmpty) {
-      final systemLocale =
-          WidgetsBinding.instance.platformDispatcher.locale;
+      final systemLocale = ref.read(systemLocaleProvider);
       final resolved = AppLocalizations.supportedLocales.firstWhere(
         (l) => l.languageCode == systemLocale.languageCode,
         orElse: () => const Locale('en'),

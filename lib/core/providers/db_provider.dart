@@ -1,4 +1,5 @@
 import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Holds the open ObjectBox [Store]. Only used when kStorageBackend == objectBox.
@@ -30,3 +31,8 @@ final ownerProvider = Provider<Owner>((ref) {
 
 /// Convenience provider — the local owner's int id.
 final ownerIdProvider = Provider<int>((ref) => ref.watch(ownerProvider).id);
+
+/// The device's current system locale. Override in tests to inject a fake locale.
+final systemLocaleProvider = Provider<Locale>(
+  (ref) => WidgetsBinding.instance.platformDispatcher.locale,
+);

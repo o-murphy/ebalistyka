@@ -10,14 +10,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:riverpod/riverpod.dart';
 
 void main() {
-  late TestWidgetsFlutterBinding binding;
   late Store store;
   late Directory tmpDir;
   late Owner owner;
-
-  setUpAll(() {
-    binding = TestWidgetsFlutterBinding.ensureInitialized();
-  });
 
   setUp(() async {
     tmpDir = await Directory.systemTemp.createTemp('settings_locale_test_');
@@ -26,25 +21,24 @@ void main() {
   });
 
   tearDown(() {
-    binding.platformDispatcher.clearLocaleTestValue();
     store.close();
     tmpDir.deleteSync(recursive: true);
   });
 
-  ProviderContainer makeContainer() => ProviderContainer(overrides: [
-    settingsRepositoryProvider
-        .overrideWithValue(ObjectBoxSettingsRepository(store)),
-    ownerProvider.overrideWithValue(owner),
-  ]);
+  ProviderContainer makeContainer({required Locale locale}) =>
+      ProviderContainer(overrides: [
+        settingsRepositoryProvider
+            .overrideWithValue(ObjectBoxSettingsRepository(store)),
+        ownerProvider.overrideWithValue(owner),
+        systemLocaleProvider.overrideWithValue(locale),
+      ]);
 
   Future<GeneralSettings> waitForSettings(ProviderContainer c) =>
       c.read(settingsProvider.future);
 
   group('first launch — locale auto-resolved from system', () {
     test('Ukrainian system locale → languageCode = "uk"', () async {
-      binding.platformDispatcher.localeTestValue = const Locale('uk');
-
-      final container = makeContainer();
+      final container = makeContainer(locale: const Locale('uk'));
       addTearDown(container.dispose);
 
       final settings = await waitForSettings(container);
@@ -52,9 +46,7 @@ void main() {
     });
 
     test('English system locale → languageCode = "en"', () async {
-      binding.platformDispatcher.localeTestValue = const Locale('en');
-
-      final container = makeContainer();
+      final container = makeContainer(locale: const Locale('en'));
       addTearDown(container.dispose);
 
       final settings = await waitForSettings(container);
@@ -62,9 +54,7 @@ void main() {
     });
 
     test('Unsupported system locale → fallback to "en"', () async {
-      binding.platformDispatcher.localeTestValue = const Locale('fr');
-
-      final container = makeContainer();
+      final container = makeContainer(locale: const Locale('fr'));
       addTearDown(container.dispose);
 
       final settings = await waitForSettings(container);
@@ -77,14 +67,12 @@ void main() {
       'saved "uk" is returned even if system locale changed to "en"',
       () async {
         // First launch: system = 'uk' → saved to DB
-        binding.platformDispatcher.localeTestValue = const Locale('uk');
-        final c1 = makeContainer();
+        final c1 = makeContainer(locale: const Locale('uk'));
         await waitForSettings(c1);
         c1.dispose();
 
         // System locale changes to 'en', but DB already has 'uk'
-        binding.platformDispatcher.localeTestValue = const Locale('en');
-        final c2 = makeContainer();
+        final c2 = makeContainer(locale: const Locale('en'));
         addTearDown(c2.dispose);
 
         final settings = await waitForSettings(c2);
