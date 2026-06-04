@@ -1,0 +1,52 @@
+name: Verify Winget Install Path
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify-winget-install:
+    name: Verify winget install path
+    runs-on: windows-latest
+    steps:
+      - name: Check winget availability
+        id: check_winget
+        shell: pwsh
+        run: |
+          if (winget --version 2>$null) {
+            "winget_available=true" >> $env:GITHUB_OUTPUT
+            winget --version
+          } else {
+            "winget_available=false" >> $env:GITHUB_OUTPUT
+          }
+
+      - name: Install winget (if missing)
+        if: steps.check_winget.outputs.winget_available == 'false'
+        uses: Cyberboss/install-winget@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Reset winget sources
+        shell: pwsh
+        run: |
+          winget source reset --force
+          winget source update
+
+      - name: Install app via winget
+        shell: pwsh
+        run: |
+          winget install -e --id o-murphy.ebalistyka `
+            --accept-package-agreements `
+            --accept-source-agreements `
+            --disable-interactivity
+
+      - name: Verify winget install path exists
+        shell: pwsh
+        run: |
+          $base  = "$env:LOCALAPPDATA\Microsoft\WinGet\Packages"
+          $found = Get-ChildItem $base -Directory -ErrorAction SilentlyContinue |
+                   Where-Object { $_.Name -like "o-murphy.ebalistyka_*" }
+          if (-not $found) {
+            Write-Error "Install path not found under $base"
+            exit 1
+          }
+          Write-Host "OK: $($found.FullName)"
