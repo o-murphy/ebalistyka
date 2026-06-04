@@ -1216,6 +1216,12 @@ class AppLocalizationsUk extends AppLocalizations {
   String get openInFlathubAction => 'Відкрити у Flathub';
 
   @override
+  String get upgradeViaWingetAction => 'Оновити через winget';
+
+  @override
+  String get wingetCommandCopied => 'Команду скопійовано до буфера';
+
+  @override
   String get downloadAndInstallAction => 'Завантажити та встановити';
 
   @override

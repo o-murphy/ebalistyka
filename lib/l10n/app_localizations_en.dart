@@ -1212,6 +1212,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get openInFlathubAction => 'Open in Flathub';
 
   @override
+  String get upgradeViaWingetAction => 'Upgrade via winget';
+
+  @override
+  String get wingetCommandCopied => 'Command copied to clipboard';
+
+  @override
   String get downloadAndInstallAction => 'Download & Install';
 
   @override

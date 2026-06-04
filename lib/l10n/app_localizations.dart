@@ -2450,6 +2450,18 @@ abstract class AppLocalizations {
   /// **'Open in Flathub'**
   String get openInFlathubAction;
 
+  /// Button label to copy the winget upgrade command
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade via winget'**
+  String get upgradeViaWingetAction;
+
+  /// Snackbar message after copying the winget upgrade command
+  ///
+  /// In en, this message translates to:
+  /// **'Command copied to clipboard'**
+  String get wingetCommandCopied;
+
   /// Button label to download and sideload the APK update
   ///
   /// In en, this message translates to:

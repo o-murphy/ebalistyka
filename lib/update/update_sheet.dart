@@ -5,6 +5,7 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/app_info.dart';
 import 'package:ebalistyka/update/update_checker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ota_update/ota_update.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -176,6 +177,21 @@ class _UpdateSheetState extends State<_UpdateSheet> {
                               _status == _DownloadStatus.error
                           ? _startDownload
                           : null,
+                    )
+                  : widget.release.isWinget
+                  ? FilledButton.icon(
+                      icon: const Icon(Icons.copy_outlined),
+                      label: Text(l10n.upgradeViaWingetAction),
+                      onPressed: () async {
+                        await Clipboard.setData(
+                          const ClipboardData(text: wingetUpgradeCommand),
+                        );
+                        if (!context.mounted) return;
+                        Navigator.of(context).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(l10n.wingetCommandCopied)),
+                        );
+                      },
                     )
                   : FilledButton.icon(
                       icon: const Icon(Icons.open_in_new_outlined),
