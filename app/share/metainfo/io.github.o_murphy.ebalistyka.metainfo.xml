@@ -28,27 +28,27 @@
  </branding>
  <screenshots>
    <screenshot type="default">
-     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.15/docs/screenshots/home.png</image>
+     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.16/docs/screenshots/home.png</image>
      <caption>Current shot screen</caption>
      <caption xml:lang="uk">Екран поточного пострілу</caption>
    </screenshot>
    <screenshot>
-     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.15/docs/screenshots/conditions.png</image>
+     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.16/docs/screenshots/conditions.png</image>
      <caption>Shooting conditions</caption>
      <caption xml:lang="uk">Умови стрільби</caption>
    </screenshot>
    <screenshot>
-     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.15/docs/screenshots/tables_trajectory.png</image>
+     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.16/docs/screenshots/tables_trajectory.png</image>
      <caption>Trajectory table</caption>
      <caption xml:lang="uk">Таблиця траєкторії</caption>
    </screenshot>
    <screenshot>
-     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.15/docs/screenshots/tables_details.png</image>
+     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.16/docs/screenshots/tables_details.png</image>
      <caption>Trajectory details</caption>
      <caption xml:lang="uk">Деталі траєкторії</caption>
    </screenshot>
    <screenshot>
-     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.15/docs/screenshots/convertors.png</image>
+     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.16/docs/screenshots/convertors.png</image>
      <caption>Unit converters</caption>
      <caption xml:lang="uk">Конвертори одиниць</caption>
    </screenshot>
@@ -62,7 +62,7 @@
    <display_length compare="ge">360</display_length>
  </requires>
  <releases>
-   <release version="0.1.17" date="2026-06-04"/>
+   <release version="0.1.17" date="2026-06-05"/>
    <release version="0.1.16" date="2026-05-26"/>
    <release version="0.1.15" date="2026-05-19"/>
    <release version="0.1.14" date="2026-05-12"/>

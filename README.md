@@ -82,6 +82,7 @@ _UI/UX inspired by the [**Strilets**](https://download.strilets.tech/) ballistic
   - [Linux — AppImage update](#linux--appimage-update)
   - [Windows — winget](#windows--winget)
   - [Windows — install MSIX](#windows--install-msix)
+  - [Android — Google Play](#android--google-play)
   - [Android — install APK](#android--install-apk)
 - [Architecture](#architecture)
 - [Building](#building)
@@ -139,8 +140,10 @@ Latest release: **[GitHub Releases][GitHub Release Latest]**
 | Linux arm64 (rpm)       | [ebalistyka_linux_aarch64.rpm][DownloadLinuxRpmArm64]         | Fedora/RHEL/openSUSE — see [Linux — rpm](#linux--rpm)                     |
 | Linux x86_64 (AUR)      | `yay -S ebalistyka-bin`                                       | Arch / Manjaro — see [Linux — AUR](#linux--aur-archmanjaro)               |
 | Linux arm64 (AUR)       | `yay -S ebalistyka-bin`                                       | Arch / Manjaro — see [Linux — AUR](#linux--aur-archmanjaro)               |
+| Windows x64 (winget)    | `winget install -e --id o-murphy.ebalistyka`                  | see [Windows — winget](#windows--winget)                                  |
 | Windows x64             | [ebalistyka_windows_x86_64.msix][DownloadWindowsMsixAmd64]    | install [ebalistyka_cert.cer][DownloadWindowsMsixCer] first (self-signed) |
 | Windows x64 (portable)  | [ebalistyka_windows_x86_64.zip][DownloadWindowsArchiveAmd64]  | extract and run                                                           |
+| Android (Google Play)   | [Internal Test registration][Google Play Internal Test]       | early access — registration required                                      |
 | Android arm64           | [ebalistyka_android_arm64.apk][DownloadAndroidApkArm64]       | enable "Install from unknown sources"                                     |
 | Android armv7           | [ebalistyka_android_armeabi_v7a.apk][DownloadAndroidApkARMv7] | enable "Install from unknown sources"                                     |
 | Android x86_64          | [ebalistyka_android_x86_64.apk][DownloadAndroidApkAmd64]      | enable "Install from unknown sources"                                     |
@@ -267,9 +270,20 @@ The tool fetches only the changed blocks from the latest GitHub Release — no n
 
 ### Windows — winget
 
-```powershel
+Install:
+
+```powershell
 winget install -e --id o-murphy.ebalistyka
 ```
+
+Upgrade:
+
+```powershell
+winget upgrade -e --id o-murphy.ebalistyka
+```
+
+> [!TIP]
+> The app detects winget installations and shows the upgrade command directly in the update notification.
 
 ### Windows — install MSIX
 
@@ -278,6 +292,12 @@ The MSIX is signed with a self-signed certificate. Before installing, trust the 
 1. Download [`ebalistyka_cert.cer`][DownloadWindowsMsixCer] from the release
 2. Double-click → **Install Certificate** → **Local Machine** → **Trusted Root Certification Authorities**
 3. Install [`ebalistyka_windows_x86_64.msix`][DownloadWindowsMsixAmd64]
+
+### Android — Google Play
+
+Currently available as an **internal test** — registration is required:
+
+[![Google Play]][Google Play Internal Test]
 
 ### Android — install APK
 

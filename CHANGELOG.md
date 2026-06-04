@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
 
-## v0.1.17 (2026-06-04)
+## v0.1.17 (2026-06-05)
 
 ### Fixed
 - **Sight line look angle** — sight line on the trajectory chart now correctly follows the look angle (`h = d × tan(θ)`); previously always drawn horizontally at h = 0
@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - `packages/bclibc_ffi` (`bclibc_ffi.dart`): added `BcShot` Dart value class, `_FillNativeShot` extension, and `BcLibC.*Shot()` API methods (`findApexShot`, `findMaxRangeShot`, `findZeroAngleShot`, `integrateShot`, `integrateAtShot`)
 - `packages/bclibc_ffi` (`bclibc_bindings.g.dart`): added `BCShot` native struct and `BCLIBCFFI_*_shot` lookup bindings (manually updated; regenerate with `dart run ffigen --config ffigen.yaml` after building bclibc)
 - `external/bclibc` submodule bumped to `caf42e0` — adds `BCShot` C struct and `BCLIBCFFI_*_shot()` entry points to `bclibc_ffi.h`; `BcShotProps` / `BCLIBCFFI_*` retained for backwards compatibility; `Vacuum` handled correctly (`pressure_hpa == 0` → zero density, no drag)
+- Update `update_sheet.dart` and `update_checker.dart`
+  - Add `winget` installer detection, and display command to get app update
 
 
 ## v0.1.16 (2026-05-26)
