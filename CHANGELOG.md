@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+
+## v0.1.17 (2026-06-04)
+
 ### Fixed
 - **Sight line look angle** — sight line on the trajectory chart now correctly follows the look angle (`h = d × tan(θ)`); previously always drawn horizontally at h = 0
 
@@ -503,7 +506,8 @@ Initial alpha release — first functional build of the ballistic trajectory cal
 - `OBJECTBOX_MIGRATION.md`: migration details
 
 
-[Unreleased]: https://github.com/o-murphy/ebalistyka/compare/v0.1.16..HEAD
+[Unreleased]: https://github.com/o-murphy/ebalistyka/compare/v0.1.17..HEAD
+[v0.1.17]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.17
 [v0.1.16]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.16
 [v0.1.15]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.15
 [v0.1.14]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.14
