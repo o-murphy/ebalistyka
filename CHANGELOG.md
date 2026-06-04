@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+### Fixed
+- **Sight line look angle** — sight line on the trajectory chart now correctly follows the look angle (`h = d × tan(θ)`); previously always drawn horizontally at h = 0
+
 ### Changed
 - **Flutter** — default version bumped to 3.44.1 across all workflows and in `flatpak/flutter.version`
 - **build-flatpak.yml** - removed checkout step

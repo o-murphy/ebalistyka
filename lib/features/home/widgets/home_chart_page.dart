@@ -46,6 +46,7 @@ class HomeChartPage extends ConsumerWidget {
             snapDistM: chart.snapDistM,
             showSubsonicLine: true,
             showSightLine: true,
+            lookAngleRad: cs.lookAngleRad,
             onIndexSelected: (i) =>
                 ref.read(homeVmProvider.notifier).selectChartPoint(i),
           ),
