@@ -18,7 +18,7 @@ on:
       arch:
         description: "Target architecture"
         required: true
-        type: string   # amd64 | arm64
+        type: string # amd64 | arm64
       build_name:
         description: "Version name override (leave empty to use pubspec.yaml)"
         required: false
@@ -48,7 +48,7 @@ on:
         required: true
         default: "amd64"
         type: choice
-        options: [ amd64, arm64 ]
+        options: [amd64, arm64]
       build_name:
         description: "Version name override (leave empty to use pubspec.yaml)"
         required: false
@@ -68,11 +68,28 @@ jobs:
   generate:
     name: Generate Flatpak manifest
     runs-on: ubuntu-latest
+    outputs:
+      safe_build_name: ${{ steps.meta.outputs.safe_build_name }}
+      build_number: ${{ steps.meta.outputs.build_number }}
+      cache_hash: ${{ steps.meta.outputs.cache_hash }}
 
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+
+      - name: Set build metadata
+        id: meta
+        shell: bash
+        env:
+          INPUT_BUILD_NAME: ${{ inputs.build_name }}
+          PR_NUMBER: ${{ github.event.number }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          source scripts/ci-common.sh
+          set_build_metadata "ebalistyka-flatpak"
+          echo "cache_hash=$(cat pubspec.lock flatpak/flutter.version | sha256sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
 
       - name: Read Flutter version
         id: flutter-ver
@@ -113,27 +130,26 @@ jobs:
 
     outputs:
       artifact_name: ${{ steps.meta.outputs.artifact_name }}
-      artifact_url:  ${{ steps.build-flatpak.outputs.artifact-url }}
+      artifact_url: ${{ steps.build-flatpak.outputs.artifact-url }}
 
     steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
       - name: Set build metadata
         id: meta
         shell: bash
         env:
-          INPUT_BUILD_NAME: ${{ inputs.build_name }}
           MATRIX_ARCH: ${{ matrix.arch }}
-          PR_NUMBER: ${{ github.event.number }}
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          SAFE_BUILD_NAME: ${{ needs.generate.outputs.safe_build_name }}
+          BUILD_NUMBER: ${{ needs.generate.outputs.build_number }}
         run: |
           set -euo pipefail
-          source scripts/ci-common.sh
-          source scripts/package-flatpak.sh
-          set_build_metadata "ebalistyka-flatpak"
-          set_flatpak_bundle_output
+          case "$MATRIX_ARCH" in
+            amd64)         arch_suffix="x86_64"  ;;
+            arm64|aarch64) arch_suffix="aarch64" ;;
+            *)             arch_suffix="x86_64"  ;;
+          esac
+          echo "arch_suffix=$arch_suffix" >> "$GITHUB_OUTPUT"
+          echo "bundle=ebalistyka_linux_${arch_suffix}.flatpak" >> "$GITHUB_OUTPUT"
+          echo "artifact_name=ebalistyka-flatpak-${arch_suffix}-${SAFE_BUILD_NAME}-${BUILD_NUMBER}" >> "$GITHUB_OUTPUT"
 
       - name: Download generated Flatpak sources
         uses: actions/download-artifact@v8
@@ -151,7 +167,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: .flatpak-builder/downloads
-          key: flatpak-dl-${{ steps.meta.outputs.arch_suffix }}-${{ hashFiles('flatpak/generated/io.github.o_murphy.ebalistyka.yml', 'pubspec.lock', 'flatpak/flutter.version') }}
+          key: flatpak-dl-${{ steps.meta.outputs.arch_suffix }}-${{ needs.generate.outputs.cache_hash }}-${{ hashFiles('flatpak/generated/io.github.o_murphy.ebalistyka.yml') }}
           restore-keys: flatpak-dl-${{ steps.meta.outputs.arch_suffix }}-
 
       - name: Build Flatpak
@@ -168,9 +184,55 @@ jobs:
 
       - name: Post PR summary
         if: always() && github.event_name == 'pull_request'
-        uses: ./.github/actions/pr-summary
+        uses: actions/github-script@v8
+        env:
+          PLATFORM: Linux Flatpak (${{ matrix.arch }})
+          BUILD_RESULT: ${{ job.status }}
+          ARTIFACT_NAME: ${{ steps.meta.outputs.artifact_name }}
+          ARTIFACT_URL: ${{ steps.build-flatpak.outputs.artifact-url }}
         with:
-          platform: Linux Flatpak (${{ matrix.arch }})
-          build_result: ${{ job.status }}
-          artifact_name: ${{ steps.meta.outputs.artifact_name }}
-          artifact_url: ${{ steps.build-flatpak.outputs.artifact-url }}
+          script: |
+            const platform = process.env.PLATFORM;
+            const success = process.env.BUILD_RESULT === 'success';
+            const artifactUrl = process.env.ARTIFACT_URL;
+            const artifactName = process.env.ARTIFACT_NAME;
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const marker = `<!-- pr-summary:${platform} -->`;
+
+            let body = `${marker}\n## ${platform} Build\n\n`;
+            if (success) {
+              body += `✅ **Build successful!**\n\n`;
+              if (artifactUrl) {
+                body += `📦 **[Download](${artifactUrl})**  \n`;
+                body += `\`${artifactName}\`\n\n`;
+              }
+              body += `**PR**: #${context.issue.number} · **Commit**: \`${context.sha}\`\n`;
+            } else {
+              body += `❌ **Build failed!**\n\n[View logs](${runUrl})\n`;
+            }
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find(c =>
+              c.user.type === 'Bot' && c.body.includes(marker)
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
