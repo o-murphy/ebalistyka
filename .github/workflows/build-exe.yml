@@ -41,6 +41,91 @@ jobs:
       CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
       CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
 
+  verify-winget-install:
+    needs: [ prepare-version, build-amd64 ]
+    name: Verify winget install path
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Check winget availability
+        id: check_winget
+        shell: pwsh
+        run: |
+          if (winget --version 2>$null) {
+            "winget_available=true" >> $env:GITHUB_OUTPUT
+            winget --version
+          } else {
+            "winget_available=false" >> $env:GITHUB_OUTPUT
+          }
+
+      - name: Install winget (if missing)
+        if: steps.check_winget.outputs.winget_available == 'false'
+        uses: Cyberboss/install-winget@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Reset winget sources
+        shell: pwsh
+        run: |
+          winget source reset --force
+          winget source update
+
+      - name: Download portable artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build-amd64.outputs.artifact_name }}
+          path: artifact
+
+      - name: Compute SHA256 and build file URI
+        id: zip
+        shell: pwsh
+        run: |
+          $zip = Get-ChildItem artifact -Filter "*.zip" | Select-Object -First 1
+          $hash = (Get-FileHash $zip.FullName -Algorithm SHA256).Hash
+          $uri  = "file:///" + $zip.FullName.Replace('\', '/')
+          "path=$($zip.FullName)" >> $env:GITHUB_OUTPUT
+          "hash=$hash"            >> $env:GITHUB_OUTPUT
+          "uri=$uri"              >> $env:GITHUB_OUTPUT
+
+      - name: Patch manifest (local file + current version)
+        shell: pwsh
+        run: |
+          $ver  = "${{ needs.prepare-version.outputs.version }}.0"
+          $hash = "${{ steps.zip.outputs.hash }}"
+          $uri  = "${{ steps.zip.outputs.uri }}"
+          $dir  = "packaging/winget"
+
+          foreach ($file in Get-ChildItem $dir -Filter "*.yaml") {
+            (Get-Content $file.FullName -Raw) `
+              -replace '(?m)^PackageVersion:.*', "PackageVersion: $ver" |
+              Set-Content $file.FullName
+          }
+          (Get-Content "$dir/o-murphy.ebalistyka.installer.yaml" -Raw) `
+            -replace '(?m)^  InstallerUrl:.*',    "  InstallerUrl: $uri" `
+            -replace '(?m)^  InstallerSha256:.*', "  InstallerSha256: $hash" |
+            Set-Content "$dir/o-murphy.ebalistyka.installer.yaml"
+
+      - name: Install via local winget manifest
+        shell: pwsh
+        run: |
+          winget install --manifest packaging/winget `
+            --accept-package-agreements `
+            --accept-source-agreements `
+            --disable-interactivity
+
+      - name: Verify winget install path exists
+        shell: pwsh
+        run: |
+          $base  = "$env:LOCALAPPDATA\Microsoft\WinGet\Packages"
+          $found = Get-ChildItem $base -Directory -ErrorAction SilentlyContinue |
+                   Where-Object { $_.Name -like "o-murphy.ebalistyka_*" }
+          if (-not $found) {
+            Write-Error "Install path not found under $base"
+            exit 1
+          }
+          Write-Host "OK: $($found.FullName)"
+
   pr-summary:
     needs: [ build-amd64 ]
     if: always() && github.event_name == 'pull_request'
