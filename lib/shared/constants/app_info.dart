@@ -26,6 +26,10 @@ const String changelogUrl = '$repoBlobUrl/CHANGELOG.md';
 const String allReleasesUrl = '$remoteApiUrl/releases';
 const String googlePlayInstallerSource = 'com.android.vending';
 const String snapStoreUrl = 'https://snapcraft.io/ebalistyka';
+const String wingetPackageId = 'o-murphy.ebalistyka';
+const String wingetUpgradeCommand = 'winget upgrade -e --id $wingetPackageId';
+const String wingetInstallPathFragment =
+    r'\microsoft\winget\packages\o-murphy.ebalistyka_';
 const String rawCollectionUrlPattern =
     '$remoteRawContent/$repoSlug/%s/assets/json/collection.json';
 const String apiCollectionUrlPattern =

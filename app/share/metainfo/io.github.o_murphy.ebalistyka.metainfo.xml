@@ -21,6 +21,7 @@
  <url type="homepage">https://github.com/o-murphy/ebalistyka</url>
  <url type="bugtracker">https://github.com/o-murphy/ebalistyka/issues</url>
  <url type="vcs-browser">https://github.com/o-murphy/ebalistyka</url>
+ <update_contact>thehelixpg@gmail.com</update_contact>
  <launchable type="desktop-id">io.github.o_murphy.ebalistyka.desktop</launchable>
  <branding>
    <color type="primary" scheme_preference="light">#1565c0</color>
@@ -28,27 +29,27 @@
  </branding>
  <screenshots>
    <screenshot type="default">
-     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.15/docs/screenshots/home.png</image>
+     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.16/docs/screenshots/home.png</image>
      <caption>Current shot screen</caption>
      <caption xml:lang="uk">Екран поточного пострілу</caption>
    </screenshot>
    <screenshot>
-     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.15/docs/screenshots/conditions.png</image>
+     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.16/docs/screenshots/conditions.png</image>
      <caption>Shooting conditions</caption>
      <caption xml:lang="uk">Умови стрільби</caption>
    </screenshot>
    <screenshot>
-     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.15/docs/screenshots/tables_trajectory.png</image>
+     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.16/docs/screenshots/tables_trajectory.png</image>
      <caption>Trajectory table</caption>
      <caption xml:lang="uk">Таблиця траєкторії</caption>
    </screenshot>
    <screenshot>
-     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.15/docs/screenshots/tables_details.png</image>
+     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.16/docs/screenshots/tables_details.png</image>
      <caption>Trajectory details</caption>
      <caption xml:lang="uk">Деталі траєкторії</caption>
    </screenshot>
    <screenshot>
-     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.15/docs/screenshots/convertors.png</image>
+     <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.16/docs/screenshots/convertors.png</image>
      <caption>Unit converters</caption>
      <caption xml:lang="uk">Конвертори одиниць</caption>
    </screenshot>
@@ -62,9 +63,21 @@
    <display_length compare="ge">360</display_length>
  </requires>
  <releases>
-   <release version="0.1.15" date="2026-05-19"/>
-   <release version="0.1.14" date="2026-05-12"/>
-   <release version="0.1.13" date="2026-05-11"/>
+   <release version="0.1.17" date="2026-06-05">
+     <url type="details">https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.17</url>
+   </release>
+   <release version="0.1.16" date="2026-05-26">
+     <url type="details">https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.16</url>
+   </release>
+   <release version="0.1.15" date="2026-05-19">
+     <url type="details">https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.15</url>
+   </release>
+   <release version="0.1.14" date="2026-05-12">
+     <url type="details">https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.14</url>
+   </release>
+   <release version="0.1.13" date="2026-05-11">
+     <url type="details">https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.13</url>
+   </release>
  </releases>
  <content_rating type="oars-1.1">
    <content_attribute id="violence-realistic">none</content_attribute>

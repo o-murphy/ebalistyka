@@ -374,6 +374,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         chartData: chartData,
         selectedPointInfo: autoInfo,
         selectedChartIndex: autoIndex,
+        lookAngleRad: conditions.lookAngleRad,
       ),
     );
   }

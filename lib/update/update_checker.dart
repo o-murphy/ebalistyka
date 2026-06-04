@@ -13,6 +13,10 @@ import 'package:path_provider/path_provider.dart';
 
 enum LinuxInstallerType { snap, flatpak, deb, rpm, aur, appImage, portable }
 
+bool _isWingetInstall() => Platform.resolvedExecutable.toLowerCase().contains(
+  wingetInstallPathFragment,
+);
+
 LinuxInstallerType _detectLinuxInstallerType() {
   if (Platform.environment.containsKey('SNAP')) return LinuxInstallerType.snap;
   if (Platform.environment.containsKey('FLATPAK_ID')) {
@@ -100,6 +104,7 @@ class GithubRelease {
 
   bool get isSnap => linuxInstallerType == LinuxInstallerType.snap;
   bool get isFlatpak => linuxInstallerType == LinuxInstallerType.flatpak;
+  bool get isWinget => Platform.isWindows && _isWingetInstall();
 }
 
 class _ParsedRelease {

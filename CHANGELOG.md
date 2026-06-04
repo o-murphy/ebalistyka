@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+
+## v0.1.17 (2026-06-05)
+
+### Fixed
+- **Sight line look angle** — sight line on the trajectory chart now correctly follows the look angle (`h = d × tan(θ)`); previously always drawn horizontally at h = 0
+
 ### Changed
 - **Flutter** — default version bumped to 3.44.1 across all workflows and in `flatpak/flutter.version`
 - **build-flatpak.yml** - removed checkout step
@@ -18,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - `packages/bclibc_ffi` (`bclibc_ffi.dart`): added `BcShot` Dart value class, `_FillNativeShot` extension, and `BcLibC.*Shot()` API methods (`findApexShot`, `findMaxRangeShot`, `findZeroAngleShot`, `integrateShot`, `integrateAtShot`)
 - `packages/bclibc_ffi` (`bclibc_bindings.g.dart`): added `BCShot` native struct and `BCLIBCFFI_*_shot` lookup bindings (manually updated; regenerate with `dart run ffigen --config ffigen.yaml` after building bclibc)
 - `external/bclibc` submodule bumped to `caf42e0` — adds `BCShot` C struct and `BCLIBCFFI_*_shot()` entry points to `bclibc_ffi.h`; `BcShotProps` / `BCLIBCFFI_*` retained for backwards compatibility; `Vacuum` handled correctly (`pressure_hpa == 0` → zero density, no drag)
+- Update `update_sheet.dart` and `update_checker.dart`
+  - Add `winget` installer detection, and display command to get app update
 
 
 ## v0.1.16 (2026-05-26)
@@ -500,7 +508,8 @@ Initial alpha release — first functional build of the ballistic trajectory cal
 - `OBJECTBOX_MIGRATION.md`: migration details
 
 
-[Unreleased]: https://github.com/o-murphy/ebalistyka/compare/v0.1.16..HEAD
+[Unreleased]: https://github.com/o-murphy/ebalistyka/compare/v0.1.17..HEAD
+[v0.1.17]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.17
 [v0.1.16]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.16
 [v0.1.15]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.15
 [v0.1.14]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.14

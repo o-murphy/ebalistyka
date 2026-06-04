@@ -10,6 +10,7 @@ class TrajectoryChart extends StatelessWidget {
   final double snapDistM;
   final bool showSubsonicLine;
   final bool showSightLine;
+  final double lookAngleRad;
 
   const TrajectoryChart({
     super.key,
@@ -19,6 +20,7 @@ class TrajectoryChart extends StatelessWidget {
     this.snapDistM = 1.0,
     this.showSubsonicLine = false,
     this.showSightLine = false,
+    this.lookAngleRad = 0.0,
   });
 
   int _tapToIndex(double tapX, double paintWidth) {
@@ -74,6 +76,7 @@ class TrajectoryChart extends StatelessWidget {
               selectedColor: cs.tertiary,
               subsonicLineColor: showSubsonicLine ? cs.tertiary : null,
               sightLineColor: showSightLine ? cs.tertiary : null,
+              lookAngleRad: lookAngleRad,
               l10n: l10n,
             ),
             child: const SizedBox.expand(),
@@ -90,6 +93,7 @@ class _ChartPainter extends CustomPainter {
   final Color heightColor, velColor, gridColor, textColor, selectedColor;
   final Color? subsonicLineColor;
   final Color? sightLineColor;
+  final double lookAngleRad;
   final AppLocalizations l10n;
 
   static const _ml = 28.0, _mr = 24.0, _mt = 16.0, _mb = 14.0;
@@ -105,6 +109,7 @@ class _ChartPainter extends CustomPainter {
     required this.l10n,
     this.subsonicLineColor,
     this.sightLineColor,
+    this.lookAngleRad = 0.0,
   });
 
   @override
@@ -175,19 +180,39 @@ class _ChartPainter extends CustomPainter {
     // Velocity line (dashed)
     _drawLine(canvas, dists, vels, px, pyV, velColor, 1.5, dashed: true);
 
-    // Sight line — dashed horizontal at height=0, only if 0 is within the visible range
-    if (sightLineColor != null && yHMin <= 0 && yHMax >= 0) {
-      final sy = pyH(0);
-      _drawLine(
-        canvas,
-        [xMin, xMax],
-        [sy, sy],
-        px,
-        (v) => v,
-        sightLineColor!,
-        1.0,
-        dashed: true,
-      );
+    // Sight line — dashed, inclined by look angle: h(d) = d_m * tan(lookAngle) * 100 cm
+    if (sightLineColor != null) {
+      final tanA = math.tan(lookAngleRad);
+      final factor = tanA * 100;
+      bool visible;
+      double drawXMin, drawXMax;
+      if (!factor.isFinite) {
+        visible = false;
+        drawXMin = xMin;
+        drawXMax = xMax;
+      } else if (factor == 0) {
+        visible = yHMin <= 0 && yHMax >= 0;
+        drawXMin = xMin;
+        drawXMax = xMax;
+      } else {
+        final xAtYMin = yHMin / factor;
+        final xAtYMax = yHMax / factor;
+        drawXMin = math.max(xMin, math.min(xAtYMin, xAtYMax));
+        drawXMax = math.min(xMax, math.max(xAtYMin, xAtYMax));
+        visible = drawXMin <= drawXMax;
+      }
+      if (visible) {
+        _drawLine(
+          canvas,
+          [drawXMin, drawXMax],
+          [drawXMin * factor, drawXMax * factor],
+          px,
+          pyH,
+          sightLineColor!,
+          1.0,
+          dashed: true,
+        );
+      }
     }
 
     // Height line (solid, on top)
@@ -218,14 +243,42 @@ class _ChartPainter extends CustomPainter {
       final syH = pyH(heights[si]);
       final syV = pyV(vels[si]);
 
-      // Vertical guide line
-      canvas.drawLine(
-        Offset(sx, _mt),
-        Offset(sx, _mt + ph),
-        Paint()
-          ..color = selectedColor.withAlpha(90)
-          ..strokeWidth = 1.0
-          ..style = PaintingStyle.stroke,
+      // Crosshair lines (dashed)
+      _drawLine(
+        canvas,
+        [sx, sx],
+        [_mt, _mt + ph],
+        (v) => v,
+        (v) => v,
+        selectedColor.withAlpha(90),
+        0.5,
+        dashed: true,
+        dashLen: 3.0,
+        gapLen: 3.0,
+      );
+      _drawLine(
+        canvas,
+        [xMin, xMax],
+        [heights[si], heights[si]],
+        px,
+        pyH,
+        heightColor.withAlpha(80),
+        0.5,
+        dashed: true,
+        dashLen: 3.0,
+        gapLen: 3.0,
+      );
+      _drawLine(
+        canvas,
+        [xMin, xMax],
+        [vels[si], vels[si]],
+        px,
+        pyV,
+        velColor.withAlpha(80),
+        0.5,
+        dashed: true,
+        dashLen: 3.0,
+        gapLen: 3.0,
       );
 
       // Dot on height curve
@@ -245,18 +298,22 @@ class _ChartPainter extends CustomPainter {
       );
 
       // Dot on sight line
-      if (sightLineColor != null && yHMin <= 0 && yHMax >= 0) {
-        final syS = pyH(0);
-        canvas.drawCircle(
-          Offset(sx, syS),
-          5.0,
-          Paint()..color = sightLineColor!,
-        );
-        canvas.drawCircle(
-          Offset(sx, syS),
-          3.0,
-          Paint()..color = Colors.white.withAlpha(200),
-        );
+      if (sightLineColor != null) {
+        final tanA = math.tan(lookAngleRad);
+        final hLos = dists[si] * tanA * 100;
+        if (hLos >= yHMin && hLos <= yHMax) {
+          final syS = pyH(hLos);
+          canvas.drawCircle(
+            Offset(sx, syS),
+            5.0,
+            Paint()..color = sightLineColor!,
+          );
+          canvas.drawCircle(
+            Offset(sx, syS),
+            3.0,
+            Paint()..color = Colors.white.withAlpha(200),
+          );
+        }
       }
     }
 
@@ -298,6 +355,8 @@ class _ChartPainter extends CustomPainter {
     Color color,
     double width, {
     bool dashed = false,
+    double dashLen = 8.0,
+    double gapLen = 5.0,
   }) {
     final paint = Paint()
       ..color = color
@@ -313,8 +372,6 @@ class _ChartPainter extends CustomPainter {
       }
       canvas.drawPath(path, paint);
     } else {
-      const dashLen = 8.0;
-      const gapLen = 5.0;
       bool drawing = true;
       double remaining = dashLen;
       for (var i = 0; i < xs.length - 1; i++) {
@@ -402,5 +459,6 @@ class _ChartPainter extends CustomPainter {
       old.points != points ||
       old.selectedIndex != selectedIndex ||
       old.subsonicLineColor != subsonicLineColor ||
-      old.sightLineColor != sightLineColor;
+      old.sightLineColor != sightLineColor ||
+      old.lookAngleRad != lookAngleRad;
 }

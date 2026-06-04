@@ -58,11 +58,13 @@ class HomeChartUiState {
   final ChartData chartData;
   final HomeChartPointInfo? selectedPointInfo;
   final int? selectedChartIndex;
+  final double lookAngleRad;
 
   const HomeChartUiState({
     required this.chartData,
     this.selectedPointInfo,
     this.selectedChartIndex,
+    this.lookAngleRad = 0.0,
   });
 
   HomeChartUiState withSelection(HomeChartPointInfo info, int index) =>
@@ -70,6 +72,7 @@ class HomeChartUiState {
         chartData: chartData,
         selectedPointInfo: info,
         selectedChartIndex: index,
+        lookAngleRad: lookAngleRad,
       );
 }
 
