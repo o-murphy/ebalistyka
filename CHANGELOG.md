@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 - **Flutter** — default version bumped to 3.44.1 across all workflows and in `flatpak/flutter.version`
+- **build-flatpak.yml** - removed checkout step
 - `packages/bclibc_ffi` (`calculator.dart`): `Calculator._toBcShotProps()` replaced with thin field mapper `_toBcShot()` — Coriolis trig (`_toCoriolis`: sin/cos lat/az, range/cross offsets) and atmosphere density (`_toAtmo`) removed from Dart; all physics conversion delegated to `BCLIBC_Shot::to_shot_props()` in C++ (Step 3a of bclibc-wrapper-consolidation)
 - `packages/bclibc_ffi` (`bclibc_ffi.dart`): added `BcShot` Dart value class, `_FillNativeShot` extension, and `BcLibC.*Shot()` API methods (`findApexShot`, `findMaxRangeShot`, `findZeroAngleShot`, `integrateShot`, `integrateAtShot`)
 - `packages/bclibc_ffi` (`bclibc_bindings.g.dart`): added `BCShot` native struct and `BCLIBCFFI_*_shot` lookup bindings (manually updated; regenerate with `dart run ffigen --config ffigen.yaml` after building bclibc)
