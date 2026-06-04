@@ -71,7 +71,7 @@ on:
         options: [ release, debug ]
 
 env:
-  FLUTTER_VERSION: "3.44.0"
+  FLUTTER_VERSION: "3.44.1"
 
 concurrency:
   group: build-android-${{ github.ref }}-${{ inputs.format || 'all' }}
