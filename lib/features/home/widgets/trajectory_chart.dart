@@ -183,14 +183,29 @@ class _ChartPainter extends CustomPainter {
     // Sight line — dashed, inclined by look angle: h(d) = d_m * tan(lookAngle) * 100 cm
     if (sightLineColor != null) {
       final tanA = math.tan(lookAngleRad);
-      final hLosMin = xMin * tanA * 100;
-      final hLosMax = xMax * tanA * 100;
-      if (hLosMin <= yHMax && hLosMax >= yHMin ||
-          hLosMax <= yHMax && hLosMin >= yHMin) {
+      final factor = tanA * 100;
+      bool visible;
+      double drawXMin, drawXMax;
+      if (!factor.isFinite) {
+        visible = false;
+        drawXMin = xMin;
+        drawXMax = xMax;
+      } else if (factor == 0) {
+        visible = yHMin <= 0 && yHMax >= 0;
+        drawXMin = xMin;
+        drawXMax = xMax;
+      } else {
+        final xAtYMin = yHMin / factor;
+        final xAtYMax = yHMax / factor;
+        drawXMin = math.max(xMin, math.min(xAtYMin, xAtYMax));
+        drawXMax = math.min(xMax, math.max(xAtYMin, xAtYMax));
+        visible = drawXMin <= drawXMax;
+      }
+      if (visible) {
         _drawLine(
           canvas,
-          [xMin, xMax],
-          [hLosMin, hLosMax],
+          [drawXMin, drawXMax],
+          [drawXMin * factor, drawXMax * factor],
           px,
           pyH,
           sightLineColor!,
