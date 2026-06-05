@@ -7,4 +7,4 @@
     - type: git
       url: https://github.com/ballistics-lab/bclibc.git
       tag: v1.1.2
-      commit: 366d300403019058e1c0fb7a8b2451fcfe8071d3
+      commit: de5e44b306e2898acc90f970b6bd6c59d000f9a6

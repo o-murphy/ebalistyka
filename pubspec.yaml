@@ -64,7 +64,6 @@ dependencies:
   flutter_markdown_plus: ^1.0.7
   ota_update: ^7.1.0
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -80,7 +79,7 @@ dev_dependencies:
   flutter_native_splash: ^2.4.4
   flutter_launcher_icons: ^0.14.3
   msix: ^3.16.13
-  flutpak: ^0.4.0-rc.2
+  flutpak: ^0.5.0
   custom_lint: ^0.8.1
 
 # For information on the generic Dart part of this file, see the
@@ -88,7 +87,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -173,11 +171,13 @@ flutpak:
   patches:
     - package: objectbox_flutter_libs
       path: flatpak/patches/objectbox_flutter_libs/CMakeLists.txt.patch
-      strip-trailing-cr: true
+      crlf: true
 
   modules:
     - flatpak/modules/bclibc.yml
     - flatpak/modules/objectbox-c.yml
+
+  disable-submodules: true
 
   icons:
     - size: 16x16
@@ -196,7 +196,5 @@ flutpak:
   manifest:
     app-id: io.github.o_murphy.ebalistyka
     runtime-version: "25.08"
-    sdk-extensions:
-      - org.freedesktop.Sdk.Extension.llvm20
     env:
       OBJECTBOX_PREBUILT_DIR: /app
