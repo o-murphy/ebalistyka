@@ -192,3 +192,7 @@ flutpak:
   manifest:
     app-id: io.github.o_murphy.ebalistyka
     runtime-version: "25.08"
+    finish-args:
+      - --filesystem=xdg-documents
+      - --filesystem=xdg-download
+      - --share=network
