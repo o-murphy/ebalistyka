@@ -31,7 +31,7 @@ jobs:
 
       - name: Install Flutter ${{ steps.flutter-ver.outputs.version }}
         id: flutter
-        uses: o-murphy/flutpak/.github/actions/flutter@556d42342c0b7f42893ebb63daa08916a930e6c6
+        uses: o-murphy/flutpak/.github/actions/flutter@b770bb8459014ed7264494a2b61e1f05c6be1ad8
         with:
           flutter-version: ${{ steps.flutter-ver.outputs.version }}
           cache: true
@@ -40,7 +40,7 @@ jobs:
         run: flutter pub get
 
       - name: Install flutpak
-        uses: o-murphy/flutpak/.github/actions/setup-flutpak@556d42342c0b7f42893ebb63daa08916a930e6c6
+        uses: o-murphy/flutpak/.github/actions/setup-flutpak@b770bb8459014ed7264494a2b61e1f05c6be1ad8
 
       - name: Generate Flathub manifest
         run: |
