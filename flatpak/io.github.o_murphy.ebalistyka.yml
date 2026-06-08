@@ -45,7 +45,7 @@ modules:
       - cp $FLATPAK_BUILDER_BUILDDIR/flutter/bin/internal/engine.version $FLATPAK_BUILDER_BUILDDIR/flutter/bin/cache/flutter_sdk.stamp
       - cp $FLATPAK_BUILDER_BUILDDIR/flutter/bin/internal/engine.version $FLATPAK_BUILDER_BUILDDIR/flutter/bin/cache/font-subset.stamp
       - cp $FLATPAK_BUILDER_BUILDDIR/flutter/bin/internal/engine.version $FLATPAK_BUILDER_BUILDDIR/flutter/bin/cache/linux-sdk.stamp
-      - setup-flutter.sh
+      - flutter pub get --offline
       - flutter build linux --release --no-pub
       - mkdir -p /app/ebalistyka
       - cp -r "$BUNDLE_PATH"/. /app/ebalistyka/
