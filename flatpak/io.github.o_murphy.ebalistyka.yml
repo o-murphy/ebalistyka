@@ -36,7 +36,6 @@ modules:
       prepend-ld-library-path: /usr/lib/sdk/llvm20/lib
       env:
         PUB_CACHE: /run/build/ebalistyka/.pub-cache
-        OBJECTBOX_PREBUILT_DIR: /app
     # Build steps — review and customise for your project.
     build-commands:
       - cp $FLATPAK_BUILDER_BUILDDIR/flutter/bin/internal/engine.version $FLATPAK_BUILDER_BUILDDIR/flutter/bin/cache/engine-dart-sdk.stamp
