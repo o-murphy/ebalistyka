@@ -79,7 +79,7 @@ dev_dependencies:
   flutter_native_splash: ^2.4.4
   flutter_launcher_icons: ^0.14.3
   msix: ^3.16.13
-  flutpak: ^0.5.0
+  flutpak: ^0.6.0
   custom_lint: ^0.8.1
 
 # For information on the generic Dart part of this file, see the
@@ -173,7 +173,7 @@ flutpak:
 
   disable-submodules: true
 
-  foreign-deps-ref: refactor/patches/use-git
+  foreign-deps-ref: v0.6.0
 
   icons:
     - size: 16x16
