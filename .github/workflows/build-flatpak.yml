@@ -97,7 +97,7 @@ jobs:
 
       - name: Install Flutter ${{ steps.flutter-ver.outputs.version }}
         id: flutter
-        uses: o-murphy/flutpak/.github/actions/flutter@5.3.2-CMakeLists.txt.patch
+        uses: o-murphy/flutpak/.github/actions/flutter@556d42342c0b7f42893ebb63daa08916a930e6c6
         with:
           flutter-version: ${{ steps.flutter-ver.outputs.version }}
           cache: true
@@ -109,7 +109,7 @@ jobs:
         run: flutter pub get
 
       - name: Generate manifest and validate
-        uses: o-murphy/flutpak/.github/actions/generate@5.3.2-CMakeLists.txt.patch
+        uses: o-murphy/flutpak/.github/actions/generate@556d42342c0b7f42893ebb63daa08916a930e6c6
         with:
           tag: ${{ inputs.tag }}
           commit: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
@@ -172,7 +172,7 @@ jobs:
 
       - name: Build Flatpak
         id: build-flatpak
-        uses: o-murphy/flutpak/.github/actions/build-flatpak@5.3.2-CMakeLists.txt.patch
+        uses: o-murphy/flutpak/.github/actions/build-flatpak@556d42342c0b7f42893ebb63daa08916a930e6c6
         with:
           manifest: flatpak/generated/io.github.o_murphy.ebalistyka.yml
           app-id: io.github.o_murphy.ebalistyka
