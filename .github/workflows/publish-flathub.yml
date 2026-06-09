@@ -26,7 +26,7 @@ jobs:
           ref: ${{ inputs.tag_name }}
 
       - name: Install Flutter
-        uses: o-murphy/flutpak/.github/actions/flutter@v0.7.0
+        uses: o-murphy/flutpak/.github/actions/flutter@v0.7.1
         with:
           flutter-version-file: .flutter-version
           cache: true
@@ -35,7 +35,7 @@ jobs:
         run: flutter pub get
 
       - name: Install flutpak
-        uses: o-murphy/flutpak/.github/actions/setup-flutpak@v0.7.0
+        uses: o-murphy/flutpak/.github/actions/setup-flutpak@v0.7.1
 
       - name: Generate Flathub manifest
         run: flutpak generate --tag "${{ inputs.tag_name }}"
