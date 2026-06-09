@@ -95,7 +95,7 @@ jobs:
         id: flutter-ver
         run: |
           # Використовуємо yq для вичитування ref
-          FLUTTER_REF=$(yq '.flutpak.flutter.ref' pubspec.yaml)
+          FLUTTER_REF=$(yq '.flutter.ref' flutpak.yaml)
           echo "version=$FLUTTER_REF" >> $GITHUB_OUTPUT
 
       - name: Install Flutter ${{ steps.flutter-ver.outputs.version }}
