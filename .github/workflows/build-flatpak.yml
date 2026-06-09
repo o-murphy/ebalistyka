@@ -10,6 +10,7 @@ on:
       - "packages/bclibc_ffi/**"
       - "pubspec.yaml"
       - "flutpak.yaml"
+      - ".flutter-version"
       - "flatpak/**"
       - "scripts/ci-common.sh"
       - "scripts/package-flatpak.sh"

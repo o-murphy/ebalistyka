@@ -10,6 +10,7 @@ on:
       - "external/**"
       - "packages/bclibc_ffi/**"
       - "pubspec.yaml"
+      - ".flutter-version"
       - "scripts/ci-common.sh"
       - "scripts/build-android.sh"
       - ".github/workflows/build-android.yml"
