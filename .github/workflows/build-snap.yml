@@ -9,6 +9,7 @@ on:
       - "external/**"
       - "packages/bclibc_ffi/**"
       - "pubspec.yaml"
+      - ".flutter-version"
       - "scripts/ci-common.sh"
       - "packaging/snap/**"
       - ".github/workflows/build-snap.yml"

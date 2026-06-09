@@ -79,7 +79,6 @@ dev_dependencies:
   flutter_native_splash: ^2.4.4
   flutter_launcher_icons: ^0.14.3
   msix: ^3.16.13
-  flutpak: ^0.6.1
   custom_lint: ^0.8.1
 
 # For information on the generic Dart part of this file, see the
@@ -158,41 +157,3 @@ msix_config:
   logo_path: "app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png"
   sign_msix: true
   install_certificate: false
-
-flutpak:
-  pub:
-    locks:
-      - pubspec.lock
-      - $FLUTTER_ROOT/packages/flutter_tools/pubspec.lock
-
-  flutter:
-    sdk: $FLUTTER_ROOT
-
-  modules:
-    - flatpak/modules/bclibc.yml
-
-  disable-submodules: true
-
-  foreign-deps-ref: v0.6.1
-
-  icons:
-    - size: 16x16
-      path: app/share/icons/hicolor/16x16/apps/io.github.o_murphy.ebalistyka.png
-    - size: 32x32
-      path: app/share/icons/hicolor/32x32/apps/io.github.o_murphy.ebalistyka.png
-    - size: 64x64
-      path: app/share/icons/hicolor/64x64/apps/io.github.o_murphy.ebalistyka.png
-    - size: 128x128
-      path: app/share/icons/hicolor/128x128/apps/io.github.o_murphy.ebalistyka.png
-    - size: 256x256
-      path: app/share/icons/hicolor/256x256/apps/io.github.o_murphy.ebalistyka.png
-    - size: 512x512
-      path: app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png
-
-  manifest:
-    app-id: io.github.o_murphy.ebalistyka
-    runtime-version: "25.08"
-    finish-args:
-      - --filesystem=xdg-documents
-      - --filesystem=xdg-download
-      - --share=network

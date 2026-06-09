@@ -9,6 +9,8 @@ on:
       - "external/**"
       - "packages/bclibc_ffi/**"
       - "pubspec.yaml"
+      - "flutpak.yaml"
+      - ".flutter-version"
       - "flatpak/**"
       - "scripts/ci-common.sh"
       - "scripts/package-flatpak.sh"
@@ -89,27 +91,19 @@ jobs:
           set -euo pipefail
           source scripts/ci-common.sh
           set_build_metadata "ebalistyka-flatpak"
-          echo "cache_hash=$(cat pubspec.lock flatpak/flutter.version | sha256sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+          echo "cache_hash=$(cat pubspec.lock flutpak.yaml | sha256sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
 
-      - name: Read Flutter version
-        id: flutter-ver
-        run: echo "version=$(cat flatpak/flutter.version)" >> $GITHUB_OUTPUT
-
-      - name: Install Flutter ${{ steps.flutter-ver.outputs.version }}
-        id: flutter
-        uses: o-murphy/flutpak/.github/actions/flutter@v0.6.1
+      - name: Install Flutter
+        uses: o-murphy/flutpak/.github/actions/flutter@v0.7.0
         with:
-          flutter-version: ${{ steps.flutter-ver.outputs.version }}
+          flutter-version-file: .flutter-version
           cache: true
-
-      - name: Set FLUTTER_ROOT
-        run: echo "FLUTTER_ROOT=${{ steps.flutter.outputs.flutter-path }}" >> $GITHUB_ENV
 
       - name: Get dependencies
         run: flutter pub get
 
       - name: Generate manifest and validate
-        uses: o-murphy/flutpak/.github/actions/generate@v0.6.1
+        uses: o-murphy/flutpak/.github/actions/generate@v0.7.0
         with:
           tag: ${{ inputs.tag }}
           commit: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
@@ -172,7 +166,7 @@ jobs:
 
       - name: Build Flatpak
         id: build-flatpak
-        uses: o-murphy/flutpak/.github/actions/build-flatpak@v0.6.1
+        uses: o-murphy/flutpak/.github/actions/build-flatpak@v0.7.0
         with:
           manifest: flatpak/generated/io.github.o_murphy.ebalistyka.yml
           app-id: io.github.o_murphy.ebalistyka

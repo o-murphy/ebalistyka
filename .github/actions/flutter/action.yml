@@ -6,6 +6,10 @@ inputs:
     description: 'Flutter SDK version (e.g., "3.44.1", "stable", "beta", "main")'
     required: false
     default: "stable"
+  flutter-version-file:
+    description: 'Path to a file containing the Flutter version (e.g. .flutter-version). Takes precedence over flutter-version.'
+    required: false
+    default: ""
   cache:
     description: "Enable caching for Flutter SDK"
     required: false
@@ -25,11 +29,23 @@ runs:
       run: |
         echo "flutter-path=$RUNNER_TEMP/flutter" >> $GITHUB_OUTPUT
 
+    - name: Resolve effective version
+      id: effective
+      shell: bash
+      run: |
+        FILE="${{ inputs.flutter-version-file }}"
+        if [ -n "$FILE" ] && [ -f "$FILE" ]; then
+          VERSION=$(tr -d '[:space:]' < "$FILE")
+        else
+          VERSION="${{ steps.effective.outputs.version }}"
+        fi
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+
     - name: Resolve version and depth
       id: resolve-version
       shell: bash
       run: |
-        VERSION="${{ inputs.flutter-version }}"
+        VERSION="${{ steps.effective.outputs.version }}"
         case "$VERSION" in
           stable|beta|latest)
             echo "branch=${VERSION/latest/stable}" >> $GITHUB_OUTPUT
@@ -49,7 +65,7 @@ runs:
       id: get-commit
       shell: bash
       run: |
-        VERSION="${{ inputs.flutter-version }}"
+        VERSION="${{ steps.effective.outputs.version }}"
         case "$VERSION" in
           stable|beta|latest|main|master)
             # Для гілок отримуємо актуальний commit
@@ -74,7 +90,7 @@ runs:
       uses: actions/cache@v5
       with:
         path: ${{ steps.get-path.outputs.flutter-path }}
-        key: flutter-${{ runner.os }}-${{ runner.arch }}-${{ inputs.flutter-version }}-${{ steps.get-commit.outputs.commit }}
+        key: flutter-${{ runner.os }}-${{ runner.arch }}-${{ steps.effective.outputs.version }}-${{ steps.get-commit.outputs.commit }}
 
     - name: Install system dependencies (Linux)
       if: runner.os == 'Linux'

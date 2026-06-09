@@ -10,15 +10,13 @@ on:
       - "pubspec.yaml"
       - "pubspec.lock"
       - "Makefile"
+      - ".flutter-version"
       - ".github/workflows/test.yml"
       - ".github/actions/flutter/**"
 
 concurrency:
   group: test-${{ github.ref }}
   cancel-in-progress: true
-
-env:
-  FLUTTER_VERSION: "3.44.1"
 
 jobs:
   test:
@@ -32,7 +30,7 @@ jobs:
       - name: Setup Flutter
         uses: ./.github/actions/flutter
         with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
+          flutter-version-file: .flutter-version
           cache: true
 
       - name: Get dependencies

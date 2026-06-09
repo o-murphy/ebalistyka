@@ -10,6 +10,7 @@ on:
       - "external/**"
       - "packages/bclibc_ffi/**"
       - "pubspec.yaml"
+      - ".flutter-version"
       - "scripts/ci-common.sh"
       - "scripts/build-android.sh"
       - ".github/workflows/build-android.yml"
@@ -70,9 +71,6 @@ on:
         type: choice
         options: [ release, debug ]
 
-env:
-  FLUTTER_VERSION: "3.44.1"
-
 concurrency:
   group: build-android-${{ github.ref }}-${{ inputs.format || 'all' }}
   cancel-in-progress: true
@@ -113,7 +111,7 @@ jobs:
       - name: Setup Flutter
         uses: ./.github/actions/flutter
         with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
+          flutter-version-file: .flutter-version
           cache: true
 
       - name: Accept Android licenses
