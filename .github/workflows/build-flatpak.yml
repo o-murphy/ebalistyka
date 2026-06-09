@@ -90,24 +90,13 @@ jobs:
           set -euo pipefail
           source scripts/ci-common.sh
           set_build_metadata "ebalistyka-flatpak"
-          echo "cache_hash=$(cat pubspec.lock flatpak/flutter.version | sha256sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+          echo "cache_hash=$(cat pubspec.lock flutpak.yaml | sha256sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
 
-      - name: Read Flutter version from pubspec.yaml
-        id: flutter-ver
-        run: |
-          # Використовуємо yq для вичитування ref
-          FLUTTER_REF=$(yq '.flutter.ref' flutpak.yaml)
-          echo "version=$FLUTTER_REF" >> $GITHUB_OUTPUT
-
-      - name: Install Flutter ${{ steps.flutter-ver.outputs.version }}
-        id: flutter
+      - name: Install Flutter
         uses: o-murphy/flutpak/.github/actions/flutter@refactor/simplify
         with:
-          flutter-version: ${{ steps.flutter-ver.outputs.version }}
+          flutter-version-file: .flutter-version
           cache: true
-
-      - name: Set FLUTTER_ROOT
-        run: echo "FLUTTER_ROOT=${{ steps.flutter.outputs.flutter-path }}" >> $GITHUB_ENV
 
       - name: Get dependencies
         run: flutter pub get

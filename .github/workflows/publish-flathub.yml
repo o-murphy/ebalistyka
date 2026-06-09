@@ -25,15 +25,10 @@ jobs:
         with:
           ref: ${{ inputs.tag_name }}
 
-      - name: Read Flutter version
-        id: flutter-ver
-        run: echo "version=$(cat flatpak/flutter.version)" >> $GITHUB_OUTPUT
-
-      - name: Install Flutter ${{ steps.flutter-ver.outputs.version }}
-        id: flutter
+      - name: Install Flutter
         uses: o-murphy/flutpak/.github/actions/flutter@refactor/simplify
         with:
-          flutter-version: ${{ steps.flutter-ver.outputs.version }}
+          flutter-version-file: .flutter-version
           cache: true
 
       - name: Get dependencies
@@ -43,10 +38,7 @@ jobs:
         uses: o-murphy/flutpak/.github/actions/setup-flutpak@refactor/simplify
 
       - name: Generate Flathub manifest
-        run: |
-          flutpak generate \
-            --tag "${{ inputs.tag_name }}" \
-            --sdk "${{ steps.flutter.outputs.flutter-path }}"
+        run: flutpak generate --tag "${{ inputs.tag_name }}"
 
       - name: Clone Flathub repo
         env:
