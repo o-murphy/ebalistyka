@@ -91,9 +91,12 @@ jobs:
           set_build_metadata "ebalistyka-flatpak"
           echo "cache_hash=$(cat pubspec.lock flatpak/flutter.version | sha256sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
 
-      - name: Read Flutter version
+      - name: Read Flutter version from pubspec.yaml
         id: flutter-ver
-        run: echo "version=$(cat flatpak/flutter.version)" >> $GITHUB_OUTPUT
+        run: |
+          # Використовуємо yq для вичитування ref
+          FLUTTER_REF=$(yq '.flutpak.flutter.ref' pubspec.yaml)
+          echo "version=$FLUTTER_REF" >> $GITHUB_OUTPUT
 
       - name: Install Flutter ${{ steps.flutter-ver.outputs.version }}
         id: flutter
