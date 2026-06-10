@@ -6,7 +6,7 @@ modules:
 
 disable-submodules: true
 
-foreign-deps-ref: v0.7.1
+foreign-deps-ref: v0.8.0
 
 icons:
   - size: 16x16
