@@ -94,7 +94,7 @@ jobs:
           echo "cache_hash=$(cat pubspec.lock flutpak.yaml | sha256sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
 
       - name: Install Flutter
-        uses: o-murphy/flutpak/.github/actions/flutter@feat/flutter-sdk-module
+        uses: o-murphy/flutpak/.github/actions/flutter@v0.8.0
         with:
           flutter-version-file: .flutter-version
           cache: true
@@ -103,7 +103,7 @@ jobs:
         run: flutter pub get
 
       - name: Generate manifest and validate
-        uses: o-murphy/flutpak/.github/actions/generate@feat/flutter-sdk-module
+        uses: o-murphy/flutpak/.github/actions/generate@v0.8.0
         with:
           tag: ${{ inputs.tag }}
           commit: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
@@ -166,7 +166,7 @@ jobs:
 
       - name: Build Flatpak
         id: build-flatpak
-        uses: o-murphy/flutpak/.github/actions/build-flatpak@feat/flutter-sdk-module
+        uses: o-murphy/flutpak/.github/actions/build-flatpak@v0.8.0
         with:
           manifest: flatpak/generated/io.github.o_murphy.ebalistyka.yml
           app-id: io.github.o_murphy.ebalistyka
