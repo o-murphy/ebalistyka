@@ -4,7 +4,7 @@
 # Run "flutpak generate" on every build to produce the final output in generated/.
 #
 # SAFE TO EDIT   finish-args, build-commands, build-options, sdk-extensions, modules
-# AUTO-INJECTED  tag, commit, modules, manifest.sources, generated-sources.json, and patches are set/appended by generate
+# AUTO-INJECTED  tag, commit, modules, manifest.sources, pubspec-sources.json, and patches are set/appended by generate
 app-id: io.github.o_murphy.ebalistyka
 runtime: org.freedesktop.Platform
 runtime-version: '25.08'
@@ -32,19 +32,12 @@ modules:
         aarch64:
           env:
             BUNDLE_PATH: build/linux/arm64/release/bundle
-      append-path: /usr/lib/sdk/llvm20/bin:/run/build/ebalistyka/flutter/bin
+      append-path: /usr/lib/sdk/llvm20/bin:/var/lib/flutter/bin
       prepend-ld-library-path: /usr/lib/sdk/llvm20/lib
       env:
         PUB_CACHE: /run/build/ebalistyka/.pub-cache
     # Build steps — review and customise for your project.
     build-commands:
-      - cp $FLATPAK_BUILDER_BUILDDIR/flutter/bin/internal/engine.version $FLATPAK_BUILDER_BUILDDIR/flutter/bin/cache/engine-dart-sdk.stamp
-      - cp $FLATPAK_BUILDER_BUILDDIR/flutter/bin/internal/material_fonts.version $FLATPAK_BUILDER_BUILDDIR/flutter/bin/cache/material_fonts.stamp
-      - cp $FLATPAK_BUILDER_BUILDDIR/flutter/bin/internal/gradle_wrapper.version $FLATPAK_BUILDER_BUILDDIR/flutter/bin/cache/gradle_wrapper.stamp
-      - cp $FLATPAK_BUILDER_BUILDDIR/flutter/bin/internal/engine.version $FLATPAK_BUILDER_BUILDDIR/flutter/bin/cache/engine_stamp.stamp
-      - cp $FLATPAK_BUILDER_BUILDDIR/flutter/bin/internal/engine.version $FLATPAK_BUILDER_BUILDDIR/flutter/bin/cache/flutter_sdk.stamp
-      - cp $FLATPAK_BUILDER_BUILDDIR/flutter/bin/internal/engine.version $FLATPAK_BUILDER_BUILDDIR/flutter/bin/cache/font-subset.stamp
-      - cp $FLATPAK_BUILDER_BUILDDIR/flutter/bin/internal/engine.version $FLATPAK_BUILDER_BUILDDIR/flutter/bin/cache/linux-sdk.stamp
       - flutter pub get --offline
       - flutter build linux --release --no-pub
       - mkdir -p /app/ebalistyka
