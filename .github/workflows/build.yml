@@ -179,7 +179,7 @@ jobs:
             "${{ steps.meta.outputs.build_number }}"
 
       - name: Decode certificate
-        if: inputs.platform == 'windows'
+        if: inputs.platform == 'windows' && github.actor != 'dependabot[bot]'
         shell: pwsh
         env:
           CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
@@ -193,7 +193,7 @@ jobs:
           Write-Host "Certificate decoded to $env:RUNNER_TEMP\ebalistyka_cert.pfx"
 
       - name: Sign Windows EXE
-        if: inputs.platform == 'windows'
+        if: inputs.platform == 'windows' && github.actor != 'dependabot[bot]'
         shell: pwsh
         env:
           CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
@@ -228,7 +228,7 @@ jobs:
             -Arch "${{ steps.meta.outputs.arch_suffix }}"
 
       - name: Package MSIX artifacts
-        if: inputs.platform == 'windows'
+        if: inputs.platform == 'windows' && github.actor != 'dependabot[bot]'
         shell: pwsh
         env:
           CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}

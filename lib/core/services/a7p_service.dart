@@ -91,7 +91,6 @@ abstract final class A7pService {
     final result = await FilePicker.pickFiles(
       type: Platform.isAndroid ? FileType.any : FileType.custom,
       allowedExtensions: Platform.isAndroid ? null : ['a7p'],
-      withData: true,
     );
     if (result == null || result.files.isEmpty) return null;
 
@@ -100,14 +99,7 @@ abstract final class A7pService {
       throw FormatException('Expected an .a7p file, got: ${file.name}');
     }
 
-    final Uint8List bytes;
-    if (file.bytes != null) {
-      bytes = file.bytes!;
-    } else if (file.path != null) {
-      bytes = await File(file.path!).readAsBytes();
-    } else {
-      throw const A7pParseException('cannot read file bytes');
-    }
+    final bytes = await file.readAsBytes();
 
     final payload = A7pFile.decode(bytes); // throws A7pParseException on error
     // Note: zeroX/zeroY are in dimensionless clicks — cannot reconstruct the
@@ -123,19 +115,11 @@ abstract final class A7pService {
     final result = await FilePicker.pickFiles(
       type: Platform.isAndroid ? FileType.any : FileType.custom,
       allowedExtensions: Platform.isAndroid ? null : ['ebcp', 'a7p'],
-      withData: true,
     );
     if (result == null || result.files.isEmpty) return null;
 
     final file = result.files.single;
-    final Uint8List bytes;
-    if (file.bytes != null) {
-      bytes = file.bytes!;
-    } else if (file.path != null) {
-      bytes = await File(file.path!).readAsBytes();
-    } else {
-      throw const A7pParseException('cannot read file bytes');
-    }
+    final bytes = await file.readAsBytes();
 
     final name = file.name.toLowerCase();
     if (name.endsWith('.a7p')) {
