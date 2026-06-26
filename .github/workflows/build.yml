@@ -116,7 +116,7 @@ jobs:
 
       - name: Cache pub packages (Linux)
         if: inputs.platform == 'linux'
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.pub-cache
           key: pub-linux-${{ inputs.arch }}-${{ hashFiles('pubspec.lock') }}
@@ -124,14 +124,14 @@ jobs:
 
       - name: Cache pub packages (Windows)
         if: inputs.platform == 'windows'
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~\AppData\Local\Pub\Cache
           key: pub-windows-${{ inputs.arch }}-${{ hashFiles('pubspec.lock') }}
           restore-keys: pub-windows-${{ inputs.arch }}-
 
       - name: Cache bclibc build
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             build/${{ inputs.platform }}/${{ steps.meta.outputs.flutter_arch }}/bclibc_ffi_build
