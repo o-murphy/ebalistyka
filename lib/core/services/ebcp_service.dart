@@ -50,7 +50,6 @@ abstract final class EbcpService {
     final result = await FilePicker.pickFiles(
       type: Platform.isAndroid ? FileType.any : FileType.custom,
       allowedExtensions: Platform.isAndroid ? null : ['ebcp'],
-      withData: true,
     );
     if (result == null || result.files.isEmpty) return null;
 
@@ -59,14 +58,7 @@ abstract final class EbcpService {
       throw FormatException('Expected an .ebcp file, got: ${file.name}');
     }
 
-    final Uint8List bytes;
-    if (file.bytes != null) {
-      bytes = file.bytes!;
-    } else if (file.path != null) {
-      bytes = await File(file.path!).readAsBytes();
-    } else {
-      return null;
-    }
+    final bytes = await file.readAsBytes();
 
     return EbcpFile.fromEbcp(bytes);
   }
