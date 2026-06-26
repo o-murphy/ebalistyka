@@ -12,7 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
 ## Changed
-- Updated `flutpak` to version `v0.8.2`
+- Updated flutpak to version v0.8.2
+- Updated bclibc to version v1.1.4\n- Updated Flutter to version 3.44.4
 
 
 ## v0.1.17 (2026-06-05)
