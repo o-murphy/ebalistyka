@@ -302,14 +302,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "25.9.23"
-  flutpak:
-    dependency: "direct dev"
-    description:
-      name: flutpak
-      sha256: "8ec7d57f21f9013a93260bc06eee0e97be1156466ee945613f4128733b764c33"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.6.1"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -1215,14 +1207,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.3"
-  yaml_edit:
-    dependency: transitive
-    description:
-      name: yaml_edit
-      sha256: "07c9e63ba42519745182b88ca12264a7ba2484d8239958778dfe4d44fe760488"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.4"
 sdks:
   dart: ">=3.12.1 <4.0.0"
   flutter: ">=3.38.4"
