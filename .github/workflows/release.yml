@@ -18,7 +18,7 @@ jobs:
       version: ${{ steps.v.outputs.version }}
       build_number: ${{ steps.bn.outputs.build_number }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - id: v
@@ -244,7 +244,7 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 

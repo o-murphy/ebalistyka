@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
 ## Changed
-- Updated `flutpak` to version `v0.8.0`
+- Updated `flutpak` to version `v0.8.2`
 
 
 ## v0.1.17 (2026-06-05)

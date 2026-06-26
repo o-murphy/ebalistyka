@@ -21,12 +21,12 @@ jobs:
   flathub:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.tag_name }}
 
       - name: Install Flutter
-        uses: o-murphy/flutpak/.github/actions/flutter@v0.8.0
+        uses: o-murphy/flutpak/.github/actions/flutter@v0.8.2
         with:
           flutter-version-file: .flutter-version
           cache: true
@@ -35,7 +35,7 @@ jobs:
         run: flutter pub get
 
       - name: Install flutpak
-        uses: o-murphy/flutpak/.github/actions/setup-flutpak@v0.8.0
+        uses: o-murphy/flutpak/.github/actions/setup-flutpak@v0.8.2
 
       - name: Generate Flathub manifest
         run: flutpak generate --tag "${{ inputs.tag_name }}"
