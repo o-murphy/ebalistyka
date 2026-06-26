@@ -152,13 +152,13 @@ jobs:
           path: flatpak/generated
 
       - name: Cache Flatpak installation (org.flatpak.Builder + runtimes)
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.local/share/flatpak
           key: flatpak-builder-25.08-llvm20-${{ runner.arch }}-v1
 
       - name: Cache flatpak-builder downloads
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: .flatpak-builder/downloads
           key: flatpak-dl-${{ steps.meta.outputs.arch_suffix }}-${{ needs.generate.outputs.cache_hash }}-${{ hashFiles('flatpak/generated/io.github.o_murphy.ebalistyka.yml') }}
@@ -178,7 +178,7 @@ jobs:
 
       - name: Post PR summary
         if: always() && github.event_name == 'pull_request'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           PLATFORM: Linux Flatpak (${{ matrix.arch }})
           BUILD_RESULT: ${{ job.status }}
