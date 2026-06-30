@@ -5,7 +5,7 @@ import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/features/home/sub_screens/weapon_wizard_notifier.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
-import 'package:bclibc_ffi/unit.dart';
+import 'package:dart_bclibc/unit.dart';
 
 // ── Fixtures ─────────────────────────────────────────────────────────────────
 

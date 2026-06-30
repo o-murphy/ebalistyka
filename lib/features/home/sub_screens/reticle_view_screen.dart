@@ -4,7 +4,7 @@ import 'package:ebalistyka/features/home/widgets/offsets_message.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 
-import 'package:bclibc_ffi/unit.dart' show Angular, Unit;
+import 'package:dart_bclibc/unit.dart' show Angular, Unit;
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';

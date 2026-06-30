@@ -1,5 +1,5 @@
-import 'package:bclibc_ffi/bclibc.dart' as bclibc;
-import 'package:bclibc_ffi/unit.dart';
+import 'package:dart_bclibc/bclibc.dart' as bclibc;
+import 'package:dart_bclibc/unit.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/core/extensions/profile_extensions.dart';

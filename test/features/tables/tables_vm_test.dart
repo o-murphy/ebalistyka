@@ -17,8 +17,8 @@ import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
 import 'package:ebalistyka/features/tables/details_table_mv.dart';
 
-import 'package:bclibc_ffi/bclibc.dart' as bclibc;
-import 'package:bclibc_ffi/unit.dart';
+import 'package:dart_bclibc/bclibc.dart' as bclibc;
+import 'package:dart_bclibc/unit.dart';
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 

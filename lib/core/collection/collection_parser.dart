@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:bclibc_ffi/unit.dart';
+import 'package:dart_bclibc/unit.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';

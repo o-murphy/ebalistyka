@@ -1,4 +1,4 @@
-import 'package:bclibc_ffi/unit.dart';
+import 'package:dart_bclibc/unit.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';

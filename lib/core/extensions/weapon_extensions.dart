@@ -1,6 +1,6 @@
-import 'package:bclibc_ffi/unit.dart';
+import 'package:dart_bclibc/unit.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
-import 'package:bclibc_ffi/bclibc.dart' as bclibc;
+import 'package:dart_bclibc/bclibc.dart' as bclibc;
 
 extension WeaponExtension on Weapon {
   Distance get twist => Distance.inch(twistInch);

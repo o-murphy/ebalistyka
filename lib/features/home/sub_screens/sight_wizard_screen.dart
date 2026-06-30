@@ -1,5 +1,5 @@
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
-import 'package:bclibc_ffi/unit.dart' show Unit;
+import 'package:dart_bclibc/unit.dart' show Unit;
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';

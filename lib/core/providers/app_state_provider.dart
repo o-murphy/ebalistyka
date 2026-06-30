@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
-import 'package:bclibc_ffi/unit.dart';
+import 'package:dart_bclibc/unit.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';

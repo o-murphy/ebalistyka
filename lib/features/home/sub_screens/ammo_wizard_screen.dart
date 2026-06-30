@@ -7,7 +7,7 @@ import 'package:ebalistyka/shared/widgets/action_sheet.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 
-import 'package:bclibc_ffi/unit.dart';
+import 'package:dart_bclibc/unit.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';

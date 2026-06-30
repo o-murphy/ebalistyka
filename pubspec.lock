@@ -64,13 +64,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.13.1"
-  bclibc_ffi:
-    dependency: "direct main"
-    description:
-      path: "packages/bclibc_ffi"
-      relative: true
-    source: path
-    version: "0.1.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -223,6 +216,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0+8.4.0"
+  dart_bclibc:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: main
+      resolved-ref: "3cf01058d421858dc9ad2244a90ecc31f58e857d"
+      url: "https://github.com/ballistics-lab/dart-bclibc.git"
+    source: git
+    version: "0.1.0-beta.1"
   dart_style:
     dependency: transitive
     description:

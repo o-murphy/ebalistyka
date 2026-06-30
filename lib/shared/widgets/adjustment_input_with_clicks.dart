@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 
-import 'package:bclibc_ffi/unit.dart';
+import 'package:dart_bclibc/unit.dart';
 import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';

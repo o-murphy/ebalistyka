@@ -40,8 +40,10 @@ dependencies:
   a7p:
     path: ./packages/a7p
 
-  bclibc_ffi:
-    path: ./packages/bclibc_ffi
+  dart_bclibc:
+    git:
+      url: https://github.com/ballistics-lab/dart-bclibc.git
+      ref: main
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

@@ -1,4 +1,4 @@
-import 'package:bclibc_ffi/unit.dart';
+import 'package:dart_bclibc/unit.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
