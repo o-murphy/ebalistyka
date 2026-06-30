@@ -6,8 +6,6 @@ on:
       - "app/**"
       - "lib/**"
       - "linux/**"
-      - "external/**"
-      - "packages/bclibc_ffi/**"
       - "pubspec.yaml"
       - ".flutter-version"
       - "scripts/ci-common.sh"
@@ -73,7 +71,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          submodules: recursive
           fetch-depth: 0
 
       - name: Set build metadata

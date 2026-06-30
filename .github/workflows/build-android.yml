@@ -7,8 +7,7 @@ on:
       - "app/**"
       - "lib/**"
       - "android/**"
-      - "external/**"
-      - "packages/bclibc_ffi/**"
+
       - "pubspec.yaml"
       - ".flutter-version"
       - "scripts/ci-common.sh"
@@ -93,7 +92,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          submodules: recursive
           fetch-depth: 0
 
       - name: Resolve version
@@ -146,15 +144,6 @@ jobs:
             ~/.gradle/wrapper
           key: gradle-${{ hashFiles('android/app/build.gradle.kts', 'android/gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: gradle-
-
-      - name: Cache bclibc NDK build
-        uses: actions/cache@v6
-        with:
-          path: packages/bclibc_ffi/android/.cxx
-          key: bclibc-android-${{ steps.meta.outputs.bclibc_hash }}-${{ steps.meta.outputs.bclibc_ffi_hash }}
-          restore-keys: |
-            bclibc-android-${{ steps.meta.outputs.bclibc_hash }}-
-            bclibc-android-
 
       - name: Install Flutter dependencies
         run: flutter clean

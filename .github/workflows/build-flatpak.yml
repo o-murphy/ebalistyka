@@ -6,8 +6,6 @@ on:
       - "app/**"
       - "lib/**"
       - "linux/**"
-      - "external/**"
-      - "packages/bclibc_ffi/**"
       - "pubspec.yaml"
       - "flutpak.yaml"
       - ".flutter-version"

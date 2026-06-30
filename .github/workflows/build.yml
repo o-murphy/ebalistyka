@@ -82,7 +82,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          submodules: recursive
           fetch-depth: 0
 
       - name: Setup Flutter
@@ -129,19 +128,6 @@ jobs:
           path: ~\AppData\Local\Pub\Cache
           key: pub-windows-${{ inputs.arch }}-${{ hashFiles('pubspec.lock') }}
           restore-keys: pub-windows-${{ inputs.arch }}-
-
-      - name: Cache bclibc build
-        uses: actions/cache@v6
-        with:
-          path: |
-            build/${{ inputs.platform }}/${{ steps.meta.outputs.flutter_arch }}/bclibc_ffi_build
-            packages/bclibc_ffi/build
-          key: bclibc-${{ inputs.platform }}-${{ inputs.arch }}-${{
-            steps.meta.outputs.bclibc_hash }}-${{
-            steps.meta.outputs.bclibc_ffi_hash }}
-          restore-keys: |
-            bclibc-${{ inputs.platform }}-${{ inputs.arch }}-${{ steps.meta.outputs.bclibc_hash }}-
-            bclibc-${{ inputs.platform }}-${{ inputs.arch }}-
 
       - name: Install Flutter dependencies
         shell: bash
