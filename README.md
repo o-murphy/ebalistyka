@@ -34,7 +34,7 @@ A high performance cross-platform ballistic calculator
 > [!WARNING]
 > **Alpha software.** Expect breaking changes, incomplete features, and rough edges.
 
-A cross-platform ballistic trajectory calculator built with Flutter. Powered by [bclibc](external/bclibc) — a high-performance (3-DOF + spin drift) C++ ballistic solver engine with RK4/Euler integration.
+A cross-platform ballistic trajectory calculator built with Flutter. Powered by [dart_bclibc](https://pub.dev/packages/dart_bclibc) — a high-performance (3-DOF + spin drift) C++ ballistic solver engine with RK4/Euler integration.
 
 _UI/UX inspired by the [**Strilets**](https://download.strilets.tech/) ballistic calculator app_
 
@@ -97,7 +97,7 @@ _UI/UX inspired by the [**Strilets**](https://download.strilets.tech/) ballistic
   - [File import](#file-import)
 - [Dependencies](#dependencies)
   - [App (`ebalistyka`)](#app-ebalistyka)
-  - [`packages/bclibc_ffi`](#packagesbclibc_ffi)
+  - [`dart_bclibc`](#dart_bclibc)
   - [`packages/ebalistyka_db`](#packagesebalistyka_db)
   - [`packages/a7p`](#packagesa7p)
   - [`packages/reticle_gen`](#packagesreticle_gen)
@@ -331,19 +331,16 @@ ebalistyka/
 │   │   └── constants/         # UI dimensions, null string sentinel
 │   ├── update/                # Update checker and utilities
 │   └── l10n/                  # Generated AppLocalizations (EN + UA)
-├── packages/
-│   ├── bclibc_ffi/            # Dart FFI bindings for the C++ solver
-│   ├── ebalistyka_db/         # ObjectBox schema + .ebcp export DTOs
-│   ├── a7p/                   # .a7p protobuf encode/decode + ProfileExport converter
-│   └── reticle_gen/           # SVG mil-reticle generator
-└── external/
-    └── bclibc/                # C++ ballistic solver engine (LGPL-3, git submodule)
+└── packages/
+    ├── ebalistyka_db/         # ObjectBox schema + .ebcp export DTOs
+    ├── a7p/                   # .a7p protobuf encode/decode + ProfileExport converter
+    └── reticle_gen/           # SVG mil-reticle generator
 ```
 
 **State management:** Riverpod  
 **Navigation:** go_router  
 **Local database:** ObjectBox  
-**Ballistic engine:** bclibc (C++ via FFI)  
+**Ballistic engine:** [dart_bclibc](https://pub.dev/packages/dart_bclibc) (pub.dev package, bundles bclibc C++ solver via FFI)  
 **Localisation:** Flutter ARB / `flutter_localizations` (EN + UA)
 
 ---
@@ -359,7 +356,7 @@ ebalistyka/
 ### Clone
 
 ```bash
-git clone --recurse-submodules https://github.com/o-murphy/ebalistyka.git
+git clone https://github.com/o-murphy/ebalistyka.git
 cd ebalistyka
 ```
 
@@ -373,7 +370,6 @@ sudo apt-get install -y \
   libclang-dev fuse libfuse2
 
 flutter pub get
-cd packages/bclibc_ffi && dart run ffigen --config ffigen.yaml && cd ../..
 flutter build linux --release
 ```
 
@@ -384,7 +380,6 @@ Output: `build/linux/x64/release/bundle/`
 ```powershell
 # Requires Visual Studio 2022 with C++ workload
 flutter pub get
-cd packages\bclibc_ffi; dart run ffigen --config ffigen.yaml; cd ..\..
 flutter build windows --release
 ```
 
@@ -394,7 +389,6 @@ Output: `build\windows\x64\runner\Release\`
 
 ```bash
 flutter pub get
-cd packages/bclibc_ffi && dart run ffigen --config ffigen.yaml && cd ../..
 flutter build apk --release --target-platform android-arm64
 ```
 
@@ -459,12 +453,12 @@ On Android, `file_picker` cannot filter by custom extensions (`.ebcp`, `.a7p`) b
 | [ota_update](https://pub.dev/packages/ota_update)                       | Autoupdate for Android sideload installations        |
 | [flutpak](https://pub.dev/packages/flutpak) (dev)                       | Manage flatpak/flathub manifest for sandboxed builds |
 
-### `packages/bclibc_ffi`
+### `dart_bclibc`
 
-| Package                             | Role                                                           |
-| ----------------------------------- | -------------------------------------------------------------- |
-| [bclibc](external/bclibc)           | C++ ballistic solver engine (3-DOF + spin drift, RK4) — LGPL-3 |
-| [ffi](https://pub.dev/packages/ffi) | Dart ↔ C FFI bindings                                          |
+| Package                                                         | Role                                                             |
+| --------------------------------------------------------------- | ---------------------------------------------------------------- |
+| [dart_bclibc](https://pub.dev/packages/dart_bclibc)             | Dart FFI package — bundles bclibc C++ solver (3-DOF, RK4) LGPL-3 |
+| [ffi](https://pub.dev/packages/ffi)                             | Dart ↔ C FFI bindings                                            |
 
 ### `packages/ebalistyka_db`
 
@@ -498,7 +492,7 @@ This program is free software: you can redistribute it and/or modify it under th
 See [LICENSE](LICENSE) for the full text. See [CHANGELOG](CHANGELOG.md) for release history.
 
 > [!NOTE]
-> `bclibc` (the ballistic solver engine, located in `external/bclibc`) is licensed separately under the **GNU Lesser General Public License v3.0**. See [`external/bclibc/LICENSE`](external/bclibc/LICENSE).
+> [`dart_bclibc`](https://pub.dev/packages/dart_bclibc) bundles `bclibc` — the ballistic solver engine — which is licensed separately under the **GNU Lesser General Public License v3.0**. See the [dart_bclibc repository](https://github.com/o-murphy/dart_bclibc) for the engine source and its license.
 
 > [!WARNING]
 > **Risk notice.** This application performs approximate simulations of complex physical processes. Calculation results must not be considered as completely or reliably reflecting actual projectile behaviour. Results may be used for educational purposes only and must not be relied upon in any context where an incorrect calculation could cause financial harm or put a human life at risk.
