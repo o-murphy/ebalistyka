@@ -40,7 +40,7 @@ dependencies:
   a7p:
     path: ./packages/a7p
 
-  dart_bclibc: ^0.1.0-beta.1
+  dart_bclibc: ^0.1.0-beta.3
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

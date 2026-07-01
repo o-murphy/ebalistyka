@@ -7,6 +7,7 @@
 		objectbox-get-sha \
 		generate-localization \
 		generate-collection \
+		build-bclibc \
 		test format clean run run-clean
 
 # Cross-platform helpers
@@ -92,7 +93,14 @@ generate: objectbox-generate \
 	generate-reticles generate-icons \
 	generate-collection
 
-test:
+# Build libbclibc_ffi standalone (dart_bclibc's bundled bclibc source) so
+# `flutter test` can dlopen it via the package's `build/bclibc/` fallback path.
+# `flutter build` bundles this automatically for the app itself, but `flutter
+# test` never runs a platform build, so tests need it built explicitly.
+build-bclibc:
+	dart run dart_bclibc:build_native
+
+test: build-bclibc
 	flutter analyze && flutter test 2>&1
 
 format:
