@@ -154,6 +154,38 @@ jobs:
             "${{ steps.meta.outputs.bundle_dir }}" \
             "${{ inputs.platform }}"
 
+      - name: Smoke test native library (Linux)
+        if: inputs.platform == 'linux'
+        shell: bash
+        run: |
+          cd "${{ steps.meta.outputs.bundle_dir }}"
+          OUTPUT=$(timeout 5 ./ebalistyka 2>&1) || true
+          if echo "$OUTPUT" | grep -q "Fatal: native library"; then
+            echo "ERROR: BcLibC.open() failed — native library did not load"
+            echo "$OUTPUT"
+            exit 1
+          fi
+          echo "✓ Native library loaded successfully"
+
+      - name: Smoke test native library (Windows)
+        if: inputs.platform == 'windows'
+        shell: pwsh
+        run: |
+          $dll = Join-Path "${{ steps.meta.outputs.bundle_dir }}" "bclibc_ffi.dll"
+          $proc = Start-Process -FilePath "${{ steps.meta.outputs.bundle_dir }}\ebalistyka.exe" `
+            -RedirectStandardError "$env:RUNNER_TEMP\smoke_stderr.txt" `
+            -PassThru -WindowStyle Hidden
+          Start-Sleep -Seconds 3
+          if (-not $proc.HasExited) { $proc.Kill() }
+          $stderr = if (Test-Path "$env:RUNNER_TEMP\smoke_stderr.txt") {
+            Get-Content "$env:RUNNER_TEMP\smoke_stderr.txt" -Raw
+          } else { "" }
+          if ($stderr -match "Fatal: native library") {
+            Write-Error "BcLibC.open() failed — native library did not load:`n$stderr"
+            exit 1
+          }
+          Write-Host "✓ Native library loaded successfully"
+
       - name: Package Linux artifacts
         if: inputs.platform == 'linux'
         shell: bash

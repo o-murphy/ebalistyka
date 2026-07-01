@@ -178,6 +178,41 @@ jobs:
           retention-days: ${{ inputs.retention_days || 2 }}
           if-no-files-found: error
 
+      - name: Smoke test native libraries in ${{ matrix.format }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ABIS=(arm64-v8a armeabi-v7a x86_64)
+          ERROR=0
+          TMPDIR=/tmp/android-smoke
+          for f in artifacts/*.apk artifacts/*.aab; do
+            [ -f "$f" ] || continue
+            EXT="${f##*.}"
+            LIB_PREFIX=$( [ "$EXT" = "aab" ] && echo "base/lib" || echo "lib" )
+            echo "── $(basename "$f") ──"
+            for ABI in "${ABIS[@]}"; do
+              ENTRY="$LIB_PREFIX/$ABI/libbclibc_ffi.so"
+              if ! unzip -l "$f" | grep -qF "$ENTRY"; then
+                echo "  SKIP: $ABI (not in this archive)"
+                continue
+              fi
+              rm -rf "$TMPDIR" && mkdir -p "$TMPDIR"
+              unzip -oq "$f" "$ENTRY" -d "$TMPDIR"
+              SO="$TMPDIR/$ENTRY"
+              if [ ! -f "$SO" ]; then
+                echo "  ERROR: $ABI/libbclibc_ffi.so — broken symlink or missing after extract"
+                ERROR=1; continue
+              fi
+              if ! file "$SO" | grep -q ELF; then
+                echo "  ERROR: $ABI/libbclibc_ffi.so — not ELF: $(file "$SO")"
+                ERROR=1; continue
+              fi
+              echo "  ✓ $ABI: $(file "$SO" | cut -d: -f2- | xargs)"
+            done
+          done
+          rm -rf "$TMPDIR"
+          exit $ERROR
+
       - name: Post PR summary
         if: always() && github.event_name == 'pull_request'
         uses: ./.github/actions/pr-summary

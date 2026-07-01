@@ -111,6 +111,30 @@ jobs:
         env:
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+      - name: Smoke test Snap native library
+        shell: bash
+        run: |
+          set -euo pipefail
+          SNAP_FILE="${{ steps.snapcraft.outputs.snap }}"
+          unsquashfs -d /tmp/snap-smoke "$SNAP_FILE"
+
+          SO=$(find /tmp/snap-smoke -name "libbclibc_ffi.so" | head -1)
+          if [ -z "$SO" ]; then
+            echo "ERROR: libbclibc_ffi.so not found in snap"
+            find /tmp/snap-smoke -name "*.so" | sort
+            exit 1
+          fi
+          if [ ! -f "$SO" ]; then
+            echo "ERROR: libbclibc_ffi.so is a broken symlink → $(readlink "$SO")"
+            exit 1
+          fi
+          if ! file "$SO" | grep -q ELF; then
+            echo "ERROR: libbclibc_ffi.so not ELF: $(file "$SO")"
+            exit 1
+          fi
+          echo "✓ libbclibc_ffi.so: $(file "$SO" | cut -d: -f2- | xargs)"
+          rm -rf /tmp/snap-smoke
+
       - name: Collect snap artifact
         run: |
           mkdir -p artifacts/snap
