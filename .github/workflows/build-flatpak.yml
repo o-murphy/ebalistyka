@@ -189,11 +189,11 @@ jobs:
             echo "ERROR: libbclibc_ffi.so not found or broken in installed Flatpak"
             exit 1
           fi
-          if ! file "$SO" | grep -q ELF; then
-            echo "ERROR: libbclibc_ffi.so not ELF: $(file "$SO")"
+          if ! file -L "$SO" | grep -q ELF; then
+            echo "ERROR: libbclibc_ffi.so not ELF: $(file -L "$SO")"
             exit 1
           fi
-          echo "✓ libbclibc_ffi.so: $(file "$SO" | cut -d: -f2- | xargs)"
+          echo "✓ libbclibc_ffi.so: $(file -L "$SO" | cut -d: -f2- | xargs)"
 
           OUTPUT=$(timeout 5 dbus-run-session flatpak run "$APP_ID" 2>&1) || true
           if echo "$OUTPUT" | grep -q "Fatal: native library"; then
