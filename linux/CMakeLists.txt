@@ -57,14 +57,6 @@ pkg_check_modules(GTK REQUIRED IMPORTED_TARGET gtk+-3.0)
 # Application build; see runner/CMakeLists.txt.
 add_subdirectory("runner")
 
-# # ============================================================================
-# # bclibc_ffi – thin C wrapper over the embedded bclibc ballistics engine
-# # ============================================================================
-# add_subdirectory(
-#     "${CMAKE_CURRENT_SOURCE_DIR}/../external/bclibc"
-#     "${CMAKE_CURRENT_BINARY_DIR}/bclibc_ffi_build"
-# )
-
 # Run the Flutter tool portions of the build. This must not be removed.
 add_dependencies(${BINARY_NAME} flutter_assemble)
 
@@ -107,12 +99,6 @@ install(FILES "${FLUTTER_ICU_DATA_FILE}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}
 
 install(FILES "${FLUTTER_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
   COMPONENT Runtime)
-
-if(TARGET bclibc_ffi)
-  install(TARGETS bclibc_ffi
-      LIBRARY DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
-      COMPONENT Runtime)
-endif()
 
 foreach(bundled_library ${PLUGIN_BUNDLED_LIBRARIES})
   install(FILES "${bundled_library}"
