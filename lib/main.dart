@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:dart_bclibc/ffi/bclibc_ffi.dart';
 import 'package:ebalistyka/shared/constants/app_info.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +42,13 @@ Future<(Store, bool)> _openStore(String directory) async {
 }
 
 void main() async {
+  try {
+    BcLibC.open();
+  } catch (e) {
+    stderr.writeln('Fatal: native library unavailable: $e');
+    exit(1);
+  }
+
   WidgetsFlutterBinding.ensureInitialized();
 
   if (isDesktop) {
