@@ -55,11 +55,11 @@ if [ "$PLATFORM" = "linux" ]; then
     ls -la "$BUNDLE_DIR/lib/libbclibc_ffi"* 2>/dev/null || true
     exit 1
   fi
-  if ! file "$BCLIBC_SO" | grep -q ELF; then
-    echo "ERROR: libbclibc_ffi.so is not an ELF binary: $(file "$BCLIBC_SO")"
+  if ! file -L "$BCLIBC_SO" | grep -q ELF; then
+    echo "ERROR: libbclibc_ffi.so is not an ELF binary: $(file -L "$BCLIBC_SO")"
     exit 1
   fi
-  echo "✓ libbclibc_ffi.so: $(file "$BCLIBC_SO" | cut -d: -f2- | xargs)"
+  echo "✓ libbclibc_ffi.so: $(file -L "$BCLIBC_SO" | cut -d: -f2- | xargs)"
 
   # Critical: objectbox
   OBJECTBOX_SO=$(find "$BUNDLE_DIR/lib" -name "libobjectbox*.so*" | head -1)
@@ -71,7 +71,7 @@ if [ "$PLATFORM" = "linux" ]; then
     echo "ERROR: $(basename "$OBJECTBOX_SO") is a broken symlink"
     exit 1
   fi
-  echo "✓ $(basename "$OBJECTBOX_SO"): $(file "$OBJECTBOX_SO" | cut -d: -f2- | xargs)"
+  echo "✓ $(basename "$OBJECTBOX_SO"): $(file -L "$OBJECTBOX_SO" | cut -d: -f2- | xargs)"
 
 else
   DLL_COUNT=$(find "$BUNDLE_DIR" -maxdepth 1 -name "*.dll" 2>/dev/null | wc -l)
