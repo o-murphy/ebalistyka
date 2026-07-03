@@ -111,7 +111,7 @@ format:
 		packages/reticle_gen/bin
 
 run:
-	flutter run
+	flutter run --flavor dev
 
 run-clean:
 ifeq ($(OS),Windows_NT)

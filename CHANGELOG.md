@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
 ### Changed
-- **Ballistic engine dependency** — replaced `packages/bclibc_ffi` (local git-submodule-based FFI package) with [`dart_bclibc ^0.1.0-beta.5`](https://pub.dev/packages/dart_bclibc) from pub.dev. The `external/bclibc` submodule and `packages/bclibc_ffi` local package have been removed; the native shared library is now built and bundled by `dart_bclibc`'s own CMake rules.
+- **Ballistic engine dependency** — replaced `packages/bclibc_ffi` (local git-submodule-based FFI package) with [`dart_bclibc ^0.1.0`](https://pub.dev/packages/dart_bclibc) from pub.dev. The `external/bclibc` submodule and `packages/bclibc_ffi` local package have been removed; the native shared library is now built and bundled by `dart_bclibc`'s own CMake rules.
 - **`linux/CMakeLists.txt`**, **`windows/CMakeLists.txt`** — removed manual `install(TARGETS bclibc_ffi …)` / `add_dependencies` blocks that are now handled inside `dart_bclibc`'s platform CMakeLists.
 - **`flutpak.yaml`** — removed `modules: [flatpak/modules/bclibc.yml]` and `disable-submodules: true` (no longer needed; `dart_bclibc` bundles bclibc source via the pub.dev archive).
 - **`Makefile`** — `build-bclibc` target now runs `dart run dart_bclibc:build_native`; the `ffigen` target has been removed (bindings are generated upstream in `dart_bclibc`).
