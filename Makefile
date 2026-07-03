@@ -8,6 +8,7 @@
 		generate-localization \
 		generate-collection \
 		build-bclibc \
+		reticle-gen-setup \
 		test format clean run run-clean
 
 # Cross-platform helpers
@@ -100,15 +101,21 @@ generate: objectbox-generate \
 build-bclibc:
 	dart run dart_bclibc:build_native
 
-test: build-bclibc
+# `tools/reticle_gen` is a standalone Dart package (not a pubspec dependency
+# of the app), so `flutter analyze` can't resolve its `package:reticle_gen`
+# self-import unless its own deps are fetched separately.
+reticle-gen-setup:
+	cd tools/reticle_gen && dart pub get
+
+test: build-bclibc reticle-gen-setup
 	flutter analyze && flutter test 2>&1
 
 format:
 	dart format lib test \
 		packages/ebalistyka_db/lib \
 		packages/a7p/lib \
-		packages/reticle_gen/lib \
-		packages/reticle_gen/bin
+		tools/reticle_gen/lib \
+		tools/reticle_gen/bin
 
 run:
 	flutter run --flavor dev
