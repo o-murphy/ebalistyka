@@ -44,12 +44,6 @@ set_build_metadata() {
     flutter_arch="arm64"
   fi
 
-  # ---------- DEP HASHES ----------
-  if [ "$use_deps" = "true" ]; then
-    echo "bclibc_hash=$(git -C external/bclibc rev-parse HEAD 2>/dev/null || echo unknown)" >> "$GITHUB_OUTPUT"
-    echo "bclibc_ffi_hash=$(git log -1 --format='%H' -- packages/bclibc_ffi 2>/dev/null || echo unknown)" >> "$GITHUB_OUTPUT"
-  fi
-
   # ---------- CORE OUTPUT ----------
   {
     echo "build_name=$build_name"

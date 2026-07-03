@@ -6,7 +6,6 @@ on:
       - "lib/**"
       - "test/**"
       - "packages/**"
-      - "external/**"
       - "pubspec.yaml"
       - "pubspec.lock"
       - "Makefile"
@@ -24,8 +23,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-        with:
-          submodules: recursive
 
       - name: Setup Flutter
         uses: ./.github/actions/flutter

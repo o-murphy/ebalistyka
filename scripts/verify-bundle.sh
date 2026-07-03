@@ -44,19 +44,34 @@ if [ "$PLATFORM" = "linux" ]; then
   echo "✓ Native libraries ($SO_COUNT .so files):"
   find "$BUNDLE_DIR/lib" -name "*.so" | sort | sed 's/^/  /'
 
-  # Critical: bclibc_ffi
-  if ! find "$BUNDLE_DIR/lib" -name "libbclibc_ffi*" | grep -q .; then
-    echo "ERROR: libbclibc_ffi not found in lib/ — app will crash on startup"
+  # Critical: bclibc_ffi — check presence, broken-symlink, and ELF format
+  BCLIBC_SO="$BUNDLE_DIR/lib/libbclibc_ffi.so"
+  if [ ! -e "$BCLIBC_SO" ]; then
+    echo "ERROR: libbclibc_ffi.so not found in lib/"
     exit 1
   fi
-  echo "✓ libbclibc_ffi present"
+  if [ ! -f "$BCLIBC_SO" ]; then
+    echo "ERROR: libbclibc_ffi.so is a broken symlink → $(readlink "$BCLIBC_SO")"
+    ls -la "$BUNDLE_DIR/lib/libbclibc_ffi"* 2>/dev/null || true
+    exit 1
+  fi
+  if ! file -L "$BCLIBC_SO" | grep -q ELF; then
+    echo "ERROR: libbclibc_ffi.so is not an ELF binary: $(file -L "$BCLIBC_SO")"
+    exit 1
+  fi
+  echo "✓ libbclibc_ffi.so: $(file -L "$BCLIBC_SO" | cut -d: -f2- | xargs)"
 
   # Critical: objectbox
-  if ! find "$BUNDLE_DIR/lib" -name "libobjectbox*" | grep -q .; then
+  OBJECTBOX_SO=$(find "$BUNDLE_DIR/lib" -name "libobjectbox*.so*" | head -1)
+  if [ -z "$OBJECTBOX_SO" ]; then
     echo "ERROR: libobjectbox not found in lib/ — database will not initialize"
     exit 1
   fi
-  echo "✓ libobjectbox present"
+  if [ ! -f "$OBJECTBOX_SO" ]; then
+    echo "ERROR: $(basename "$OBJECTBOX_SO") is a broken symlink"
+    exit 1
+  fi
+  echo "✓ $(basename "$OBJECTBOX_SO"): $(file -L "$OBJECTBOX_SO" | cut -d: -f2- | xargs)"
 
 else
   DLL_COUNT=$(find "$BUNDLE_DIR" -maxdepth 1 -name "*.dll" 2>/dev/null | wc -l)
@@ -68,12 +83,19 @@ else
   echo "✓ Native DLLs ($DLL_COUNT files):"
   find "$BUNDLE_DIR" -maxdepth 1 -name "*.dll" | sort | sed 's/^/  /'
 
-  # Critical: bclibc_ffi
-  if ! find "$BUNDLE_DIR" -maxdepth 1 -name "bclibc_ffi*" | grep -q .; then
+  # Critical: bclibc_ffi — check PE header (MZ magic)
+  BCLIBC_DLL=$(find "$BUNDLE_DIR" -maxdepth 1 -name "bclibc_ffi.dll" | head -1)
+  if [ -z "$BCLIBC_DLL" ]; then
     echo "ERROR: bclibc_ffi.dll not found — app will crash on startup"
     exit 1
   fi
-  echo "✓ bclibc_ffi.dll present"
+  MZ=$(od -A n -t x1 -N 2 "$BCLIBC_DLL" | tr -d ' \n')
+  if [ "$MZ" != "4d5a" ]; then
+    echo "ERROR: bclibc_ffi.dll missing MZ header (got: $MZ) — not a valid PE file"
+    exit 1
+  fi
+  SIZE_KB=$(( $(wc -c < "$BCLIBC_DLL") / 1024 ))
+  echo "✓ bclibc_ffi.dll: valid PE file (${SIZE_KB} KB)"
 fi
 
 echo "✓ Bundle verified OK"

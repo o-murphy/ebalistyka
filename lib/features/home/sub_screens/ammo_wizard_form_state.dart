@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bclibc_ffi/unit.dart';
+import 'package:dart_bclibc/unit.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/features/home/sub_screens/ammo_wizard_parsers.dart';

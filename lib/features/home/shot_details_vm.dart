@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'package:bclibc_ffi/unit.dart';
+import 'package:dart_bclibc/unit.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
-import 'package:bclibc_ffi/bclibc.dart' as bclibc;
+import 'package:dart_bclibc/bclibc.dart' as bclibc;
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:riverpod/riverpod.dart';
 

@@ -1,5 +1,5 @@
 import 'package:ebalistyka_db/ebalistyka_db.dart';
-import 'package:bclibc_ffi/bclibc.dart' as bclibc;
+import 'package:dart_bclibc/bclibc.dart' as bclibc;
 
 class TableCalcOptions {
   final double startM;

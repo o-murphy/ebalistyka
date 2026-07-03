@@ -1,6 +1,6 @@
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:flutter/material.dart';
-import 'package:bclibc_ffi/unit.dart';
+import 'package:dart_bclibc/unit.dart';
 
 /// Reusable header widget showing current value and unit
 class UnitValueHeader extends StatelessWidget {

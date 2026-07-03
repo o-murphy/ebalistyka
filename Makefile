@@ -2,12 +2,12 @@
 		generate-reticles \
 		generate-icons \
 		generate-a7p \
-		build-bclibc ffigen \
 		proto-setup \
         objectbox-generate objectbox-setup objectbox-clean \
 		objectbox-get-sha \
 		generate-localization \
 		generate-collection \
+		build-bclibc \
 		test format clean run run-clean
 
 # Cross-platform helpers
@@ -29,21 +29,6 @@ else
     DB_DIR := $(or $(XDG_DATA_HOME),$(HOME)/.local/share)/com.o.murphy.ebalistyka
   endif
 endif
-
-# Build the native shared library via CMake directly (used by generate/ffigen).
-# For running tests use `make test` which goes through `flutter build linux`.
-BCLIBC_BUILD_TYPE ?= Debug
-build-bclibc:
-	cmake -S external/bclibc -B build/bclibc -DCMAKE_BUILD_TYPE=$(BCLIBC_BUILD_TYPE)
-	cmake --build build/bclibc --parallel $(NPROC)
-
-# Re-generate Dart FFI bindings from the C header (now in the package)
-# Requires LLVM/Clang installed:
-#   Windows: winget install LLVM  (then restart terminal)
-#   Linux:   sudo apt install libclang-dev clang
-#   macOS:   brew install llvm
-ffigen:
-	cd packages/bclibc_ffi && dart run ffigen --config ffigen.yaml
 
 # Install protoc + Dart plugin (run once per machine)
 proto-setup:
@@ -103,28 +88,30 @@ generate-collection:
 	--near-dupes \
 	--near-dupes-threshold 0.0
 
-generate: build-bclibc ffigen \
-	objectbox-generate \
+generate: objectbox-generate \
 	generate-a7p generate-localization \
 	generate-reticles generate-icons \
 	generate-collection
 
-# Run all tests (native must be built first via cmake).
-# Use `flutter build linux --debug` manually beforehand if you want
-# tests to run against the Flutter-bundled library instead.
+# Build libbclibc_ffi standalone (dart_bclibc's bundled bclibc source) so
+# `flutter test` can dlopen it via the package's `build/bclibc/` fallback path.
+# `flutter build` bundles this automatically for the app itself, but `flutter
+# test` never runs a platform build, so tests need it built explicitly.
+build-bclibc:
+	dart run dart_bclibc:build_native
+
 test: build-bclibc
 	flutter analyze && flutter test 2>&1
 
 format:
 	dart format lib test \
-		packages/bclibc_ffi/lib \
 		packages/ebalistyka_db/lib \
 		packages/a7p/lib \
 		packages/reticle_gen/lib \
 		packages/reticle_gen/bin
 
 run:
-	flutter run
+	flutter run --flavor dev
 
 run-clean:
 ifeq ($(OS),Windows_NT)
@@ -135,5 +122,3 @@ endif
 	flutter run
 
 clean:
-	$(RM_DIR) build/bclibc
-	$(RM_DIR) packages/bclibc_ffi/lib/ffi/*.g.dart

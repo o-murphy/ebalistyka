@@ -1,4 +1,4 @@
-import 'package:bclibc_ffi/unit.dart';
+import 'package:dart_bclibc/unit.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 
 enum FocalPlane { ffp, sfp, lwir }

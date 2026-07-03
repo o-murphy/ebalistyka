@@ -26,11 +26,25 @@ android {
         create("googlePlay") {
             dimension = "type"
             // You can add an ID suffix if you want a separate app for testing
-            // applicationIdSuffix = ".play" 
+            // applicationIdSuffix = ".play"
         }
         create("sideload") {
             dimension = "type"
             // Тут нічого не міняємо, це буде "повна" версія
+        }
+        create("dev") {
+            dimension = "type"
+            // Local adb builds: distinct applicationId so this doesn't
+            // overwrite the Google Play version installed on the device.
+            applicationIdSuffix = ".dev"
+            resValue("string", "app_name", "[dev] ebalistyka")
+        }
+    }
+
+    sourceSets {
+        getByName("dev") {
+            // Reuse the sideload manifest (OTA provider, etc.) instead of duplicating it.
+            manifest.srcFile("src/sideload/AndroidManifest.xml")
         }
     }
 
@@ -50,6 +64,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        resValue("string", "app_name", "ebalistyka")
     }
 
     signingConfigs {

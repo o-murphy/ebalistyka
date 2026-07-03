@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:a7p/a7p.dart';
-import 'package:bclibc_ffi/unit.dart';
+import 'package:dart_bclibc/unit.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';

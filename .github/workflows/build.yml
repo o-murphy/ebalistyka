@@ -82,7 +82,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          submodules: recursive
           fetch-depth: 0
 
       - name: Setup Flutter
@@ -130,19 +129,6 @@ jobs:
           key: pub-windows-${{ inputs.arch }}-${{ hashFiles('pubspec.lock') }}
           restore-keys: pub-windows-${{ inputs.arch }}-
 
-      - name: Cache bclibc build
-        uses: actions/cache@v6
-        with:
-          path: |
-            build/${{ inputs.platform }}/${{ steps.meta.outputs.flutter_arch }}/bclibc_ffi_build
-            packages/bclibc_ffi/build
-          key: bclibc-${{ inputs.platform }}-${{ inputs.arch }}-${{
-            steps.meta.outputs.bclibc_hash }}-${{
-            steps.meta.outputs.bclibc_ffi_hash }}
-          restore-keys: |
-            bclibc-${{ inputs.platform }}-${{ inputs.arch }}-${{ steps.meta.outputs.bclibc_hash }}-
-            bclibc-${{ inputs.platform }}-${{ inputs.arch }}-
-
       - name: Install Flutter dependencies
         shell: bash
         run: flutter clean
@@ -167,6 +153,38 @@ jobs:
           bash scripts/verify-bundle.sh \
             "${{ steps.meta.outputs.bundle_dir }}" \
             "${{ inputs.platform }}"
+
+      - name: Smoke test native library (Linux)
+        if: inputs.platform == 'linux'
+        shell: bash
+        run: |
+          cd "${{ steps.meta.outputs.bundle_dir }}"
+          OUTPUT=$(timeout 5 ./ebalistyka 2>&1) || true
+          if echo "$OUTPUT" | grep -q "Fatal: native library"; then
+            echo "ERROR: BcLibC.open() failed — native library did not load"
+            echo "$OUTPUT"
+            exit 1
+          fi
+          echo "✓ Native library loaded successfully"
+
+      - name: Smoke test native library (Windows)
+        if: inputs.platform == 'windows'
+        shell: pwsh
+        run: |
+          $dll = Join-Path "${{ steps.meta.outputs.bundle_dir }}" "bclibc_ffi.dll"
+          $proc = Start-Process -FilePath "${{ steps.meta.outputs.bundle_dir }}\ebalistyka.exe" `
+            -RedirectStandardError "$env:RUNNER_TEMP\smoke_stderr.txt" `
+            -PassThru -WindowStyle Hidden
+          Start-Sleep -Seconds 3
+          if (-not $proc.HasExited) { $proc.Kill() }
+          $stderr = if (Test-Path "$env:RUNNER_TEMP\smoke_stderr.txt") {
+            Get-Content "$env:RUNNER_TEMP\smoke_stderr.txt" -Raw
+          } else { "" }
+          if ($stderr -match "Fatal: native library") {
+            Write-Error "BcLibC.open() failed — native library did not load:`n$stderr"
+            exit 1
+          }
+          Write-Host "✓ Native library loaded successfully"
 
       - name: Package Linux artifacts
         if: inputs.platform == 'linux'

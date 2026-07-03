@@ -1,3 +1,0 @@
-[submodule "external/bclibc"]
-	path = external/bclibc
-	url = https://github.com/ballistics-lab/bclibc

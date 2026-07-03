@@ -6,8 +6,6 @@ on:
       - "app/**"
       - "lib/**"
       - "linux/**"
-      - "external/**"
-      - "packages/bclibc_ffi/**"
       - "pubspec.yaml"
       - "flutpak.yaml"
       - ".flutter-version"
@@ -175,6 +173,37 @@ jobs:
           artifact-name: ${{ steps.meta.outputs.artifact_name }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           retention-days: ${{ inputs.retention_days || 2 }}
+
+      - name: Smoke test Flatpak native library
+        shell: bash
+        env:
+          BUNDLE: ${{ steps.meta.outputs.bundle }}
+          APP_ID: io.github.o_murphy.ebalistyka
+        run: |
+          set -euo pipefail
+          dbus-run-session flatpak install --user -y --bundle "$BUNDLE"
+
+          SO=$(find "$HOME/.local/share/flatpak/app/$APP_ID" \
+               -name "libbclibc_ffi.so" | head -1)
+          if [ -z "$SO" ] || [ ! -f "$SO" ]; then
+            echo "ERROR: libbclibc_ffi.so not found or broken in installed Flatpak"
+            exit 1
+          fi
+          if ! file -L "$SO" | grep -q ELF; then
+            echo "ERROR: libbclibc_ffi.so not ELF: $(file -L "$SO")"
+            exit 1
+          fi
+          echo "✓ libbclibc_ffi.so: $(file -L "$SO" | cut -d: -f2- | xargs)"
+
+          OUTPUT=$(timeout 5 dbus-run-session flatpak run "$APP_ID" 2>&1) || true
+          if echo "$OUTPUT" | grep -q "Fatal: native library"; then
+            echo "ERROR: BcLibC.open() failed inside Flatpak sandbox"
+            echo "$OUTPUT"
+            exit 1
+          fi
+          echo "✓ Flatpak smoke test passed"
+
+          dbus-run-session flatpak uninstall --user -y "$APP_ID" 2>/dev/null || true
 
       - name: Post PR summary
         if: always() && github.event_name == 'pull_request'

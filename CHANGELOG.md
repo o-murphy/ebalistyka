@@ -11,6 +11,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+### Changed
+- **Ballistic engine dependency** — replaced `packages/bclibc_ffi` (local git-submodule-based FFI package) with [`dart_bclibc ^0.1.0`](https://pub.dev/packages/dart_bclibc) from pub.dev. The `external/bclibc` submodule and `packages/bclibc_ffi` local package have been removed; the native shared library is now built and bundled by `dart_bclibc`'s own CMake rules.
+- **`linux/CMakeLists.txt`**, **`windows/CMakeLists.txt`** — removed manual `install(TARGETS bclibc_ffi …)` / `add_dependencies` blocks that are now handled inside `dart_bclibc`'s platform CMakeLists.
+- **`flutpak.yaml`** — removed `modules: [flatpak/modules/bclibc.yml]` and `disable-submodules: true` (no longer needed; `dart_bclibc` bundles bclibc source via the pub.dev archive).
+- **`Makefile`** — `build-bclibc` target now runs `dart run dart_bclibc:build_native`; the `ffigen` target has been removed (bindings are generated upstream in `dart_bclibc`).
+- **`lib/main.dart`** — `BcLibC.open()` is now called before `WidgetsFlutterBinding.ensureInitialized()`. If the shared library fails to load the process exits immediately with `Fatal: native library unavailable: …` on stderr (exit code 1) instead of surfacing the error in the UI only when the first calculation runs.
+- **`scripts/verify-bundle.sh`** — enhanced native library checks:
+  - Linux: broken-symlink detection + `file -L` ELF validation for `libbclibc_ffi.so`
+  - Windows: MZ PE-header check via `od` for `bclibc_ffi.dll`
+
+### Added
+- **Native library smoke tests** in CI across all build formats — verify that the shared library is present, valid, and loads cleanly at startup:
+  - `build.yml` (Linux): runs the app binary, checks stderr for `"Fatal: native library"`
+  - `build.yml` (Windows): `Start-Process` + stderr check for the same message
+  - `build-android.yml`: unzips APK/AAB and checks `libbclibc_ffi.so` ELF for each ABI (`arm64-v8a`, `armeabi-v7a`, `x86_64`)
+  - `build-flatpak.yml`: installs bundle via `flatpak install`, checks ELF, runs app under `dbus-run-session`
+  - `build-snap.yml`: `unsquashfs` extraction + ELF check
+
+### Removed
+- `packages/bclibc_ffi/` local package (superseded by `dart_bclibc` on pub.dev)
+- `external/bclibc` git submodule and `.gitmodules`
+- `flatpak/modules/bclibc.yml` Flatpak module
+- `ffigen` Makefile target
+- `--recurse-submodules` from all CI `git clone` / `actions/checkout` steps
+
 
 ## v0.1.18 (2026-06-26)
 

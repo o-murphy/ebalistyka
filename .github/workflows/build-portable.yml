@@ -7,7 +7,6 @@ on:
   #     - "lib/**"
   #     - "linux/**"
   #     - "external/**"
-  #     - "packages/bclibc_ffi/**"
   #     - "pubspec.yaml"
   #     - "scripts/ci-common.sh"
   #     - ".github/workflows/build-portable.yml"

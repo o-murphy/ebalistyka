@@ -1,10 +1,6 @@
 flutter:
     ref: 3.44.4
 
-modules:
-  - flatpak/modules/bclibc.yml
-
-disable-submodules: true
 
 foreign-deps-ref: v0.8.2
 

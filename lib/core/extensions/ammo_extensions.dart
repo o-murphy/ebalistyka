@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:bclibc_ffi/bclibc.dart' as bclibc;
-import 'package:bclibc_ffi/unit.dart';
+import 'package:dart_bclibc/bclibc.dart' as bclibc;
+import 'package:dart_bclibc/unit.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 
 enum DragType { g1, g7, custom }

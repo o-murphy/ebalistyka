@@ -11,12 +11,14 @@ A high performance cross-platform ballistic calculator
 [![Release]][GitHub Release Latest]
 ![Status]
 [![Flutter Shield]][Flutter]
+[![powered by bclibc]][bclibc repo]
+
 ![Linux] ![Windows] ![Android]
 
 [![AUR Version]][AUR Package]
 [![Snapcraft Version]][Snapcraft Package]
-[![FlatpakRepoVersion]][FlatpakRepoPackage]
 [![WinGet Package Version]][WinGet Package]
+[![FlatpakRepoVersion]][FlatpakRepoPackage]
 
 [![Google Play]][Google Play Internal Test]
 
@@ -34,7 +36,7 @@ A high performance cross-platform ballistic calculator
 > [!WARNING]
 > **Alpha software.** Expect breaking changes, incomplete features, and rough edges.
 
-A cross-platform ballistic trajectory calculator built with Flutter. Powered by [bclibc](external/bclibc) — a high-performance (3-DOF + spin drift) C++ ballistic solver engine with RK4/Euler integration.
+A cross-platform ballistic trajectory calculator built with Flutter. Powered by [dart_bclibc](https://pub.dev/packages/dart_bclibc) — a high-performance (3-DOF + spin drift) C++ ballistic solver engine with RK4/Euler integration.
 
 _UI/UX inspired by the [**Strilets**](https://download.strilets.tech/) ballistic calculator app_
 
@@ -97,7 +99,7 @@ _UI/UX inspired by the [**Strilets**](https://download.strilets.tech/) ballistic
   - [File import](#file-import)
 - [Dependencies](#dependencies)
   - [App (`ebalistyka`)](#app-ebalistyka)
-  - [`packages/bclibc_ffi`](#packagesbclibc_ffi)
+  - [`dart_bclibc`](#dart_bclibc)
   - [`packages/ebalistyka_db`](#packagesebalistyka_db)
   - [`packages/a7p`](#packagesa7p)
   - [`packages/reticle_gen`](#packagesreticle_gen)
@@ -331,19 +333,16 @@ ebalistyka/
 │   │   └── constants/         # UI dimensions, null string sentinel
 │   ├── update/                # Update checker and utilities
 │   └── l10n/                  # Generated AppLocalizations (EN + UA)
-├── packages/
-│   ├── bclibc_ffi/            # Dart FFI bindings for the C++ solver
-│   ├── ebalistyka_db/         # ObjectBox schema + .ebcp export DTOs
-│   ├── a7p/                   # .a7p protobuf encode/decode + ProfileExport converter
-│   └── reticle_gen/           # SVG mil-reticle generator
-└── external/
-    └── bclibc/                # C++ ballistic solver engine (LGPL-3, git submodule)
+└── packages/
+    ├── ebalistyka_db/         # ObjectBox schema + .ebcp export DTOs
+    ├── a7p/                   # .a7p protobuf encode/decode + ProfileExport converter
+    └── reticle_gen/           # SVG mil-reticle generator
 ```
 
 **State management:** Riverpod  
 **Navigation:** go_router  
 **Local database:** ObjectBox  
-**Ballistic engine:** bclibc (C++ via FFI)  
+**Ballistic engine:** [dart_bclibc](https://pub.dev/packages/dart_bclibc) (pub.dev package, bundles bclibc C++ solver via FFI)  
 **Localisation:** Flutter ARB / `flutter_localizations` (EN + UA)
 
 ---
@@ -359,7 +358,7 @@ ebalistyka/
 ### Clone
 
 ```bash
-git clone --recurse-submodules https://github.com/o-murphy/ebalistyka.git
+git clone https://github.com/o-murphy/ebalistyka.git
 cd ebalistyka
 ```
 
@@ -373,7 +372,6 @@ sudo apt-get install -y \
   libclang-dev fuse libfuse2
 
 flutter pub get
-cd packages/bclibc_ffi && dart run ffigen --config ffigen.yaml && cd ../..
 flutter build linux --release
 ```
 
@@ -384,7 +382,6 @@ Output: `build/linux/x64/release/bundle/`
 ```powershell
 # Requires Visual Studio 2022 with C++ workload
 flutter pub get
-cd packages\bclibc_ffi; dart run ffigen --config ffigen.yaml; cd ..\..
 flutter build windows --release
 ```
 
@@ -394,7 +391,6 @@ Output: `build\windows\x64\runner\Release\`
 
 ```bash
 flutter pub get
-cd packages/bclibc_ffi && dart run ffigen --config ffigen.yaml && cd ../..
 flutter build apk --release --target-platform android-arm64
 ```
 
@@ -459,12 +455,12 @@ On Android, `file_picker` cannot filter by custom extensions (`.ebcp`, `.a7p`) b
 | [ota_update](https://pub.dev/packages/ota_update)                       | Autoupdate for Android sideload installations        |
 | [flutpak](https://pub.dev/packages/flutpak) (dev)                       | Manage flatpak/flathub manifest for sandboxed builds |
 
-### `packages/bclibc_ffi`
+### `dart_bclibc`
 
-| Package                             | Role                                                           |
-| ----------------------------------- | -------------------------------------------------------------- |
-| [bclibc](external/bclibc)           | C++ ballistic solver engine (3-DOF + spin drift, RK4) — LGPL-3 |
-| [ffi](https://pub.dev/packages/ffi) | Dart ↔ C FFI bindings                                          |
+| Package                                                         | Role                                                             |
+| --------------------------------------------------------------- | ---------------------------------------------------------------- |
+| [dart_bclibc](https://pub.dev/packages/dart_bclibc)             | Dart FFI package — bundles bclibc C++ solver (3-DOF, RK4) LGPL-3 |
+| [ffi](https://pub.dev/packages/ffi)                             | Dart ↔ C FFI bindings                                            |
 
 ### `packages/ebalistyka_db`
 
@@ -498,7 +494,7 @@ This program is free software: you can redistribute it and/or modify it under th
 See [LICENSE](LICENSE) for the full text. See [CHANGELOG](CHANGELOG.md) for release history.
 
 > [!NOTE]
-> `bclibc` (the ballistic solver engine, located in `external/bclibc`) is licensed separately under the **GNU Lesser General Public License v3.0**. See [`external/bclibc/LICENSE`](external/bclibc/LICENSE).
+> [`dart_bclibc`](https://pub.dev/packages/dart_bclibc) bundles `bclibc` — the ballistic solver engine — which is licensed separately under the **GNU Lesser General Public License v3.0**. See the [dart_bclibc repository](https://github.com/o-murphy/dart_bclibc) for the engine source and its license.
 
 > [!WARNING]
 > **Risk notice.** This application performs approximate simulations of complex physical processes. Calculation results must not be considered as completely or reliably reflecting actual projectile behaviour. Results may be used for educational purposes only and must not be relied upon in any context where an incorrect calculation could cause financial harm or put a human life at risk.
@@ -530,16 +526,16 @@ See [LICENSE](LICENSE) for the full text. See [CHANGELOG](CHANGELOG.md) for rele
 
 [Android]: https://img.shields.io/badge/Android-arm64%20%7C%20armv7%20%7C%20x86__64-grey?logo=android&logoColor=white&labelColor=3DDC84
 
-[AUR Version]: https://img.shields.io/aur/version/ebalistyka-bin?style=for-the-badge&logo=arch-linux&cacheSeconds=0
+[AUR Version]: https://img.shields.io/badge/AUR-1793D1?style=for-the-badge&logo=arch-linux&logoColor=white
 [AUR Package]: https://aur.archlinux.org/packages/ebalistyka-bin
 
-[Snapcraft Version]: https://img.shields.io/snapcraft/v/ebalistyka/latest/stable?style=for-the-badge&logo=snapcraft&cacheSeconds=0
+[Snapcraft Version]: https://img.shields.io/badge/Snapcraft-82BEA0?style=for-the-badge&logo=snapcraft&logoColor=white
 [Snapcraft Package]: https://snapcraft.io/ebalistyka
 
-[FlatpakRepoVersion]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fo-murphy.github.io%2Fflatpak-repo%2Fapps.json&query=%24%5B'io.github.o_murphy.ebalistyka'%5D.version&style=for-the-badge&logo=flatpak&label=FLATPAK
+[FlatpakRepoVersion]: https://img.shields.io/badge/Flatpak-4A90D9?style=for-the-badge&logo=flatpak&logoColor=white
 [FlatpakRepoPackage]: https://o-murphy.net/flatpak-repo/#io.github.o_murphy.ebalistyka
 
-[Google Play]: https://img.shields.io/badge/Internal%20Test%20Registration-black?style=for-the-badge&logo=google-play&label=Google%20Play&labelColor=000&color=orange
+[Google Play]: https://img.shields.io/badge/Internal%20Test%20Registration-black?style=for-the-badge&logo=google-play&label=Google%20Play&labelColor=%23414141&color=orange
 [Google Play Internal Test]: https://docs.google.com/forms/d/e/1FAIpQLSdMKHwnBLuwSo9BkqPXRPx4eZwio6RiaNxWEyrvyEpK0dLcuA/viewform?usp=dialog
 
 <!-- DOWNLOADS -->
@@ -566,4 +562,9 @@ See [LICENSE](LICENSE) for the full text. See [CHANGELOG](CHANGELOG.md) for rele
 <!-- EXTRA -->
 
 [WinGet Package]: https://winstall.app/apps/o-murphy.ebalistyka
-[WinGet Package Version]: https://img.shields.io/winget/v/o-murphy.ebalistyka?style=for-the-badge&logo=data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM%2FrhtAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAacSURBVHgBvVjNb1VFFP%2FNe%2Fd9tLSl1CgutBT8CK5scOGCmNSNwcRNdW9k6U4XohsisvBP0GU1RuKOlRIXJpgAC0NiXRhIwIQI1K82kpjCo%2B%2FdOc7XmTkz9xZ23OT13Tn3nJnf%2FM7vnLmvCsX1%2BTvDpV6l1gC1gkd7rY8nevXdL0Y3pLFTevWqzlkLjsw9CbsbC4O85zHb3L2Ik%2FFtceFa7lXdNRRXVRpGYyzrYhIFCZaCpXnlfrs9l%2FHp3v5VilbwMIC3%2F9WtS9mdKsX3FO9zJ%2ByCXQKS39auG15tkTh36vBSr2u0R49ce%2FmljBZrvfr6qas37DBqsNftnmVw1JInqa82n4fps20%2B%2BYk2jeVKqajFmOK7I71MwdOmj8iTSyEdHWPUxPfWrkKqlb1LiwTfNJePY1v53F9uBreu8vJaaQC8uXkfmqsjJF65ieKe3QMPXurFTZ1UG0D7BTk%2BgHVA5Jj%2FUrKEzUToV869tzSoe2vGYYV3QoZniImpyJ8fUwaebWyMwCgszzFxGqZcZ%2F5pLb2ud9Rq1a97Z43LslsYCRgVYpNjl30GKsBHkMKfAoA474NAuS%2FNUy6jqtcqrfVyfEphYgYAKliTwJgZCFB%2BAfksmwNtG5KAC%2FaNFqvGrokXLRnRQAujYrIUH4RKZRx5HbOMlGRRzG0B87jyRt2iAQEwMiFY5gktFk15bMaI0CqvFZ6RAB6Lh5JOHUCiOkfPu87EXaRTppBKn5zhrDgoZ6qZPUmSt7sUS4PXGPLANmZLINUQC4eOor6%2FjTu3fgaNt8V8Iu0thYSyoMQaFWmNUgNZQUBo0t03K3BSaywdPY6FxZfcs%2Fk%2Fr%2BDa95%2Bi2xHdUtcoCysrmizNKoClwGAMEqktmMo1FuE62%2Bj%2BOIKz49n9h3HP2PYMKxGLB0shsp2zWDHSBt1%2B29kkjaIxY1sfo50J8ouwM64x1e%2BKs0OQAJUXUEva%2BbuSbYBBPTDdcaeJVSuTpGUfo63NykchXzwrmt0ISJWcNNgoDOxSbRCTkGsxdpMRIMnFZftKcbttvK1oqsYZKndARQMF5e2AfQNj8rJj9xYTFrJVTDoxprK1RCEW6RYpZm3I73yyeF8AZgazi3yKSQV%2Fe4%2Fkw4w34ygjyQOksroYTHJkJrXYseLFScpEAtDQJTOtskkbTzr3fyqmHcVDkpXNLcWsNvvUESw88wrqnbu49dNX0JPtACaxwovZNHf703jyxbcwtbCEv379Fv%2FdvCxecFNXcC%2FDqigkAp%2FFkj2xk6JwaLCAQ6%2B%2BH4EP55%2FG1e8%2BMUDuZhr0ncOMuwM8%2B9pJTD%2B25GJm9r%2BAy1%2B%2Bja4e2V9w4QwHpLbLI7Xj0%2BD1osOHWD9cncFeUz8CsfbhvkU8d%2BwkqDNs6EqrIZ4%2F9rEDp0MbsgT05hbTOmD9skS0B00U1%2B%2BQGEAGCLsOtq0%2FrmNr47e0oPGfXjiAI6unU4sJnyNvnjZpPZBtyMZv%2Fv4L3AuK1ql%2FatE37bNAjLV17BkZGZOsuYbNQR7w1KCDS998hM2N65nu5p446CcUAGcfP5gxumViLnx9AoNKRe35tepICuveg62dT0f2ougoUiIb8LDXwexgggtnPowgy9TmrcPf%2F3P7Gi6eOYG5wRj9SqUWJMiQGUMAGxi0ekiUIwJL7HGgFfbMsIv54cSxYRfmdGtx3EUdmtRtGp9LDtwOpk0GOopPH6m1%2FLjU3PpYg5KFrFCCs9SlbREz5i1lnwF5sWCyZNOm1TK314DbM%2BiaU4Uy1nQBDpRI0qlIdKYFcA%2FShLyamenagZx2TI4dgKTJtNlNl9YPsHdombNvNTqCkkBiDZAOGpbAyafYO4vuLwoHXAxaps%2Bn27Iyb3Rl0725kdK9tRHAmWd7%2Bsxcsyv4dQQRYQxBmLr02RuUjp68aQKiYWcNPTX22gDfHk1wZ9TF3OLLGE7P4O%2BrP2Cuv%2BNeWDvyJyyJ%2BVHcu8c6O8lsXOvPTkpe8bsExkeRBeDEjwnu3foRY%2FNkYdjBoBeYy37xyXMYaS1qP838WcwlLhx5cYB2mST3sUCm%2BsqA6rmx%2FyWiwX1SzuPP6vS2lDMqSfK29LIAIH%2B79v0KjfRjV0Z8C275jR3lAvAbe9x0lrGSKHCKUyCiQwKRs0kIv9Yzf7kJP12IBYk50aq5LOWFPs3bjD5P9v9xFPfY3HlMEwrg%2BWQplgrWms8kcGqQwtPq9U5Nk%2BPGth5bCLcdLnt5VpNs4tyCxAkS21Kyo%2BEvYuTRxn04bMR8zu%2BoavV%2FeJIg8GPYjyMAAAAASUVORK5CYII%3D
+[WinGet Package Version]: https://img.shields.io/badge/WinGet-0078D4?style=for-the-badge&logo=data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM%2FrhtAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAacSURBVHgBvVjNb1VFFP%2FNe%2Fd9tLSl1CgutBT8CK5scOGCmNSNwcRNdW9k6U4XohsisvBP0GU1RuKOlRIXJpgAC0NiXRhIwIQI1K82kpjCo%2B%2FdOc7XmTkz9xZ23OT13Tn3nJnf%2FM7vnLmvCsX1%2BTvDpV6l1gC1gkd7rY8nevXdL0Y3pLFTevWqzlkLjsw9CbsbC4O85zHb3L2Ik%2FFtceFa7lXdNRRXVRpGYyzrYhIFCZaCpXnlfrs9l%2FHp3v5VilbwMIC3%2F9WtS9mdKsX3FO9zJ%2ByCXQKS39auG15tkTh36vBSr2u0R49ce%2FmljBZrvfr6qas37DBqsNftnmVw1JInqa82n4fps20%2B%2BYk2jeVKqajFmOK7I71MwdOmj8iTSyEdHWPUxPfWrkKqlb1LiwTfNJePY1v53F9uBreu8vJaaQC8uXkfmqsjJF65ieKe3QMPXurFTZ1UG0D7BTk%2BgHVA5Jj%2FUrKEzUToV869tzSoe2vGYYV3QoZniImpyJ8fUwaebWyMwCgszzFxGqZcZ%2F5pLb2ud9Rq1a97Z43LslsYCRgVYpNjl30GKsBHkMKfAoA474NAuS%2FNUy6jqtcqrfVyfEphYgYAKliTwJgZCFB%2BAfksmwNtG5KAC%2FaNFqvGrokXLRnRQAujYrIUH4RKZRx5HbOMlGRRzG0B87jyRt2iAQEwMiFY5gktFk15bMaI0CqvFZ6RAB6Lh5JOHUCiOkfPu87EXaRTppBKn5zhrDgoZ6qZPUmSt7sUS4PXGPLANmZLINUQC4eOor6%2FjTu3fgaNt8V8Iu0thYSyoMQaFWmNUgNZQUBo0t03K3BSaywdPY6FxZfcs%2Fk%2Fr%2BDa95%2Bi2xHdUtcoCysrmizNKoClwGAMEqktmMo1FuE62%2Bj%2BOIKz49n9h3HP2PYMKxGLB0shsp2zWDHSBt1%2B29kkjaIxY1sfo50J8ouwM64x1e%2BKs0OQAJUXUEva%2BbuSbYBBPTDdcaeJVSuTpGUfo63NykchXzwrmt0ISJWcNNgoDOxSbRCTkGsxdpMRIMnFZftKcbttvK1oqsYZKndARQMF5e2AfQNj8rJj9xYTFrJVTDoxprK1RCEW6RYpZm3I73yyeF8AZgazi3yKSQV%2Fe4%2Fkw4w34ygjyQOksroYTHJkJrXYseLFScpEAtDQJTOtskkbTzr3fyqmHcVDkpXNLcWsNvvUESw88wrqnbu49dNX0JPtACaxwovZNHf703jyxbcwtbCEv379Fv%2FdvCxecFNXcC%2FDqigkAp%2FFkj2xk6JwaLCAQ6%2B%2BH4EP55%2FG1e8%2BMUDuZhr0ncOMuwM8%2B9pJTD%2B25GJm9r%2BAy1%2B%2Bja4e2V9w4QwHpLbLI7Xj0%2BD1osOHWD9cncFeUz8CsfbhvkU8d%2BwkqDNs6EqrIZ4%2F9rEDp0MbsgT05hbTOmD9skS0B00U1%2B%2BQGEAGCLsOtq0%2FrmNr47e0oPGfXjiAI6unU4sJnyNvnjZpPZBtyMZv%2Fv4L3AuK1ql%2FatE37bNAjLV17BkZGZOsuYbNQR7w1KCDS998hM2N65nu5p446CcUAGcfP5gxumViLnx9AoNKRe35tepICuveg62dT0f2ougoUiIb8LDXwexgggtnPowgy9TmrcPf%2F3P7Gi6eOYG5wRj9SqUWJMiQGUMAGxi0ekiUIwJL7HGgFfbMsIv54cSxYRfmdGtx3EUdmtRtGp9LDtwOpk0GOopPH6m1%2FLjU3PpYg5KFrFCCs9SlbREz5i1lnwF5sWCyZNOm1TK314DbM%2BiaU4Uy1nQBDpRI0qlIdKYFcA%2FShLyamenagZx2TI4dgKTJtNlNl9YPsHdombNvNTqCkkBiDZAOGpbAyafYO4vuLwoHXAxaps%2Bn27Iyb3Rl0725kdK9tRHAmWd7%2Bsxcsyv4dQQRYQxBmLr02RuUjp68aQKiYWcNPTX22gDfHk1wZ9TF3OLLGE7P4O%2BrP2Cuv%2BNeWDvyJyyJ%2BVHcu8c6O8lsXOvPTkpe8bsExkeRBeDEjwnu3foRY%2FNkYdjBoBeYy37xyXMYaS1qP838WcwlLhx5cYB2mST3sUCm%2BsqA6rmx%2FyWiwX1SzuPP6vS2lDMqSfK29LIAIH%2B79v0KjfRjV0Z8C275jR3lAvAbe9x0lrGSKHCKUyCiQwKRs0kIv9Yzf7kJP12IBYk50aq5LOWFPs3bjD5P9v9xFPfY3HlMEwrg%2BWQplgrWms8kcGqQwtPq9U5Nk%2BPGth5bCLcdLnt5VpNs4tyCxAkS21Kyo%2BEvYuTRxn04bMR8zu%2BoavV%2FeJIg8GPYjyMAAAAASUVORK5CYII%3D
+
+
+[bclibc repo]: https://github.com/ballistics-lab/bclibc
+[powered by bclibc]:
+https://img.shields.io/badge/bclibc-0d1228?logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI%2FPgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDIwMDEwOTA0Ly9FTiIgImh0dHA6Ly93d3cudzMub3JnL1RSLzIwMDEvUkVDLVNWRy0yMDAxMDkwNC9EVEQvc3ZnMTAuZHRkIj4KPHN2ZyB2ZXJzaW9uPSIxLjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMjQuMDAwMDAwcHQiIGhlaWdodD0iMTAyNC4wMDAwMDBwdCIgdmlld0JveD0iMCAwIDEwMjQuMDAwMDAwIDEwMjQuMDAwMDAwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCBtZWV0Ij4KCTxjaXJjbGUgY3g9IjUxMiIgY3k9IjUxMiIgcj0iNTEyIiBmaWxsPSIjMGQxMjI4IiAvPgoJPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTEwMCwxMTI0KSBzY2FsZSgwLjEyMDAwMCwtMC4xMjAwMDApIiBmaWxsPSIjRkZGRkZGIiBzdHJva2U9Im5vbmUiPgoJCTxwYXRoIGQ9Ik01MDU1IDgwNzEgYy0xNjcgLTMzMyAtMjczIC03NjggLTI5MiAtMTE5OCBsLTYgLTE0MyAzNDYgMCAzNDcgMCAwCjYzIGMwIDI3NSAtODAgNzMxIC0xNzUgMTAwNyAtMzkgMTEyIC0xNDUgMzQzIC0xNjMgMzU0IC03IDQgLTI5IC0yOCAtNTcgLTgzegptLTE1IC0yODkgYy00NiAtMjI1IC05MCAtNjYzIC05MCAtODk0IDAgLTEwNCAtMiAtMTA4IC02MSAtMTA4IGwtNDkgMCAwIDc4CmMxIDE1OSA0OCA0ODIgMTAxIDY5MCAzNCAxMzQgMTE5IDM5NiAxMjUgMzg5IDMgLTMgLTkgLTcyIC0yNiAtMTU1eiIgLz4KCQk8cGF0aCBkPSJNNDcxMCA2NDA2IGwwIC0yNDQgMjMgLTYgYzEyIC0zIDMyIC02IDQ1IC02IGwyMiAwIDAgMjI1IDAgMjI1IDY1IDAKNjUgMCAwIC0yMjUgMCAtMjI1IDI4MyAyIDI4MiAzIDMgMjQ4IDIgMjQ3IC0zOTUgMCAtMzk1IDAgMCAtMjQ0eiIgLz4KCQk8cGF0aCBkPSJNNDQyNCA2MTExIGMtMTggLTUgLTQ4IC0xOCAtNjggLTMwIC0xMzcgLTg1IC0xMjAgLTMwMCAyOSAtMzcwIGw0NgotMjEgLTMgLTUzMyAtMyAtNTMyIC0yMyAtNTggYy0xOCAtNDUgLTU0NSAtODUwIC04NzkgLTEzNDMgLTc2IC0xMTMgLTExMgotMjkxIC04MyAtNDE1IDQxIC0xNzcgMTY5IC0zMTIgMzQwIC0zNTkgNTkgLTE3IDI1OTMgLTE1IDI2NTUgMiAxMTQgMzAgMjMzCjEyMiAyODcgMjI0IDc2IDE0MiA3NyAzNDMgMyA0ODYgLTI4IDU0IC0xMzMgMjEzIC01NzMgODc1IC0xNzYgMjY2IC0zMzEgNTA5Ci0zNDQgNTQwIC0yMyA1OCAtMjMgNjAgLTI2IDU4OCBsLTMgNTMwIDQ1IDE4IGM1MiAyMiAxMDEgODAgMTE3IDE0MSAyNCA5MAotMjMgMTk2IC0xMDYgMjM2IC01NCAyNiAtMTk5IDM1IC0yMDEgMTMgLTEgLTcgLTIgLTE3IC0zIC0yMiAwIC01IC04OCAtNwotMjA4IC0zIC0xNTQgNCAtMjA0IDIgLTE5OSAtNiA0IC03IDE1IC0xMiAyNiAtMTIgMTAgMCA5MiAtMTMgMTgxIC0yOSA5MCAtMTYKMjA2IC0zMyAyNTggLTM3IDEwOSAtNyAxNDEgLTI3IDE0MSAtODYgLTEgLTYwIC00OCAtOTggLTEyNSAtOTggbC00NiAwIDMKLTU5MiAzIC01OTMgMjUgLTcwIGMxOCAtNTIgODAgLTE1NCAyNDEgLTM5NSA0NzYgLTcxNCA2ODkgLTEwNDMgNzEwIC0xMDk3IDE2Ci00NCAyMiAtNzkgMjIgLTE0MyAwIC0xNzQgLTgxIC0yOTMgLTIzNyAtMzQ3IC00OCAtMTcgLTEyNSAtMTggLTEzMzEgLTE4CmwtMTI4MCAwIC02NSAzMSBjLTc5IDM4IC0xMzEgODkgLTE2OCAxNjMgLTI1IDUxIC0yNyA2NiAtMjcgMTcxIDAgOTggMyAxMjIKMjIgMTYzIDEzIDI3IDExNiAxODkgMjI5IDM2MCAxMTQgMTcyIDMwOCA0NjQgNDMyIDY1MCAxMjMgMTg1IDIzNiAzNjMgMjUyCjM5NSA1NCAxMTEgNTUgMTIwIDU1IDc0MiBsMCA1NzUgLTUwIDYgYy0yNyAzIC01OCA5IC02OCAxNCAtMjcgMTEgLTQ5IDYyIC00Mgo5NCAxMCA0OCA0MyA2OSAxMTAgNzMgbDYwIDMgMCA2MCAwIDYwIC01MCAyIGMtMjcgMSAtNjQgLTIgLTgxIC02eiIgLz4KCQk8cGF0aCBkPSJNNDcwMCA1MzY5IGMwIC00MjggLTQgLTcwNyAtMTEgLTc1MiAtMjMgLTE1NyAtNTggLTIzMCAtMjYzIC01NDAKLTg0IC0xMjggLTE5NSAtMjk3IC0yNDggLTM3NyAtNTIgLTgwIC0xNjYgLTI1MyAtMjUzIC0zODUgLTg3IC0xMzIgLTE2OSAtMjYwCi0xODIgLTI4NCAtNDMgLTgyIC0yNiAtMTk3IDM5IC0yNTggNTkgLTU2IC03IC01MyAxMzI3IC01MyBsMTIyOSAwIDUyIDI4IGM5OAo1MSAxMzIgMTc2IDc3IDI4MiAtMjMgNDUgLTI2MSA0MTAgLTYzMyA5NzUgLTIzOCAzNjEgLTI1OCAzOTUgLTMwMiA1NDQgLTE0CjQ5IC0xNyAxMzkgLTIyIDcxNiBsLTUgNjYwIC0xMTUgMTcgYy02MyAxMCAtMTg1IDI5IC0yNzEgNDMgLTIxNyAzNSAtMTk5IDM5Ci0xOTkgLTQ4IDAgLTQxIC00IC0xNTQgLTEwIC0yNTMgLTUgLTk4IC0xNyAtMzEyIC0yNSAtNDc0IC05IC0xNjIgLTIwIC0zNDcKLTI1IC00MTAgLTUgLTYzIC0xMCAtMTQ1IC0xMCAtMTgyIDAgLTM4IC00IC02OCAtOCAtNjggLTggMCAtMjggNTcwIC0zOSAxMTU3CmwtNiAzMzEgLTMwIDYgYy0xNiAzIC0zOCA2IC00OCA2IC0xOCAwIC0xOSAtMjIgLTE5IC02ODF6IG0xMDMyIC0xNDI2IGM5IC0xMAo3NCAtMTA2IDE0NCAtMjE1IDcxIC0xMDggMjAzIC0zMDkgMjk0IC00NDcgMjEwIC0zMTggMjAyIC0zMDUgMjA0IC0zNTMgMSAtMzIKLTUgLTQ1IC0yNyAtNjQgbC0yOCAtMjQgLTEyMTUgMCAtMTIxNSAwIC0yNCAyNSBjLTE5IDE4IC0yNSAzNSAtMjUgNjggMCA0MQoxNyA2OSAyMDYgMzU4IDExNCAxNzMgMjU5IDM5NCAzMjMgNDkxIGwxMTYgMTc4IDYxNiAwIGM1NzQgMCA2MTcgLTEgNjMxIC0xN3oiIC8%2BCgk8L2c%2BCjwvc3ZnPgo%3D&label=powered%20by

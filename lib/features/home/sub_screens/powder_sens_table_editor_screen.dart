@@ -1,4 +1,4 @@
-import 'package:bclibc_ffi/bclibc.dart';
+import 'package:dart_bclibc/bclibc.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';

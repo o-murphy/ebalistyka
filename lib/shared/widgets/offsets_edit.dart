@@ -1,4 +1,4 @@
-import 'package:bclibc_ffi/unit.dart';
+import 'package:dart_bclibc/unit.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/shared/widgets/click_label.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_with_unit_picker_tile.dart';
