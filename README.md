@@ -102,7 +102,7 @@ _UI/UX inspired by the [**Strilets**](https://download.strilets.tech/) ballistic
   - [`dart_bclibc`](#dart_bclibc)
   - [`packages/ebalistyka_db`](#packagesebalistyka_db)
   - [`packages/a7p`](#packagesa7p)
-  - [`packages/reticle_gen`](#packagesreticle_gen)
+  - [`tools/reticle_gen`](#toolsreticle_gen)
 - [License](#license)
 
 ---
@@ -333,9 +333,10 @@ ebalistyka/
 │   │   └── constants/         # UI dimensions, null string sentinel
 │   ├── update/                # Update checker and utilities
 │   └── l10n/                  # Generated AppLocalizations (EN + UA)
-└── packages/
-    ├── ebalistyka_db/         # ObjectBox schema + .ebcp export DTOs
-    ├── a7p/                   # .a7p protobuf encode/decode + ProfileExport converter
+├── packages/
+│   ├── ebalistyka_db/         # ObjectBox schema + .ebcp export DTOs
+│   └── a7p/                   # .a7p protobuf encode/decode + ProfileExport converter
+└── tools/
     └── reticle_gen/           # SVG mil-reticle generator
 ```
 
@@ -477,7 +478,7 @@ On Android, `file_picker` cannot filter by custom extensions (`.ebcp`, `.a7p`) b
 | [protobuf](https://pub.dev/packages/protobuf) | `.a7p` protobuf encode/decode |
 | [crypto](https://pub.dev/packages/crypto)     | `.a7p` checksum verification  |
 
-### `packages/reticle_gen`
+### `tools/reticle_gen`
 
 | Package                             | Role                   |
 | ----------------------------------- | ---------------------- |

@@ -6,6 +6,7 @@ on:
       - "lib/**"
       - "test/**"
       - "packages/**"
+      - "tools/**"
       - "pubspec.yaml"
       - "pubspec.lock"
       - "Makefile"
