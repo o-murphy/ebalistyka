@@ -53,15 +53,6 @@ generate-reticles:
 generate-icons:
 	dart run flutter_launcher_icons:main && dart run flutter_native_splash:create
 
-# Re-generate Dart protobuf bindings for packages/a7p
-generate-a7p:
-	cd packages/a7p && protoc \
-		--dart_out=lib/src/proto \
-		-I proto \
-		proto/profedit.proto \
-		--plugin=protoc-gen-dart=$$HOME/.pub-cache/bin/protoc-gen-dart
-	@echo "Done. Files written to packages/a7p/lib/src/proto/"
-
 objectbox-setup:
 	cd packages/ebalistyka_db && bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-dart/main/install.sh)
 
@@ -90,7 +81,7 @@ generate-collection:
 	--near-dupes-threshold 0.0
 
 generate: objectbox-generate \
-	generate-a7p generate-localization \
+	generate-localization \
 	generate-reticles generate-icons \
 	generate-collection
 
@@ -113,7 +104,6 @@ test: build-bclibc reticle-gen-setup
 format:
 	dart format lib test \
 		packages/ebalistyka_db/lib \
-		packages/a7p/lib \
 		tools/reticle_gen/lib \
 		tools/reticle_gen/bin
 

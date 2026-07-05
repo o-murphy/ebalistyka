@@ -1,9 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:a7p/a7p.dart' as proto;
 import 'package:ebalistyka_db/ebalistyka_db.dart';
-
-import 'a7p_validator.dart';
-import 'proto/profedit.pb.dart' as proto;
 
 // ── Multipliers from the a7p specification ────────────────────────────────────
 // sc_height   : mm   × 1
@@ -25,6 +23,12 @@ const _kInchToMm = 25.4;
 
 enum A7pRange { subsonic, low, medium, long, ultra }
 
+/// Bridges the a7p protobuf `proto.Payload` (from `package:a7p`, which only
+/// speaks the wire format — it has no notion of this app's domain model)
+/// and [ProfileExport] (this app's own DB-entity-agnostic export format,
+/// also used for `.ebcp`). Ported from the app's former local `a7p`
+/// package, which bundled this conversion directly; kept here now that
+/// the app depends on the standalone, published `a7p` package instead.
 abstract final class A7pConverter {
   // ── proto → ProfileExport (import) ───────────────────────────────────────────
 
@@ -32,7 +36,7 @@ abstract final class A7pConverter {
     proto.Payload payload, {
     bool validate = true,
   }) {
-    if (validate) A7pValidator.validate(payload);
+    if (validate) proto.A7pValidator.validate(payload);
     return _fromProfile(payload.profile);
   }
 
@@ -882,45 +886,25 @@ const List<int> ultraLongRangeTable = [
   1480,
   1490,
   1500,
-  1505,
   1510,
-  1515,
   1520,
-  1525,
   1530,
-  1535,
   1540,
-  1545,
   1550,
-  1555,
   1560,
-  1565,
   1570,
-  1575,
   1580,
-  1585,
   1590,
-  1595,
   1600,
-  1605,
   1610,
-  1615,
   1620,
-  1625,
   1630,
-  1635,
   1640,
-  1645,
   1650,
-  1655,
   1660,
-  1665,
   1670,
-  1675,
   1680,
-  1685,
   1690,
-  1695,
   1700,
   1705,
   1710,
@@ -995,4 +979,31 @@ const List<int> ultraLongRangeTable = [
   2055,
   2060,
   2065,
+  2070,
+  2075,
+  2080,
+  2085,
+  2090,
+  2095,
+  2100,
+  2105,
+  2110,
+  2115,
+  2120,
+  2125,
+  2130,
+  2135,
+  2140,
+  2145,
+  2150,
+  2155,
+  2160,
+  2165,
+  2170,
+  2175,
+  2180,
+  2185,
+  2190,
+  2195,
+  2200,
 ];

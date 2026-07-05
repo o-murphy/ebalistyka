@@ -101,7 +101,6 @@ _UI/UX inspired by the [**Strilets**](https://download.strilets.tech/) ballistic
   - [App (`ebalistyka`)](#app-ebalistyka)
   - [`dart_bclibc`](#dart_bclibc)
   - [`packages/ebalistyka_db`](#packagesebalistyka_db)
-  - [`packages/a7p`](#packagesa7p)
   - [`tools/reticle_gen`](#toolsreticle_gen)
 - [License](#license)
 
@@ -323,7 +322,7 @@ ebalistyka/
 │   │   ├── extensions/        # Typed getters/setters on ObjectBox entities
 │   │   ├── formatting/        # UnitFormatterImpl — localized value formatting
 │   │   ├── models/            # FieldConstraints and other shared models
-│   │   ├── services/          # A7pService, import/export orchestration
+│   │   ├── services/          # A7pService/A7pConverter, import/export orchestration
 │   │   └── collection/        # Built-in weapon/ammo/sight collection assets
 │   ├── shared/
 │   │   ├── widgets/           # Reusable widgets (pickers, inputs, dialogs, wizards)
@@ -334,8 +333,7 @@ ebalistyka/
 │   ├── update/                # Update checker and utilities
 │   └── l10n/                  # Generated AppLocalizations (EN + UA)
 ├── packages/
-│   ├── ebalistyka_db/         # ObjectBox schema + .ebcp export DTOs
-│   └── a7p/                   # .a7p protobuf encode/decode + ProfileExport converter
+│   └── ebalistyka_db/         # ObjectBox schema + .ebcp export DTOs
 └── tools/
     └── reticle_gen/           # SVG mil-reticle generator
 ```
@@ -447,6 +445,7 @@ On Android, `file_picker` cannot filter by custom extensions (`.ebcp`, `.a7p`) b
 | [go_router](https://pub.dev/packages/go_router)                         | Navigation                                           |
 | [flutter_localizations](https://pub.dev/packages/flutter_localizations) | EN + UA localisation                                 |
 | [flutter_svg](https://pub.dev/packages/flutter_svg)                     | SVG reticle & target rendering                       |
+| [a7p](https://pub.dev/packages/a7p)                                     | `.a7p` profile format — protobuf encode/decode/validate |
 | [window_manager](https://pub.dev/packages/window_manager)               | Desktop window size / title / icon                   |
 | [file_picker](https://pub.dev/packages/file_picker)                     | Import file picker                                   |
 | [share_plus](https://pub.dev/packages/share_plus)                       | Export / share files                                 |
@@ -470,13 +469,6 @@ On Android, `file_picker` cannot filter by custom extensions (`.ebcp`, `.a7p`) b
 | [objectbox](https://pub.dev/packages/objectbox_flutter_libs) | Local database                 |
 | [archive](https://pub.dev/packages/archive)                  | `.ebcp` zip archive read/write |
 | [json_annotation](https://pub.dev/packages/json_annotation)  | Export DTO serialisation       |
-
-### `packages/a7p`
-
-| Package                                       | Role                          |
-| --------------------------------------------- | ----------------------------- |
-| [protobuf](https://pub.dev/packages/protobuf) | `.a7p` protobuf encode/decode |
-| [crypto](https://pub.dev/packages/crypto)     | `.a7p` checksum verification  |
 
 ### `tools/reticle_gen`
 

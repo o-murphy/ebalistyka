@@ -12,9 +12,10 @@ packages:
   a7p:
     dependency: "direct main"
     description:
-      path: "packages/a7p"
-      relative: true
-    source: path
+      name: a7p
+      sha256: "095d968d08628be5801309bc0904d8d0202636dfa1928f6eaed436bdeec6dad5"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.1.0"
   analyzer:
     dependency: transitive
