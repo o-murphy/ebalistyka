@@ -1003,7 +1003,4 @@ const List<int> ultraLongRangeTable = [
   2175,
   2180,
   2185,
-  2190,
-  2195,
-  2200,
 ];
