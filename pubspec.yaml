@@ -37,8 +37,7 @@ dependencies:
   ebalistyka_db:
     path: ./packages/ebalistyka_db
 
-  a7p:
-    path: ./packages/a7p
+  a7p: ^0.1.0
 
   dart_bclibc: ^0.1.0
   # dart_bclibc:

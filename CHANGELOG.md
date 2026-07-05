@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
 ### Changed
+- **A7P format dependency** — replaced `packages/a7p` (local path package) with [`a7p ^0.1.0`](https://pub.dev/packages/a7p) from pub.dev. `A7pConverter`/`A7pRange` (the proto ↔ `ProfileExport` conversion, plus the distance-range tables — app-specific, and not part of the standalone `a7p` package) now live in `lib/core/services/a7p_converter.dart`.
 - **Ballistic engine dependency** — replaced `packages/bclibc_ffi` (local git-submodule-based FFI package) with [`dart_bclibc ^0.1.0`](https://pub.dev/packages/dart_bclibc) from pub.dev. The `external/bclibc` submodule and `packages/bclibc_ffi` local package have been removed; the native shared library is now built and bundled by `dart_bclibc`'s own CMake rules.
 - **`linux/CMakeLists.txt`**, **`windows/CMakeLists.txt`** — removed manual `install(TARGETS bclibc_ffi …)` / `add_dependencies` blocks that are now handled inside `dart_bclibc`'s platform CMakeLists.
 - **`flutpak.yaml`** — removed `modules: [flatpak/modules/bclibc.yml]` and `disable-submodules: true` (no longer needed; `dart_bclibc` bundles bclibc source via the pub.dev archive).
@@ -30,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   - `build-snap.yml`: `unsquashfs` extraction + ELF check
 
 ### Removed
+- `packages/a7p/` local package (superseded by `a7p` on pub.dev)
+- `generate-a7p` Makefile target (protobuf bindings now ship inside the `a7p` package itself)
 - `packages/bclibc_ffi/` local package (superseded by `dart_bclibc` on pub.dev)
 - `external/bclibc` git submodule and `.gitmodules`
 - `flatpak/modules/bclibc.yml` Flatpak module

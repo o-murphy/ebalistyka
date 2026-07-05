@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:a7p/a7p.dart';
+import 'package:ebalistyka/core/services/a7p_converter.dart';
 import 'package:ebalistyka/core/services/a7p_service.dart';
 import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
