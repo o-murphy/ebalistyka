@@ -13,10 +13,10 @@ packages:
     dependency: "direct main"
     description:
       name: a7p
-      sha256: "5acdf337dfaf80bb40953f341aa356773c951a6fbe51d6340586fe286f88bcae"
+      sha256: "7dd498ec9c26887823038c7480350c4b870b600f8060a945f6baf41a47d169bc"
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.2"
   analyzer:
     dependency: transitive
     description:
@@ -342,10 +342,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_markdown_plus
-      sha256: "2e4b667a75c08e5710866ae010da392acf5af475f9ad0be9bf406525e9751b0c"
+      sha256: fce641d6c2106cc495de1cd603f97a4f9d615a97a64011928ded380dbdade935
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.11"
+    version: "1.0.12"
   flutter_native_splash:
     dependency: "direct dev"
     description:
