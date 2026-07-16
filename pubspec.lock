@@ -13,10 +13,10 @@ packages:
     dependency: "direct main"
     description:
       name: a7p
-      sha256: "2b29ba7dde1f3327bbc06d6df01495005283d0e04de32162e43e76165cf2ac18"
+      sha256: "3fbdbea19c12cb324c298f6f95f0bd2581af6736da3652ce020b1de4605d9cd7"
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.3"
+    version: "1.2.4"
   analyzer:
     dependency: transitive
     description:
