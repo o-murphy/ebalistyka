@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
-import 'db_file.dart';
-import 'db_validator.dart';
-import 'proto/ebc_db.pb.dart' as proto;
-
-/// Reads/writes a single [proto.Db] to disk. `Db` itself is the app's
-/// in-memory global state — this class is purely the durability layer:
-/// callers own the in-memory instance and decide when to call [save].
-class DbStore {
+/// Reads/writes a single message of type [T] to disk. In memory, the
+/// decoded value *is* that slice of the app's state — this class is purely
+/// the durability layer: callers own the in-memory instance and decide when
+/// to call [save]. One instance per file (e.g. one for `profiles.ebcp`, a
+/// separate one for `settings.ebcp`) — each file's atomicity/debounce is
+/// fully independent of any other file's.
+class MsgStore<T> {
   final File file;
 
   /// Coalesces rapid [save] calls into one write. `Duration.zero` (the
@@ -17,39 +17,48 @@ class DbStore {
   /// against hammering disk if some caller doesn't.
   final Duration debounce;
 
-  DbStore(this.file, {this.debounce = Duration.zero});
+  final Uint8List Function(T) _encode;
+  final T Function(Uint8List) _decode;
+
+  MsgStore(
+    this.file, {
+    required Uint8List Function(T) encode,
+    required T Function(Uint8List) decode,
+    this.debounce = Duration.zero,
+  }) : _encode = encode,
+       _decode = decode;
 
   File get _tmpFile => File('${file.path}.tmp');
   File get _bakFile => File('${file.path}.bak');
 
   Timer? _debounceTimer;
-  proto.Db? _pendingDb;
+  T? _pending;
   Completer<void>? _pendingCompleter;
 
-  /// Loads [Db] from disk. Falls back to [orElseSeed] if the file is
-  /// missing, fails to decode, or fails schema validation — mirrors the
-  /// reset-on-corruption behavior ObjectBox-era code used.
-  Future<proto.Db> load({required proto.Db Function() orElseSeed}) async {
+  /// Loads [T] from disk. Falls back to [orElseSeed] if the file is
+  /// missing, fails to decode, or fails schema validation (validation is
+  /// the caller's job — pass a `validate` step inside [orElseSeed]'s
+  /// caller, or wrap [load] — this class only owns the byte-level
+  /// round-trip and atomic write).
+  Future<T> load({required T Function() orElseSeed}) async {
     if (!await file.exists()) return orElseSeed();
 
     try {
       final bytes = await file.readAsBytes();
-      final db = DbFile.decode(bytes);
-      DbValidator.validate(db);
-      return db;
+      return _decode(bytes);
     } catch (_) {
       return orElseSeed();
     }
   }
 
-  /// Persists [db]. With [debounce] set, rapid calls coalesce into a
+  /// Persists [value]. With [debounce] set, rapid calls coalesce into a
   /// single write after the quiet period; the returned future completes
   /// when that write actually happens, not immediately. Call [flush] on
   /// app pause/dispose so a pending debounced write isn't lost.
-  Future<void> save(proto.Db db) {
-    if (debounce == Duration.zero) return _writeNow(db);
+  Future<void> save(T value) {
+    if (debounce == Duration.zero) return _writeNow(value);
 
-    _pendingDb = db;
+    _pending = value;
     _pendingCompleter ??= Completer<void>();
     final completer = _pendingCompleter!;
 
@@ -67,27 +76,27 @@ class DbStore {
     _debounceTimer?.cancel();
     _debounceTimer = null;
 
-    final db = _pendingDb;
+    final value = _pending;
     final completer = _pendingCompleter;
-    _pendingDb = null;
+    _pending = null;
     _pendingCompleter = null;
-    if (db == null || completer == null) return;
+    if (value == null || completer == null) return;
 
     try {
-      await _writeNow(db);
+      await _writeNow(value);
       completer.complete();
     } catch (e, st) {
       completer.completeError(e, st);
     }
   }
 
-  /// Atomically persists [db]: write to a temp file, flush, then rename
-  /// over the real path (atomic on all target platforms' filesystems).
-  /// The previous good file is rotated to `<path>.bak` first, so a crash
+  /// Atomically persists [value]: write to a temp file, flush, then rename
+  /// over the real path (atomic on all target platforms' filesystems). The
+  /// previous good file is rotated to `<path>.bak` first, so a crash
   /// mid-write always leaves either the old file or the new one intact,
   /// never a torn one.
-  Future<void> _writeNow(proto.Db db) async {
-    final bytes = DbFile.encode(db);
+  Future<void> _writeNow(T value) async {
+    final bytes = _encode(value);
 
     final sink = _tmpFile.openWrite();
     sink.add(bytes);
