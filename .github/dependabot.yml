@@ -17,6 +17,9 @@ updates:
       flutter-packages:
         patterns:
           - "flutter_*"
+      pub-packages:
+        patterns:
+          - "*"
 
   - package-ecosystem: "gitsubmodule"
     directory: "/"
