@@ -45,14 +45,13 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "ui_key", "name", "focal_plane_value", "sight_height_inch",
+        "name", "focal_plane_value", "sight_height_inch",
         "sight_horizontal_offset_inch", "vertical_click", "horizontal_click",
         "vertical_click_unit", "horizontal_click_unit", "min_magnification",
         "max_magnification", "reticle_image", "calibrated_magnification",
         "vendor", "notes", "image"
       ],
       "properties": {
-        "ui_key": { "type": "string" },
         "name": { "type": "string", "default": "" },
         "focal_plane_value": {
           "type": "string", "enum": ["ffp", "sfp", "lwir"], "default": "ffp"
@@ -161,7 +160,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "ui_key", "name", "caliber_inch", "weight_grain", "length_inch",
+        "name", "caliber_inch", "weight_grain", "length_inch",
         "drag_type_value", "bc_g1", "bc_g7", "use_multi_bc_g1",
         "use_multi_bc_g7", "muzzle_velocity_mps",
         "muzzle_velocity_temperature_c", "use_powder_sensitivity",
@@ -172,7 +171,6 @@
         "custom_drag_table_cd", "zero", "projectile_name", "vendor", "image"
       ],
       "properties": {
-        "ui_key": { "type": "string" },
         "name": { "type": "string", "default": "" },
         "caliber_inch": {
           "description": "FC.projectileDiameter, mm→inch (1–30mm). optional in the .proto — null/absent means unset.",
@@ -242,21 +240,13 @@
     "Profile": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["ui_key", "name", "weapon", "ammo", "sights"],
+      "required": ["ui_key", "name", "weapon", "ammo", "sight"],
       "properties": {
         "ui_key": { "type": "string" },
         "name": { "type": "string", "default": "" },
         "weapon": { "$ref": "#/$defs/Weapon" },
-        "ammo": {
-          "type": "array",
-          "items": { "$ref": "#/$defs/Ammo" },
-          "description": "ammo[0] is the active ammo for this profile."
-        },
-        "sights": {
-          "type": "array",
-          "items": { "$ref": "#/$defs/Sight" },
-          "description": "sights[0] is the active sight for this profile."
-        }
+        "ammo": { "$ref": "#/$defs/Ammo" },
+        "sight": { "$ref": "#/$defs/Sight" }
       }
     },
 
