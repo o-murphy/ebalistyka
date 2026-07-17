@@ -15,7 +15,6 @@ Db _sampleDb() {
     ..vendor = 'Acme';
 
   final sight = Sight()
-    ..uiKey = 'sight-1'
     ..name = 'Test Scope'
     ..focalPlaneValue = 'ffp'
     ..verticalClick = 0.1
@@ -27,7 +26,6 @@ Db _sampleDb() {
   // calibratedMagnification left unset — optional field, null when absent.
 
   final ammo = Ammo()
-    ..uiKey = 'ammo-1'
     ..name = '.308 175gr'
     ..caliberInch = 0.308
     ..weightGrain = 175.0
@@ -48,8 +46,8 @@ Db _sampleDb() {
     ..uiKey = 'profile-1'
     ..name = 'Test Profile'
     ..weapon = weapon
-    ..ammo.add(ammo)
-    ..sights.add(sight);
+    ..ammo = ammo
+    ..sight = sight;
 
   return Db()
     ..schemaVersion = 1
@@ -105,9 +103,9 @@ void main() {
 
       expect(decoded.profiles.single.name, 'Test Profile');
       expect(decoded.profiles.single.weapon.name, 'Test Rifle');
-      expect(decoded.profiles.single.ammo.single.name, '.308 175gr');
-      expect(decoded.profiles.single.ammo.single.zero.distanceMeter, 100.0);
-      expect(decoded.profiles.single.sights.single.name, 'Test Scope');
+      expect(decoded.profiles.single.ammo.name, '.308 175gr');
+      expect(decoded.profiles.single.ammo.zero.distanceMeter, 100.0);
+      expect(decoded.profiles.single.sight.name, 'Test Scope');
       expect(decoded.writeToBuffer(), db.writeToBuffer());
     });
 
@@ -133,15 +131,15 @@ void main() {
     });
 
     test('accepts an unset (optional) Ammo.caliberInch as null', () {
-      final db = _sampleDb()..profiles.single.ammo.single.clearCaliberInch();
-      expect(db.profiles.single.ammo.single.hasCaliberInch(), isFalse);
+      final db = _sampleDb()..profiles.single.ammo.clearCaliberInch();
+      expect(db.profiles.single.ammo.hasCaliberInch(), isFalse);
       expect(() => DbValidator.validate(db), returnsNormally);
     });
 
     test('rejects a present but out-of-range Ammo.caliberInch', () {
       // Sentinel-style -1 is no longer special-cased now that the field is
       // optional — a present value must fall within the real range.
-      final db = _sampleDb()..profiles.single.ammo.single.caliberInch = -1.0;
+      final db = _sampleDb()..profiles.single.ammo.caliberInch = -1.0;
       expect(
         () => DbValidator.validate(db),
         throwsA(isA<DbValidationException>()),
@@ -150,7 +148,7 @@ void main() {
 
     test('rejects an out-of-range Ammo.weightGrain', () {
       // FC.projectileWeight caps at 800 grain.
-      final db = _sampleDb()..profiles.single.ammo.single.weightGrain = 5000.0;
+      final db = _sampleDb()..profiles.single.ammo.weightGrain = 5000.0;
       expect(
         () => DbValidator.validate(db),
         throwsA(isA<DbValidationException>()),

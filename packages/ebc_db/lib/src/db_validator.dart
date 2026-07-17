@@ -78,7 +78,6 @@ abstract final class DbValidator {
   };
 
   static Map<String, dynamic> _sightToJson(proto.Sight s) => {
-    'ui_key': s.uiKey,
     'name': s.name,
     'focal_plane_value': s.focalPlaneValue,
     'sight_height_inch': s.sightHeightInch,
@@ -99,7 +98,6 @@ abstract final class DbValidator {
   };
 
   static Map<String, dynamic> _ammoToJson(proto.Ammo a) => {
-    'ui_key': a.uiKey,
     'name': a.name,
     'caliber_inch': a.hasCaliberInch() ? a.caliberInch : null,
     'weight_grain': a.hasWeightGrain() ? a.weightGrain : null,
@@ -149,8 +147,8 @@ abstract final class DbValidator {
     'ui_key': p.uiKey,
     'name': p.name,
     'weapon': _weaponToJson(p.weapon),
-    'ammo': p.ammo.map(_ammoToJson).toList(),
-    'sights': p.sights.map(_sightToJson).toList(),
+    'ammo': _ammoToJson(p.ammo),
+    'sight': _sightToJson(p.sight),
   };
 
   static Map<String, dynamic> _generalSettingsToJson(
