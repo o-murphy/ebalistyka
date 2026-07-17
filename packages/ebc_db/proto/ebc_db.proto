@@ -15,51 +15,49 @@ message Weapon {
 }
 
 message Sight {
-  string ui_key = 1;
-  string name = 2;
-  string focal_plane_value = 3;
-  double sight_height_inch = 4;
-  double sight_horizontal_offset_inch = 5;
-  double vertical_click = 6;
-  double horizontal_click = 7;
-  string vertical_click_unit = 8;
-  string horizontal_click_unit = 9;
-  double min_magnification = 10;
-  double max_magnification = 11;
-  string reticle_image = 12;
-  optional double calibrated_magnification = 13;
-  string vendor = 14;
-  string notes = 15;
-  string image = 16;
+  string name = 1;
+  string focal_plane_value = 2;
+  double sight_height_inch = 3;
+  double sight_horizontal_offset_inch = 4;
+  double vertical_click = 5;
+  double horizontal_click = 6;
+  string vertical_click_unit = 7;
+  string horizontal_click_unit = 8;
+  double min_magnification = 9;
+  double max_magnification = 10;
+  string reticle_image = 11;
+  optional double calibrated_magnification = 12;
+  string vendor = 13;
+  string notes = 14;
+  string image = 15;
 }
 
 message Ammo {
-  string ui_key = 1;
-  string name = 2;
-  optional double caliber_inch = 3;
-  optional double weight_grain = 4;
-  optional double length_inch = 5;
-  string drag_type_value = 6;
-  optional double bc_g1 = 7;
-  optional double bc_g7 = 8;
-  bool use_multi_bc_g1 = 9;
-  bool use_multi_bc_g7 = 10;
-  optional double muzzle_velocity_mps = 11;
-  double muzzle_velocity_temperature_c = 12;
-  bool use_powder_sensitivity = 13;
-  double powder_sensitivity_frac = 14;
-  repeated double powder_sensitivity_tc = 15;
-  repeated double powder_sensitivity_v_mps = 16;
-  repeated double multi_bc_table_g1_v_mps = 17;
-  repeated double multi_bc_table_g1_bc = 18;
-  repeated double multi_bc_table_g7_v_mps = 19;
-  repeated double multi_bc_table_g7_bc = 20;
-  repeated double custom_drag_table_mach = 21;
-  repeated double custom_drag_table_cd = 22;
-  Zero zero = 23;
-  string projectile_name = 24;
-  string vendor = 25;
-  string image = 26;
+  string name = 1;
+  optional double caliber_inch = 2;
+  optional double weight_grain = 3;
+  optional double length_inch = 4;
+  string drag_type_value = 5;
+  optional double bc_g1 = 6;
+  optional double bc_g7 = 7;
+  bool use_multi_bc_g1 = 8;
+  bool use_multi_bc_g7 = 9;
+  optional double muzzle_velocity_mps = 10;
+  double muzzle_velocity_temperature_c = 11;
+  bool use_powder_sensitivity = 12;
+  double powder_sensitivity_frac = 13;
+  repeated double powder_sensitivity_tc = 14;
+  repeated double powder_sensitivity_v_mps = 15;
+  repeated double multi_bc_table_g1_v_mps = 16;
+  repeated double multi_bc_table_g1_bc = 17;
+  repeated double multi_bc_table_g7_v_mps = 18;
+  repeated double multi_bc_table_g7_bc = 19;
+  repeated double custom_drag_table_mach = 20;
+  repeated double custom_drag_table_cd = 21;
+  Zero zero = 22;
+  string projectile_name = 23;
+  string vendor = 24;
+  string image = 25;
 }
 
 message Zero {
@@ -83,9 +81,9 @@ message Zero {
 message Profile {
   string ui_key = 1;
   string name = 2;
-  Weapon weapon = 3;          // embedded, not a reference
-  repeated Ammo ammo = 4;     // ammo[0] = active
-  repeated Sight sights = 5;  // sights[0] = active
+  Weapon weapon = 3;
+  Ammo ammo = 4;
+  Sight sight = 5;
 }
 
 message GeneralSettings {
