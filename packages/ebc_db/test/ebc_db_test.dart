@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -224,6 +225,53 @@ void main() {
         },
       );
       expect(seeded, isTrue);
+    });
+
+    test('debounce coalesces rapid saves into one write of the latest value', () async {
+      final dbFile = File('${tmpDir.path}/db.pb');
+      final store = DbStore(
+        dbFile,
+        debounce: const Duration(milliseconds: 30),
+      );
+
+      final first = _sampleDb();
+      final second = _sampleDb()..profiles.first.name = 'Second';
+      final third = _sampleDb()..profiles.first.name = 'Third';
+
+      unawaited(store.save(first));
+      unawaited(store.save(second));
+      final lastSave = store.save(third);
+
+      // Nothing written yet — still inside the debounce window.
+      expect(dbFile.existsSync(), isFalse);
+
+      await lastSave;
+      final loaded = DbFile.decode(await dbFile.readAsBytes());
+      expect(loaded.profiles.single.name, 'Third');
+    });
+
+    test('flush() immediately writes a pending debounced save', () async {
+      final dbFile = File('${tmpDir.path}/db.pb');
+      final store = DbStore(
+        dbFile,
+        debounce: const Duration(seconds: 10),
+      );
+
+      final saveFuture = store.save(_sampleDb());
+      expect(dbFile.existsSync(), isFalse);
+
+      await store.flush();
+      await saveFuture; // the original save() future must also complete.
+
+      expect(dbFile.existsSync(), isTrue);
+    });
+
+    test('flush() is a no-op when nothing is pending', () async {
+      final store = DbStore(
+        File('${tmpDir.path}/db.pb'),
+        debounce: const Duration(seconds: 10),
+      );
+      await store.flush();
     });
   });
 }
