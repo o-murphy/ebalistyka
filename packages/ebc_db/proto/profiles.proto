@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+package profiles;
+
+message Weapon {
+  string name = 1;
+  optional double caliber_inch = 2;
+  string caliber_name = 3;
+  double twist_inch = 4;
+  optional double barrel_length_inch = 5;
+  double zero_elevation_rad = 6;
+  string vendor = 7;
+  string notes = 8;
+  string image = 9;
+}
+
+message Sight {
+  string name = 1;
+  string focal_plane_value = 2;
+  double sight_height_inch = 3;
+  double sight_horizontal_offset_inch = 4;
+  double vertical_click = 5;
+  double horizontal_click = 6;
+  string vertical_click_unit = 7;
+  string horizontal_click_unit = 8;
+  double min_magnification = 9;
+  double max_magnification = 10;
+  string reticle_image = 11;
+  optional double calibrated_magnification = 12;
+  string vendor = 13;
+  string notes = 14;
+  string image = 15;
+}
+
+message Ammo {
+  string name = 1;
+  optional double caliber_inch = 2;
+  optional double weight_grain = 3;
+  optional double length_inch = 4;
+  string drag_type_value = 5;
+  optional double bc_g1 = 6;
+  optional double bc_g7 = 7;
+  bool use_multi_bc_g1 = 8;
+  bool use_multi_bc_g7 = 9;
+  optional double muzzle_velocity_mps = 10;
+  double muzzle_velocity_temperature_c = 11;
+  bool use_powder_sensitivity = 12;
+  double powder_sensitivity_frac = 13;
+  repeated double powder_sensitivity_tc = 14;
+  repeated double powder_sensitivity_v_mps = 15;
+  repeated double multi_bc_table_g1_v_mps = 16;
+  repeated double multi_bc_table_g1_bc = 17;
+  repeated double multi_bc_table_g7_v_mps = 18;
+  repeated double multi_bc_table_g7_bc = 19;
+  repeated double custom_drag_table_mach = 20;
+  repeated double custom_drag_table_cd = 21;
+  Zero zero = 22;
+  string projectile_name = 23;
+  string vendor = 24;
+  string image = 25;
+}
+
+message Zero {
+  double distance_meter = 1;
+  double look_angle_rad = 2;
+  double altitude_meter = 3;
+  double temperature_c = 4;
+  double pressure_h_pa = 5;
+  double humidity_frac = 6;
+  bool use_diff_powder_temperature = 7;
+  bool use_coriolis = 8;
+  double powder_temperature_c = 9;
+  double latitude_deg = 10;
+  double azimuth_deg = 11;
+  double offset_x = 12;
+  double offset_y = 13;
+  string offset_x_unit = 14;
+  string offset_y_unit = 15;
+}
+
+message Profile {
+  string uuid = 1;
+  string name = 2;
+  Weapon weapon = 3;
+  Ammo ammo = 4;
+  Sight sight = 5;
+}
+
+message ProfilesData {
+  uint32 schema_version = 1;
+  repeated Profile profiles = 2; // profiles[0] = active profile
+}

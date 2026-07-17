@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ebc_db/schema/ebcp.schema.json",
+  "title": "eBalistyka EbcpData",
+  "description": "Canonical schema for the app's protobuf EbcpData document (snake_case, as produced by EbcpValidator's hand-written proto→JSON conversion) — the shareable/exportable .ebcp container, successor to today's ZIP+JSON .ebcp format. Bundles one or more ProfilesData blocks and, optionally, one SettingsData block. See docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md. ProfilesData/SettingsData are not redefined here — bin/embed_schema.dart inlines the real $defs from profiles.schema.json/settings.schema.json at embed time (see that script's _mergeExternalDefs), so this source file stays the single point of truth for EbcpData only.",
+  "$ref": "#/$defs/EbcpData",
+  "$defs": {
+    "EbcpData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "profiles_data"],
+      "properties": {
+        "schema_version": { "type": "integer", "minimum": 0 },
+        "profiles_data": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ProfilesData" }
+        },
+        "settings_data": {
+          "description": "Absent when this .ebcp carries no settings (e.g. a single-profile share).",
+          "$ref": "#/$defs/SettingsData"
+        }
+      }
+    }
+  }
+}

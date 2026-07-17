@@ -1,4 +1,4 @@
-// Re-generates lib/src/proto/*.dart from ../proto/ebc_db.proto.
+// Re-generates lib/src/proto/*.dart from ../proto/*.proto.
 //
 // Run after editing the .proto source:
 //   dart run bin/generate_proto.dart
@@ -36,11 +36,20 @@ void main() {
 
   final binDir = p.dirname(Platform.script.toFilePath());
   final repoRoot = p.dirname(binDir);
+
+  // profiles.proto/settings.proto are independent (own package, no
+  // cross-imports); ebcp.proto imports both to define the shareable
+  // container. One protoc invocation compiles all three.
+  const protoFiles = [
+    'proto/profiles.proto',
+    'proto/settings.proto',
+    'proto/ebcp.proto',
+  ];
   final result = Process.runSync(protoc, [
     '--dart_out=lib/src/proto',
     '-I',
     'proto',
-    'proto/ebc_db.proto',
+    ...protoFiles,
     '--plugin=protoc-gen-dart=${plugin.path}',
   ], workingDirectory: repoRoot);
 
