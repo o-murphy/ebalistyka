@@ -1,0 +1,22 @@
+name: ebc_db
+description: "Protobuf-backed data layer for eBalistyka (replaces ebalistyka_db/ObjectBox)."
+version: 0.0.1
+homepage:
+publish_to: 'none'
+
+environment:
+  sdk: ^3.11.4
+
+dependencies:
+  protobuf: ^6.0.0
+  crypto: ^3.0.3
+  json_schema: ^5.2.0
+  # Only used by bin/generate_proto.dart (a maintainer-only script, not
+  # imported by lib/) — a regular dependency rather than a dev_dependency
+  # because bin/ scripts are still part of what a `pub global activate`
+  # install fetches, unlike test/.
+  path: ^1.9.0
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.31.0
