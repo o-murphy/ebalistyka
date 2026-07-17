@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package ebcp;
+
+import "profiles.proto";
+import "settings.proto";
+
+// The shareable/exportable .ebcp container — successor to today's ZIP+JSON
+// .ebcp format. Bundles one or more ProfilesData blocks and, optionally,
+// one SettingsData block into a single MD5-hex + protobuf-bytes file (same
+// wire convention as profiles.ebcp/settings.ebcp).
+message EbcpData {
+  uint32 schema_version = 1;
+  repeated profiles.ProfilesData profiles_data = 2;
+  optional settings.SettingsData settings_data = 3;
+}

@@ -1,0 +1,267 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ebc_db/schema/profiles.schema.json",
+  "title": "eBalistyka ProfilesData",
+  "description": "Canonical schema for the app's protobuf ProfilesData document (snake_case, as produced by ProfilesValidator's hand-written proto→JSON conversion), persisted to profiles.ebcp via ProfilesFile/ProfilesStore. See docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md. Numeric ranges and defaults are ported from lib/core/models/field_constraints.dart (FC) in the main app, converted from FC's rawUnit into the unit each field is actually stored in here (documented per-field below) — FC itself is the single source of truth for these limits, not this file.",
+  "$ref": "#/$defs/ProfilesData",
+  "$defs": {
+    "Weapon": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name", "caliber_inch", "caliber_name", "twist_inch",
+        "barrel_length_inch", "zero_elevation_rad", "vendor", "notes", "image"
+      ],
+      "properties": {
+        "name": { "type": "string", "default": "" },
+        "caliber_inch": {
+          "description": "FC.projectileDiameter, mm→inch (1–30mm). optional in the .proto — null/absent means unset (ProfilesValidator emits null via hasCaliberInch()).",
+          "type": ["number", "null"],
+          "minimum": 0.03937007874015748, "maximum": 1.1811023622047244,
+          "default": null
+        },
+        "caliber_name": { "type": "string", "default": "" },
+        "twist_inch": {
+          "description": "FC.twist is [0,30] as an input-widget magnitude; storage is signed (direction encoded by sign, see weapon_wizard_notifier.dart).",
+          "type": "number", "minimum": -30, "maximum": 30, "default": 0.0
+        },
+        "barrel_length_inch": {
+          "description": "FC.barrelLength, inch (1–36). optional in the .proto — null/absent means unset.",
+          "type": ["number", "null"],
+          "minimum": 1.0, "maximum": 36.0,
+          "default": null
+        },
+        "zero_elevation_rad": {
+          "description": "No FC constraint exists for this field in the app today.",
+          "type": "number", "default": 0.0
+        },
+        "vendor": { "type": "string", "default": "" },
+        "notes": { "type": "string", "default": "" },
+        "image": { "type": "string", "default": "" }
+      }
+    },
+
+    "Sight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name", "focal_plane_value", "sight_height_inch",
+        "sight_horizontal_offset_inch", "vertical_click", "horizontal_click",
+        "vertical_click_unit", "horizontal_click_unit", "min_magnification",
+        "max_magnification", "reticle_image", "calibrated_magnification",
+        "vendor", "notes", "image"
+      ],
+      "properties": {
+        "name": { "type": "string", "default": "" },
+        "focal_plane_value": {
+          "type": "string", "enum": ["ffp", "sfp", "lwir"], "default": "ffp"
+        },
+        "sight_height_inch": {
+          "description": "FC.sightHeight, mm→inch (0–200mm).",
+          "type": "number", "minimum": 0, "maximum": 7.874015748031496, "default": 0.0
+        },
+        "sight_horizontal_offset_inch": {
+          "description": "Reuses FC.sightHeight, mm→inch (0–200mm) — same constraint the wizard applies to this field.",
+          "type": "number", "minimum": 0, "maximum": 7.874015748031496, "default": 0.0
+        },
+        "vertical_click": {
+          "description": "Self-describing value+unit pair with vertical_click_unit (stored in whatever unit that field names, see sight_wizard_notifier.dart) — no single fixed-unit bound applies.",
+          "type": "number", "default": 0.1
+        },
+        "horizontal_click": {
+          "description": "Self-describing value+unit pair with horizontal_click_unit — see vertical_click.",
+          "type": "number", "default": 0.1
+        },
+        "vertical_click_unit": { "type": "string", "default": "mil" },
+        "horizontal_click_unit": { "type": "string", "default": "mil" },
+        "min_magnification": {
+          "description": "FC.magnification, scalar (0.5–100).",
+          "type": "number", "minimum": 0.5, "maximum": 100, "default": 1.0
+        },
+        "max_magnification": {
+          "description": "FC.magnification, scalar (0.5–100).",
+          "type": "number", "minimum": 0.5, "maximum": 100, "default": 1.0
+        },
+        "reticle_image": { "type": "string", "default": "" },
+        "calibrated_magnification": {
+          "description": "No dedicated FC constant; inferred from FC.magnification (0.5–100). optional in the .proto — null/absent means unset.",
+          "type": ["number", "null"],
+          "minimum": 0.5, "maximum": 100,
+          "default": null
+        },
+        "vendor": { "type": "string", "default": "" },
+        "notes": { "type": "string", "default": "" },
+        "image": { "type": "string", "default": "" }
+      }
+    },
+
+    "Zero": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "distance_meter", "look_angle_rad", "altitude_meter", "temperature_c",
+        "pressure_h_pa", "humidity_frac", "use_diff_powder_temperature",
+        "use_coriolis", "powder_temperature_c", "latitude_deg", "azimuth_deg",
+        "offset_x", "offset_y", "offset_x_unit", "offset_y_unit"
+      ],
+      "properties": {
+        "distance_meter": {
+          "description": "FC.zeroDistance, meter (10–1000).",
+          "type": "number", "minimum": 10, "maximum": 1000, "default": 100.0
+        },
+        "look_angle_rad": {
+          "description": "FC.lookAngle, degree→radian (-90°..90°).",
+          "type": "number", "minimum": -1.5707963267948966, "maximum": 1.5707963267948966, "default": 0.0
+        },
+        "altitude_meter": {
+          "description": "FC.altitude, meter (-500–15000).",
+          "type": "number", "minimum": -500, "maximum": 15000, "default": 0.0
+        },
+        "temperature_c": {
+          "description": "FC.temperature, celsius (-100–100).",
+          "type": "number", "minimum": -100, "maximum": 100, "default": 15.0
+        },
+        "pressure_h_pa": {
+          "description": "FC.pressure, hPa (300–1500).",
+          "type": "number", "minimum": 300, "maximum": 1500, "default": 1013.0
+        },
+        "humidity_frac": {
+          "description": "FC.humidity, fraction (0–1).",
+          "type": "number", "minimum": 0, "maximum": 1, "default": 0.0
+        },
+        "use_diff_powder_temperature": { "type": "boolean", "default": false },
+        "use_coriolis": { "type": "boolean", "default": false },
+        "powder_temperature_c": {
+          "description": "FC.temperature, celsius (-100–100).",
+          "type": "number", "minimum": -100, "maximum": 100, "default": 15.0
+        },
+        "latitude_deg": {
+          "description": "FC.latitude, degree (-90–90).",
+          "type": "number", "minimum": -90, "maximum": 90, "default": 0.0
+        },
+        "azimuth_deg": {
+          "description": "FC.azimuth, degree (0–360).",
+          "type": "number", "minimum": 0, "maximum": 360, "default": 0.0
+        },
+        "offset_x": {
+          "description": "Self-describing value+unit pair with offset_x_unit — no single fixed-unit bound applies (see Sight.vertical_click).",
+          "type": "number", "default": 0.0
+        },
+        "offset_y": {
+          "description": "Self-describing value+unit pair with offset_y_unit.",
+          "type": "number", "default": 0.0
+        },
+        "offset_x_unit": { "type": "string", "default": "mil" },
+        "offset_y_unit": { "type": "string", "default": "mil" }
+      }
+    },
+
+    "Ammo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name", "caliber_inch", "weight_grain", "length_inch",
+        "drag_type_value", "bc_g1", "bc_g7", "use_multi_bc_g1",
+        "use_multi_bc_g7", "muzzle_velocity_mps",
+        "muzzle_velocity_temperature_c", "use_powder_sensitivity",
+        "powder_sensitivity_frac", "powder_sensitivity_tc",
+        "powder_sensitivity_v_mps", "multi_bc_table_g1_v_mps",
+        "multi_bc_table_g1_bc", "multi_bc_table_g7_v_mps",
+        "multi_bc_table_g7_bc", "custom_drag_table_mach",
+        "custom_drag_table_cd", "zero", "projectile_name", "vendor", "image"
+      ],
+      "properties": {
+        "name": { "type": "string", "default": "" },
+        "caliber_inch": {
+          "description": "FC.projectileDiameter, mm→inch (1–30mm). optional in the .proto — null/absent means unset.",
+          "type": ["number", "null"],
+          "minimum": 0.03937007874015748, "maximum": 1.1811023622047244,
+          "default": null
+        },
+        "weight_grain": {
+          "description": "FC.projectileWeight, grain (1–800). optional in the .proto — null/absent means unset.",
+          "type": ["number", "null"],
+          "minimum": 1, "maximum": 800,
+          "default": null
+        },
+        "length_inch": {
+          "description": "FC.projectileLength, mm→inch (1–100mm). optional in the .proto — null/absent means unset.",
+          "type": ["number", "null"],
+          "minimum": 0.03937007874015748, "maximum": 3.937007874015748,
+          "default": null
+        },
+        "drag_type_value": {
+          "type": "string", "enum": ["g1", "g7", "custom"], "default": "g1"
+        },
+        "bc_g1": {
+          "description": "FC.ballisticCoefficient, scalar (0.001–2.000). optional in the .proto — null/absent means unset.",
+          "type": ["number", "null"],
+          "minimum": 0.001, "maximum": 2.000,
+          "default": null
+        },
+        "bc_g7": {
+          "description": "FC.ballisticCoefficient, scalar (0.001–2.000). optional in the .proto — null/absent means unset.",
+          "type": ["number", "null"],
+          "minimum": 0.001, "maximum": 2.000,
+          "default": null
+        },
+        "use_multi_bc_g1": { "type": "boolean", "default": false },
+        "use_multi_bc_g7": { "type": "boolean", "default": false },
+        "muzzle_velocity_mps": {
+          "description": "FC.muzzleVelocity, mps (100–1800). optional in the .proto — null/absent means unset.",
+          "type": ["number", "null"],
+          "minimum": 100, "maximum": 1800,
+          "default": null
+        },
+        "muzzle_velocity_temperature_c": {
+          "description": "FC.temperature, celsius (-100–100).",
+          "type": "number", "minimum": -100, "maximum": 100, "default": 15.0
+        },
+        "use_powder_sensitivity": { "type": "boolean", "default": false },
+        "powder_sensitivity_frac": {
+          "description": "FC.powderSensitivity, fraction (0–5).",
+          "type": "number", "minimum": 0, "maximum": 5, "default": 0.0
+        },
+        "powder_sensitivity_tc": { "type": "array", "items": { "type": "number" }, "default": [] },
+        "powder_sensitivity_v_mps": { "type": "array", "items": { "type": "number" }, "default": [] },
+        "multi_bc_table_g1_v_mps": { "type": "array", "items": { "type": "number" }, "default": [] },
+        "multi_bc_table_g1_bc": { "type": "array", "items": { "type": "number" }, "default": [] },
+        "multi_bc_table_g7_v_mps": { "type": "array", "items": { "type": "number" }, "default": [] },
+        "multi_bc_table_g7_bc": { "type": "array", "items": { "type": "number" }, "default": [] },
+        "custom_drag_table_mach": { "type": "array", "items": { "type": "number" }, "default": [] },
+        "custom_drag_table_cd": { "type": "array", "items": { "type": "number" }, "default": [] },
+        "zero": { "$ref": "#/$defs/Zero" },
+        "projectile_name": { "type": "string", "default": "" },
+        "vendor": { "type": "string", "default": "" },
+        "image": { "type": "string", "default": "" }
+      }
+    },
+
+    "Profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uuid", "name", "weapon", "ammo", "sight"],
+      "properties": {
+        "uuid": { "type": "string" },
+        "name": { "type": "string", "default": "" },
+        "weapon": { "$ref": "#/$defs/Weapon" },
+        "ammo": { "$ref": "#/$defs/Ammo" },
+        "sight": { "$ref": "#/$defs/Sight" }
+      }
+    },
+
+    "ProfilesData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "profiles"],
+      "properties": {
+        "schema_version": { "type": "integer", "minimum": 0 },
+        "profiles": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Profile" },
+          "description": "profiles[0] is the active profile."
+        }
+      }
+    }
+  }
+}
