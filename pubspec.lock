@@ -256,6 +256,13 @@ packages:
       relative: true
     source: path
     version: "0.0.1"
+  ebc_db:
+    dependency: "direct main"
+    description:
+      path: "packages/ebc_db"
+      relative: true
+    source: path
+    version: "0.0.1"
   fake_async:
     dependency: transitive
     description:

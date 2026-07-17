@@ -1,0 +1,219 @@
+syntax = "proto3";
+
+package ebc_db;
+
+message Weapon {
+  string name = 1;
+  optional double caliber_inch = 2;
+  string caliber_name = 3;
+  double twist_inch = 4;
+  optional double barrel_length_inch = 5;
+  double zero_elevation_rad = 6;
+  string vendor = 7;
+  string notes = 8;
+  string image = 9;
+}
+
+message Sight {
+  string ui_key = 1;
+  string name = 2;
+  string focal_plane_value = 3;
+  double sight_height_inch = 4;
+  double sight_horizontal_offset_inch = 5;
+  double vertical_click = 6;
+  double horizontal_click = 7;
+  string vertical_click_unit = 8;
+  string horizontal_click_unit = 9;
+  double min_magnification = 10;
+  double max_magnification = 11;
+  string reticle_image = 12;
+  optional double calibrated_magnification = 13;
+  string vendor = 14;
+  string notes = 15;
+  string image = 16;
+}
+
+message Ammo {
+  string ui_key = 1;
+  string name = 2;
+  optional double caliber_inch = 3;
+  optional double weight_grain = 4;
+  optional double length_inch = 5;
+  string drag_type_value = 6;
+  optional double bc_g1 = 7;
+  optional double bc_g7 = 8;
+  bool use_multi_bc_g1 = 9;
+  bool use_multi_bc_g7 = 10;
+  optional double muzzle_velocity_mps = 11;
+  double muzzle_velocity_temperature_c = 12;
+  bool use_powder_sensitivity = 13;
+  double powder_sensitivity_frac = 14;
+  repeated double powder_sensitivity_tc = 15;
+  repeated double powder_sensitivity_v_mps = 16;
+  repeated double multi_bc_table_g1_v_mps = 17;
+  repeated double multi_bc_table_g1_bc = 18;
+  repeated double multi_bc_table_g7_v_mps = 19;
+  repeated double multi_bc_table_g7_bc = 20;
+  repeated double custom_drag_table_mach = 21;
+  repeated double custom_drag_table_cd = 22;
+  Zero zero = 23;
+  string projectile_name = 24;
+  string vendor = 25;
+  string image = 26;
+}
+
+message Zero {
+  double distance_meter = 1;
+  double look_angle_rad = 2;
+  double altitude_meter = 3;
+  double temperature_c = 4;
+  double pressure_h_pa = 5;
+  double humidity_frac = 6;
+  bool use_diff_powder_temperature = 7;
+  bool use_coriolis = 8;
+  double powder_temperature_c = 9;
+  double latitude_deg = 10;
+  double azimuth_deg = 11;
+  double offset_x = 12;
+  double offset_y = 13;
+  string offset_x_unit = 14;
+  string offset_y_unit = 15;
+}
+
+message Profile {
+  string ui_key = 1;
+  string name = 2;
+  Weapon weapon = 3;          // embedded, not a reference
+  repeated Ammo ammo = 4;     // ammo[0] = active
+  repeated Sight sights = 5;  // sights[0] = active
+}
+
+message GeneralSettings {
+  string language_code = 1;
+  string theme_mode = 2;
+  string adjustment_display_format_value = 3;
+  bool home_show_mil = 4;
+  bool home_show_mrad = 5;
+  bool home_show_moa = 6;
+  bool home_show_cm_per100m = 7;
+  bool home_show_in_per100yd = 8;
+  bool home_show_in_clicks = 9;
+  double home_chart_distance_step = 10;
+  double home_table_distance_step = 11;
+  bool home_show_subsonic_transition = 12;
+}
+
+message TablesSettings {
+  double distance_start_meter = 1;
+  double distance_end_meter = 2;
+  double distance_step_meter = 3;
+  bool show_zeros = 4;
+  bool show_subsonic_transition = 5;
+  repeated string hidden_cols = 6;
+  bool show_mil = 7;
+  bool show_mrad = 8;
+  bool show_moa = 9;
+  bool show_cm_per100m = 10;
+  bool show_in_per100yd = 11;
+  bool show_in_clicks = 12;
+}
+
+message UnitSettings {
+  string angular = 1;
+  string distance = 2;
+  string velocity = 3;
+  string pressure = 4;
+  string temperature = 5;
+  string diameter = 6;
+  string length = 7;
+  string weight = 8;
+  string adjustment = 9;
+  string drop = 10;
+  string energy = 11;
+  string sight_height = 12;
+  string twist = 13;
+  string barrel_length = 14;
+  string time = 15;
+  string torque = 16;
+  string target_size = 17;
+}
+
+message ShootingConditions {
+  double distance_meter = 1;
+  double look_angle_rad = 2;
+  double altitude_meter = 3;
+  double temperature_c = 4;
+  double pressure_h_pa = 5;
+  double humidity_frac = 6;
+  double powder_temperature_c = 7;
+  bool use_powder_sensitivity = 8;
+  bool use_diff_powder_temp = 9;
+  bool use_coriolis = 10;
+  double latitude_deg = 11;
+  double azimuth_deg = 12;
+  double wind_direction_deg = 13;
+  double wind_speed_mps = 14;
+}
+
+// A raw stored value plus the unit last selected for display — the shape
+// shared by every simple (non-composite) convertor below.
+message UnitValue {
+  double value = 1;
+  string last_unit = 2;
+}
+
+message AnglesConv {
+  double distance_value_meter = 1;
+  string distance_last_unit = 2;
+  double angular_value_mil = 3;
+  string angular_last_unit = 4;
+  string output_last_unit = 5;
+}
+
+message VelocityConv {
+  double value_mps = 1;
+  string last_unit = 2;
+  double mach_input_value = 3;
+  bool mach_use_custom_atmo = 4;
+  double atmo_temperature_c = 5;
+  double atmo_pressure_h_pa = 6;
+  double atmo_humidity_frac = 7;
+  double atmo_altitude_meter = 8;
+}
+
+message DistanceConvTargetSize {
+  double size_inch = 1;
+  string size_unit = 2;
+  double size_angular_mil = 3;
+  string size_angular_unit = 4;
+}
+
+message ConvertorsState {
+  UnitValue length = 1;       // raw value in inches
+  UnitValue weight = 2;       // raw value in grains
+  UnitValue pressure = 3;     // raw value in mmHg
+  UnitValue temperature = 4;  // raw value in Fahrenheit
+  UnitValue torque = 5;       // raw value in newton-meters
+  AnglesConv angles = 6;
+  VelocityConv velocity = 7;
+  DistanceConvTargetSize distance_conv_target_size = 8;
+}
+
+message ReticleSettings {
+  double vertical_adjustment = 1;
+  string vertical_adjustment_unit = 2;
+  double horizontal_adjustment = 3;
+  string horizontal_adjustment_unit = 4;
+  string target_image = 5;
+}
+
+message Db {
+  uint32 schema_version = 1;
+  GeneralSettings general_settings = 2;
+  UnitSettings unit_settings = 3;
+  TablesSettings tables_settings = 4;
+  ReticleSettings reticle_settings = 5;
+  ConvertorsState convertors_state = 6;
+  ShootingConditions shooting_conditions = 7;
+  repeated Profile profiles = 8; // profiles[0] = active profile
+}
