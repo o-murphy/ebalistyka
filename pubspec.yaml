@@ -48,7 +48,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   window_manager: ^0.5.2
   flutter_riverpod: ^3.3.1
-  uuid: ^4.0.0
+  uuid: ^4.6.0
   package_info_plus: ^10.2.0
   path_provider: ^2.1.6
   share_plus: ^13.2.0
