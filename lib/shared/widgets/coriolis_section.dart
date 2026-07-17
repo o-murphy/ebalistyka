@@ -1,0 +1,67 @@
+import 'package:dart_bclibc/unit.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
+import 'package:flutter/material.dart';
+
+/// Reusable Coriolis section for ListView-based screens.
+class CoriolisSection extends StatelessWidget {
+  const CoriolisSection({
+    required this.useCoriolis,
+    required this.latitudeRaw,
+    required this.azimuthRaw,
+    required this.angularUnit,
+    required this.onCoriolisToggled,
+    required this.onLatitudeChanged,
+    required this.onAzimuthChanged,
+    super.key,
+  });
+
+  final bool useCoriolis;
+  final double latitudeRaw;
+  final double azimuthRaw;
+  final Unit angularUnit;
+
+  final ValueChanged<bool> onCoriolisToggled;
+  final ValueChanged<double> onLatitudeChanged;
+  final ValueChanged<double> onAzimuthChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SwitchListTile(
+          title: Text(l10n.sectionCoriolisEffect),
+          secondary: const Icon(IconDef.coriolis),
+          value: useCoriolis,
+          onChanged: onCoriolisToggled,
+          dense: true,
+        ),
+        if (useCoriolis) ...[
+          UnitValueFieldTile(
+            title: l10n.latitude,
+            rawValue: latitudeRaw,
+            constraints: FC.latitude,
+            displayUnit: angularUnit,
+            symbol: '°',
+            icon: IconDef.latitude,
+            onChanged: onLatitudeChanged,
+          ),
+          UnitValueFieldTile(
+            title: l10n.azimuth,
+            rawValue: azimuthRaw,
+            constraints: FC.azimuth,
+            displayUnit: angularUnit,
+            symbol: '°',
+            icon: IconDef.azimuth,
+            onChanged: onAzimuthChanged,
+          ),
+        ],
+      ],
+    );
+  }
+}

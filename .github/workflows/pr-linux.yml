@@ -1,0 +1,181 @@
+name: PR Linux Builds
+
+on:
+  pull_request:
+    paths:
+      - "app/**"
+      - "lib/**"
+      - "linux/**"
+      - "pubspec.yaml"
+      - ".flutter-version"
+      - "packaging/**"
+      - "scripts/ci-common.sh"
+      - ".github/workflows/pr-linux.yml"
+      - ".github/workflows/build.yml"
+      - ".github/workflows/build-portable.yml"
+      - ".github/workflows/build-linux-package.yml"
+
+concurrency:
+  group: pr-linux-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      core:     ${{ steps.filter.outputs.core }}
+      appimage: ${{ steps.filter.outputs.appimage }}
+      deb:      ${{ steps.filter.outputs.deb }}
+      rpm:      ${{ steps.filter.outputs.rpm }}
+    steps:
+      - uses: dorny/paths-filter@v4
+        id: filter
+        with:
+          filters: |
+            core:
+              - "app/**"
+              - "lib/**"
+              - "linux/**"
+              - "pubspec.yaml"
+              - ".flutter-version"
+              - ".github/workflows/build.yml"
+              - ".github/workflows/build-portable.yml"
+              - ".github/workflows/pr-linux.yml"
+            appimage:
+              - "app/**"
+              - ".github/workflows/build-linux-package.yml"
+            deb:
+              - "app/**"
+              - "packaging/deb/**"
+              - ".github/workflows/build-linux-package.yml"
+            rpm:
+              - "app/**"
+              - "packaging/rpm/**"
+              - ".github/workflows/build-linux-package.yml"
+
+  build-bundle-amd64:
+    needs: changes
+    if: |
+      needs.changes.outputs.core     == 'true' ||
+      needs.changes.outputs.appimage == 'true' ||
+      needs.changes.outputs.deb      == 'true' ||
+      needs.changes.outputs.rpm      == 'true'
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/build-portable.yml
+    with:
+      arch: amd64
+      retention_days: 2
+
+  build-bundle-arm64:
+    needs: changes
+    if: |
+      needs.changes.outputs.core     == 'true' ||
+      needs.changes.outputs.appimage == 'true' ||
+      needs.changes.outputs.deb      == 'true' ||
+      needs.changes.outputs.rpm      == 'true'
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/build-portable.yml
+    with:
+      arch: arm64
+      retention_days: 2
+
+  build-appimage-amd64:
+    needs: [changes, build-bundle-amd64]
+    if: |
+      always() &&
+      needs.build-bundle-amd64.result == 'success' &&
+      (needs.changes.outputs.core == 'true' || needs.changes.outputs.appimage == 'true')
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/build-linux-package.yml
+    with:
+      format: appimage
+      arch: amd64
+      retention_days: 2
+      bundle_artifact_name: ${{ needs.build-bundle-amd64.outputs.artifact_name }}
+
+  build-appimage-arm64:
+    needs: [changes, build-bundle-arm64]
+    if: |
+      always() &&
+      needs.build-bundle-arm64.result == 'success' &&
+      (needs.changes.outputs.core == 'true' || needs.changes.outputs.appimage == 'true')
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/build-linux-package.yml
+    with:
+      format: appimage
+      arch: arm64
+      retention_days: 2
+      bundle_artifact_name: ${{ needs.build-bundle-arm64.outputs.artifact_name }}
+
+  build-deb-amd64:
+    needs: [changes, build-bundle-amd64]
+    if: |
+      always() &&
+      needs.build-bundle-amd64.result == 'success' &&
+      (needs.changes.outputs.core == 'true' || needs.changes.outputs.deb == 'true')
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/build-linux-package.yml
+    with:
+      format: deb
+      arch: amd64
+      retention_days: 2
+      bundle_artifact_name: ${{ needs.build-bundle-amd64.outputs.artifact_name }}
+
+  build-deb-arm64:
+    needs: [changes, build-bundle-arm64]
+    if: |
+      always() &&
+      needs.build-bundle-arm64.result == 'success' &&
+      (needs.changes.outputs.core == 'true' || needs.changes.outputs.deb == 'true')
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/build-linux-package.yml
+    with:
+      format: deb
+      arch: arm64
+      retention_days: 2
+      bundle_artifact_name: ${{ needs.build-bundle-arm64.outputs.artifact_name }}
+
+  build-rpm-amd64:
+    needs: [changes, build-bundle-amd64]
+    if: |
+      always() &&
+      needs.build-bundle-amd64.result == 'success' &&
+      (needs.changes.outputs.core == 'true' || needs.changes.outputs.rpm == 'true')
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/build-linux-package.yml
+    with:
+      format: rpm
+      arch: amd64
+      retention_days: 2
+      bundle_artifact_name: ${{ needs.build-bundle-amd64.outputs.artifact_name }}
+
+  build-rpm-arm64:
+    needs: [changes, build-bundle-arm64]
+    if: |
+      always() &&
+      needs.build-bundle-arm64.result == 'success' &&
+      (needs.changes.outputs.core == 'true' || needs.changes.outputs.rpm == 'true')
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/build-linux-package.yml
+    with:
+      format: rpm
+      arch: arm64
+      retention_days: 2
+      bundle_artifact_name: ${{ needs.build-bundle-arm64.outputs.artifact_name }}
+

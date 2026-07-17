@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=eBalistyka
+Comment=Ballistic calculator
+Exec=ebalistyka
+Icon=io.github.o_murphy.ebalistyka
+Categories=Utility;Science;
+StartupWMClass=ebalistyka

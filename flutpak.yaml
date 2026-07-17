@@ -1,0 +1,26 @@
+flutter:
+    ref: 3.44.6
+
+
+foreign-deps-ref: v0.8.2
+
+icons:
+  - size: 16x16
+    path: app/share/icons/hicolor/16x16/apps/io.github.o_murphy.ebalistyka.png
+  - size: 32x32
+    path: app/share/icons/hicolor/32x32/apps/io.github.o_murphy.ebalistyka.png
+  - size: 64x64
+    path: app/share/icons/hicolor/64x64/apps/io.github.o_murphy.ebalistyka.png
+  - size: 128x128
+    path: app/share/icons/hicolor/128x128/apps/io.github.o_murphy.ebalistyka.png
+  - size: 256x256
+    path: app/share/icons/hicolor/256x256/apps/io.github.o_murphy.ebalistyka.png
+  - size: 512x512
+    path: app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png
+
+app-id: io.github.o_murphy.ebalistyka
+runtime-version: "25.08"
+finish-args:
+  - --filesystem=xdg-documents
+  - --filesystem=xdg-download
+  - --share=network

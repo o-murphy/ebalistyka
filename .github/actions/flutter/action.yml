@@ -1,0 +1,162 @@
+name: "Setup Flutter"
+description: "Install Flutter SDK with caching support for Linux/Windows amd64/arm64"
+
+inputs:
+  flutter-version:
+    description: 'Flutter SDK version (e.g., "3.44.1", "stable", "beta", "main")'
+    required: false
+    default: "stable"
+  flutter-version-file:
+    description: 'Path to a file containing the Flutter version (e.g. .flutter-version). Takes precedence over flutter-version.'
+    required: false
+    default: ""
+  cache:
+    description: "Enable caching for Flutter SDK"
+    required: false
+    default: "true"
+
+outputs:
+  flutter-path:
+    description: "Path to the installed Flutter SDK"
+    value: ${{ steps.get-path.outputs.flutter-path }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Get Flutter path
+      id: get-path
+      shell: bash
+      run: |
+        echo "flutter-path=$RUNNER_TEMP/flutter" >> $GITHUB_OUTPUT
+
+    - name: Resolve effective version
+      id: effective
+      shell: bash
+      run: |
+        FILE="${{ inputs.flutter-version-file }}"
+        if [ -n "$FILE" ] && [ -f "$FILE" ]; then
+          VERSION=$(tr -d '[:space:]' < "$FILE")
+        else
+          VERSION="${{ steps.effective.outputs.version }}"
+        fi
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+    - name: Resolve version and depth
+      id: resolve-version
+      shell: bash
+      run: |
+        VERSION="${{ steps.effective.outputs.version }}"
+        case "$VERSION" in
+          stable|beta|latest)
+            echo "branch=${VERSION/latest/stable}" >> $GITHUB_OUTPUT
+            echo "depth=1" >> $GITHUB_OUTPUT
+            ;;
+          main|master)
+            echo "branch=main" >> $GITHUB_OUTPUT
+            echo "depth=50" >> $GITHUB_OUTPUT
+            ;;
+          *)
+            echo "branch=$VERSION" >> $GITHUB_OUTPUT
+            echo "depth=1" >> $GITHUB_OUTPUT
+            ;;
+        esac
+
+    - name: Get commit hash for version tag
+      id: get-commit
+      shell: bash
+      run: |
+        VERSION="${{ steps.effective.outputs.version }}"
+        case "$VERSION" in
+          stable|beta|latest|main|master)
+            # Для гілок отримуємо актуальний commit
+            BRANCH="${VERSION/latest/stable}"
+            BRANCH="${BRANCH/master/main}"
+            COMMIT=$(git ls-remote https://github.com/flutter/flutter.git "refs/heads/$BRANCH" | cut -f1)
+            echo "commit=$COMMIT" >> $GITHUB_OUTPUT
+            ;;
+          *)
+            COMMIT=$(git ls-remote https://github.com/flutter/flutter.git "refs/tags/$VERSION" | cut -f1)
+            if [ -z "$COMMIT" ]; then
+              # Якщо тег не знайдено, можливо це повний hash
+              COMMIT="$VERSION"
+            fi
+            echo "commit=$COMMIT" >> $GITHUB_OUTPUT
+            ;;
+        esac
+
+    - name: Cache Flutter SDK
+      if: inputs.cache == 'true'
+      id: cache-flutter
+      uses: actions/cache@v5
+      with:
+        path: ${{ steps.get-path.outputs.flutter-path }}
+        key: flutter-${{ runner.os }}-${{ runner.arch }}-${{ steps.effective.outputs.version }}-${{ steps.get-commit.outputs.commit }}
+
+    - name: Install system dependencies (Linux)
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install -y \
+          curl git unzip xz-utils zip libglu1-mesa \
+          clang cmake ninja-build pkg-config libgtk-3-dev \
+          liblzma-dev libstdc++-12-dev
+
+    - name: Clone Flutter
+      if: steps.cache-flutter.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        TARGET_DIR="${{ steps.get-path.outputs.flutter-path }}"
+
+        if [ -d "$TARGET_DIR" ]; then
+          echo "Removing existing directory: $TARGET_DIR"
+          rm -rf "$TARGET_DIR"
+        fi
+
+        echo "Creating directory: $TARGET_DIR"
+        mkdir -p "$TARGET_DIR"
+
+        echo "Cloning Flutter [${{ steps.resolve-version.outputs.branch }}]..."
+        git clone --depth ${{ steps.resolve-version.outputs.depth }} \
+          --branch ${{ steps.resolve-version.outputs.branch }} \
+          https://github.com/flutter/flutter.git "$TARGET_DIR"
+
+    - name: Setup environment
+      shell: bash
+      run: |
+        FLUTTER_PATH="${{ steps.get-path.outputs.flutter-path }}"
+
+        echo "FLUTTER_HOME=$FLUTTER_PATH" >> $GITHUB_ENV
+        echo "FLUTTER_ROOT=$FLUTTER_PATH" >> $GITHUB_ENV
+        echo "$FLUTTER_PATH/bin" >> $GITHUB_PATH
+        echo "FLUTTER_GIT_URL=https://github.com/flutter/flutter.git" >> $GITHUB_ENV
+
+        if [[ "${{ runner.os }}" == "Windows" ]]; then
+          echo "PUB_CACHE=$RUNNER_TEMP\\pub-cache" >> $GITHUB_ENV
+        else
+          echo "PUB_CACHE=$RUNNER_TEMP/pub-cache" >> $GITHUB_ENV
+        fi
+
+    - name: Verify Flutter (Unix)
+      if: runner.os != 'Windows'
+      shell: bash
+      run: |
+        flutter --version
+        flutter doctor
+        flutter precache
+
+    - name: Verify Flutter (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $flutterHome = $env:FLUTTER_HOME
+        $flutterBat = Join-Path $flutterHome "bin/flutter.bat"
+
+        if (!(Test-Path $flutterBat)) {
+          Write-Error "Flutter not found at $flutterBat"
+          exit 1
+        }
+
+        & $flutterBat --version
+        & $flutterBat doctor
+        & $flutterBat precache

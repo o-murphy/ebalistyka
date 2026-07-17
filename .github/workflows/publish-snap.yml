@@ -1,0 +1,69 @@
+name: Publish Snap
+
+on:
+  release:
+    types: [ published ]
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Release tag to publish (e.g. v0.1.11)"
+        required: true
+        type: string
+      channel:
+        description: "Snap store channel (stable | beta | edge)"
+        required: false
+        type: string
+        default: stable
+  workflow_call:
+    inputs:
+      tag_name:
+        description: "Release tag to download snaps from"
+        required: true
+        type: string
+      channel:
+        description: "Snap store channel (stable | beta | edge)"
+        required: false
+        type: string
+        default: stable
+
+permissions:
+  contents: read
+
+jobs:
+  approve:
+    runs-on: ubuntu-latest
+    environment: publish
+    steps:
+      - run: echo "Approved"
+
+  snap:
+    needs: approve
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runs-on: ubuntu-latest
+            snap: ebalistyka_linux_x86_64.snap
+          - arch: arm64
+            runs-on: ubuntu-24.04-arm
+            snap: ebalistyka_linux_aarch64.snap
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+      - name: Download snap from release
+        run: |
+          gh release download "${{ inputs.tag_name || github.event.release.tag_name }}" \
+            --pattern "${{ matrix.snap }}" \
+            --dir snap \
+            --repo "${{ github.repository }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to Snap Store
+        uses: snapcore/action-publish@v1
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+        with:
+          snap: snap/${{ matrix.snap }}
+          release: ${{ inputs.channel || (github.event.release.prerelease && 'beta' || 'stable') }}

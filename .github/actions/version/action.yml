@@ -1,0 +1,17 @@
+name: "Resolve version"
+description: "Extracts version from tag (v1.2.3 → 1.2.3) or reads base version from pubspec.yaml"
+
+outputs:
+  version:
+    description: "Resolved version string (without leading v)"
+    value: ${{ steps.resolve.outputs.version }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Resolve version
+      id: resolve
+      shell: bash
+      run: |
+        source scripts/ci-common.sh
+        resolve_version "${{ github.ref_type }}" "${{ github.ref_name }}"

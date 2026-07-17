@@ -1,0 +1,57 @@
+name: Build Windows MSIX + Portable
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - "lib/**"
+      - "windows/**"
+      - "pubspec.yaml"
+      - ".github/workflows/build-exe.yml"
+      - ".github/workflows/build.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: build-exe-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prepare-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: v
+        uses: ./.github/actions/version
+
+  build-amd64:
+    needs: prepare-version
+    name: Windows amd64 (release)
+    uses: ./.github/workflows/build.yml
+    with:
+      platform: windows
+      arch: amd64
+      build_type: release
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 2
+    secrets:
+      CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
+      CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+
+  pr-summary:
+    needs: [ build-amd64 ]
+    if: always() && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Post PR summary
+        uses: ./.github/actions/pr-summary
+        with:
+          platform: Windows amd64
+          build_result: ${{ needs.build-amd64.result }}
+          artifact_name: ${{ needs.build-amd64.outputs.artifact_name }}
+          artifact_url: ${{ needs.build-amd64.outputs.artifact_url }}

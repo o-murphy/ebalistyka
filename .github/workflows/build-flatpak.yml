@@ -1,0 +1,261 @@
+name: Build Flatpak
+
+on:
+  pull_request:
+    paths:
+      - "app/**"
+      - "lib/**"
+      - "linux/**"
+      - "pubspec.yaml"
+      - "flutpak.yaml"
+      - ".flutter-version"
+      - "flatpak/**"
+      - "scripts/ci-common.sh"
+      - "scripts/package-flatpak.sh"
+      - ".github/workflows/build-flatpak.yml"
+  workflow_call:
+    inputs:
+      arch:
+        description: "Target architecture"
+        required: true
+        type: string # amd64 | arm64
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        type: string
+        default: ""
+      retention_days:
+        description: "Artifact retention in days"
+        required: false
+        type: number
+        default: 2
+      tag:
+        description: "Git tag to build"
+        required: false
+        type: string
+        default: ""
+    outputs:
+      artifact_name:
+        description: "Name of the uploaded artifact"
+        value: ${{ jobs.build.outputs.artifact_name }}
+      artifact_url:
+        description: "URL to download the artifact"
+        value: ${{ jobs.build.outputs.artifact_url }}
+  workflow_dispatch:
+    inputs:
+      arch:
+        description: "Target architecture"
+        required: true
+        default: "amd64"
+        type: choice
+        options: [amd64, arm64]
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        default: ""
+        type: string
+      tag:
+        description: "Git tag to build"
+        required: false
+        default: ""
+        type: string
+
+concurrency:
+  group: build-flatpak-${{ github.ref }}-${{ inputs.arch || 'all' }}
+  cancel-in-progress: true
+
+jobs:
+  generate:
+    name: Generate Flatpak manifest
+    runs-on: ubuntu-latest
+    outputs:
+      safe_build_name: ${{ steps.meta.outputs.safe_build_name }}
+      build_number: ${{ steps.meta.outputs.build_number }}
+      cache_hash: ${{ steps.meta.outputs.cache_hash }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set build metadata
+        id: meta
+        shell: bash
+        env:
+          INPUT_BUILD_NAME: ${{ inputs.build_name }}
+          PR_NUMBER: ${{ github.event.number }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          source scripts/ci-common.sh
+          set_build_metadata "ebalistyka-flatpak"
+          echo "cache_hash=$(cat pubspec.lock flutpak.yaml | sha256sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+
+      - name: Install Flutter
+        uses: o-murphy/flutpak/.github/actions/flutter@v0.8.2
+        with:
+          flutter-version-file: .flutter-version
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Generate manifest and validate
+        uses: o-murphy/flutpak/.github/actions/generate@v0.8.2
+        with:
+          tag: ${{ inputs.tag }}
+          commit: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          metainfo-path: app/share/metainfo/io.github.o_murphy.ebalistyka.metainfo.xml
+          artifact-name: flutpak-artifacts-${{ inputs.arch || 'pr' }}
+
+  build:
+    name: flatpak-${{ matrix.arch }}
+    needs: generate
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ${{ github.event_name == 'pull_request' && fromJSON('["amd64","arm64"]') || fromJSON(format('["{0}"]', inputs.arch || 'amd64')) }}
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    permissions:
+      pull-requests: write
+      issues: write
+
+    outputs:
+      artifact_name: ${{ steps.meta.outputs.artifact_name }}
+      artifact_url: ${{ steps.build-flatpak.outputs.artifact-url }}
+
+    steps:
+      - name: Set build metadata
+        id: meta
+        shell: bash
+        env:
+          MATRIX_ARCH: ${{ matrix.arch }}
+          SAFE_BUILD_NAME: ${{ needs.generate.outputs.safe_build_name }}
+          BUILD_NUMBER: ${{ needs.generate.outputs.build_number }}
+        run: |
+          set -euo pipefail
+          case "$MATRIX_ARCH" in
+            amd64)         arch_suffix="x86_64"  ;;
+            arm64|aarch64) arch_suffix="aarch64" ;;
+            *)             arch_suffix="x86_64"  ;;
+          esac
+          echo "arch_suffix=$arch_suffix" >> "$GITHUB_OUTPUT"
+          echo "bundle=ebalistyka_linux_${arch_suffix}.flatpak" >> "$GITHUB_OUTPUT"
+          echo "artifact_name=ebalistyka-flatpak-${arch_suffix}-${SAFE_BUILD_NAME}-${BUILD_NUMBER}" >> "$GITHUB_OUTPUT"
+
+      - name: Download generated Flatpak sources
+        uses: actions/download-artifact@v8
+        with:
+          name: flutpak-artifacts-${{ inputs.arch || 'pr' }}
+          path: flatpak/generated
+
+      - name: Cache Flatpak installation (org.flatpak.Builder + runtimes)
+        uses: actions/cache@v6
+        with:
+          path: ~/.local/share/flatpak
+          key: flatpak-builder-25.08-llvm20-${{ runner.arch }}-v1
+
+      - name: Cache flatpak-builder downloads
+        uses: actions/cache@v6
+        with:
+          path: .flatpak-builder/downloads
+          key: flatpak-dl-${{ steps.meta.outputs.arch_suffix }}-${{ needs.generate.outputs.cache_hash }}-${{ hashFiles('flatpak/generated/io.github.o_murphy.ebalistyka.yml') }}
+          restore-keys: flatpak-dl-${{ steps.meta.outputs.arch_suffix }}-
+
+      - name: Build Flatpak
+        id: build-flatpak
+        uses: o-murphy/flutpak/.github/actions/build-flatpak@v0.8.2
+        with:
+          manifest: flatpak/generated/io.github.o_murphy.ebalistyka.yml
+          app-id: io.github.o_murphy.ebalistyka
+          arch: ${{ steps.meta.outputs.arch_suffix }}
+          bundle: ${{ steps.meta.outputs.bundle }}
+          artifact-name: ${{ steps.meta.outputs.artifact_name }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          retention-days: ${{ inputs.retention_days || 2 }}
+
+      - name: Smoke test Flatpak native library
+        shell: bash
+        env:
+          BUNDLE: ${{ steps.meta.outputs.bundle }}
+          APP_ID: io.github.o_murphy.ebalistyka
+        run: |
+          set -euo pipefail
+          dbus-run-session flatpak install --user -y --bundle "$BUNDLE"
+
+          SO=$(find "$HOME/.local/share/flatpak/app/$APP_ID" \
+               -name "libbclibc_ffi.so" | head -1)
+          if [ -z "$SO" ] || [ ! -f "$SO" ]; then
+            echo "ERROR: libbclibc_ffi.so not found or broken in installed Flatpak"
+            exit 1
+          fi
+          if ! file -L "$SO" | grep -q ELF; then
+            echo "ERROR: libbclibc_ffi.so not ELF: $(file -L "$SO")"
+            exit 1
+          fi
+          echo "✓ libbclibc_ffi.so: $(file -L "$SO" | cut -d: -f2- | xargs)"
+
+          OUTPUT=$(timeout 5 dbus-run-session flatpak run "$APP_ID" 2>&1) || true
+          if echo "$OUTPUT" | grep -q "Fatal: native library"; then
+            echo "ERROR: BcLibC.open() failed inside Flatpak sandbox"
+            echo "$OUTPUT"
+            exit 1
+          fi
+          echo "✓ Flatpak smoke test passed"
+
+          dbus-run-session flatpak uninstall --user -y "$APP_ID" 2>/dev/null || true
+
+      - name: Post PR summary
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v9
+        env:
+          PLATFORM: Linux Flatpak (${{ matrix.arch }})
+          BUILD_RESULT: ${{ job.status }}
+          ARTIFACT_NAME: ${{ steps.meta.outputs.artifact_name }}
+          ARTIFACT_URL: ${{ steps.build-flatpak.outputs.artifact-url }}
+        with:
+          script: |
+            const platform = process.env.PLATFORM;
+            const success = process.env.BUILD_RESULT === 'success';
+            const artifactUrl = process.env.ARTIFACT_URL;
+            const artifactName = process.env.ARTIFACT_NAME;
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const marker = `<!-- pr-summary:${platform} -->`;
+
+            let body = `${marker}\n## ${platform} Build\n\n`;
+            if (success) {
+              body += `✅ **Build successful!**\n\n`;
+              if (artifactUrl) {
+                body += `📦 **[Download](${artifactUrl})**  \n`;
+                body += `\`${artifactName}\`\n\n`;
+              }
+              body += `**PR**: #${context.issue.number} · **Commit**: \`${context.sha}\`\n`;
+            } else {
+              body += `❌ **Build failed!**\n\n[View logs](${runUrl})\n`;
+            }
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find(c =>
+              c.user.type === 'Bot' && c.body.includes(marker)
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }

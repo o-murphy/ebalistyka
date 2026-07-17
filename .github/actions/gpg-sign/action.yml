@@ -1,0 +1,48 @@
+name: Sign artifacts with GPG
+description: >
+  Import a GPG private key and create detached .asc signatures for every
+  file in the given directory. Signatures are placed alongside the originals.
+
+inputs:
+  gpg-private-key:
+    description: ASCII-armored GPG private key (gpg --armor --export-secret-keys KEY_ID)
+    required: true
+  gpg-passphrase:
+    description: Passphrase for the GPG private key
+    required: true
+  path:
+    description: Directory containing artifacts to sign (trailing slash required)
+    required: false
+    default: release/
+
+runs:
+  using: composite
+  steps:
+    - name: Import GPG key
+      shell: bash
+      run: |
+        echo "${{ inputs.gpg-private-key }}" | gpg --batch --import
+        GPG_KEY_ID=$(gpg --list-secret-keys --keyid-format=long \
+          | grep '^sec' | head -1 | awk '{print $2}' | cut -d/ -f2)
+        echo "GPG_KEY_ID=$GPG_KEY_ID" >> "$GITHUB_ENV"
+        gpg --list-secret-keys "$GPG_KEY_ID"
+
+    - name: Sign artifacts
+      shell: bash
+      env:
+        GPG_PASSPHRASE: ${{ inputs.gpg-passphrase }}
+      run: |
+        shopt -s nullglob
+        for f in "${{ inputs.path }}"*; do
+          [ -f "$f" ] || continue
+          [[ "$f" == *.asc ]] && continue
+          echo "Signing $f …"
+          gpg --batch --yes \
+              --local-user "$GPG_KEY_ID" \
+              --passphrase-fd 3 \
+              --pinentry-mode loopback \
+              --detach-sign --armor \
+              "$f" 3<<<"$GPG_PASSPHRASE"
+        done
+        echo "=== Signatures created ==="
+        ls -lh "${{ inputs.path }}"*.asc 2>/dev/null || echo "(none)"

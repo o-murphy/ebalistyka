@@ -1,0 +1,362 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+" # v1.2.3       → full release
+      - "v[0-9]+.[0-9]+.[0-9]+-*" # v1.2.3-beta  → prerelease
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prepare-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+      build_number: ${{ steps.bn.outputs.build_number }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - id: v
+        uses: ./.github/actions/version
+      - id: bn
+        shell: bash
+        run: echo "build_number=$(git rev-list --count --first-parent HEAD)" >> $GITHUB_OUTPUT
+
+  build-portable-amd64:
+    needs: prepare-version
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/build-portable.yml
+    with:
+      arch: amd64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 2
+
+  build-portable-arm64:
+    needs: prepare-version
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/build-portable.yml
+    with:
+      arch: arm64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 2
+
+  build-windows-amd64:
+    needs: prepare-version
+    uses: ./.github/workflows/build.yml
+    with:
+      platform: windows
+      arch: amd64
+      build_type: release
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 2
+    secrets:
+      CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
+      CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+
+  build-android:
+    needs: prepare-version
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/build-android.yml
+    with:
+      format: apk
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      build_type: release
+      retention_days: 2
+    secrets:
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+  build-android-aab:
+    needs: prepare-version
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/build-android.yml
+    with:
+      format: aab
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      build_type: release
+      retention_days: 2
+    secrets:
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+  build-snap-amd64:
+    needs: prepare-version
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/build-snap.yml
+    with:
+      arch: amd64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 2
+
+  build-snap-arm64:
+    needs: prepare-version
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/build-snap.yml
+    with:
+      arch: arm64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 2
+
+  build-appimage-amd64:
+    needs: [prepare-version, build-portable-amd64]
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/build-linux-package.yml
+    with:
+      format: appimage
+      arch: amd64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 2
+      bundle_artifact_name: ${{ needs.build-portable-amd64.outputs.artifact_name }}
+
+  build-appimage-arm64:
+    needs: [prepare-version, build-portable-arm64]
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/build-linux-package.yml
+    with:
+      format: appimage
+      arch: arm64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 2
+      bundle_artifact_name: ${{ needs.build-portable-arm64.outputs.artifact_name }}
+
+  build-flatpak-amd64:
+    needs: [prepare-version]
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/build-flatpak.yml
+    with:
+      tag: ${{ github.ref_name }}
+      arch: amd64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 2
+
+  build-flatpak-arm64:
+    needs: [prepare-version]
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/build-flatpak.yml
+    with:
+      tag: ${{ github.ref_name }}
+      arch: arm64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 2
+
+  build-deb-amd64:
+    needs: [prepare-version, build-portable-amd64]
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/build-linux-package.yml
+    with:
+      format: deb
+      arch: amd64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 2
+      bundle_artifact_name: ${{ needs.build-portable-amd64.outputs.artifact_name }}
+
+  build-deb-arm64:
+    needs: [prepare-version, build-portable-arm64]
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/build-linux-package.yml
+    with:
+      format: deb
+      arch: arm64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 2
+      bundle_artifact_name: ${{ needs.build-portable-arm64.outputs.artifact_name }}
+
+  build-rpm-amd64:
+    needs: [prepare-version, build-portable-amd64]
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/build-linux-package.yml
+    with:
+      format: rpm
+      arch: amd64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 2
+      bundle_artifact_name: ${{ needs.build-portable-amd64.outputs.artifact_name }}
+
+  build-rpm-arm64:
+    needs: [prepare-version, build-portable-arm64]
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/build-linux-package.yml
+    with:
+      format: rpm
+      arch: arm64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 2
+      bundle_artifact_name: ${{ needs.build-portable-arm64.outputs.artifact_name }}
+
+  release:
+    needs: [
+        prepare-version,
+        build-portable-amd64,
+        build-portable-arm64,
+        build-windows-amd64,
+        build-android,
+        build-android-aab,
+        build-snap-amd64,
+        build-snap-arm64,
+        build-appimage-amd64,
+        build-appimage-arm64,
+        build-flatpak-amd64,
+        build-flatpak-arm64,
+        build-deb-amd64,
+        build-deb-arm64,
+        build-rpm-amd64,
+        build-rpm-arm64,
+      ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: dl
+          merge-multiple: true
+
+      - name: Collect release assets
+        run: |
+          mkdir -p release
+          find dl -type f \( \
+            -name "*.tar.gz"      -o \
+            -name "*.AppImage"    -o \
+            -name "*.zsync"       -o \
+            -name "*.zip"         -o \
+            -name "*.msix"        -o \
+            -name "*.appinstaller" -o \
+            -name "*.cer"         -o \
+            -name "*.apk"         -o \
+            -name "*.aab"         -o \
+            -name "*.snap"        -o \
+            -name "*.flatpak"     -o \
+            -name "*.deb"         -o \
+            -name "*.rpm" \
+          \) -exec cp {} release/ \;
+
+          echo "=== Release assets ==="
+          ls -lh release/
+
+      - name: Sign release artifacts
+        if: github.ref_type == 'tag'
+        uses: ./.github/actions/gpg-sign
+        with:
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          path: release/
+
+      - name: Extract changelog
+        if: github.ref_type == 'tag'
+        run: |
+          VERSION="${{ needs.prepare-version.outputs.version }}"
+          V_RE="${VERSION//./\\.}"
+
+          awk "/^## v?${V_RE}([[:space:]]|\$)/{found=1;next} /^\[!\[/{next} /^---$/{next} /^## /{if(found)exit} found{print}" \
+            CHANGELOG.md | sed -e '/./,$!d' -e 's/[[:space:]]*$//' > /tmp/release_notes.md
+
+          if [ ! -s /tmp/release_notes.md ]; then
+            awk '/^## Unreleased/{found=1;next} /^\[!\[/{next} /^---$/{next} /^## /{if(found)exit} found{print}' \
+              CHANGELOG.md | sed -e '/./,$!d' -e 's/[[:space:]]*$//' > /tmp/release_notes.md
+          fi
+
+          PREV_TAG=$(git tag --sort=-version:refname | grep -v "^${{ github.ref_name }}$" | head -1)
+          if [ -n "$PREV_TAG" ]; then
+            echo "" >> /tmp/release_notes.md
+            echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...${{ github.ref_name }}" >> /tmp/release_notes.md
+          fi
+
+          echo "--- release notes ---"
+          cat /tmp/release_notes.md
+
+      - name: Create GitHub Release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: eBalistyka ${{ needs.prepare-version.outputs.version }}
+          body_path: /tmp/release_notes.md
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          fail_on_unmatched_files: true
+          files: release/*
+
+  publish-snap:
+    if: github.ref_type == 'tag'
+    needs: [prepare-version, release]
+    uses: ./.github/workflows/publish-snap.yml
+    with:
+      tag_name: ${{ github.ref_name }}
+      channel: ${{ contains(needs.prepare-version.outputs.version, '-') && 'beta' || 'stable' }}
+    secrets: inherit
+
+  publish-aur:
+    if: github.ref_type == 'tag' && !contains(github.ref_name, '-')
+    needs: [prepare-version, release]
+    uses: ./.github/workflows/publish-aur.yml
+    with:
+      tag_name: ${{ github.ref_name }}
+    secrets: inherit
+
+  publish-flatpak-repo:
+    if: github.ref_type == 'tag'
+    needs: [prepare-version, release]
+    uses: ./.github/workflows/publish-flatpak-repo.yml
+    with:
+      tag_name: ${{ github.ref_name }}
+    secrets: inherit
+
+  publish-winget:
+    if: github.ref_type == 'tag' && !contains(github.ref_name, '-')
+    needs: [prepare-version, release]
+    uses: ./.github/workflows/publish-winget.yml
+    with:
+      tag_name: ${{ github.ref_name }}
+      version: ${{ needs.prepare-version.outputs.version }}.${{ needs.prepare-version.outputs.build_number }}
+    secrets: inherit
+
+  publish-google-play:
+    if: github.ref_type == 'tag'
+    needs: [release]
+    uses: ./.github/workflows/publish-google-play.yml
+    with:
+      tag_name: ${{ github.ref_name }}
+      track: internal
+    secrets: inherit

@@ -1,0 +1,283 @@
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      platform:
+        description: "Target platform"
+        required: true
+        type: string # linux | windows
+      arch:
+        description: "Target architecture"
+        required: true
+        type: string # amd64 | arm64
+      build_type:
+        description: "Build type"
+        required: true
+        type: string # release | debug
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        type: string
+        default: ""
+      retention_days:
+        description: "Artifact retention in days"
+        required: false
+        type: number
+        default: 30
+    secrets:
+      CERTIFICATE_BASE64:
+        description: "PFX certificate encoded as Base64 (for MSIX signing)"
+        required: false
+      CERTIFICATE_PASSWORD:
+        description: "Password for the PFX certificate"
+        required: false
+    outputs:
+      artifact_name:
+        description: "Name of the uploaded artifact"
+        value: ${{ jobs.build.outputs.artifact_name }}
+      artifact_url:
+        description: "URL to download the artifact"
+        value: ${{ jobs.build.outputs.artifact_url }}
+
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: "Target platform"
+        required: true
+        default: "linux"
+        type: choice
+        options: [ linux, windows ]
+      arch:
+        description: "Target architecture"
+        required: true
+        default: "amd64"
+        type: choice
+        options: [ amd64, arm64 ]
+      build_type:
+        description: "Build type"
+        required: true
+        default: "release"
+        type: choice
+        options: [ release, debug ]
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        default: ""
+        type: string
+
+jobs:
+  build:
+    name: ${{ inputs.platform }}-${{ inputs.arch }} (${{ inputs.build_type }})
+    runs-on: ${{ (inputs.platform == 'linux' && inputs.arch == 'amd64' &&
+      'ubuntu-latest') || (inputs.platform == 'linux' && inputs.arch == 'arm64'
+      && 'ubuntu-24.04-arm') || (inputs.platform == 'windows' && inputs.arch ==
+      'amd64' && 'windows-latest') || (inputs.platform == 'windows' &&
+      inputs.arch == 'arm64' && 'windows-11-arm') }}
+
+    outputs:
+      artifact_name: ${{ steps.meta.outputs.artifact_name }}
+      artifact_url: ${{ steps.upload.outputs.artifact-url }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup Flutter
+        uses: ./.github/actions/flutter
+        with:
+          flutter-version-file: .flutter-version
+          cache: true
+
+      - name: Install Linux build dependencies
+        if: inputs.platform == 'linux'
+        shell: bash
+        run: |
+          source scripts/ci-common.sh
+          setup_linux_build_deps
+
+      - name: Set build metadata
+        id: meta
+        shell: bash
+        env:
+          INPUT_ARCH: ${{ inputs.arch }}
+          INPUT_PLATFORM: ${{ inputs.platform }}
+          INPUT_BUILD_NAME: ${{ inputs.build_name }}
+          INPUT_BUILD_TYPE: ${{ inputs.build_type }}
+          MATRIX_ARCH: ${{ matrix.arch }}
+          PR_NUMBER: ${{ github.event.number }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          source scripts/ci-common.sh
+          set_build_metadata "ebalistyka-${INPUT_PLATFORM}" "${INPUT_BUILD_TYPE:-release}" true
+
+      - name: Cache pub packages (Linux)
+        if: inputs.platform == 'linux'
+        uses: actions/cache@v6
+        with:
+          path: ~/.pub-cache
+          key: pub-linux-${{ inputs.arch }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: pub-linux-${{ inputs.arch }}-
+
+      - name: Cache pub packages (Windows)
+        if: inputs.platform == 'windows'
+        uses: actions/cache@v6
+        with:
+          path: ~\AppData\Local\Pub\Cache
+          key: pub-windows-${{ inputs.arch }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: pub-windows-${{ inputs.arch }}-
+
+      - name: Install Flutter dependencies
+        shell: bash
+        run: flutter clean
+
+      - name: Set pubspec version
+        shell: bash
+        run: |
+          source scripts/ci-common.sh
+          set_pubspec_version "${{ steps.meta.outputs.build_name }}" "${{ steps.meta.outputs.build_number }}"
+
+      - name: Get Flutter dependencies
+        shell: bash
+        run: flutter pub get
+
+      - name: Build bundle
+        shell: bash
+        run: flutter build ${{ inputs.platform }} --${{ inputs.build_type }}
+
+      - name: Verify bundle
+        shell: bash
+        run: |
+          bash scripts/verify-bundle.sh \
+            "${{ steps.meta.outputs.bundle_dir }}" \
+            "${{ inputs.platform }}"
+
+      - name: Smoke test native library (Linux)
+        if: inputs.platform == 'linux'
+        shell: bash
+        run: |
+          cd "${{ steps.meta.outputs.bundle_dir }}"
+          OUTPUT=$(timeout 5 ./ebalistyka 2>&1) || true
+          if echo "$OUTPUT" | grep -q "Fatal: native library"; then
+            echo "ERROR: BcLibC.open() failed — native library did not load"
+            echo "$OUTPUT"
+            exit 1
+          fi
+          echo "✓ Native library loaded successfully"
+
+      - name: Smoke test native library (Windows)
+        if: inputs.platform == 'windows'
+        shell: pwsh
+        run: |
+          $dll = Join-Path "${{ steps.meta.outputs.bundle_dir }}" "bclibc_ffi.dll"
+          $proc = Start-Process -FilePath "${{ steps.meta.outputs.bundle_dir }}\ebalistyka.exe" `
+            -RedirectStandardError "$env:RUNNER_TEMP\smoke_stderr.txt" `
+            -PassThru -WindowStyle Hidden
+          Start-Sleep -Seconds 3
+          if (-not $proc.HasExited) { $proc.Kill() }
+          $stderr = if (Test-Path "$env:RUNNER_TEMP\smoke_stderr.txt") {
+            Get-Content "$env:RUNNER_TEMP\smoke_stderr.txt" -Raw
+          } else { "" }
+          if ($stderr -match "Fatal: native library") {
+            Write-Error "BcLibC.open() failed — native library did not load:`n$stderr"
+            exit 1
+          }
+          Write-Host "✓ Native library loaded successfully"
+
+      - name: Package Linux artifacts
+        if: inputs.platform == 'linux'
+        shell: bash
+        run: |
+          bash scripts/package-linux.sh \
+            "${{ steps.meta.outputs.bundle_dir }}" \
+            "${{ steps.meta.outputs.arch_suffix }}" \
+            "${{ steps.meta.outputs.build_name }}" \
+            "${{ steps.meta.outputs.build_number }}"
+
+      - name: Decode certificate
+        if: inputs.platform == 'windows' && github.actor != 'dependabot[bot]'
+        shell: pwsh
+        env:
+          CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
+        run: |
+          if (-not $env:CERTIFICATE_BASE64) {
+            Write-Host "No CERTIFICATE_BASE64 secret — skipping cert decode"
+            exit 0
+          }
+          $bytes = [System.Convert]::FromBase64String($env:CERTIFICATE_BASE64)
+          [System.IO.File]::WriteAllBytes("$env:RUNNER_TEMP\ebalistyka_cert.pfx", $bytes)
+          Write-Host "Certificate decoded to $env:RUNNER_TEMP\ebalistyka_cert.pfx"
+
+      - name: Sign Windows EXE
+        if: inputs.platform == 'windows' && github.actor != 'dependabot[bot]'
+        shell: pwsh
+        env:
+          CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+        run: |
+          $certPath = "$env:RUNNER_TEMP\ebalistyka_cert.pfx"
+          if (-not (Test-Path $certPath)) {
+            Write-Host "No certificate found — skipping EXE signing"
+            exit 0
+          }
+          $signtool = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin" `
+            -Recurse -Filter signtool.exe |
+            Where-Object FullName -match x64 |
+            Sort-Object FullName -Descending |
+            Select-Object -First 1 -ExpandProperty FullName
+          if (-not $signtool) { throw "signtool.exe not found in Windows Kits" }
+          Write-Host "signtool: $signtool"
+
+          $exePath = "${{ steps.meta.outputs.bundle_dir }}\ebalistyka.exe"
+          & $signtool sign /fd SHA256 /f $certPath /p $env:CERTIFICATE_PASSWORD `
+            /tr http://timestamp.digicert.com /td SHA256 $exePath
+          Write-Host "✓ Signed $exePath"
+
+      - name: Package Windows artifacts
+        if: inputs.platform == 'windows'
+        shell: pwsh
+        run: |
+          .\scripts\package-windows.ps1 `
+            -BundleDir "${{ steps.meta.outputs.bundle_dir }}" `
+            -BuildName "${{ steps.meta.outputs.build_name }}" `
+            -BuildNumber "${{ steps.meta.outputs.build_number }}" `
+            -BuildType "${{ inputs.build_type }}" `
+            -Arch "${{ steps.meta.outputs.arch_suffix }}"
+
+      - name: Package MSIX artifacts
+        if: inputs.platform == 'windows' && github.actor != 'dependabot[bot]'
+        shell: pwsh
+        env:
+          CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+        run: |
+          $certPath = "$env:RUNNER_TEMP\ebalistyka_cert.pfx"
+          $certPassword = $env:CERTIFICATE_PASSWORD
+          if (-not (Test-Path $certPath)) {
+            Write-Error "Certificate not found at $certPath — set CERTIFICATE_BASE64 and CERTIFICATE_PASSWORD secrets"
+            exit 1
+          }
+          $buildName = "${{ steps.meta.outputs.build_name }}"
+          if ($buildName -match '^(\d+\.\d+\.\d+)') { $base = $Matches[1] } else { $base = "0.1.0" }
+          $revision = if ('${{ github.ref_type }}' -eq 'tag' -and '${{ github.ref_name }}' -match '^v\d+\.\d+\.\d+$') { '0' } else { '${{ steps.meta.outputs.build_number }}' }
+          $msixVersion = "$base.$revision"
+
+          .\scripts\package-msix.ps1 `
+            -BuildName $buildName `
+            -BuildNumber "${{ steps.meta.outputs.build_number }}" `
+            -BuildType "${{ inputs.build_type }}" `
+            -Arch "${{ steps.meta.outputs.arch_suffix }}" `
+            -CertificatePath $certPath `
+            -CertificatePassword $certPassword `
+            -MsixVersion $msixVersion `
+            -GithubRepo "${{ github.repository }}"
+
+      - name: Upload artifact
+        id: upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.meta.outputs.artifact_name }}
+          path: artifacts/
+          retention-days: ${{ inputs.retention_days || 2 }}
+          if-no-files-found: error
+

@@ -1,0 +1,160 @@
+name: Build Snap
+
+on:
+  pull_request:
+    paths:
+      - "app/**"
+      - "lib/**"
+      - "linux/**"
+      - "pubspec.yaml"
+      - ".flutter-version"
+      - "scripts/ci-common.sh"
+      - "packaging/snap/**"
+      - ".github/workflows/build-snap.yml"
+  workflow_call:
+    inputs:
+      arch:
+        description: "Target architecture"
+        required: true
+        type: string   # amd64 | arm64
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        type: string
+        default: ""
+      retention_days:
+        description: "Artifact retention in days"
+        required: false
+        type: number
+        default: 2
+    outputs:
+      artifact_name:
+        description: "Name of the uploaded artifact"
+        value: ${{ jobs.build.outputs.artifact_name }}
+      artifact_url:
+        description: "URL to download the artifact"
+        value: ${{ jobs.build.outputs.artifact_url }}
+  workflow_dispatch:
+    inputs:
+      arch:
+        description: "Target architecture"
+        required: true
+        default: "amd64"
+        type: choice
+        options: [ amd64, arm64 ]
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        default: ""
+        type: string
+
+concurrency:
+  group: build-snap-${{ github.ref }}-${{ inputs.arch || 'all' }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: snap-${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ${{ github.event_name == 'pull_request' && fromJSON('["amd64","arm64"]') || fromJSON(format('["{0}"]', inputs.arch || 'amd64')) }}
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    permissions:
+      pull-requests: write
+      issues: write
+
+    outputs:
+      artifact_name: ${{ steps.meta.outputs.artifact_name }}
+      artifact_url:  ${{ steps.upload.outputs.artifact-url }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set build metadata
+        id: meta
+        shell: bash
+        env:
+          INPUT_BUILD_NAME: ${{ inputs.build_name }}
+          MATRIX_ARCH: ${{ matrix.arch }}
+          PR_NUMBER: ${{ github.event.number }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          source scripts/ci-common.sh
+          set_build_metadata "ebalistyka-snap"
+
+      - name: Cache LXD base image
+        uses: actions/cache@v6
+        with:
+          path: /var/snap/lxd/common/lxd/storage-pools/default/images
+          key: lxd-core22-${{ runner.arch }}
+          restore-keys: lxd-core22-
+
+      - name: Copy snap project to repo root
+        run: cp -r packaging/snap snap
+
+      - name: Prepare snap sources
+        run: |
+          VERSION="${{ steps.meta.outputs.build_name }}"
+          if [[ "$VERSION" == *-* ]]; then GRADE="devel"; else GRADE="stable"; fi
+          sed -i "s/^version: .*/version: '${VERSION}'/" snap/snapcraft.yaml
+          sed -i "s/^grade: .*/grade: ${GRADE}/" snap/snapcraft.yaml
+          cp "app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png" "snap/gui/ebalistyka.png"
+          echo "✓ snap version: ${VERSION} (grade: ${GRADE})"
+
+      - name: Build snap
+        uses: snapcore/action-build@v1
+        id: snapcraft
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+      - name: Smoke test Snap native library
+        shell: bash
+        run: |
+          set -euo pipefail
+          SNAP_FILE="${{ steps.snapcraft.outputs.snap }}"
+          unsquashfs -d /tmp/snap-smoke "$SNAP_FILE"
+
+          SO=$(find /tmp/snap-smoke -name "libbclibc_ffi.so" | head -1)
+          if [ -z "$SO" ]; then
+            echo "ERROR: libbclibc_ffi.so not found in snap"
+            find /tmp/snap-smoke -name "*.so" | sort
+            exit 1
+          fi
+          if [ ! -f "$SO" ]; then
+            echo "ERROR: libbclibc_ffi.so is a broken symlink → $(readlink "$SO")"
+            exit 1
+          fi
+          if ! file -L "$SO" | grep -q ELF; then
+            echo "ERROR: libbclibc_ffi.so not ELF: $(file -L "$SO")"
+            exit 1
+          fi
+          echo "✓ libbclibc_ffi.so: $(file -L "$SO" | cut -d: -f2- | xargs)"
+          rm -rf /tmp/snap-smoke
+
+      - name: Collect snap artifact
+        run: |
+          mkdir -p artifacts/snap
+          cp "${{ steps.snapcraft.outputs.snap }}" \
+             "artifacts/snap/ebalistyka_linux_${{ steps.meta.outputs.arch_suffix }}.snap"
+
+      - name: Upload artifact
+        id: upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.meta.outputs.artifact_name }}
+          path: artifacts/snap/
+          retention-days: ${{ inputs.retention_days || 2 }}
+          if-no-files-found: error
+
+      - name: Post PR summary
+        if: always() && github.event_name == 'pull_request'
+        uses: ./.github/actions/pr-summary
+        with:
+          platform: Linux Snap (${{ matrix.arch }})
+          build_result: ${{ job.status }}
+          artifact_name: ${{ steps.meta.outputs.artifact_name }}
+          artifact_url: ${{ steps.upload.outputs.artifact-url }}

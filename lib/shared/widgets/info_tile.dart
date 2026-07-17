@@ -1,0 +1,34 @@
+// ─── Info tile (readonly) ────────────────────────────────────────────────────
+
+import 'package:flutter/material.dart';
+
+class InfoListTile extends StatelessWidget {
+  const InfoListTile({
+    required this.label,
+    required this.value,
+    this.icon,
+    super.key,
+  });
+
+  final String label;
+  final String value;
+  final IconData? icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    return ListTile(
+      dense: true,
+      leading: icon != null ? Icon(icon, color: cs.onSurfaceVariant) : null,
+      title: Text(label),
+      trailing: Text(
+        value,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          fontFamily: 'monospace',
+          color: cs.onSurfaceVariant,
+        ),
+      ),
+    );
+  }
+}

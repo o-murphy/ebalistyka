@@ -1,0 +1,46 @@
+import 'package:dart_bclibc/unit.dart';
+import 'package:ebalistyka/shared/widgets/unit_picker_button.dart';
+import 'package:flutter/material.dart';
+
+/// ListTile-based wrapper for use in settings
+class UnitPickerListTile extends StatelessWidget {
+  const UnitPickerListTile({
+    required this.current,
+    required this.onChanged,
+    required this.options,
+    this.label,
+    this.icon,
+    this.title,
+    this.dense = true,
+    super.key,
+  });
+
+  final Unit current;
+  final ValueChanged<Unit> onChanged;
+  final List<Unit> options;
+  final String? label;
+  final IconData? icon;
+  final String? title;
+  final bool dense;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: icon != null ? Icon(icon) : null,
+      title: Text(title ?? label ?? ''),
+      trailing: UnitPickerButton(
+        current: current,
+        options: options,
+        label: label ?? title ?? 'Select Unit',
+      ),
+      onTap: () => showUnitPicker(
+        context,
+        current: current,
+        onChanged: onChanged,
+        options: options,
+        label: label ?? title ?? 'Select Unit',
+      ),
+      dense: dense,
+    );
+  }
+}

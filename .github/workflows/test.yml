@@ -1,0 +1,43 @@
+name: Tests
+
+on:
+  pull_request:
+    paths:
+      - "lib/**"
+      - "test/**"
+      - "packages/**"
+      - "tools/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - "Makefile"
+      - ".flutter-version"
+      - ".github/workflows/test.yml"
+      - ".github/actions/flutter/**"
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Flutter
+        uses: ./.github/actions/flutter
+        with:
+          flutter-version-file: .flutter-version
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Download ObjectBox native library
+        run: |
+          bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-dart/main/install.sh)
+          sudo cp lib/libobjectbox.so /usr/local/lib/
+          sudo ldconfig
+
+      - run: make test

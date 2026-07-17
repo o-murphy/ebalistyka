@@ -1,0 +1,223 @@
+name: Build Android
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - "app/**"
+      - "lib/**"
+      - "android/**"
+
+      - "pubspec.yaml"
+      - ".flutter-version"
+      - "scripts/ci-common.sh"
+      - "scripts/build-android.sh"
+      - ".github/workflows/build-android.yml"
+  workflow_call:
+    inputs:
+      format:
+        description: "Build format"
+        required: true
+        type: string   # apk | aab
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        type: string
+        default: ""
+      build_type:
+        description: "Build type"
+        required: false
+        type: string
+        default: "release"
+      retention_days:
+        description: "Artifact retention in days"
+        required: false
+        type: number
+        default: 2
+    secrets:
+      ANDROID_KEYSTORE_BASE64:
+        required: false
+      ANDROID_KEYSTORE_PASSWORD:
+        required: false
+      ANDROID_KEY_ALIAS:
+        required: false
+      ANDROID_KEY_PASSWORD:
+        required: false
+    outputs:
+      artifact_name:
+        description: "Name of the uploaded artifact"
+        value: ${{ jobs.build.outputs.artifact_name }}
+      artifact_url:
+        description: "URL to the artifact"
+        value: ${{ jobs.build.outputs.artifact_url }}
+  workflow_dispatch:
+    inputs:
+      format:
+        description: "Build format"
+        required: true
+        default: "apk"
+        type: choice
+        options: [ apk, aab ]
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        default: ""
+        type: string
+      build_type:
+        description: "Build type"
+        required: false
+        default: "release"
+        type: choice
+        options: [ release, debug ]
+
+concurrency:
+  group: build-android-${{ github.ref }}-${{ inputs.format || 'all' }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: android-${{ matrix.format }} (${{ inputs.build_type || 'release' }})
+    strategy:
+      fail-fast: false
+      matrix:
+        format: ${{ github.event_name == 'pull_request' && fromJSON('["apk","aab"]') || fromJSON(format('["{0}"]', inputs.format || 'apk')) }}
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+    outputs:
+      artifact_name: ${{ steps.meta.outputs.artifact_name }}
+      artifact_url:  ${{ steps.upload.outputs.artifact-url }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          source scripts/ci-common.sh
+          resolve_version "${{ github.ref_type }}" "${{ github.ref_name }}"
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Flutter
+        uses: ./.github/actions/flutter
+        with:
+          flutter-version-file: .flutter-version
+          cache: true
+
+      - name: Accept Android licenses
+        run: yes | flutter doctor --android-licenses || true
+
+      - name: Set build metadata
+        id: meta
+        shell: bash
+        env:
+          INPUT_BUILD_NAME: ${{ inputs.build_name }}
+          VERSION: ${{ steps.version.outputs.version }}
+          INPUT_BUILD_TYPE: ${{ inputs.build_type }}
+          PR_NUMBER: ${{ github.event.number }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          source scripts/ci-common.sh
+          set_build_metadata "ebalistyka-android-${{ matrix.format }}" "${INPUT_BUILD_TYPE:-release}" true
+
+      - name: Cache pub packages
+        uses: actions/cache@v6
+        with:
+          path: ${{ runner.temp }}/pub-cache
+          key: pub-android-${{ hashFiles('pubspec.lock') }}
+          restore-keys: pub-android-
+
+      - name: Cache Gradle
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ hashFiles('android/app/build.gradle.kts', 'android/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: gradle-
+
+      - name: Install Flutter dependencies
+        run: flutter clean
+
+      - name: Set pubspec version
+        run: |
+          source scripts/ci-common.sh
+          set_pubspec_version "${{ steps.meta.outputs.build_name }}" "${{ steps.meta.outputs.build_number }}"
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      - name: Build & sign ${{ matrix.format }}
+        env:
+          ANDROID_KEYSTORE_BASE64:   ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS:         ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD:      ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          source scripts/ci-common.sh
+          build_android "${{ matrix.format }}" \
+            "${{ steps.meta.outputs.build_name }}" \
+            "${{ steps.meta.outputs.build_number }}"
+
+      - name: Upload artifact
+        id: upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.meta.outputs.artifact_name }}
+          path: artifacts/
+          retention-days: ${{ inputs.retention_days || 2 }}
+          if-no-files-found: error
+
+      - name: Smoke test native libraries in ${{ matrix.format }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ABIS=(arm64-v8a armeabi-v7a x86_64)
+          ERROR=0
+          TMPDIR=/tmp/android-smoke
+          for f in artifacts/*.apk artifacts/*.aab; do
+            [ -f "$f" ] || continue
+            EXT="${f##*.}"
+            LIB_PREFIX=$( [ "$EXT" = "aab" ] && echo "base/lib" || echo "lib" )
+            echo "── $(basename "$f") ──"
+            for ABI in "${ABIS[@]}"; do
+              ENTRY="$LIB_PREFIX/$ABI/libbclibc_ffi.so"
+              if ! unzip -l "$f" | grep -qF "$ENTRY"; then
+                echo "  SKIP: $ABI (not in this archive)"
+                continue
+              fi
+              rm -rf "$TMPDIR" && mkdir -p "$TMPDIR"
+              unzip -oq "$f" "$ENTRY" -d "$TMPDIR"
+              SO="$TMPDIR/$ENTRY"
+              if [ ! -f "$SO" ]; then
+                echo "  ERROR: $ABI/libbclibc_ffi.so — broken symlink or missing after extract"
+                ERROR=1; continue
+              fi
+              if ! file "$SO" | grep -q ELF; then
+                echo "  ERROR: $ABI/libbclibc_ffi.so — not ELF: $(file "$SO")"
+                ERROR=1; continue
+              fi
+              echo "  ✓ $ABI: $(file "$SO" | cut -d: -f2- | xargs)"
+            done
+          done
+          rm -rf "$TMPDIR"
+          exit $ERROR
+
+      - name: Post PR summary
+        if: always() && github.event_name == 'pull_request'
+        uses: ./.github/actions/pr-summary
+        with:
+          platform: Android ${{ matrix.format }}
+          build_result: ${{ job.status }}
+          artifact_name: ${{ steps.meta.outputs.artifact_name }}
+          artifact_url: ${{ steps.upload.outputs.artifact-url }}

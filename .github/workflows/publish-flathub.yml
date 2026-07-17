@@ -1,0 +1,69 @@
+name: Publish Flathub
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Release tag to publish (e.g. v0.1.12)"
+        required: true
+        type: string
+  workflow_call:
+    inputs:
+      tag_name:
+        description: "Release tag to publish"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  flathub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.tag_name }}
+
+      - name: Install Flutter
+        uses: o-murphy/flutpak/.github/actions/flutter@v0.8.2
+        with:
+          flutter-version-file: .flutter-version
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Install flutpak
+        uses: o-murphy/flutpak/.github/actions/setup-flutpak@v0.8.2
+
+      - name: Generate Flathub manifest
+        run: flutpak generate --tag "${{ inputs.tag_name }}"
+
+      - name: Clone Flathub repo
+        env:
+          FLATHUB_TOKEN: ${{ secrets.FLATHUB_TOKEN }}
+        run: |
+          git clone \
+            "https://x-access-token:${FLATHUB_TOKEN}@github.com/flathub/io.github.o_murphy.ebalistyka.git" \
+            /tmp/flathub-repo
+
+      - name: Copy generated files to Flathub repo
+        run: |
+          cp flatpak/generated/io.github.o_murphy.ebalistyka.yml /tmp/flathub-repo/
+          cp flatpak/generated/generated-sources.json             /tmp/flathub-repo/
+          cp -r flatpak/generated/patches                         /tmp/flathub-repo/
+          [ -f flatpak/generated/flathub.json ] && \
+            cp flatpak/generated/flathub.json /tmp/flathub-repo/ || true
+
+      - name: Commit and push
+        env:
+          TAG: ${{ inputs.tag_name }}
+        run: |
+          cd /tmp/flathub-repo
+          git config user.name  "o-murphy"
+          git config user.email "thehelixpg@gmail.com"
+          git add -A
+          git diff --cached --quiet && { echo "Nothing changed, skipping commit"; exit 0; }
+          git commit -m "Update to ${TAG}"
+          git push

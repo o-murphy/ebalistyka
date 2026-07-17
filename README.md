@@ -1,0 +1,563 @@
+<h1 style="display: flex; align-items: center; gap: 10px;">
+  <img src="./assets/svg/logo/favicon_scaled.svg" alt="favicon" width="50" height="50"> 
+  eBalistyka
+</h1>
+
+A high performance cross-platform ballistic calculator
+
+[![Made in Ukraine]][SWUBadge]
+
+[![License]](LICENSE)
+[![Release]][GitHub Release Latest]
+![Status]
+[![Flutter Shield]][Flutter]
+[![powered by bclibc]][bclibc repo]
+
+![Linux] ![Windows] ![Android]
+
+[![AUR Version]][AUR Package]
+[![Snapcraft Version]][Snapcraft Package]
+[![WinGet Package Version]][WinGet Package]
+[![FlatpakRepoVersion]][FlatpakRepoPackage]
+
+[![Google Play]][Google Play Internal Test]
+
+<!-- [![Snap](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/ebalistyka) -->
+<!-- <a href='https://snapcraft.io/ebalistyka'><img width='182' alt='Get it on Snap Store' src='https://snapcraft.io/static/images/badges/en/snap-store-black.svg'/></a> -->
+<!-- <a href='https://flathub.org/apps/com.o.murphy.ebalistyka'><img width='200' alt='Get it on Flathub' src='https://flathub.org/api/badge?svg?locale=en&light'/></a> -->
+
+[![Build (Android)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-android.yml/badge.svg)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-apk.yml)
+[![Build (Windows)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-exe.yml/badge.svg)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-exe.yml)
+[![Build (Linux Portable)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-portable.yml/badge.svg)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-portable.yml)
+[![Build (Linux Snap)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-snap.yml/badge.svg)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-snap.yml)
+[![Build (Linux Flatpak)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-flatpak.yml/badge.svg)](https://github.com/o-murphy/ebalistyka/actions/workflows/build-flatpak.yml)
+
+
+> [!WARNING]
+> **Alpha software.** Expect breaking changes, incomplete features, and rough edges.
+
+A cross-platform ballistic trajectory calculator built with Flutter. Powered by [dart_bclibc](https://pub.dev/packages/dart_bclibc) — a high-performance (3-DOF + spin drift) C++ ballistic solver engine with RK4/Euler integration.
+
+_UI/UX inspired by the [**Strilets**](https://download.strilets.tech/) ballistic calculator app_
+
+---
+
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center"><b>Home</b></td>
+    <td align="center"><b>Conditions</b></td>
+    <td align="center"><b>Trajectory Tables</b></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/home.png" width="200"/></td>
+    <td><img src="docs/screenshots/conditions.png" width="200"/></td>
+    <td><img src="docs/screenshots/tables_trajectory.png" width="200"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Convertors</b></td>
+    <td align="center"><b>My Profiles</b></td>
+    <td align="center"><b>Reticle</b></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/convertors.png" width="200"/></td>
+    <td><img src="docs/screenshots/my_profiles.png" width="200"/></td>
+    <td><img src="docs/screenshots/reticle.png" width="200"/></td>
+  </tr>
+</table>
+
+---
+
+## Table of Contents
+
+- [Screenshots](#screenshots)
+- [Table of Contents](#table-of-contents)
+- [Features](#features)
+- [Download \& Installation](#download--installation)
+  - [Linux — run](#linux--run)
+  - [Linux — Snap](#linux--snap)
+  - [Linux — Flatpak](#linux--flatpak)
+  - [Linux — deb](#linux--deb)
+  - [Linux — rpm](#linux--rpm)
+  - [Linux — AUR (Arch/Manjaro)](#linux--aur-archmanjaro)
+  - [Linux — AppImage update](#linux--appimage-update)
+  - [Windows — winget](#windows--winget)
+  - [Windows — install MSIX](#windows--install-msix)
+  - [Android — Google Play](#android--google-play)
+  - [Android — install APK](#android--install-apk)
+- [Architecture](#architecture)
+- [Building](#building)
+  - [Prerequisites](#prerequisites)
+  - [Clone](#clone)
+  - [Linux](#linux)
+  - [Windows](#windows)
+  - [Android](#android)
+  - [CI](#ci)
+- [Android notes](#android-notes)
+  - [Impeller disabled](#impeller-disabled)
+  - [File import](#file-import)
+- [Dependencies](#dependencies)
+  - [App (`ebalistyka`)](#app-ebalistyka)
+  - [`dart_bclibc`](#dart_bclibc)
+  - [`packages/ebalistyka_db`](#packagesebalistyka_db)
+  - [`tools/reticle_gen`](#toolsreticle_gen)
+- [License](#license)
+
+---
+
+## Features
+
+- **Shooting profiles** — create and manage profiles combining weapon, ammunition, and sight configurations
+- **Weapon, ammo & sight wizards** — step-by-step setup with optional import from a built-in collection
+- **Trajectory tables** — compute and display ballistic tables with HTML export
+- **Environmental conditions** — atmosphere, wind, Coriolis, target parameters
+- **Reticle view** — SVG mil-reticle with live drop/windage adjustment indicator, theme-aware colours
+- **Multi-BC & custom drag** — G1/G7 multi-BC tables and full custom drag curve support
+- **Powder sensitivity** — temperature-based MV correction tables
+- **Configurable units** — choose your preferred measurement system per quantity in settings
+- **Adjustment display** — arrows / signs / letters format, configurable in settings
+- **Import / Export** — profiles in `.ebcp` (native) and `.a7p` (Archer Ballistic Profile) formats; full backup via Settings
+
+---
+
+## Download & Installation
+
+Latest release: **[GitHub Releases][GitHub Release Latest]**
+
+| Platform                | File                                                          | Notes                                                                     |
+| ----------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Linux x86_64            | [ebalistyka_linux_x86_64.AppImage][DownloadAppImageAmd64]     | requires FUSE 2                                                           |
+| Linux x86_64 (portable) | [ebalistyka_linux_x86_64.tar.gz][DownloadLinuxArchiveAmd64]   | no FUSE required                                                          |
+| Linux x86_64 (snap)     | [ebalistyka_linux_x86_64.snap][DownloadLinuxSnapAmd64]        | or `snap install ebalistyka`                                              |
+| Linux x86_64 (flatpak)  | [ebalistyka_linux_x86_64.flatpak][DownloadLinuxFlatpakAmd64]  | sideload — see [Linux — Flatpak](#linux--flatpak)                         |
+| Linux arm64             | [ebalistyka_linux_aarch64.AppImage][DownloadAppImageArm64]    | requires FUSE 2                                                           |
+| Linux arm64 (portable)  | [ebalistyka_linux_aarch64.tar.gz][DownloadLinuxArchiveArm64]  | no FUSE required                                                          |
+| Linux arm64 (snap)      | [ebalistyka_linux_aarch64.snap][DownloadLinuxSnapArm64]       | or `snap install ebalistyka`                                              |
+| Linux arm64 (flatpak)   | [ebalistyka_linux_aarch64.flatpak][DownloadLinuxFlatpakArm64] | sideload — see [Linux — Flatpak](#linux--flatpak)                         |
+| Linux x86_64 (deb)      | [ebalistyka_linux_x86_64.deb][DownloadLinuxDebAmd64]          | Debian/Ubuntu — see [Linux — deb](#linux--deb)                            |
+| Linux arm64 (deb)       | [ebalistyka_linux_aarch64.deb][DownloadLinuxDebArm64]         | Debian/Ubuntu — see [Linux — deb](#linux--deb)                            |
+| Linux x86_64 (rpm)      | [ebalistyka_linux_x86_64.rpm][DownloadLinuxRpmAmd64]          | Fedora/RHEL/openSUSE — see [Linux — rpm](#linux--rpm)                     |
+| Linux arm64 (rpm)       | [ebalistyka_linux_aarch64.rpm][DownloadLinuxRpmArm64]         | Fedora/RHEL/openSUSE — see [Linux — rpm](#linux--rpm)                     |
+| Linux x86_64 (AUR)      | `yay -S ebalistyka-bin`                                       | Arch / Manjaro — see [Linux — AUR](#linux--aur-archmanjaro)               |
+| Linux arm64 (AUR)       | `yay -S ebalistyka-bin`                                       | Arch / Manjaro — see [Linux — AUR](#linux--aur-archmanjaro)               |
+| Windows x64 (winget)    | `winget install -e --id o-murphy.ebalistyka`                  | see [Windows — winget](#windows--winget)                                  |
+| Windows x64             | [ebalistyka_windows_x86_64.msix][DownloadWindowsMsixAmd64]    | install [ebalistyka_cert.cer][DownloadWindowsMsixCer] first (self-signed) |
+| Windows x64 (portable)  | [ebalistyka_windows_x86_64.zip][DownloadWindowsArchiveAmd64]  | extract and run                                                           |
+| Android (Google Play)   | [Internal Test registration][Google Play Internal Test]       | early access — registration required                                      |
+| Android arm64           | [ebalistyka_android_arm64.apk][DownloadAndroidApkArm64]       | enable "Install from unknown sources"                                     |
+| Android armv7           | [ebalistyka_android_armeabi_v7a.apk][DownloadAndroidApkARMv7] | enable "Install from unknown sources"                                     |
+| Android x86_64          | [ebalistyka_android_x86_64.apk][DownloadAndroidApkAmd64]      | enable "Install from unknown sources"                                     |
+
+### Linux — run
+
+```bash
+chmod +x ebalistyka_linux_x86_64.AppImage
+./ebalistyka_linux_x86_64.AppImage
+```
+
+If FUSE 2 is not available on your system:
+
+```bash
+./ebalistyka_linux_x86_64.AppImage --appimage-extract-and-run
+```
+
+### Linux — Snap
+
+Install from the Snap Store (auto-updates included):
+
+```bash
+sudo snap install ebalistyka
+```
+
+Or sideload a `.snap` file from GitHub Releases:
+
+```bash
+sudo snap install ebalistyka_linux_x86_64.snap --dangerous
+```
+
+### Linux — Flatpak
+
+Install from repo
+
+```
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+flatpak remote-add --if-not-exists o-murphy https://o-murphy.github.io/flatpak-repo/o_murphy.flatpakrepo
+flatpak install o-murphy io.github.o_murphy.ebalistyka
+```
+
+Install from a `.flatpak` sideload file (Flathub not yet available):
+
+```bash
+# Install flatpak runtime if needed
+flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+flatpak install --user flathub org.gnome.Platform//50
+
+# Install the app
+flatpak install --user ebalistyka_linux_x86_64.flatpak
+```
+
+Run:
+
+```bash
+flatpak run io.github.o_murphy.ebalistyka
+```
+
+### Linux — deb
+
+Install on Debian/Ubuntu and derivatives:
+
+```bash
+sudo dpkg -i ebalistyka_linux_x86_64.deb
+```
+
+Uninstall:
+
+```bash
+sudo dpkg -r ebalistyka
+```
+
+### Linux — rpm
+
+Install on Fedora/RHEL/openSUSE:
+
+```bash
+sudo rpm -i ebalistyka_linux_x86_64.rpm
+```
+
+> **Note for Debian/Ubuntu users:** if you are testing the `.rpm` on a Debian-based system, RPM cannot resolve package names like `gtk3` from `apt`. Use `--nodeps` to skip dependency checks — the bundle is self-contained and does not actually require them to be installed via RPM:
+> ```bash
+> sudo rpm -i --nodeps ebalistyka_linux_x86_64.rpm
+> ```
+
+Uninstall:
+
+```bash
+sudo rpm -e ebalistyka
+```
+
+### Linux — AUR (Arch/Manjaro)
+
+Install via any AUR helper:
+
+```bash
+yay -S ebalistyka-bin
+```
+
+Or manually with `makepkg`:
+
+```bash
+git clone https://aur.archlinux.org/ebalistyka-bin.git
+cd ebalistyka-bin
+makepkg -si
+```
+
+Uninstall:
+
+```bash
+sudo pacman -R ebalistyka-bin
+```
+
+### Linux — AppImage update
+
+Updates are delivered via **zsync**. Download [AppImageUpdate](https://github.com/AppImageCommunity/AppImageUpdate/releases/latest), then run:
+
+```bash
+chmod +x AppImageUpdate-x86_64.AppImage
+./AppImageUpdate-x86_64.AppImage ebalistyka_linux_x86_64.AppImage
+```
+
+The tool fetches only the changed blocks from the latest GitHub Release — no need to re-download the full file.
+
+### Windows — winget
+
+Install:
+
+```powershell
+winget install -e --id o-murphy.ebalistyka
+```
+
+Upgrade:
+
+```powershell
+winget upgrade -e --id o-murphy.ebalistyka
+```
+
+> [!TIP]
+> The app detects winget installations and shows the upgrade command directly in the update notification.
+
+### Windows — install MSIX
+
+The MSIX is signed with a self-signed certificate. Before installing, trust the certificate:
+
+1. Download [`ebalistyka_cert.cer`][DownloadWindowsMsixCer] from the release
+2. Double-click → **Install Certificate** → **Local Machine** → **Trusted Root Certification Authorities**
+3. Install [`ebalistyka_windows_x86_64.msix`][DownloadWindowsMsixAmd64]
+
+### Android — Google Play
+
+Currently available as an **internal test** — registration is required:
+
+[![Google Play]][Google Play Internal Test]
+
+### Android — install APK
+
+Download the APK for your device ABI from the release and open it to install — if unsure, pick the `universal` APK. Android will verify the app via Google Play before installing.
+
+---
+
+## Architecture
+
+```
+ebalistyka/
+├── lib/
+│   ├── features/              # Screen-level feature modules
+│   │   ├── home/              # Main screen: profiles, shot, reticle, chart, tables
+│   │   ├── conditions/        # Environmental conditions input
+│   │   ├── tables/            # Trajectory tables & HTML export
+│   │   ├── convertors/        # Unit converters (angular, velocity, length, …)
+│   │   └── settings/          # App settings (units, adjustments, theme, locale)
+│   ├── core/
+│   │   ├── providers/         # Riverpod providers (app state, settings, DB, l10n)
+│   │   ├── extensions/        # Typed getters/setters on ObjectBox entities
+│   │   ├── formatting/        # UnitFormatterImpl — localized value formatting
+│   │   ├── models/            # FieldConstraints and other shared models
+│   │   ├── services/          # A7pService/A7pConverter, import/export orchestration
+│   │   └── collection/        # Built-in weapon/ammo/sight collection assets
+│   ├── shared/
+│   │   ├── widgets/           # Reusable widgets (pickers, inputs, dialogs, wizards)
+│   │   ├── models/            # UI-layer models (AdjustmentData, ChartPoint, …)
+│   │   ├── helpers/           # Formatting helpers, drag model info
+│   │   ├── mixins/            # WizardFormMixin
+│   │   └── constants/         # UI dimensions, null string sentinel
+│   ├── update/                # Update checker and utilities
+│   └── l10n/                  # Generated AppLocalizations (EN + UA)
+├── packages/
+│   └── ebalistyka_db/         # ObjectBox schema + .ebcp export DTOs
+└── tools/
+    └── reticle_gen/           # SVG mil-reticle generator
+```
+
+**State management:** Riverpod  
+**Navigation:** go_router  
+**Local database:** ObjectBox  
+**Ballistic engine:** [dart_bclibc](https://pub.dev/packages/dart_bclibc) (pub.dev package, bundles bclibc C++ solver via FFI)  
+**Localisation:** Flutter ARB / `flutter_localizations` (EN + UA)
+
+---
+
+## Building
+
+### Prerequisites
+
+- [Flutter](https://docs.flutter.dev/get-started/install) ≥ 3.41.7 (stable channel)
+- CMake ≥ 3.13
+- C++17 compiler (GCC / Clang on Linux, MSVC 2022 on Windows)
+
+### Clone
+
+```bash
+git clone https://github.com/o-murphy/ebalistyka.git
+cd ebalistyka
+```
+
+### Linux
+
+```bash
+# System dependencies (Ubuntu/Debian)
+sudo apt-get install -y \
+  clang cmake ninja-build pkg-config \
+  libgtk-3-dev liblzma-dev libstdc++-12-dev \
+  libclang-dev fuse libfuse2
+
+flutter pub get
+flutter build linux --release
+```
+
+Output: `build/linux/x64/release/bundle/`
+
+### Windows
+
+```powershell
+# Requires Visual Studio 2022 with C++ workload
+flutter pub get
+flutter build windows --release
+```
+
+Output: `build\windows\x64\runner\Release\`
+
+### Android
+
+```bash
+flutter pub get
+flutter build apk --release --target-platform android-arm64
+```
+
+Output: `build/app/outputs/flutter-apk/app-release.apk`
+
+### CI
+
+GitHub Actions workflows publish a GitHub Release on every push to `main`:
+
+| Workflow                | Artifact                                                      |
+| ----------------------- | ------------------------------------------------------------- |
+| `build-portable.yml`    | Linux portable tar.gz (x86_64 + aarch64)                      |
+| `build-appimage.yml`    | Linux AppImage (x86_64 + aarch64)                             |
+| `build-snap.yml`        | Linux Snap (x86_64 + aarch64)                                 |
+| `build-flatpak.yml`     | Linux Flatpak (x86_64 + aarch64)                              |
+| `build-deb.yml`         | Linux deb (x86_64 + aarch64)                                  |
+| `build-rpm.yml`         | Linux rpm (x86_64 + aarch64)                                  |
+| `build-exe.yml`         | Windows MSIX installer                                        |
+| `build-apk.yml`         | Android APK (arm64 + armv7 + x86_64)                          |
+| `build.yml`             | Reusable build workflow called by the above                   |
+| `publish.yml`           | Publishes to Snap Store on GitHub Release                     |
+| `scripts/update-aur.sh` | Updates `aur/PKGBUILD` checksums (run manually after release) |
+
+---
+
+## Android notes
+
+### Impeller disabled
+
+Flutter's Impeller renderer (enabled by default on Android since Flutter 3.16) tessellates SVG paths — including circles — into coarse polygons, which makes reticle and target SVGs look jagged. Until Flutter/Impeller resolves path tessellation quality for small shapes, Impeller is **explicitly disabled** for Android in `android/app/src/main/AndroidManifest.xml`:
+
+```xml
+<meta-data
+    android:name="io.flutter.embedding.android.EnableImpeller"
+    android:value="false" />
+```
+
+This forces the app to use **Skia**, which renders SVG circles smoothly. Re-enable Impeller only after verifying that circle/arc quality is acceptable on your target Android version.
+
+### File import
+
+On Android, `file_picker` cannot filter by custom extensions (`.ebcp`, `.a7p`) because Android does not know their MIME types. The import dialogs open with `FileType.any` and validate the extension after the user selects a file. Selecting a wrong file type shows an error message.
+
+---
+
+## Dependencies
+
+### App (`ebalistyka`)
+
+| Package                                                                 | Role                                                 |
+| ----------------------------------------------------------------------- | ---------------------------------------------------- |
+| [flutter_riverpod](https://pub.dev/packages/flutter_riverpod)           | State management                                     |
+| [go_router](https://pub.dev/packages/go_router)                         | Navigation                                           |
+| [flutter_localizations](https://pub.dev/packages/flutter_localizations) | EN + UA localisation                                 |
+| [flutter_svg](https://pub.dev/packages/flutter_svg)                     | SVG reticle & target rendering                       |
+| [a7p](https://pub.dev/packages/a7p)                                     | `.a7p` profile format — protobuf encode/decode/validate |
+| [window_manager](https://pub.dev/packages/window_manager)               | Desktop window size / title / icon                   |
+| [file_picker](https://pub.dev/packages/file_picker)                     | Import file picker                                   |
+| [share_plus](https://pub.dev/packages/share_plus)                       | Export / share files                                 |
+| [url_launcher](https://pub.dev/packages/url_launcher)                   | External links                                       |
+| [package_info_plus](https://pub.dev/packages/package_info_plus)         | App version info                                     |
+| [flutter_markdown_plus](https://pub.dev/packages/flutter_markdown_plus) | App help widgets                                     |
+| [ota_update](https://pub.dev/packages/ota_update)                       | Autoupdate for Android sideload installations        |
+| [flutpak](https://pub.dev/packages/flutpak) (dev)                       | Manage flatpak/flathub manifest for sandboxed builds |
+
+### `dart_bclibc`
+
+| Package                                                         | Role                                                             |
+| --------------------------------------------------------------- | ---------------------------------------------------------------- |
+| [dart_bclibc](https://pub.dev/packages/dart_bclibc)             | Dart FFI package — bundles bclibc C++ solver (3-DOF, RK4) LGPL-3 |
+| [ffi](https://pub.dev/packages/ffi)                             | Dart ↔ C FFI bindings                                            |
+
+### `packages/ebalistyka_db`
+
+| Package                                                      | Role                           |
+| ------------------------------------------------------------ | ------------------------------ |
+| [objectbox](https://pub.dev/packages/objectbox_flutter_libs) | Local database                 |
+| [archive](https://pub.dev/packages/archive)                  | `.ebcp` zip archive read/write |
+| [json_annotation](https://pub.dev/packages/json_annotation)  | Export DTO serialisation       |
+
+### `tools/reticle_gen`
+
+| Package                             | Role                   |
+| ----------------------------------- | ---------------------- |
+| [xml](https://pub.dev/packages/xml) | SVG reticle generation |
+
+---
+
+## License
+
+Copyright (C) 2026 Yaroshenko Dmytro (o-murphy)
+
+This program is free software: you can redistribute it and/or modify it under the terms of the **GNU General Public License v3.0** as published by the Free Software Foundation.
+
+See [LICENSE](LICENSE) for the full text. See [CHANGELOG](CHANGELOG.md) for release history.
+
+> [!NOTE]
+> [`dart_bclibc`](https://pub.dev/packages/dart_bclibc) bundles `bclibc` — the ballistic solver engine — which is licensed separately under the **GNU Lesser General Public License v3.0**. See the [dart_bclibc repository](https://github.com/o-murphy/dart_bclibc) for the engine source and its license.
+
+> [!WARNING]
+> **Risk notice.** This application performs approximate simulations of complex physical processes. Calculation results must not be considered as completely or reliably reflecting actual projectile behaviour. Results may be used for educational purposes only and must not be relied upon in any context where an incorrect calculation could cause financial harm or put a human life at risk.
+>
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+<!-- REUSABLE LINKS -->
+
+
+[Made in Ukraine]:https://img.shields.io/badge/made_in-Ukraine-ffd700.svg?labelColor=0057b7&style=flat-square
+[SWUBadge]: https://stand-with-ukraine.pp.ua
+
+[Flutter Shield]: https://img.shields.io/badge/Flutter-3.41.7-02569B?logo=flutter
+[Flutter]: https://flutter.dev
+
+[Release]: https://img.shields.io/github/v/release/o-murphy/ebalistyka?logo=github&cacheSeconds=0
+[GitHub Release Latest]: https://github.com/o-murphy/ebalistyka/releases/latest
+
+[Prerelease]: https://img.shields.io/github/v/release/o-murphy/ebalistyka?include_prereleases&logo=github&cacheSeconds=0
+[GitHub Releases]: https://github.com/o-murphy/ebalistyka/releases
+
+[License]: https://img.shields.io/badge/License-GPL%20v3-blue.svg
+[Status]: https://img.shields.io/badge/status-alpha-orange
+
+[Linux]: https://img.shields.io/badge/Linux-x86__64%20%7C%20arm64-grey?logo=linux&logoColor=black&labelColor=FCC624
+
+[Windows]: https://img.shields.io/badge/x86__64-grey?logo=windows&logoColor=black&label=Windows&labelColor=0078D4
+
+[Android]: https://img.shields.io/badge/Android-arm64%20%7C%20armv7%20%7C%20x86__64-grey?logo=android&logoColor=white&labelColor=3DDC84
+
+[AUR Version]: https://img.shields.io/badge/AUR-1793D1?style=for-the-badge&logo=arch-linux&logoColor=white
+[AUR Package]: https://aur.archlinux.org/packages/ebalistyka-bin
+
+[Snapcraft Version]: https://img.shields.io/badge/Snapcraft-82BEA0?style=for-the-badge&logo=snapcraft&logoColor=white
+[Snapcraft Package]: https://snapcraft.io/ebalistyka
+
+[FlatpakRepoVersion]: https://img.shields.io/badge/Flatpak-4A90D9?style=for-the-badge&logo=flatpak&logoColor=white
+[FlatpakRepoPackage]: https://o-murphy.net/flatpak-repo/#io.github.o_murphy.ebalistyka
+
+[Google Play]: https://img.shields.io/badge/Internal%20Test%20Registration-black?style=for-the-badge&logo=google-play&label=Google%20Play&labelColor=%23414141&color=orange
+[Google Play Internal Test]: https://docs.google.com/forms/d/e/1FAIpQLSdMKHwnBLuwSo9BkqPXRPx4eZwio6RiaNxWEyrvyEpK0dLcuA/viewform?usp=dialog
+
+<!-- DOWNLOADS -->
+[DownloadAppImageAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_x86_64.AppImage
+[DownloadLinuxArchiveAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_x86_64.tar.gz
+[DownloadLinuxSnapAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_x86_64.snap
+[DownloadAppImageArm64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_aarch64.AppImage
+[DownloadLinuxArchiveArm64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_aarch64.tar.gz
+[DownloadLinuxSnapArm64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_aarch64.snap
+[DownloadLinuxFlatpakAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_x86_64.flatpak
+[DownloadLinuxFlatpakArm64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_aarch64.flatpak
+[DownloadLinuxDebAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_x86_64.deb
+[DownloadLinuxDebArm64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_aarch64.deb
+[DownloadLinuxRpmAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_x86_64.rpm
+[DownloadLinuxRpmArm64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_aarch64.rpm
+[DownloadWindowsMsixAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_windows_x86_64.msix
+[DownloadWindowsMsixCer]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_cert.cer
+[DownloadWindowsArchiveAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_windows_x86_64.zip
+[DownloadAndroidApkArm64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_android_arm64.apk
+[DownloadAndroidApkARMv7]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_android_armeabi_v7a.apk
+[DownloadAndroidApkAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_android_x86_64.apk
+
+
+<!-- EXTRA -->
+
+[WinGet Package]: https://winstall.app/apps/o-murphy.ebalistyka
+[WinGet Package Version]: https://img.shields.io/badge/WinGet-0078D4?style=for-the-badge&logo=data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM%2FrhtAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAacSURBVHgBvVjNb1VFFP%2FNe%2Fd9tLSl1CgutBT8CK5scOGCmNSNwcRNdW9k6U4XohsisvBP0GU1RuKOlRIXJpgAC0NiXRhIwIQI1K82kpjCo%2B%2FdOc7XmTkz9xZ23OT13Tn3nJnf%2FM7vnLmvCsX1%2BTvDpV6l1gC1gkd7rY8nevXdL0Y3pLFTevWqzlkLjsw9CbsbC4O85zHb3L2Ik%2FFtceFa7lXdNRRXVRpGYyzrYhIFCZaCpXnlfrs9l%2FHp3v5VilbwMIC3%2F9WtS9mdKsX3FO9zJ%2ByCXQKS39auG15tkTh36vBSr2u0R49ce%2FmljBZrvfr6qas37DBqsNftnmVw1JInqa82n4fps20%2B%2BYk2jeVKqajFmOK7I71MwdOmj8iTSyEdHWPUxPfWrkKqlb1LiwTfNJePY1v53F9uBreu8vJaaQC8uXkfmqsjJF65ieKe3QMPXurFTZ1UG0D7BTk%2BgHVA5Jj%2FUrKEzUToV869tzSoe2vGYYV3QoZniImpyJ8fUwaebWyMwCgszzFxGqZcZ%2F5pLb2ud9Rq1a97Z43LslsYCRgVYpNjl30GKsBHkMKfAoA474NAuS%2FNUy6jqtcqrfVyfEphYgYAKliTwJgZCFB%2BAfksmwNtG5KAC%2FaNFqvGrokXLRnRQAujYrIUH4RKZRx5HbOMlGRRzG0B87jyRt2iAQEwMiFY5gktFk15bMaI0CqvFZ6RAB6Lh5JOHUCiOkfPu87EXaRTppBKn5zhrDgoZ6qZPUmSt7sUS4PXGPLANmZLINUQC4eOor6%2FjTu3fgaNt8V8Iu0thYSyoMQaFWmNUgNZQUBo0t03K3BSaywdPY6FxZfcs%2Fk%2Fr%2BDa95%2Bi2xHdUtcoCysrmizNKoClwGAMEqktmMo1FuE62%2Bj%2BOIKz49n9h3HP2PYMKxGLB0shsp2zWDHSBt1%2B29kkjaIxY1sfo50J8ouwM64x1e%2BKs0OQAJUXUEva%2BbuSbYBBPTDdcaeJVSuTpGUfo63NykchXzwrmt0ISJWcNNgoDOxSbRCTkGsxdpMRIMnFZftKcbttvK1oqsYZKndARQMF5e2AfQNj8rJj9xYTFrJVTDoxprK1RCEW6RYpZm3I73yyeF8AZgazi3yKSQV%2Fe4%2Fkw4w34ygjyQOksroYTHJkJrXYseLFScpEAtDQJTOtskkbTzr3fyqmHcVDkpXNLcWsNvvUESw88wrqnbu49dNX0JPtACaxwovZNHf703jyxbcwtbCEv379Fv%2FdvCxecFNXcC%2FDqigkAp%2FFkj2xk6JwaLCAQ6%2B%2BH4EP55%2FG1e8%2BMUDuZhr0ncOMuwM8%2B9pJTD%2B25GJm9r%2BAy1%2B%2Bja4e2V9w4QwHpLbLI7Xj0%2BD1osOHWD9cncFeUz8CsfbhvkU8d%2BwkqDNs6EqrIZ4%2F9rEDp0MbsgT05hbTOmD9skS0B00U1%2B%2BQGEAGCLsOtq0%2FrmNr47e0oPGfXjiAI6unU4sJnyNvnjZpPZBtyMZv%2Fv4L3AuK1ql%2FatE37bNAjLV17BkZGZOsuYbNQR7w1KCDS998hM2N65nu5p446CcUAGcfP5gxumViLnx9AoNKRe35tepICuveg62dT0f2ougoUiIb8LDXwexgggtnPowgy9TmrcPf%2F3P7Gi6eOYG5wRj9SqUWJMiQGUMAGxi0ekiUIwJL7HGgFfbMsIv54cSxYRfmdGtx3EUdmtRtGp9LDtwOpk0GOopPH6m1%2FLjU3PpYg5KFrFCCs9SlbREz5i1lnwF5sWCyZNOm1TK314DbM%2BiaU4Uy1nQBDpRI0qlIdKYFcA%2FShLyamenagZx2TI4dgKTJtNlNl9YPsHdombNvNTqCkkBiDZAOGpbAyafYO4vuLwoHXAxaps%2Bn27Iyb3Rl0725kdK9tRHAmWd7%2Bsxcsyv4dQQRYQxBmLr02RuUjp68aQKiYWcNPTX22gDfHk1wZ9TF3OLLGE7P4O%2BrP2Cuv%2BNeWDvyJyyJ%2BVHcu8c6O8lsXOvPTkpe8bsExkeRBeDEjwnu3foRY%2FNkYdjBoBeYy37xyXMYaS1qP838WcwlLhx5cYB2mST3sUCm%2BsqA6rmx%2FyWiwX1SzuPP6vS2lDMqSfK29LIAIH%2B79v0KjfRjV0Z8C275jR3lAvAbe9x0lrGSKHCKUyCiQwKRs0kIv9Yzf7kJP12IBYk50aq5LOWFPs3bjD5P9v9xFPfY3HlMEwrg%2BWQplgrWms8kcGqQwtPq9U5Nk%2BPGth5bCLcdLnt5VpNs4tyCxAkS21Kyo%2BEvYuTRxn04bMR8zu%2BoavV%2FeJIg8GPYjyMAAAAASUVORK5CYII%3D
+
+
+[bclibc repo]: https://github.com/ballistics-lab/bclibc
+[powered by bclibc]:
+https://img.shields.io/badge/bclibc-0d1228?logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI%2FPgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDIwMDEwOTA0Ly9FTiIgImh0dHA6Ly93d3cudzMub3JnL1RSLzIwMDEvUkVDLVNWRy0yMDAxMDkwNC9EVEQvc3ZnMTAuZHRkIj4KPHN2ZyB2ZXJzaW9uPSIxLjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMjQuMDAwMDAwcHQiIGhlaWdodD0iMTAyNC4wMDAwMDBwdCIgdmlld0JveD0iMCAwIDEwMjQuMDAwMDAwIDEwMjQuMDAwMDAwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCBtZWV0Ij4KCTxjaXJjbGUgY3g9IjUxMiIgY3k9IjUxMiIgcj0iNTEyIiBmaWxsPSIjMGQxMjI4IiAvPgoJPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTEwMCwxMTI0KSBzY2FsZSgwLjEyMDAwMCwtMC4xMjAwMDApIiBmaWxsPSIjRkZGRkZGIiBzdHJva2U9Im5vbmUiPgoJCTxwYXRoIGQ9Ik01MDU1IDgwNzEgYy0xNjcgLTMzMyAtMjczIC03NjggLTI5MiAtMTE5OCBsLTYgLTE0MyAzNDYgMCAzNDcgMCAwCjYzIGMwIDI3NSAtODAgNzMxIC0xNzUgMTAwNyAtMzkgMTEyIC0xNDUgMzQzIC0xNjMgMzU0IC03IDQgLTI5IC0yOCAtNTcgLTgzegptLTE1IC0yODkgYy00NiAtMjI1IC05MCAtNjYzIC05MCAtODk0IDAgLTEwNCAtMiAtMTA4IC02MSAtMTA4IGwtNDkgMCAwIDc4CmMxIDE1OSA0OCA0ODIgMTAxIDY5MCAzNCAxMzQgMTE5IDM5NiAxMjUgMzg5IDMgLTMgLTkgLTcyIC0yNiAtMTU1eiIgLz4KCQk8cGF0aCBkPSJNNDcxMCA2NDA2IGwwIC0yNDQgMjMgLTYgYzEyIC0zIDMyIC02IDQ1IC02IGwyMiAwIDAgMjI1IDAgMjI1IDY1IDAKNjUgMCAwIC0yMjUgMCAtMjI1IDI4MyAyIDI4MiAzIDMgMjQ4IDIgMjQ3IC0zOTUgMCAtMzk1IDAgMCAtMjQ0eiIgLz4KCQk8cGF0aCBkPSJNNDQyNCA2MTExIGMtMTggLTUgLTQ4IC0xOCAtNjggLTMwIC0xMzcgLTg1IC0xMjAgLTMwMCAyOSAtMzcwIGw0NgotMjEgLTMgLTUzMyAtMyAtNTMyIC0yMyAtNTggYy0xOCAtNDUgLTU0NSAtODUwIC04NzkgLTEzNDMgLTc2IC0xMTMgLTExMgotMjkxIC04MyAtNDE1IDQxIC0xNzcgMTY5IC0zMTIgMzQwIC0zNTkgNTkgLTE3IDI1OTMgLTE1IDI2NTUgMiAxMTQgMzAgMjMzCjEyMiAyODcgMjI0IDc2IDE0MiA3NyAzNDMgMyA0ODYgLTI4IDU0IC0xMzMgMjEzIC01NzMgODc1IC0xNzYgMjY2IC0zMzEgNTA5Ci0zNDQgNTQwIC0yMyA1OCAtMjMgNjAgLTI2IDU4OCBsLTMgNTMwIDQ1IDE4IGM1MiAyMiAxMDEgODAgMTE3IDE0MSAyNCA5MAotMjMgMTk2IC0xMDYgMjM2IC01NCAyNiAtMTk5IDM1IC0yMDEgMTMgLTEgLTcgLTIgLTE3IC0zIC0yMiAwIC01IC04OCAtNwotMjA4IC0zIC0xNTQgNCAtMjA0IDIgLTE5OSAtNiA0IC03IDE1IC0xMiAyNiAtMTIgMTAgMCA5MiAtMTMgMTgxIC0yOSA5MCAtMTYKMjA2IC0zMyAyNTggLTM3IDEwOSAtNyAxNDEgLTI3IDE0MSAtODYgLTEgLTYwIC00OCAtOTggLTEyNSAtOTggbC00NiAwIDMKLTU5MiAzIC01OTMgMjUgLTcwIGMxOCAtNTIgODAgLTE1NCAyNDEgLTM5NSA0NzYgLTcxNCA2ODkgLTEwNDMgNzEwIC0xMDk3IDE2Ci00NCAyMiAtNzkgMjIgLTE0MyAwIC0xNzQgLTgxIC0yOTMgLTIzNyAtMzQ3IC00OCAtMTcgLTEyNSAtMTggLTEzMzEgLTE4CmwtMTI4MCAwIC02NSAzMSBjLTc5IDM4IC0xMzEgODkgLTE2OCAxNjMgLTI1IDUxIC0yNyA2NiAtMjcgMTcxIDAgOTggMyAxMjIKMjIgMTYzIDEzIDI3IDExNiAxODkgMjI5IDM2MCAxMTQgMTcyIDMwOCA0NjQgNDMyIDY1MCAxMjMgMTg1IDIzNiAzNjMgMjUyCjM5NSA1NCAxMTEgNTUgMTIwIDU1IDc0MiBsMCA1NzUgLTUwIDYgYy0yNyAzIC01OCA5IC02OCAxNCAtMjcgMTEgLTQ5IDYyIC00Mgo5NCAxMCA0OCA0MyA2OSAxMTAgNzMgbDYwIDMgMCA2MCAwIDYwIC01MCAyIGMtMjcgMSAtNjQgLTIgLTgxIC02eiIgLz4KCQk8cGF0aCBkPSJNNDcwMCA1MzY5IGMwIC00MjggLTQgLTcwNyAtMTEgLTc1MiAtMjMgLTE1NyAtNTggLTIzMCAtMjYzIC01NDAKLTg0IC0xMjggLTE5NSAtMjk3IC0yNDggLTM3NyAtNTIgLTgwIC0xNjYgLTI1MyAtMjUzIC0zODUgLTg3IC0xMzIgLTE2OSAtMjYwCi0xODIgLTI4NCAtNDMgLTgyIC0yNiAtMTk3IDM5IC0yNTggNTkgLTU2IC03IC01MyAxMzI3IC01MyBsMTIyOSAwIDUyIDI4IGM5OAo1MSAxMzIgMTc2IDc3IDI4MiAtMjMgNDUgLTI2MSA0MTAgLTYzMyA5NzUgLTIzOCAzNjEgLTI1OCAzOTUgLTMwMiA1NDQgLTE0CjQ5IC0xNyAxMzkgLTIyIDcxNiBsLTUgNjYwIC0xMTUgMTcgYy02MyAxMCAtMTg1IDI5IC0yNzEgNDMgLTIxNyAzNSAtMTk5IDM5Ci0xOTkgLTQ4IDAgLTQxIC00IC0xNTQgLTEwIC0yNTMgLTUgLTk4IC0xNyAtMzEyIC0yNSAtNDc0IC05IC0xNjIgLTIwIC0zNDcKLTI1IC00MTAgLTUgLTYzIC0xMCAtMTQ1IC0xMCAtMTgyIDAgLTM4IC00IC02OCAtOCAtNjggLTggMCAtMjggNTcwIC0zOSAxMTU3CmwtNiAzMzEgLTMwIDYgYy0xNiAzIC0zOCA2IC00OCA2IC0xOCAwIC0xOSAtMjIgLTE5IC02ODF6IG0xMDMyIC0xNDI2IGM5IC0xMAo3NCAtMTA2IDE0NCAtMjE1IDcxIC0xMDggMjAzIC0zMDkgMjk0IC00NDcgMjEwIC0zMTggMjAyIC0zMDUgMjA0IC0zNTMgMSAtMzIKLTUgLTQ1IC0yNyAtNjQgbC0yOCAtMjQgLTEyMTUgMCAtMTIxNSAwIC0yNCAyNSBjLTE5IDE4IC0yNSAzNSAtMjUgNjggMCA0MQoxNyA2OSAyMDYgMzU4IDExNCAxNzMgMjU5IDM5NCAzMjMgNDkxIGwxMTYgMTc4IDYxNiAwIGM1NzQgMCA2MTcgLTEgNjMxIC0xN3oiIC8%2BCgk8L2c%2BCjwvc3ZnPgo%3D&label=powered%20by

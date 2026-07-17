@@ -1,0 +1,240 @@
+import 'dart:async';
+
+import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
+import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/models/unit_picker_context.dart';
+import 'package:ebalistyka/shared/widgets/unit_dialog_input_field.dart';
+import 'package:flutter/material.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:dart_bclibc/unit.dart';
+
+// ── Refactored dialog using UnitPickerContext ──────────────────────────────
+
+class _UnitEditDialogContent extends StatefulWidget {
+  const _UnitEditDialogContent({
+    required this.pickerContext,
+    required this.initialRawValue,
+  });
+
+  final UnitPickerContext pickerContext;
+  final double? initialRawValue;
+
+  @override
+  State<_UnitEditDialogContent> createState() => _UnitEditDialogContentState();
+}
+
+class _UnitEditDialogContentState extends State<_UnitEditDialogContent> {
+  late final TextEditingController _controller;
+  late final UnitConversionHelper _helper;
+
+  late double _editRaw;
+  late bool _isNullValue;
+  String? _errorText;
+
+  @override
+  void initState() {
+    super.initState();
+    final ctx = widget.pickerContext;
+
+    _helper = UnitConversionHelper(
+      constraints: ctx.constraints,
+      displayUnit: ctx.displayUnit,
+    );
+
+    // IMPORTANT: Use initialRawValue to define the initial state null
+    _editRaw = widget.initialRawValue ?? ctx.constraints.minRaw;
+    _isNullValue = widget.initialRawValue == null;
+
+    final initialText = widget.initialRawValue != null
+        ? _helper.formatDisplayValue(_helper.toDisplay(widget.initialRawValue!))
+        : '';
+
+    _controller = TextEditingController(text: initialText);
+  }
+
+  void _onTextChanged(String text) {
+    final (rawValue, errorText) = _helper.parseAndValidate(text);
+
+    setState(() {
+      _errorText = errorText;
+      if (errorText == null) {
+        _isNullValue = (rawValue == null);
+        if (rawValue != null) {
+          _editRaw = rawValue;
+        }
+      } else {
+        _isNullValue = false;
+      }
+    });
+  }
+
+  void _step(int dir) {
+    setState(() {
+      _isNullValue = false;
+      _editRaw = (_editRaw + dir * _helper.stepRaw).clamp(
+        widget.pickerContext.constraints.minRaw,
+        widget.pickerContext.constraints.maxRaw,
+      );
+      _controller.text = _helper.formatDisplayValue(
+        _helper.toDisplay(_editRaw),
+      );
+      _errorText = null;
+    });
+  }
+
+  void _clearField() {
+    if (widget.pickerContext.allowNull != true) return;
+    _controller.clear();
+    setState(() {
+      _isNullValue = true;
+      _errorText = null;
+      _editRaw = widget.pickerContext.constraints.minRaw;
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
+    final ctx = widget.pickerContext;
+    final l10n = AppLocalizations.of(context)!;
+    final sym = ctx.symbol ?? ctx.displayUnit.localizedSymbol(l10n);
+
+    final canSave =
+        _errorText == null && (!_isNullValue || (ctx.allowNull == true));
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+      constraints: BoxConstraints(maxWidth: 300),
+      decoration: BoxDecoration(
+        color: cs.surface,
+        borderRadius: BorderRadius.circular(28),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            ctx.label,
+            style: tt.titleMedium?.copyWith(color: cs.onSurfaceVariant),
+          ),
+
+          const SizedBox(height: 12),
+
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              IconButton.filledTonal(
+                icon: const Icon(IconDef.minus),
+                onPressed: () => _step(-1),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: UnitDialogInputField(
+                  controller: _controller,
+                  constraints: ctx.constraints,
+                  displayUnit: ctx.displayUnit,
+                  onChanged: _onTextChanged,
+                  errorText: _errorText,
+                  symbol: sym,
+                  allowNull: ctx.allowNull == true,
+                  onClear: _clearField,
+                ),
+              ),
+              const SizedBox(width: 8),
+              IconButton.filledTonal(
+                icon: const Icon(IconDef.plus),
+                onPressed: () => _step(1),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 24),
+
+          Row(
+            children: [
+              Expanded(
+                child: TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(l10n.discardButton),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: FilledButton(
+                  onPressed: !canSave
+                      ? null
+                      : () {
+                          ctx.onChanged(_isNullValue ? null : _editRaw);
+                          Navigator.pop(context);
+                        },
+                  child: Text(l10n.confirmButton),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Public dialog functions ─────────────────────────────────────────────────
+
+void showUnitEditDialog(UnitPickerContext pickerContext) {
+  unawaited(
+    showDialog<void>(
+      context: pickerContext.buildContext,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: _UnitEditDialogContent(
+          pickerContext: pickerContext,
+          initialRawValue: pickerContext.rawValue,
+        ),
+      ),
+    ),
+  );
+}
+
+Future<void> showNullableUnitEditDialog(
+  BuildContext context, {
+  required String label,
+  required double? rawValue,
+  required FieldConstraints constraints,
+  required Unit displayUnit,
+  String? symbol,
+  required ValueChanged<double?> onChanged,
+}) async {
+  // Create a context. Although internally UnitPickerContext onChanged has type ValueChanged<double>,
+  // we wrap our nullable onChanged to avoid a Type Error when passing null.
+  final pickerContext = UnitPickerContext(
+    context,
+    label: label,
+    rawValue: rawValue ?? constraints.minRaw,
+    constraints: constraints,
+    displayUnit: displayUnit,
+    onChanged: onChanged,
+    symbol: symbol,
+    allowNull: true,
+  );
+
+  await showDialog<void>(
+    context: context,
+    builder: (ctx) => Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      child: _UnitEditDialogContent(
+        pickerContext: pickerContext,
+        initialRawValue: rawValue,
+      ),
+    ),
+  );
+}
