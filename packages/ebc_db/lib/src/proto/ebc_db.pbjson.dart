@@ -71,60 +71,59 @@ final $typed_data.Uint8List weaponDescriptor = $convert.base64Decode(
 const Sight$json = {
   '1': 'Sight',
   '2': [
-    {'1': 'ui_key', '3': 1, '4': 1, '5': 9, '10': 'uiKey'},
-    {'1': 'name', '3': 2, '4': 1, '5': 9, '10': 'name'},
-    {'1': 'focal_plane_value', '3': 3, '4': 1, '5': 9, '10': 'focalPlaneValue'},
-    {'1': 'sight_height_inch', '3': 4, '4': 1, '5': 1, '10': 'sightHeightInch'},
+    {'1': 'name', '3': 1, '4': 1, '5': 9, '10': 'name'},
+    {'1': 'focal_plane_value', '3': 2, '4': 1, '5': 9, '10': 'focalPlaneValue'},
+    {'1': 'sight_height_inch', '3': 3, '4': 1, '5': 1, '10': 'sightHeightInch'},
     {
       '1': 'sight_horizontal_offset_inch',
-      '3': 5,
+      '3': 4,
       '4': 1,
       '5': 1,
       '10': 'sightHorizontalOffsetInch'
     },
-    {'1': 'vertical_click', '3': 6, '4': 1, '5': 1, '10': 'verticalClick'},
-    {'1': 'horizontal_click', '3': 7, '4': 1, '5': 1, '10': 'horizontalClick'},
+    {'1': 'vertical_click', '3': 5, '4': 1, '5': 1, '10': 'verticalClick'},
+    {'1': 'horizontal_click', '3': 6, '4': 1, '5': 1, '10': 'horizontalClick'},
     {
       '1': 'vertical_click_unit',
-      '3': 8,
+      '3': 7,
       '4': 1,
       '5': 9,
       '10': 'verticalClickUnit'
     },
     {
       '1': 'horizontal_click_unit',
-      '3': 9,
+      '3': 8,
       '4': 1,
       '5': 9,
       '10': 'horizontalClickUnit'
     },
     {
       '1': 'min_magnification',
-      '3': 10,
+      '3': 9,
       '4': 1,
       '5': 1,
       '10': 'minMagnification'
     },
     {
       '1': 'max_magnification',
-      '3': 11,
+      '3': 10,
       '4': 1,
       '5': 1,
       '10': 'maxMagnification'
     },
-    {'1': 'reticle_image', '3': 12, '4': 1, '5': 9, '10': 'reticleImage'},
+    {'1': 'reticle_image', '3': 11, '4': 1, '5': 9, '10': 'reticleImage'},
     {
       '1': 'calibrated_magnification',
-      '3': 13,
+      '3': 12,
       '4': 1,
       '5': 1,
       '9': 0,
       '10': 'calibratedMagnification',
       '17': true
     },
-    {'1': 'vendor', '3': 14, '4': 1, '5': 9, '10': 'vendor'},
-    {'1': 'notes', '3': 15, '4': 1, '5': 9, '10': 'notes'},
-    {'1': 'image', '3': 16, '4': 1, '5': 9, '10': 'image'},
+    {'1': 'vendor', '3': 13, '4': 1, '5': 9, '10': 'vendor'},
+    {'1': 'notes', '3': 14, '4': 1, '5': 9, '10': 'notes'},
+    {'1': 'image', '3': 15, '4': 1, '5': 9, '10': 'image'},
   ],
   '8': [
     {'1': '_calibrated_magnification'},
@@ -133,29 +132,27 @@ const Sight$json = {
 
 /// Descriptor for `Sight`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List sightDescriptor = $convert.base64Decode(
-    'CgVTaWdodBIVCgZ1aV9rZXkYASABKAlSBXVpS2V5EhIKBG5hbWUYAiABKAlSBG5hbWUSKgoRZm'
-    '9jYWxfcGxhbmVfdmFsdWUYAyABKAlSD2ZvY2FsUGxhbmVWYWx1ZRIqChFzaWdodF9oZWlnaHRf'
-    'aW5jaBgEIAEoAVIPc2lnaHRIZWlnaHRJbmNoEj8KHHNpZ2h0X2hvcml6b250YWxfb2Zmc2V0X2'
-    'luY2gYBSABKAFSGXNpZ2h0SG9yaXpvbnRhbE9mZnNldEluY2gSJQoOdmVydGljYWxfY2xpY2sY'
-    'BiABKAFSDXZlcnRpY2FsQ2xpY2sSKQoQaG9yaXpvbnRhbF9jbGljaxgHIAEoAVIPaG9yaXpvbn'
-    'RhbENsaWNrEi4KE3ZlcnRpY2FsX2NsaWNrX3VuaXQYCCABKAlSEXZlcnRpY2FsQ2xpY2tVbml0'
-    'EjIKFWhvcml6b250YWxfY2xpY2tfdW5pdBgJIAEoCVITaG9yaXpvbnRhbENsaWNrVW5pdBIrCh'
-    'FtaW5fbWFnbmlmaWNhdGlvbhgKIAEoAVIQbWluTWFnbmlmaWNhdGlvbhIrChFtYXhfbWFnbmlm'
-    'aWNhdGlvbhgLIAEoAVIQbWF4TWFnbmlmaWNhdGlvbhIjCg1yZXRpY2xlX2ltYWdlGAwgASgJUg'
-    'xyZXRpY2xlSW1hZ2USPgoYY2FsaWJyYXRlZF9tYWduaWZpY2F0aW9uGA0gASgBSABSF2NhbGli'
-    'cmF0ZWRNYWduaWZpY2F0aW9uiAEBEhYKBnZlbmRvchgOIAEoCVIGdmVuZG9yEhQKBW5vdGVzGA'
-    '8gASgJUgVub3RlcxIUCgVpbWFnZRgQIAEoCVIFaW1hZ2VCGwoZX2NhbGlicmF0ZWRfbWFnbmlm'
-    'aWNhdGlvbg==');
+    'CgVTaWdodBISCgRuYW1lGAEgASgJUgRuYW1lEioKEWZvY2FsX3BsYW5lX3ZhbHVlGAIgASgJUg'
+    '9mb2NhbFBsYW5lVmFsdWUSKgoRc2lnaHRfaGVpZ2h0X2luY2gYAyABKAFSD3NpZ2h0SGVpZ2h0'
+    'SW5jaBI/ChxzaWdodF9ob3Jpem9udGFsX29mZnNldF9pbmNoGAQgASgBUhlzaWdodEhvcml6b2'
+    '50YWxPZmZzZXRJbmNoEiUKDnZlcnRpY2FsX2NsaWNrGAUgASgBUg12ZXJ0aWNhbENsaWNrEikK'
+    'EGhvcml6b250YWxfY2xpY2sYBiABKAFSD2hvcml6b250YWxDbGljaxIuChN2ZXJ0aWNhbF9jbG'
+    'lja191bml0GAcgASgJUhF2ZXJ0aWNhbENsaWNrVW5pdBIyChVob3Jpem9udGFsX2NsaWNrX3Vu'
+    'aXQYCCABKAlSE2hvcml6b250YWxDbGlja1VuaXQSKwoRbWluX21hZ25pZmljYXRpb24YCSABKA'
+    'FSEG1pbk1hZ25pZmljYXRpb24SKwoRbWF4X21hZ25pZmljYXRpb24YCiABKAFSEG1heE1hZ25p'
+    'ZmljYXRpb24SIwoNcmV0aWNsZV9pbWFnZRgLIAEoCVIMcmV0aWNsZUltYWdlEj4KGGNhbGlicm'
+    'F0ZWRfbWFnbmlmaWNhdGlvbhgMIAEoAUgAUhdjYWxpYnJhdGVkTWFnbmlmaWNhdGlvbogBARIW'
+    'CgZ2ZW5kb3IYDSABKAlSBnZlbmRvchIUCgVub3RlcxgOIAEoCVIFbm90ZXMSFAoFaW1hZ2UYDy'
+    'ABKAlSBWltYWdlQhsKGV9jYWxpYnJhdGVkX21hZ25pZmljYXRpb24=');
 
 @$core.Deprecated('Use ammoDescriptor instead')
 const Ammo$json = {
   '1': 'Ammo',
   '2': [
-    {'1': 'ui_key', '3': 1, '4': 1, '5': 9, '10': 'uiKey'},
-    {'1': 'name', '3': 2, '4': 1, '5': 9, '10': 'name'},
+    {'1': 'name', '3': 1, '4': 1, '5': 9, '10': 'name'},
     {
       '1': 'caliber_inch',
-      '3': 3,
+      '3': 2,
       '4': 1,
       '5': 1,
       '9': 0,
@@ -164,7 +161,7 @@ const Ammo$json = {
     },
     {
       '1': 'weight_grain',
-      '3': 4,
+      '3': 3,
       '4': 1,
       '5': 1,
       '9': 1,
@@ -173,21 +170,21 @@ const Ammo$json = {
     },
     {
       '1': 'length_inch',
-      '3': 5,
+      '3': 4,
       '4': 1,
       '5': 1,
       '9': 2,
       '10': 'lengthInch',
       '17': true
     },
-    {'1': 'drag_type_value', '3': 6, '4': 1, '5': 9, '10': 'dragTypeValue'},
-    {'1': 'bc_g1', '3': 7, '4': 1, '5': 1, '9': 3, '10': 'bcG1', '17': true},
-    {'1': 'bc_g7', '3': 8, '4': 1, '5': 1, '9': 4, '10': 'bcG7', '17': true},
-    {'1': 'use_multi_bc_g1', '3': 9, '4': 1, '5': 8, '10': 'useMultiBcG1'},
-    {'1': 'use_multi_bc_g7', '3': 10, '4': 1, '5': 8, '10': 'useMultiBcG7'},
+    {'1': 'drag_type_value', '3': 5, '4': 1, '5': 9, '10': 'dragTypeValue'},
+    {'1': 'bc_g1', '3': 6, '4': 1, '5': 1, '9': 3, '10': 'bcG1', '17': true},
+    {'1': 'bc_g7', '3': 7, '4': 1, '5': 1, '9': 4, '10': 'bcG7', '17': true},
+    {'1': 'use_multi_bc_g1', '3': 8, '4': 1, '5': 8, '10': 'useMultiBcG1'},
+    {'1': 'use_multi_bc_g7', '3': 9, '4': 1, '5': 8, '10': 'useMultiBcG7'},
     {
       '1': 'muzzle_velocity_mps',
-      '3': 11,
+      '3': 10,
       '4': 1,
       '5': 1,
       '9': 5,
@@ -196,85 +193,85 @@ const Ammo$json = {
     },
     {
       '1': 'muzzle_velocity_temperature_c',
-      '3': 12,
+      '3': 11,
       '4': 1,
       '5': 1,
       '10': 'muzzleVelocityTemperatureC'
     },
     {
       '1': 'use_powder_sensitivity',
-      '3': 13,
+      '3': 12,
       '4': 1,
       '5': 8,
       '10': 'usePowderSensitivity'
     },
     {
       '1': 'powder_sensitivity_frac',
-      '3': 14,
+      '3': 13,
       '4': 1,
       '5': 1,
       '10': 'powderSensitivityFrac'
     },
     {
       '1': 'powder_sensitivity_tc',
-      '3': 15,
+      '3': 14,
       '4': 3,
       '5': 1,
       '10': 'powderSensitivityTc'
     },
     {
       '1': 'powder_sensitivity_v_mps',
-      '3': 16,
+      '3': 15,
       '4': 3,
       '5': 1,
       '10': 'powderSensitivityVMps'
     },
     {
       '1': 'multi_bc_table_g1_v_mps',
-      '3': 17,
+      '3': 16,
       '4': 3,
       '5': 1,
       '10': 'multiBcTableG1VMps'
     },
     {
       '1': 'multi_bc_table_g1_bc',
-      '3': 18,
+      '3': 17,
       '4': 3,
       '5': 1,
       '10': 'multiBcTableG1Bc'
     },
     {
       '1': 'multi_bc_table_g7_v_mps',
-      '3': 19,
+      '3': 18,
       '4': 3,
       '5': 1,
       '10': 'multiBcTableG7VMps'
     },
     {
       '1': 'multi_bc_table_g7_bc',
-      '3': 20,
+      '3': 19,
       '4': 3,
       '5': 1,
       '10': 'multiBcTableG7Bc'
     },
     {
       '1': 'custom_drag_table_mach',
-      '3': 21,
+      '3': 20,
       '4': 3,
       '5': 1,
       '10': 'customDragTableMach'
     },
     {
       '1': 'custom_drag_table_cd',
-      '3': 22,
+      '3': 21,
       '4': 3,
       '5': 1,
       '10': 'customDragTableCd'
     },
-    {'1': 'zero', '3': 23, '4': 1, '5': 11, '6': '.ebc_db.Zero', '10': 'zero'},
-    {'1': 'projectile_name', '3': 24, '4': 1, '5': 9, '10': 'projectileName'},
-    {'1': 'vendor', '3': 25, '4': 1, '5': 9, '10': 'vendor'},
-    {'1': 'image', '3': 26, '4': 1, '5': 9, '10': 'image'},
+    {'1': 'zero', '3': 22, '4': 1, '5': 11, '6': '.ebc_db.Zero', '10': 'zero'},
+    {'1': 'projectile_name', '3': 23, '4': 1, '5': 9, '10': 'projectileName'},
+    {'1': 'vendor', '3': 24, '4': 1, '5': 9, '10': 'vendor'},
+    {'1': 'image', '3': 25, '4': 1, '5': 9, '10': 'image'},
   ],
   '8': [
     {'1': '_caliber_inch'},
@@ -288,28 +285,28 @@ const Ammo$json = {
 
 /// Descriptor for `Ammo`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List ammoDescriptor = $convert.base64Decode(
-    'CgRBbW1vEhUKBnVpX2tleRgBIAEoCVIFdWlLZXkSEgoEbmFtZRgCIAEoCVIEbmFtZRImCgxjYW'
-    'xpYmVyX2luY2gYAyABKAFIAFILY2FsaWJlckluY2iIAQESJgoMd2VpZ2h0X2dyYWluGAQgASgB'
-    'SAFSC3dlaWdodEdyYWluiAEBEiQKC2xlbmd0aF9pbmNoGAUgASgBSAJSCmxlbmd0aEluY2iIAQ'
-    'ESJgoPZHJhZ190eXBlX3ZhbHVlGAYgASgJUg1kcmFnVHlwZVZhbHVlEhgKBWJjX2cxGAcgASgB'
-    'SANSBGJjRzGIAQESGAoFYmNfZzcYCCABKAFIBFIEYmNHN4gBARIlCg91c2VfbXVsdGlfYmNfZz'
-    'EYCSABKAhSDHVzZU11bHRpQmNHMRIlCg91c2VfbXVsdGlfYmNfZzcYCiABKAhSDHVzZU11bHRp'
-    'QmNHNxIzChNtdXp6bGVfdmVsb2NpdHlfbXBzGAsgASgBSAVSEW11enpsZVZlbG9jaXR5TXBziA'
-    'EBEkEKHW11enpsZV92ZWxvY2l0eV90ZW1wZXJhdHVyZV9jGAwgASgBUhptdXp6bGVWZWxvY2l0'
-    'eVRlbXBlcmF0dXJlQxI0ChZ1c2VfcG93ZGVyX3NlbnNpdGl2aXR5GA0gASgIUhR1c2VQb3dkZX'
-    'JTZW5zaXRpdml0eRI2Chdwb3dkZXJfc2Vuc2l0aXZpdHlfZnJhYxgOIAEoAVIVcG93ZGVyU2Vu'
-    'c2l0aXZpdHlGcmFjEjIKFXBvd2Rlcl9zZW5zaXRpdml0eV90YxgPIAMoAVITcG93ZGVyU2Vuc2'
-    'l0aXZpdHlUYxI3Chhwb3dkZXJfc2Vuc2l0aXZpdHlfdl9tcHMYECADKAFSFXBvd2RlclNlbnNp'
-    'dGl2aXR5Vk1wcxIzChdtdWx0aV9iY190YWJsZV9nMV92X21wcxgRIAMoAVISbXVsdGlCY1RhYm'
-    'xlRzFWTXBzEi4KFG11bHRpX2JjX3RhYmxlX2cxX2JjGBIgAygBUhBtdWx0aUJjVGFibGVHMUJj'
-    'EjMKF211bHRpX2JjX3RhYmxlX2c3X3ZfbXBzGBMgAygBUhJtdWx0aUJjVGFibGVHN1ZNcHMSLg'
-    'oUbXVsdGlfYmNfdGFibGVfZzdfYmMYFCADKAFSEG11bHRpQmNUYWJsZUc3QmMSMwoWY3VzdG9t'
-    'X2RyYWdfdGFibGVfbWFjaBgVIAMoAVITY3VzdG9tRHJhZ1RhYmxlTWFjaBIvChRjdXN0b21fZH'
-    'JhZ190YWJsZV9jZBgWIAMoAVIRY3VzdG9tRHJhZ1RhYmxlQ2QSIAoEemVybxgXIAEoCzIMLmVi'
-    'Y19kYi5aZXJvUgR6ZXJvEicKD3Byb2plY3RpbGVfbmFtZRgYIAEoCVIOcHJvamVjdGlsZU5hbW'
-    'USFgoGdmVuZG9yGBkgASgJUgZ2ZW5kb3ISFAoFaW1hZ2UYGiABKAlSBWltYWdlQg8KDV9jYWxp'
-    'YmVyX2luY2hCDwoNX3dlaWdodF9ncmFpbkIOCgxfbGVuZ3RoX2luY2hCCAoGX2JjX2cxQggKBl'
-    '9iY19nN0IWChRfbXV6emxlX3ZlbG9jaXR5X21wcw==');
+    'CgRBbW1vEhIKBG5hbWUYASABKAlSBG5hbWUSJgoMY2FsaWJlcl9pbmNoGAIgASgBSABSC2NhbG'
+    'liZXJJbmNoiAEBEiYKDHdlaWdodF9ncmFpbhgDIAEoAUgBUgt3ZWlnaHRHcmFpbogBARIkCgts'
+    'ZW5ndGhfaW5jaBgEIAEoAUgCUgpsZW5ndGhJbmNoiAEBEiYKD2RyYWdfdHlwZV92YWx1ZRgFIA'
+    'EoCVINZHJhZ1R5cGVWYWx1ZRIYCgViY19nMRgGIAEoAUgDUgRiY0cxiAEBEhgKBWJjX2c3GAcg'
+    'ASgBSARSBGJjRzeIAQESJQoPdXNlX211bHRpX2JjX2cxGAggASgIUgx1c2VNdWx0aUJjRzESJQ'
+    'oPdXNlX211bHRpX2JjX2c3GAkgASgIUgx1c2VNdWx0aUJjRzcSMwoTbXV6emxlX3ZlbG9jaXR5'
+    'X21wcxgKIAEoAUgFUhFtdXp6bGVWZWxvY2l0eU1wc4gBARJBCh1tdXp6bGVfdmVsb2NpdHlfdG'
+    'VtcGVyYXR1cmVfYxgLIAEoAVIabXV6emxlVmVsb2NpdHlUZW1wZXJhdHVyZUMSNAoWdXNlX3Bv'
+    'd2Rlcl9zZW5zaXRpdml0eRgMIAEoCFIUdXNlUG93ZGVyU2Vuc2l0aXZpdHkSNgoXcG93ZGVyX3'
+    'NlbnNpdGl2aXR5X2ZyYWMYDSABKAFSFXBvd2RlclNlbnNpdGl2aXR5RnJhYxIyChVwb3dkZXJf'
+    'c2Vuc2l0aXZpdHlfdGMYDiADKAFSE3Bvd2RlclNlbnNpdGl2aXR5VGMSNwoYcG93ZGVyX3Nlbn'
+    'NpdGl2aXR5X3ZfbXBzGA8gAygBUhVwb3dkZXJTZW5zaXRpdml0eVZNcHMSMwoXbXVsdGlfYmNf'
+    'dGFibGVfZzFfdl9tcHMYECADKAFSEm11bHRpQmNUYWJsZUcxVk1wcxIuChRtdWx0aV9iY190YW'
+    'JsZV9nMV9iYxgRIAMoAVIQbXVsdGlCY1RhYmxlRzFCYxIzChdtdWx0aV9iY190YWJsZV9nN192'
+    'X21wcxgSIAMoAVISbXVsdGlCY1RhYmxlRzdWTXBzEi4KFG11bHRpX2JjX3RhYmxlX2c3X2JjGB'
+    'MgAygBUhBtdWx0aUJjVGFibGVHN0JjEjMKFmN1c3RvbV9kcmFnX3RhYmxlX21hY2gYFCADKAFS'
+    'E2N1c3RvbURyYWdUYWJsZU1hY2gSLwoUY3VzdG9tX2RyYWdfdGFibGVfY2QYFSADKAFSEWN1c3'
+    'RvbURyYWdUYWJsZUNkEiAKBHplcm8YFiABKAsyDC5lYmNfZGIuWmVyb1IEemVybxInCg9wcm9q'
+    'ZWN0aWxlX25hbWUYFyABKAlSDnByb2plY3RpbGVOYW1lEhYKBnZlbmRvchgYIAEoCVIGdmVuZG'
+    '9yEhQKBWltYWdlGBkgASgJUgVpbWFnZUIPCg1fY2FsaWJlcl9pbmNoQg8KDV93ZWlnaHRfZ3Jh'
+    'aW5CDgoMX2xlbmd0aF9pbmNoQggKBl9iY19nMUIICgZfYmNfZzdCFgoUX211enpsZV92ZWxvY2'
+    'l0eV9tcHM=');
 
 @$core.Deprecated('Use zeroDescriptor instead')
 const Zero$json = {
@@ -373,14 +370,14 @@ const Profile$json = {
       '6': '.ebc_db.Weapon',
       '10': 'weapon'
     },
-    {'1': 'ammo', '3': 4, '4': 3, '5': 11, '6': '.ebc_db.Ammo', '10': 'ammo'},
+    {'1': 'ammo', '3': 4, '4': 1, '5': 11, '6': '.ebc_db.Ammo', '10': 'ammo'},
     {
-      '1': 'sights',
+      '1': 'sight',
       '3': 5,
-      '4': 3,
+      '4': 1,
       '5': 11,
       '6': '.ebc_db.Sight',
-      '10': 'sights'
+      '10': 'sight'
     },
   ],
 };
@@ -388,8 +385,8 @@ const Profile$json = {
 /// Descriptor for `Profile`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List profileDescriptor = $convert.base64Decode(
     'CgdQcm9maWxlEhUKBnVpX2tleRgBIAEoCVIFdWlLZXkSEgoEbmFtZRgCIAEoCVIEbmFtZRImCg'
-    'Z3ZWFwb24YAyABKAsyDi5lYmNfZGIuV2VhcG9uUgZ3ZWFwb24SIAoEYW1tbxgEIAMoCzIMLmVi'
-    'Y19kYi5BbW1vUgRhbW1vEiUKBnNpZ2h0cxgFIAMoCzINLmViY19kYi5TaWdodFIGc2lnaHRz');
+    'Z3ZWFwb24YAyABKAsyDi5lYmNfZGIuV2VhcG9uUgZ3ZWFwb24SIAoEYW1tbxgEIAEoCzIMLmVi'
+    'Y19kYi5BbW1vUgRhbW1vEiMKBXNpZ2h0GAUgASgLMg0uZWJjX2RiLlNpZ2h0UgVzaWdodA==');
 
 @$core.Deprecated('Use generalSettingsDescriptor instead')
 const GeneralSettings$json = {

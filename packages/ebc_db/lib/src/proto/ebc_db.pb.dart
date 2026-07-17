@@ -167,7 +167,6 @@ class Weapon extends $pb.GeneratedMessage {
 
 class Sight extends $pb.GeneratedMessage {
   factory Sight({
-    $core.String? uiKey,
     $core.String? name,
     $core.String? focalPlaneValue,
     $core.double? sightHeightInch,
@@ -185,7 +184,6 @@ class Sight extends $pb.GeneratedMessage {
     $core.String? image,
   }) {
     final result = create();
-    if (uiKey != null) result.uiKey = uiKey;
     if (name != null) result.name = name;
     if (focalPlaneValue != null) result.focalPlaneValue = focalPlaneValue;
     if (sightHeightInch != null) result.sightHeightInch = sightHeightInch;
@@ -220,22 +218,21 @@ class Sight extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'Sight',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'ebc_db'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'uiKey')
-    ..aOS(2, _omitFieldNames ? '' : 'name')
-    ..aOS(3, _omitFieldNames ? '' : 'focalPlaneValue')
-    ..aD(4, _omitFieldNames ? '' : 'sightHeightInch')
-    ..aD(5, _omitFieldNames ? '' : 'sightHorizontalOffsetInch')
-    ..aD(6, _omitFieldNames ? '' : 'verticalClick')
-    ..aD(7, _omitFieldNames ? '' : 'horizontalClick')
-    ..aOS(8, _omitFieldNames ? '' : 'verticalClickUnit')
-    ..aOS(9, _omitFieldNames ? '' : 'horizontalClickUnit')
-    ..aD(10, _omitFieldNames ? '' : 'minMagnification')
-    ..aD(11, _omitFieldNames ? '' : 'maxMagnification')
-    ..aOS(12, _omitFieldNames ? '' : 'reticleImage')
-    ..aD(13, _omitFieldNames ? '' : 'calibratedMagnification')
-    ..aOS(14, _omitFieldNames ? '' : 'vendor')
-    ..aOS(15, _omitFieldNames ? '' : 'notes')
-    ..aOS(16, _omitFieldNames ? '' : 'image')
+    ..aOS(1, _omitFieldNames ? '' : 'name')
+    ..aOS(2, _omitFieldNames ? '' : 'focalPlaneValue')
+    ..aD(3, _omitFieldNames ? '' : 'sightHeightInch')
+    ..aD(4, _omitFieldNames ? '' : 'sightHorizontalOffsetInch')
+    ..aD(5, _omitFieldNames ? '' : 'verticalClick')
+    ..aD(6, _omitFieldNames ? '' : 'horizontalClick')
+    ..aOS(7, _omitFieldNames ? '' : 'verticalClickUnit')
+    ..aOS(8, _omitFieldNames ? '' : 'horizontalClickUnit')
+    ..aD(9, _omitFieldNames ? '' : 'minMagnification')
+    ..aD(10, _omitFieldNames ? '' : 'maxMagnification')
+    ..aOS(11, _omitFieldNames ? '' : 'reticleImage')
+    ..aD(12, _omitFieldNames ? '' : 'calibratedMagnification')
+    ..aOS(13, _omitFieldNames ? '' : 'vendor')
+    ..aOS(14, _omitFieldNames ? '' : 'notes')
+    ..aOS(15, _omitFieldNames ? '' : 'image')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -257,153 +254,143 @@ class Sight extends $pb.GeneratedMessage {
   static Sight? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.String get uiKey => $_getSZ(0);
+  $core.String get name => $_getSZ(0);
   @$pb.TagNumber(1)
-  set uiKey($core.String value) => $_setString(0, value);
+  set name($core.String value) => $_setString(0, value);
   @$pb.TagNumber(1)
-  $core.bool hasUiKey() => $_has(0);
+  $core.bool hasName() => $_has(0);
   @$pb.TagNumber(1)
-  void clearUiKey() => $_clearField(1);
+  void clearName() => $_clearField(1);
 
   @$pb.TagNumber(2)
-  $core.String get name => $_getSZ(1);
+  $core.String get focalPlaneValue => $_getSZ(1);
   @$pb.TagNumber(2)
-  set name($core.String value) => $_setString(1, value);
+  set focalPlaneValue($core.String value) => $_setString(1, value);
   @$pb.TagNumber(2)
-  $core.bool hasName() => $_has(1);
+  $core.bool hasFocalPlaneValue() => $_has(1);
   @$pb.TagNumber(2)
-  void clearName() => $_clearField(2);
+  void clearFocalPlaneValue() => $_clearField(2);
 
   @$pb.TagNumber(3)
-  $core.String get focalPlaneValue => $_getSZ(2);
+  $core.double get sightHeightInch => $_getN(2);
   @$pb.TagNumber(3)
-  set focalPlaneValue($core.String value) => $_setString(2, value);
+  set sightHeightInch($core.double value) => $_setDouble(2, value);
   @$pb.TagNumber(3)
-  $core.bool hasFocalPlaneValue() => $_has(2);
+  $core.bool hasSightHeightInch() => $_has(2);
   @$pb.TagNumber(3)
-  void clearFocalPlaneValue() => $_clearField(3);
+  void clearSightHeightInch() => $_clearField(3);
 
   @$pb.TagNumber(4)
-  $core.double get sightHeightInch => $_getN(3);
+  $core.double get sightHorizontalOffsetInch => $_getN(3);
   @$pb.TagNumber(4)
-  set sightHeightInch($core.double value) => $_setDouble(3, value);
+  set sightHorizontalOffsetInch($core.double value) => $_setDouble(3, value);
   @$pb.TagNumber(4)
-  $core.bool hasSightHeightInch() => $_has(3);
+  $core.bool hasSightHorizontalOffsetInch() => $_has(3);
   @$pb.TagNumber(4)
-  void clearSightHeightInch() => $_clearField(4);
+  void clearSightHorizontalOffsetInch() => $_clearField(4);
 
   @$pb.TagNumber(5)
-  $core.double get sightHorizontalOffsetInch => $_getN(4);
+  $core.double get verticalClick => $_getN(4);
   @$pb.TagNumber(5)
-  set sightHorizontalOffsetInch($core.double value) => $_setDouble(4, value);
+  set verticalClick($core.double value) => $_setDouble(4, value);
   @$pb.TagNumber(5)
-  $core.bool hasSightHorizontalOffsetInch() => $_has(4);
+  $core.bool hasVerticalClick() => $_has(4);
   @$pb.TagNumber(5)
-  void clearSightHorizontalOffsetInch() => $_clearField(5);
+  void clearVerticalClick() => $_clearField(5);
 
   @$pb.TagNumber(6)
-  $core.double get verticalClick => $_getN(5);
+  $core.double get horizontalClick => $_getN(5);
   @$pb.TagNumber(6)
-  set verticalClick($core.double value) => $_setDouble(5, value);
+  set horizontalClick($core.double value) => $_setDouble(5, value);
   @$pb.TagNumber(6)
-  $core.bool hasVerticalClick() => $_has(5);
+  $core.bool hasHorizontalClick() => $_has(5);
   @$pb.TagNumber(6)
-  void clearVerticalClick() => $_clearField(6);
+  void clearHorizontalClick() => $_clearField(6);
 
   @$pb.TagNumber(7)
-  $core.double get horizontalClick => $_getN(6);
+  $core.String get verticalClickUnit => $_getSZ(6);
   @$pb.TagNumber(7)
-  set horizontalClick($core.double value) => $_setDouble(6, value);
+  set verticalClickUnit($core.String value) => $_setString(6, value);
   @$pb.TagNumber(7)
-  $core.bool hasHorizontalClick() => $_has(6);
+  $core.bool hasVerticalClickUnit() => $_has(6);
   @$pb.TagNumber(7)
-  void clearHorizontalClick() => $_clearField(7);
+  void clearVerticalClickUnit() => $_clearField(7);
 
   @$pb.TagNumber(8)
-  $core.String get verticalClickUnit => $_getSZ(7);
+  $core.String get horizontalClickUnit => $_getSZ(7);
   @$pb.TagNumber(8)
-  set verticalClickUnit($core.String value) => $_setString(7, value);
+  set horizontalClickUnit($core.String value) => $_setString(7, value);
   @$pb.TagNumber(8)
-  $core.bool hasVerticalClickUnit() => $_has(7);
+  $core.bool hasHorizontalClickUnit() => $_has(7);
   @$pb.TagNumber(8)
-  void clearVerticalClickUnit() => $_clearField(8);
+  void clearHorizontalClickUnit() => $_clearField(8);
 
   @$pb.TagNumber(9)
-  $core.String get horizontalClickUnit => $_getSZ(8);
+  $core.double get minMagnification => $_getN(8);
   @$pb.TagNumber(9)
-  set horizontalClickUnit($core.String value) => $_setString(8, value);
+  set minMagnification($core.double value) => $_setDouble(8, value);
   @$pb.TagNumber(9)
-  $core.bool hasHorizontalClickUnit() => $_has(8);
+  $core.bool hasMinMagnification() => $_has(8);
   @$pb.TagNumber(9)
-  void clearHorizontalClickUnit() => $_clearField(9);
+  void clearMinMagnification() => $_clearField(9);
 
   @$pb.TagNumber(10)
-  $core.double get minMagnification => $_getN(9);
+  $core.double get maxMagnification => $_getN(9);
   @$pb.TagNumber(10)
-  set minMagnification($core.double value) => $_setDouble(9, value);
+  set maxMagnification($core.double value) => $_setDouble(9, value);
   @$pb.TagNumber(10)
-  $core.bool hasMinMagnification() => $_has(9);
+  $core.bool hasMaxMagnification() => $_has(9);
   @$pb.TagNumber(10)
-  void clearMinMagnification() => $_clearField(10);
+  void clearMaxMagnification() => $_clearField(10);
 
   @$pb.TagNumber(11)
-  $core.double get maxMagnification => $_getN(10);
+  $core.String get reticleImage => $_getSZ(10);
   @$pb.TagNumber(11)
-  set maxMagnification($core.double value) => $_setDouble(10, value);
+  set reticleImage($core.String value) => $_setString(10, value);
   @$pb.TagNumber(11)
-  $core.bool hasMaxMagnification() => $_has(10);
+  $core.bool hasReticleImage() => $_has(10);
   @$pb.TagNumber(11)
-  void clearMaxMagnification() => $_clearField(11);
+  void clearReticleImage() => $_clearField(11);
 
   @$pb.TagNumber(12)
-  $core.String get reticleImage => $_getSZ(11);
+  $core.double get calibratedMagnification => $_getN(11);
   @$pb.TagNumber(12)
-  set reticleImage($core.String value) => $_setString(11, value);
+  set calibratedMagnification($core.double value) => $_setDouble(11, value);
   @$pb.TagNumber(12)
-  $core.bool hasReticleImage() => $_has(11);
+  $core.bool hasCalibratedMagnification() => $_has(11);
   @$pb.TagNumber(12)
-  void clearReticleImage() => $_clearField(12);
+  void clearCalibratedMagnification() => $_clearField(12);
 
   @$pb.TagNumber(13)
-  $core.double get calibratedMagnification => $_getN(12);
+  $core.String get vendor => $_getSZ(12);
   @$pb.TagNumber(13)
-  set calibratedMagnification($core.double value) => $_setDouble(12, value);
+  set vendor($core.String value) => $_setString(12, value);
   @$pb.TagNumber(13)
-  $core.bool hasCalibratedMagnification() => $_has(12);
+  $core.bool hasVendor() => $_has(12);
   @$pb.TagNumber(13)
-  void clearCalibratedMagnification() => $_clearField(13);
+  void clearVendor() => $_clearField(13);
 
   @$pb.TagNumber(14)
-  $core.String get vendor => $_getSZ(13);
+  $core.String get notes => $_getSZ(13);
   @$pb.TagNumber(14)
-  set vendor($core.String value) => $_setString(13, value);
+  set notes($core.String value) => $_setString(13, value);
   @$pb.TagNumber(14)
-  $core.bool hasVendor() => $_has(13);
+  $core.bool hasNotes() => $_has(13);
   @$pb.TagNumber(14)
-  void clearVendor() => $_clearField(14);
+  void clearNotes() => $_clearField(14);
 
   @$pb.TagNumber(15)
-  $core.String get notes => $_getSZ(14);
+  $core.String get image => $_getSZ(14);
   @$pb.TagNumber(15)
-  set notes($core.String value) => $_setString(14, value);
+  set image($core.String value) => $_setString(14, value);
   @$pb.TagNumber(15)
-  $core.bool hasNotes() => $_has(14);
+  $core.bool hasImage() => $_has(14);
   @$pb.TagNumber(15)
-  void clearNotes() => $_clearField(15);
-
-  @$pb.TagNumber(16)
-  $core.String get image => $_getSZ(15);
-  @$pb.TagNumber(16)
-  set image($core.String value) => $_setString(15, value);
-  @$pb.TagNumber(16)
-  $core.bool hasImage() => $_has(15);
-  @$pb.TagNumber(16)
-  void clearImage() => $_clearField(16);
+  void clearImage() => $_clearField(15);
 }
 
 class Ammo extends $pb.GeneratedMessage {
   factory Ammo({
-    $core.String? uiKey,
     $core.String? name,
     $core.double? caliberInch,
     $core.double? weightGrain,
@@ -431,7 +418,6 @@ class Ammo extends $pb.GeneratedMessage {
     $core.String? image,
   }) {
     final result = create();
-    if (uiKey != null) result.uiKey = uiKey;
     if (name != null) result.name = name;
     if (caliberInch != null) result.caliberInch = caliberInch;
     if (weightGrain != null) result.weightGrain = weightGrain;
@@ -484,40 +470,39 @@ class Ammo extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'Ammo',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'ebc_db'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'uiKey')
-    ..aOS(2, _omitFieldNames ? '' : 'name')
-    ..aD(3, _omitFieldNames ? '' : 'caliberInch')
-    ..aD(4, _omitFieldNames ? '' : 'weightGrain')
-    ..aD(5, _omitFieldNames ? '' : 'lengthInch')
-    ..aOS(6, _omitFieldNames ? '' : 'dragTypeValue')
-    ..aD(7, _omitFieldNames ? '' : 'bcG1')
-    ..aD(8, _omitFieldNames ? '' : 'bcG7')
-    ..aOB(9, _omitFieldNames ? '' : 'useMultiBcG1')
-    ..aOB(10, _omitFieldNames ? '' : 'useMultiBcG7')
-    ..aD(11, _omitFieldNames ? '' : 'muzzleVelocityMps')
-    ..aD(12, _omitFieldNames ? '' : 'muzzleVelocityTemperatureC')
-    ..aOB(13, _omitFieldNames ? '' : 'usePowderSensitivity')
-    ..aD(14, _omitFieldNames ? '' : 'powderSensitivityFrac')
+    ..aOS(1, _omitFieldNames ? '' : 'name')
+    ..aD(2, _omitFieldNames ? '' : 'caliberInch')
+    ..aD(3, _omitFieldNames ? '' : 'weightGrain')
+    ..aD(4, _omitFieldNames ? '' : 'lengthInch')
+    ..aOS(5, _omitFieldNames ? '' : 'dragTypeValue')
+    ..aD(6, _omitFieldNames ? '' : 'bcG1')
+    ..aD(7, _omitFieldNames ? '' : 'bcG7')
+    ..aOB(8, _omitFieldNames ? '' : 'useMultiBcG1')
+    ..aOB(9, _omitFieldNames ? '' : 'useMultiBcG7')
+    ..aD(10, _omitFieldNames ? '' : 'muzzleVelocityMps')
+    ..aD(11, _omitFieldNames ? '' : 'muzzleVelocityTemperatureC')
+    ..aOB(12, _omitFieldNames ? '' : 'usePowderSensitivity')
+    ..aD(13, _omitFieldNames ? '' : 'powderSensitivityFrac')
     ..p<$core.double>(
-        15, _omitFieldNames ? '' : 'powderSensitivityTc', $pb.PbFieldType.KD)
+        14, _omitFieldNames ? '' : 'powderSensitivityTc', $pb.PbFieldType.KD)
     ..p<$core.double>(
-        16, _omitFieldNames ? '' : 'powderSensitivityVMps', $pb.PbFieldType.KD)
+        15, _omitFieldNames ? '' : 'powderSensitivityVMps', $pb.PbFieldType.KD)
     ..p<$core.double>(
-        17, _omitFieldNames ? '' : 'multiBcTableG1VMps', $pb.PbFieldType.KD)
+        16, _omitFieldNames ? '' : 'multiBcTableG1VMps', $pb.PbFieldType.KD)
     ..p<$core.double>(
-        18, _omitFieldNames ? '' : 'multiBcTableG1Bc', $pb.PbFieldType.KD)
+        17, _omitFieldNames ? '' : 'multiBcTableG1Bc', $pb.PbFieldType.KD)
     ..p<$core.double>(
-        19, _omitFieldNames ? '' : 'multiBcTableG7VMps', $pb.PbFieldType.KD)
+        18, _omitFieldNames ? '' : 'multiBcTableG7VMps', $pb.PbFieldType.KD)
     ..p<$core.double>(
-        20, _omitFieldNames ? '' : 'multiBcTableG7Bc', $pb.PbFieldType.KD)
+        19, _omitFieldNames ? '' : 'multiBcTableG7Bc', $pb.PbFieldType.KD)
     ..p<$core.double>(
-        21, _omitFieldNames ? '' : 'customDragTableMach', $pb.PbFieldType.KD)
+        20, _omitFieldNames ? '' : 'customDragTableMach', $pb.PbFieldType.KD)
     ..p<$core.double>(
-        22, _omitFieldNames ? '' : 'customDragTableCd', $pb.PbFieldType.KD)
-    ..aOM<Zero>(23, _omitFieldNames ? '' : 'zero', subBuilder: Zero.create)
-    ..aOS(24, _omitFieldNames ? '' : 'projectileName')
-    ..aOS(25, _omitFieldNames ? '' : 'vendor')
-    ..aOS(26, _omitFieldNames ? '' : 'image')
+        21, _omitFieldNames ? '' : 'customDragTableCd', $pb.PbFieldType.KD)
+    ..aOM<Zero>(22, _omitFieldNames ? '' : 'zero', subBuilder: Zero.create)
+    ..aOS(23, _omitFieldNames ? '' : 'projectileName')
+    ..aOS(24, _omitFieldNames ? '' : 'vendor')
+    ..aOS(25, _omitFieldNames ? '' : 'image')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -539,192 +524,183 @@ class Ammo extends $pb.GeneratedMessage {
   static Ammo? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.String get uiKey => $_getSZ(0);
+  $core.String get name => $_getSZ(0);
   @$pb.TagNumber(1)
-  set uiKey($core.String value) => $_setString(0, value);
+  set name($core.String value) => $_setString(0, value);
   @$pb.TagNumber(1)
-  $core.bool hasUiKey() => $_has(0);
+  $core.bool hasName() => $_has(0);
   @$pb.TagNumber(1)
-  void clearUiKey() => $_clearField(1);
+  void clearName() => $_clearField(1);
 
   @$pb.TagNumber(2)
-  $core.String get name => $_getSZ(1);
+  $core.double get caliberInch => $_getN(1);
   @$pb.TagNumber(2)
-  set name($core.String value) => $_setString(1, value);
+  set caliberInch($core.double value) => $_setDouble(1, value);
   @$pb.TagNumber(2)
-  $core.bool hasName() => $_has(1);
+  $core.bool hasCaliberInch() => $_has(1);
   @$pb.TagNumber(2)
-  void clearName() => $_clearField(2);
+  void clearCaliberInch() => $_clearField(2);
 
   @$pb.TagNumber(3)
-  $core.double get caliberInch => $_getN(2);
+  $core.double get weightGrain => $_getN(2);
   @$pb.TagNumber(3)
-  set caliberInch($core.double value) => $_setDouble(2, value);
+  set weightGrain($core.double value) => $_setDouble(2, value);
   @$pb.TagNumber(3)
-  $core.bool hasCaliberInch() => $_has(2);
+  $core.bool hasWeightGrain() => $_has(2);
   @$pb.TagNumber(3)
-  void clearCaliberInch() => $_clearField(3);
+  void clearWeightGrain() => $_clearField(3);
 
   @$pb.TagNumber(4)
-  $core.double get weightGrain => $_getN(3);
+  $core.double get lengthInch => $_getN(3);
   @$pb.TagNumber(4)
-  set weightGrain($core.double value) => $_setDouble(3, value);
+  set lengthInch($core.double value) => $_setDouble(3, value);
   @$pb.TagNumber(4)
-  $core.bool hasWeightGrain() => $_has(3);
+  $core.bool hasLengthInch() => $_has(3);
   @$pb.TagNumber(4)
-  void clearWeightGrain() => $_clearField(4);
+  void clearLengthInch() => $_clearField(4);
 
   @$pb.TagNumber(5)
-  $core.double get lengthInch => $_getN(4);
+  $core.String get dragTypeValue => $_getSZ(4);
   @$pb.TagNumber(5)
-  set lengthInch($core.double value) => $_setDouble(4, value);
+  set dragTypeValue($core.String value) => $_setString(4, value);
   @$pb.TagNumber(5)
-  $core.bool hasLengthInch() => $_has(4);
+  $core.bool hasDragTypeValue() => $_has(4);
   @$pb.TagNumber(5)
-  void clearLengthInch() => $_clearField(5);
+  void clearDragTypeValue() => $_clearField(5);
 
   @$pb.TagNumber(6)
-  $core.String get dragTypeValue => $_getSZ(5);
+  $core.double get bcG1 => $_getN(5);
   @$pb.TagNumber(6)
-  set dragTypeValue($core.String value) => $_setString(5, value);
+  set bcG1($core.double value) => $_setDouble(5, value);
   @$pb.TagNumber(6)
-  $core.bool hasDragTypeValue() => $_has(5);
+  $core.bool hasBcG1() => $_has(5);
   @$pb.TagNumber(6)
-  void clearDragTypeValue() => $_clearField(6);
+  void clearBcG1() => $_clearField(6);
 
   @$pb.TagNumber(7)
-  $core.double get bcG1 => $_getN(6);
+  $core.double get bcG7 => $_getN(6);
   @$pb.TagNumber(7)
-  set bcG1($core.double value) => $_setDouble(6, value);
+  set bcG7($core.double value) => $_setDouble(6, value);
   @$pb.TagNumber(7)
-  $core.bool hasBcG1() => $_has(6);
+  $core.bool hasBcG7() => $_has(6);
   @$pb.TagNumber(7)
-  void clearBcG1() => $_clearField(7);
+  void clearBcG7() => $_clearField(7);
 
   @$pb.TagNumber(8)
-  $core.double get bcG7 => $_getN(7);
+  $core.bool get useMultiBcG1 => $_getBF(7);
   @$pb.TagNumber(8)
-  set bcG7($core.double value) => $_setDouble(7, value);
+  set useMultiBcG1($core.bool value) => $_setBool(7, value);
   @$pb.TagNumber(8)
-  $core.bool hasBcG7() => $_has(7);
+  $core.bool hasUseMultiBcG1() => $_has(7);
   @$pb.TagNumber(8)
-  void clearBcG7() => $_clearField(8);
+  void clearUseMultiBcG1() => $_clearField(8);
 
   @$pb.TagNumber(9)
-  $core.bool get useMultiBcG1 => $_getBF(8);
+  $core.bool get useMultiBcG7 => $_getBF(8);
   @$pb.TagNumber(9)
-  set useMultiBcG1($core.bool value) => $_setBool(8, value);
+  set useMultiBcG7($core.bool value) => $_setBool(8, value);
   @$pb.TagNumber(9)
-  $core.bool hasUseMultiBcG1() => $_has(8);
+  $core.bool hasUseMultiBcG7() => $_has(8);
   @$pb.TagNumber(9)
-  void clearUseMultiBcG1() => $_clearField(9);
+  void clearUseMultiBcG7() => $_clearField(9);
 
   @$pb.TagNumber(10)
-  $core.bool get useMultiBcG7 => $_getBF(9);
+  $core.double get muzzleVelocityMps => $_getN(9);
   @$pb.TagNumber(10)
-  set useMultiBcG7($core.bool value) => $_setBool(9, value);
+  set muzzleVelocityMps($core.double value) => $_setDouble(9, value);
   @$pb.TagNumber(10)
-  $core.bool hasUseMultiBcG7() => $_has(9);
+  $core.bool hasMuzzleVelocityMps() => $_has(9);
   @$pb.TagNumber(10)
-  void clearUseMultiBcG7() => $_clearField(10);
+  void clearMuzzleVelocityMps() => $_clearField(10);
 
   @$pb.TagNumber(11)
-  $core.double get muzzleVelocityMps => $_getN(10);
+  $core.double get muzzleVelocityTemperatureC => $_getN(10);
   @$pb.TagNumber(11)
-  set muzzleVelocityMps($core.double value) => $_setDouble(10, value);
+  set muzzleVelocityTemperatureC($core.double value) => $_setDouble(10, value);
   @$pb.TagNumber(11)
-  $core.bool hasMuzzleVelocityMps() => $_has(10);
+  $core.bool hasMuzzleVelocityTemperatureC() => $_has(10);
   @$pb.TagNumber(11)
-  void clearMuzzleVelocityMps() => $_clearField(11);
+  void clearMuzzleVelocityTemperatureC() => $_clearField(11);
 
   @$pb.TagNumber(12)
-  $core.double get muzzleVelocityTemperatureC => $_getN(11);
+  $core.bool get usePowderSensitivity => $_getBF(11);
   @$pb.TagNumber(12)
-  set muzzleVelocityTemperatureC($core.double value) => $_setDouble(11, value);
+  set usePowderSensitivity($core.bool value) => $_setBool(11, value);
   @$pb.TagNumber(12)
-  $core.bool hasMuzzleVelocityTemperatureC() => $_has(11);
+  $core.bool hasUsePowderSensitivity() => $_has(11);
   @$pb.TagNumber(12)
-  void clearMuzzleVelocityTemperatureC() => $_clearField(12);
+  void clearUsePowderSensitivity() => $_clearField(12);
 
   @$pb.TagNumber(13)
-  $core.bool get usePowderSensitivity => $_getBF(12);
+  $core.double get powderSensitivityFrac => $_getN(12);
   @$pb.TagNumber(13)
-  set usePowderSensitivity($core.bool value) => $_setBool(12, value);
+  set powderSensitivityFrac($core.double value) => $_setDouble(12, value);
   @$pb.TagNumber(13)
-  $core.bool hasUsePowderSensitivity() => $_has(12);
+  $core.bool hasPowderSensitivityFrac() => $_has(12);
   @$pb.TagNumber(13)
-  void clearUsePowderSensitivity() => $_clearField(13);
+  void clearPowderSensitivityFrac() => $_clearField(13);
 
   @$pb.TagNumber(14)
-  $core.double get powderSensitivityFrac => $_getN(13);
-  @$pb.TagNumber(14)
-  set powderSensitivityFrac($core.double value) => $_setDouble(13, value);
-  @$pb.TagNumber(14)
-  $core.bool hasPowderSensitivityFrac() => $_has(13);
-  @$pb.TagNumber(14)
-  void clearPowderSensitivityFrac() => $_clearField(14);
+  $pb.PbList<$core.double> get powderSensitivityTc => $_getList(13);
 
   @$pb.TagNumber(15)
-  $pb.PbList<$core.double> get powderSensitivityTc => $_getList(14);
+  $pb.PbList<$core.double> get powderSensitivityVMps => $_getList(14);
 
   @$pb.TagNumber(16)
-  $pb.PbList<$core.double> get powderSensitivityVMps => $_getList(15);
+  $pb.PbList<$core.double> get multiBcTableG1VMps => $_getList(15);
 
   @$pb.TagNumber(17)
-  $pb.PbList<$core.double> get multiBcTableG1VMps => $_getList(16);
+  $pb.PbList<$core.double> get multiBcTableG1Bc => $_getList(16);
 
   @$pb.TagNumber(18)
-  $pb.PbList<$core.double> get multiBcTableG1Bc => $_getList(17);
+  $pb.PbList<$core.double> get multiBcTableG7VMps => $_getList(17);
 
   @$pb.TagNumber(19)
-  $pb.PbList<$core.double> get multiBcTableG7VMps => $_getList(18);
+  $pb.PbList<$core.double> get multiBcTableG7Bc => $_getList(18);
 
   @$pb.TagNumber(20)
-  $pb.PbList<$core.double> get multiBcTableG7Bc => $_getList(19);
+  $pb.PbList<$core.double> get customDragTableMach => $_getList(19);
 
   @$pb.TagNumber(21)
-  $pb.PbList<$core.double> get customDragTableMach => $_getList(20);
+  $pb.PbList<$core.double> get customDragTableCd => $_getList(20);
 
   @$pb.TagNumber(22)
-  $pb.PbList<$core.double> get customDragTableCd => $_getList(21);
+  Zero get zero => $_getN(21);
+  @$pb.TagNumber(22)
+  set zero(Zero value) => $_setField(22, value);
+  @$pb.TagNumber(22)
+  $core.bool hasZero() => $_has(21);
+  @$pb.TagNumber(22)
+  void clearZero() => $_clearField(22);
+  @$pb.TagNumber(22)
+  Zero ensureZero() => $_ensure(21);
 
   @$pb.TagNumber(23)
-  Zero get zero => $_getN(22);
+  $core.String get projectileName => $_getSZ(22);
   @$pb.TagNumber(23)
-  set zero(Zero value) => $_setField(23, value);
+  set projectileName($core.String value) => $_setString(22, value);
   @$pb.TagNumber(23)
-  $core.bool hasZero() => $_has(22);
+  $core.bool hasProjectileName() => $_has(22);
   @$pb.TagNumber(23)
-  void clearZero() => $_clearField(23);
-  @$pb.TagNumber(23)
-  Zero ensureZero() => $_ensure(22);
+  void clearProjectileName() => $_clearField(23);
 
   @$pb.TagNumber(24)
-  $core.String get projectileName => $_getSZ(23);
+  $core.String get vendor => $_getSZ(23);
   @$pb.TagNumber(24)
-  set projectileName($core.String value) => $_setString(23, value);
+  set vendor($core.String value) => $_setString(23, value);
   @$pb.TagNumber(24)
-  $core.bool hasProjectileName() => $_has(23);
+  $core.bool hasVendor() => $_has(23);
   @$pb.TagNumber(24)
-  void clearProjectileName() => $_clearField(24);
+  void clearVendor() => $_clearField(24);
 
   @$pb.TagNumber(25)
-  $core.String get vendor => $_getSZ(24);
+  $core.String get image => $_getSZ(24);
   @$pb.TagNumber(25)
-  set vendor($core.String value) => $_setString(24, value);
+  set image($core.String value) => $_setString(24, value);
   @$pb.TagNumber(25)
-  $core.bool hasVendor() => $_has(24);
+  $core.bool hasImage() => $_has(24);
   @$pb.TagNumber(25)
-  void clearVendor() => $_clearField(25);
-
-  @$pb.TagNumber(26)
-  $core.String get image => $_getSZ(25);
-  @$pb.TagNumber(26)
-  set image($core.String value) => $_setString(25, value);
-  @$pb.TagNumber(26)
-  $core.bool hasImage() => $_has(25);
-  @$pb.TagNumber(26)
-  void clearImage() => $_clearField(26);
+  void clearImage() => $_clearField(25);
 }
 
 class Zero extends $pb.GeneratedMessage {
@@ -955,15 +931,15 @@ class Profile extends $pb.GeneratedMessage {
     $core.String? uiKey,
     $core.String? name,
     Weapon? weapon,
-    $core.Iterable<Ammo>? ammo,
-    $core.Iterable<Sight>? sights,
+    Ammo? ammo,
+    Sight? sight,
   }) {
     final result = create();
     if (uiKey != null) result.uiKey = uiKey;
     if (name != null) result.name = name;
     if (weapon != null) result.weapon = weapon;
-    if (ammo != null) result.ammo.addAll(ammo);
-    if (sights != null) result.sights.addAll(sights);
+    if (ammo != null) result.ammo = ammo;
+    if (sight != null) result.sight = sight;
     return result;
   }
 
@@ -983,8 +959,8 @@ class Profile extends $pb.GeneratedMessage {
     ..aOS(1, _omitFieldNames ? '' : 'uiKey')
     ..aOS(2, _omitFieldNames ? '' : 'name')
     ..aOM<Weapon>(3, _omitFieldNames ? '' : 'weapon', subBuilder: Weapon.create)
-    ..pPM<Ammo>(4, _omitFieldNames ? '' : 'ammo', subBuilder: Ammo.create)
-    ..pPM<Sight>(5, _omitFieldNames ? '' : 'sights', subBuilder: Sight.create)
+    ..aOM<Ammo>(4, _omitFieldNames ? '' : 'ammo', subBuilder: Ammo.create)
+    ..aOM<Sight>(5, _omitFieldNames ? '' : 'sight', subBuilder: Sight.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -1035,10 +1011,26 @@ class Profile extends $pb.GeneratedMessage {
   Weapon ensureWeapon() => $_ensure(2);
 
   @$pb.TagNumber(4)
-  $pb.PbList<Ammo> get ammo => $_getList(3);
+  Ammo get ammo => $_getN(3);
+  @$pb.TagNumber(4)
+  set ammo(Ammo value) => $_setField(4, value);
+  @$pb.TagNumber(4)
+  $core.bool hasAmmo() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearAmmo() => $_clearField(4);
+  @$pb.TagNumber(4)
+  Ammo ensureAmmo() => $_ensure(3);
 
   @$pb.TagNumber(5)
-  $pb.PbList<Sight> get sights => $_getList(4);
+  Sight get sight => $_getN(4);
+  @$pb.TagNumber(5)
+  set sight(Sight value) => $_setField(5, value);
+  @$pb.TagNumber(5)
+  $core.bool hasSight() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearSight() => $_clearField(5);
+  @$pb.TagNumber(5)
+  Sight ensureSight() => $_ensure(4);
 }
 
 class GeneralSettings extends $pb.GeneratedMessage {
