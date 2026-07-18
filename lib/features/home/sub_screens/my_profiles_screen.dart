@@ -1,79 +1,26 @@
-import 'dart:async';
-
-import 'package:ebalistyka/core/services/a7p_converter.dart';
-import 'package:ebalistyka/core/services/a7p_service.dart';
-import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
-import 'package:ebalistyka/shared/icons_definitions.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/features/home/profiles_vm.dart';
-import 'package:ebalistyka/features/home/sub_screens/widgets/profile_card.dart';
+import 'package:ebalistyka/features/home/sub_screens/widgets/profile_control_tile.dart';
+import 'package:ebalistyka/features/home/sub_screens/widgets/profile_sections.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/router.dart';
-import 'package:ebalistyka/shared/widgets/base_screen.dart';
-import 'package:ebalistyka/shared/widgets/help_dialog.dart';
-import 'package:ebalistyka/shared/widgets/pages_dots_indicator.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
+import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/confirm_dialog.dart';
+import 'package:ebalistyka/shared/widgets/error_display.dart';
+import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
-import 'package:ebalistyka/l10n/app_localizations.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class ProfilesScreen extends ConsumerStatefulWidget {
+class ProfilesScreen extends ConsumerWidget {
   const ProfilesScreen({super.key});
 
-  @override
-  ConsumerState<ProfilesScreen> createState() => _ProfilesScreenState();
-}
-
-class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
-  final _pageController = PageController();
-  int _currentPage = 0;
-  String? _currentProfileId;
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  void _onPageChanged(int page, List<String> orderedIds) {
-    setState(() {
-      _currentPage = page;
-      if (page < orderedIds.length) {
-        _currentProfileId = orderedIds[page];
-      }
-    });
-  }
-
-  void _navigateTo(int page, String profileId, {bool animate = false}) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      setState(() {
-        _currentPage = page;
-        _currentProfileId = profileId;
-      });
-      if (_pageController.hasClients) {
-        if (animate) {
-          unawaited(
-            _pageController.animateToPage(
-              page,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-            ),
-          );
-        } else {
-          _pageController.jumpToPage(page);
-        }
-      }
-    });
-  }
-
-  // ── Add (bottom sheet) ────────────────────────────────────────────────────
-
-  Future<String?> _askProfileName({String? initial}) {
+  Future<String?> _askProfileName(BuildContext context, {String? initial}) {
     final l10n = AppLocalizations.of(context)!;
     return showTextInputDialog(
       context,
@@ -84,7 +31,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     );
   }
 
-  Future<void> _onAddTap() {
+  Future<void> _onAddTap(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     return showActionSheet(
       context,
@@ -94,12 +41,12 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
           icon: IconDef.addCircle,
           title: l10n.createNewAction,
           onTap: () async {
-            final name = await _askProfileName();
-            if (name == null || !mounted) return;
+            final name = await _askProfileName(context);
+            if (name == null || !context.mounted) return;
             final weapon = await context.push<Weapon?>(
               Routes.profileAddWeaponCreate,
             );
-            if (weapon != null && mounted) {
+            if (weapon != null && context.mounted) {
               await ref
                   .read(profilesActionsProvider.notifier)
                   .createProfile(name, weapon);
@@ -110,495 +57,348 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
           icon: IconDef.openCollection,
           title: l10n.fromCollectionAction,
           onTap: () async {
-            final name = await _askProfileName();
-            if (name == null || !mounted) return;
+            final name = await _askProfileName(context);
+            if (name == null || !context.mounted) return;
             final weapon = await context.push<Weapon?>(
               Routes.profileAddWeaponCollection,
             );
-            if (weapon != null && mounted) {
+            if (weapon != null && context.mounted) {
               await ref
                   .read(profilesActionsProvider.notifier)
                   .createProfile(name, weapon);
             }
           },
         ),
+      ],
+    );
+  }
+
+  Future<void> _onEditWeapon(
+    BuildContext context,
+    WidgetRef ref,
+    Profile profile,
+  ) async {
+    final result = await context.push<Weapon?>(
+      Routes.profileEditWeapon,
+      extra: profile.weapon,
+    );
+    if (result != null && context.mounted) {
+      await ref
+          .read(appStateProvider.notifier)
+          .setProfileWeapon(profile.uuid, result);
+    }
+  }
+
+  Future<void> _onEditAmmo(
+    BuildContext context,
+    WidgetRef ref,
+    Profile profile,
+  ) async {
+    final weapon = profile.weapon;
+    final result = await context.push<Ammo?>(
+      Routes.profileEditAmmo,
+      extra: (
+        profile.ammo,
+        weapon.hasCaliberInch() ? weapon.caliberInch : null,
+        profile.uuid,
+      ),
+    );
+    if (result != null && context.mounted) {
+      await ref
+          .read(appStateProvider.notifier)
+          .setProfileAmmo(profile.uuid, result);
+    }
+  }
+
+  Future<void> _onEditSight(
+    BuildContext context,
+    WidgetRef ref,
+    Profile profile,
+  ) async {
+    final result = await context.push<Sight?>(
+      Routes.profileEditSight,
+      extra: profile.sight,
+    );
+    if (result != null && context.mounted) {
+      await ref
+          .read(appStateProvider.notifier)
+          .setProfileSight(profile.uuid, result);
+    }
+  }
+
+  Future<void> _onReplaceAmmo(
+    BuildContext context,
+    WidgetRef ref,
+    Profile profile,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+    final weapon = profile.weapon;
+    final defaultCaliberInch = weapon.hasCaliberInch()
+        ? weapon.caliberInch
+        : null;
+
+    Future<void> replace(Future<Ammo?> Function() pick) async {
+      final result = await pick();
+      if (result != null && context.mounted) {
+        await ref
+            .read(appStateProvider.notifier)
+            .setProfileAmmo(profile.uuid, result);
+      }
+    }
+
+    return showActionSheet(
+      context,
+      title: l10n.actionAddAmmo,
+      entries: [
+        ActionSheetItem(
+          icon: IconDef.addCircle,
+          title: l10n.createNewAction,
+          onTap: () => replace(
+            () => context.push<Ammo?>(
+              Routes.ammoCreate,
+              extra: defaultCaliberInch,
+            ),
+          ),
+        ),
+        ActionSheetItem(
+          icon: IconDef.openCollection,
+          title: l10n.selectCartridgeFromCollection,
+          onTap: () => replace(() async {
+            final template = await context.push<Ammo?>(
+              Routes.cartridgeCollection,
+              extra: defaultCaliberInch,
+            );
+            if (template == null || !context.mounted) return null;
+            return context.push<Ammo?>(
+              Routes.profileEditAmmo,
+              extra: (template, defaultCaliberInch, profile.uuid),
+            );
+          }),
+        ),
+        ActionSheetItem(
+          icon: IconDef.openCollection,
+          title: l10n.selectBulletFromCollection,
+          onTap: () => replace(() async {
+            final template = await context.push<Ammo?>(
+              Routes.bulletCollection,
+              extra: defaultCaliberInch,
+            );
+            if (template == null || !context.mounted) return null;
+            return context.push<Ammo?>(
+              Routes.profileEditAmmo,
+              extra: (template, defaultCaliberInch, profile.uuid),
+            );
+          }),
+        ),
         ActionSheetItem(
           icon: IconDef.import,
           title: l10n.actionImportFromFile,
-          onTap: _onImportFromFile,
+          onTap: () async =>
+              showNotAvailableSnackBar(context, l10n.actionImportFromFile),
         ),
       ],
     );
   }
 
-  Future<void> _onImportFromFile() async {
-    try {
-      final profiles = await A7pService.pickAndParseProfiles();
-      if (profiles == null || !mounted) return;
-      for (final p in profiles) {
-        await ref.read(appStateProvider.notifier).importProfile(p);
+  Future<void> _onReplaceSight(
+    BuildContext context,
+    WidgetRef ref,
+    Profile profile,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+
+    Future<void> replace(Future<Sight?> Function() pick) async {
+      final result = await pick();
+      if (result != null && context.mounted) {
+        await ref
+            .read(appStateProvider.notifier)
+            .setProfileSight(profile.uuid, result);
       }
-    } catch (e) {
-      if (!mounted) return;
-      showFeedback(context, 'Import failed: $e', isError: true);
     }
+
+    return showActionSheet(
+      context,
+      title: l10n.actionAddSight,
+      entries: [
+        ActionSheetItem(
+          icon: IconDef.addCircle,
+          title: l10n.createNewAction,
+          onTap: () => replace(() => context.push<Sight?>(Routes.sightCreate)),
+        ),
+        ActionSheetItem(
+          icon: IconDef.openCollection,
+          title: l10n.actionSelectSightFromCollection,
+          onTap: () => replace(
+            () => context.push<Sight?>(Routes.sightCollection),
+          ),
+        ),
+        ActionSheetItem(
+          icon: IconDef.import,
+          title: l10n.actionImportFromFile,
+          onTap: () async =>
+              showNotAvailableSnackBar(context, l10n.actionImportFromFile),
+        ),
+      ],
+    );
   }
 
-  // ── Actions (by profile ID) ───────────────────────────────────────────────
-
-  Future<void> _onDuplicate(String profileId) async {
-    final originalName = ref.read(profileCardProvider(profileId))?.name;
-    if (originalName == null || !mounted) return;
-    final name = await _askProfileName(initial: 'Copy of $originalName');
-    if (name == null || !mounted) return;
+  Future<void> _onDuplicate(
+    BuildContext context,
+    WidgetRef ref,
+    Profile profile,
+  ) async {
+    final name = await _askProfileName(
+      context,
+      initial: '${AppLocalizations.of(context)!.copyOf} ${profile.name}',
+    );
+    if (name == null) return;
     await ref
         .read(profilesActionsProvider.notifier)
-        .duplicateProfile(profileId, name);
+        .duplicateProfile(profile.uuid, name);
   }
 
-  Future<void> _onRemove(String profileId) async {
-    final name = ref.read(profileCardProvider(profileId))?.name;
-    if (name == null) return;
+  Future<void> _onRemove(
+    BuildContext context,
+    WidgetRef ref,
+    Profile profile,
+  ) async {
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showConfirmDialog(
       context,
       title: l10n.removeProfile,
-      content: l10n.removeProfileContent(name),
+      content: l10n.removeProfileContent(profile.name),
       confirmLabel: l10n.removeAction,
       isDestructive: true,
     );
     if (confirmed) {
-      await ref.read(profilesActionsProvider.notifier).removeProfile(profileId);
+      await ref
+          .read(profilesActionsProvider.notifier)
+          .removeProfile(profile.uuid);
     }
   }
 
-  Future<void> _onExport(String profileId) async {
-    final appState = ref.read(appStateProvider).value;
-    if (appState == null) return;
-    final profile = appState.profiles
-        .where((p) => p.id.toString() == profileId)
-        .firstOrNull;
-    if (profile == null) return;
-    final weapon = appState.weapons
-        .where((w) => w.id == profile.weapon.targetId)
-        .firstOrNull;
-    if (weapon == null) return;
-    final ammo = appState.ammo
-        .where((a) => a.id == profile.ammo.targetId)
-        .firstOrNull;
-    final sight = appState.sights
-        .where((s) => s.id == profile.sight.targetId)
-        .firstOrNull;
-    final profileExport = ProfileExport.fromEntities(
-      profile,
-      weapon,
-      ammo,
-      sight,
-    );
-
-    final bool a7pExportable =
-        (profileExport.ammo != null && profileExport.sight != null);
-
-    if (!mounted) return;
+  Future<void> _onExport(BuildContext context, Profile profile) async {
     final l10n = AppLocalizations.of(context)!;
-    await showActionSheet(
-      context,
-      title: l10n.exportFormatDialogTitle,
-      entries: [
-        ActionSheetItem(
-          icon: IconDef.export,
-          title: '.ebcp (eBalistyka)',
-          onTap: () async {
-            final ebcp = EbcpFile(items: [EbcpItem.fromProfile(profileExport)]);
-            final messenger = ScaffoldMessenger.of(context);
-            final errorColor = Theme.of(context).colorScheme.error;
-            try {
-              await EbcpService.shareFile(
-                ebcp,
-                EbcpService.sanitizeName(profile.name),
-              );
-            } catch (e) {
-              messenger.showSnackBar(
-                SnackBar(
-                  content: Text(e.toString()),
-                  backgroundColor: errorColor,
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-            }
-          },
-        ),
-        ActionSheetItem(
-          icon: IconDef.export,
-          title: '.a7p (Archer Ballistic Profile)',
-          subtitle: !a7pExportable ? l10n.selectAmmoSightHint : null,
-          onTap: !a7pExportable
-              ? null
-              : () => showActionSheet(
-                  context,
-                  title: l10n.selectRangeDialogTitle,
-                  entries: [
-                    ActionSheetItem(
-                      title: l10n.rangeSubsonic,
-                      subtitle: '25-400m',
-                      onTap: () async {
-                        final messenger = ScaffoldMessenger.of(context);
-                        final errorColor = Theme.of(context).colorScheme.error;
-                        try {
-                          await A7pService.shareFile(
-                            profileExport,
-                            A7pRange.subsonic,
-                          );
-                        } catch (e) {
-                          messenger.showSnackBar(
-                            SnackBar(
-                              content: Text(e.toString()),
-                              backgroundColor: errorColor,
-                              duration: const Duration(seconds: 2),
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                    ActionSheetItem(
-                      title: l10n.rangeLow,
-                      subtitle: '100-700m',
-                      onTap: () async {
-                        final messenger = ScaffoldMessenger.of(context);
-                        final errorColor = Theme.of(context).colorScheme.error;
-                        try {
-                          await A7pService.shareFile(
-                            profileExport,
-                            A7pRange.low,
-                          );
-                        } catch (e) {
-                          messenger.showSnackBar(
-                            SnackBar(
-                              content: Text(e.toString()),
-                              backgroundColor: errorColor,
-                              duration: const Duration(seconds: 2),
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                    ActionSheetItem(
-                      title: l10n.rangeMiddle,
-                      subtitle: '100-1000m',
-                      onTap: () async {
-                        final messenger = ScaffoldMessenger.of(context);
-                        final errorColor = Theme.of(context).colorScheme.error;
-                        try {
-                          await A7pService.shareFile(
-                            profileExport,
-                            A7pRange.medium,
-                          );
-                        } catch (e) {
-                          messenger.showSnackBar(
-                            SnackBar(
-                              content: Text(e.toString()),
-                              backgroundColor: errorColor,
-                              duration: const Duration(seconds: 2),
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                    ActionSheetItem(
-                      title: l10n.rangeLong,
-                      subtitle: '100-1700m',
-                      onTap: () async {
-                        final messenger = ScaffoldMessenger.of(context);
-                        final errorColor = Theme.of(context).colorScheme.error;
-                        try {
-                          await A7pService.shareFile(
-                            profileExport,
-                            A7pRange.long,
-                          );
-                        } catch (e) {
-                          messenger.showSnackBar(
-                            SnackBar(
-                              content: Text(e.toString()),
-                              backgroundColor: errorColor,
-                              duration: const Duration(seconds: 2),
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                    ActionSheetItem(
-                      title: l10n.rangeUltraLong,
-                      subtitle: '100-2000m',
-                      onTap: () async {
-                        final messenger = ScaffoldMessenger.of(context);
-                        final errorColor = Theme.of(context).colorScheme.error;
-                        try {
-                          await A7pService.shareFile(
-                            profileExport,
-                            A7pRange.ultra,
-                          );
-                        } catch (e) {
-                          messenger.showSnackBar(
-                            SnackBar(
-                              content: Text(e.toString()),
-                              backgroundColor: errorColor,
-                              duration: const Duration(seconds: 2),
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                  ],
-                ),
-        ),
-      ],
-    );
+    showNotAvailableSnackBar(context, l10n.exportAction);
   }
 
-  Future<void> _onEditRifle(String profileId) async {
-    final appState = ref.read(appStateProvider).value;
-    if (appState == null) return;
-
-    final profile = appState.profiles
-        .where((p) => p.id.toString() == profileId)
-        .firstOrNull;
-    if (profile == null) return;
-
-    final weapon = appState.weapons
-        .where((w) => w.id == profile.weapon.targetId)
-        .firstOrNull;
-
-    final result = await context.push<Weapon?>(
-      Routes.profileEditWeapon,
-      extra: weapon,
-    );
-    if (result != null && mounted) {
-      await ref.read(appStateProvider.notifier).saveWeapon(result);
-    }
-  }
-
-  Future<void> _onEditAmmo(String profileId) async {
-    final appState = ref.read(appStateProvider).value;
-    if (appState == null) return;
-
-    final profile = appState.profiles
-        .where((p) => p.id.toString() == profileId)
-        .firstOrNull;
-    if (profile == null) return;
-
-    final weapon = appState.weapons
-        .where((w) => w.id == profile.weapon.targetId)
-        .firstOrNull;
-    final ammo = appState.ammo
-        .where((a) => a.id == profile.ammo.targetId)
-        .firstOrNull;
-
-    final result = await context.push<Ammo?>(
-      Routes.profileEditAmmo,
-      extra: (ammo, weapon?.caliberInch, weapon?.id),
-    );
-    if (result != null && mounted) {
-      await ref.read(appStateProvider.notifier).saveAmmo(result);
-    }
-  }
-
-  Future<void> _onEditSight(String profileId) async {
-    final appState = ref.read(appStateProvider).value;
-    if (appState == null) return;
-
-    final profile = appState.profiles
-        .where((p) => p.id.toString() == profileId)
-        .firstOrNull;
-    if (profile == null) return;
-
-    final sight = appState.sights
-        .where((s) => s.id == profile.sight.targetId)
-        .firstOrNull;
-
-    final result = await context.push<Sight?>(
-      Routes.profileEditSight,
-      extra: sight,
-    );
-    if (result != null && mounted) {
-      await ref.read(appStateProvider.notifier).saveSight(result);
-    }
-  }
-
-  Future<void> _onRename(String profileId, String name) async {
+  Future<void> _onRename(
+    BuildContext context,
+    WidgetRef ref,
+    Profile profile,
+    String name,
+  ) async {
     await ref
         .read(profilesActionsProvider.notifier)
-        .renameProfile(profileId, name);
-  }
-
-  Future<void> _onSelect(String profileId) async {
-    await ref.read(profilesActionsProvider.notifier).selectProfile(profileId);
-    if (mounted) context.pop();
+        .renameProfile(profile.uuid, name);
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appStateAsync = ref.watch(appStateProvider);
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
-    // ── Paging listener ───────────────────────────────────────────────────────
-    // Fires ONLY when profiles are added/removed or the active profile changes.
-    // Content-only changes (ammo, sight, weapon edits) do NOT fire this because
-    // profilesPagingProvider uses proper == on its output.
-    ref.listen<ProfilesPagingState>(profilesPagingProvider, (prev, next) {
-      if (next.orderedIds.isEmpty) return;
-
-      if (prev == null) {
-        // Initial — seed current profile ID without jumping.
-        _currentProfileId ??=
-            next.orderedIds[_currentPage.clamp(0, next.orderedIds.length - 1)];
-        return;
-      }
-
-      if (next.orderedIds.length > prev.orderedIds.length) {
-        // Profile added → jump to last page.
-        final last = next.orderedIds.length - 1;
-        _navigateTo(last, next.orderedIds[last], animate: true);
-      } else if (next.orderedIds.length < prev.orderedIds.length) {
-        // Profile deleted → stay on nearest valid page, only if current gone.
-        final exists = next.orderedIds.contains(_currentProfileId);
-        if (!exists) {
-          final page = _currentPage.clamp(0, next.orderedIds.length - 1);
-          _navigateTo(page, next.orderedIds[page]);
-        }
-      } else if (next.activeId != prev.activeId) {
-        // Active profile changed → sort changed → jump to page 0.
-        _navigateTo(0, next.orderedIds.first);
-      }
-      // Same structure → content-only change → no paging update.
-    });
-
-    // ── Paging state ──────────────────────────────────────────────────────────
-    final paging = ref.watch(profilesPagingProvider);
-
-    if (paging.orderedIds.isEmpty) {
-      return BaseScreen(
-        title: l10n.selectProfile,
-        actions: [HelpAction(HelpData.profilesScreen)],
-        floatingActionButton: FloatingActionButton(
-          heroTag: 'generalFab',
-          onPressed: _onAddTap,
-          backgroundColor: cs.primary,
-          foregroundColor: cs.onPrimary,
-          elevation: 6,
-          child: const Icon(IconDef.add),
-        ),
-        body: Center(child: Text(l10n.noProfiles)),
-      );
-    }
 
     return BaseScreen(
-      title: l10n.myProfiles,
-      actions: [HelpAction(HelpData.profilesScreen)],
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'generalFab',
-        onPressed: _onAddTap,
-        backgroundColor: cs.primary,
-        foregroundColor: cs.onPrimary,
-        elevation: 6,
-        child: const Icon(IconDef.add),
-      ),
-      body: _ProfilePageView(
-        orderedIds: paging.orderedIds,
-        activeProfileId: paging.activeId,
-        pageController: _pageController,
-        currentPage: _currentPage,
-        onPageChanged: (page) => _onPageChanged(page, paging.orderedIds),
-        onSelect: _onSelect,
-        onEditRifle: _onEditRifle,
-        onEditAmmo: _onEditAmmo,
-        onEditSight: _onEditSight,
-        onDuplicate: _onDuplicate,
-        onExport: _onExport,
-        onRemove: _onRemove,
-        onRename: _onRename,
+      title: l10n.myProfile,
+      actions: [
+        IconButton(
+          onPressed: () => context.push(Routes.profilesList),
+          icon: const Icon(IconDef.profilesList),
+        ),
+        HelpAction(HelpData.profilesScreen),
+      ],
+      floatingActionButton: appStateAsync.value?.profiles.isEmpty ?? false
+          ? FloatingActionButton(
+              heroTag: 'generalFab',
+              onPressed: () => _onAddTap(context, ref),
+              backgroundColor: cs.primary,
+              foregroundColor: cs.onPrimary,
+              elevation: 6,
+              child: const Icon(IconDef.add),
+            )
+          : null,
+      body: appStateAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) => ErrorDisplay(error: error),
+        data: (state) {
+          final profile = state.activeProfile;
+          if (profile == null) {
+            return Center(child: Text(l10n.noProfiles));
+          }
+
+          final data = ref.watch(profileCardProvider(profile.uuid));
+          if (data == null) return const SizedBox.shrink();
+
+          return Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  children: [
+                    ProfileControlTile(
+                      profileId: profile.uuid,
+                      profileName: data.name,
+                      weaponImage: data.weaponImage,
+                      hasAmmo: profile.ammo.name.isNotEmpty,
+                      hasSight: profile.sight.name.isNotEmpty,
+                      onDuplicate: () => _onDuplicate(context, ref, profile),
+                      onExport: () => _onExport(context, profile),
+                      onSelectAmmo: () => _onReplaceAmmo(context, ref, profile),
+                      onSelectSight: () =>
+                          _onReplaceSight(context, ref, profile),
+                      onRemove: () => _onRemove(context, ref, profile),
+                      onRename: (name) =>
+                          _onRename(context, ref, profile, name),
+                    ),
+                    ProfileWeaponSection(
+                      data: data,
+                      onEdit: () => _onEditWeapon(context, ref, profile),
+                    ),
+                    ProfileAmmoSection(
+                      data: data,
+                      onEdit: () => _onEditAmmo(context, ref, profile),
+                    ),
+                    ProfileSightSection(
+                      data: data,
+                      onEdit: () => _onEditSight(context, ref, profile),
+                    ),
+                  ],
+                ),
+              ),
+              if (!data.isReadyForCalculation)
+                _IncompleteProfileBanner(hint: l10n.selectAmmoSightHint),
+            ],
+          );
+        },
       ),
     );
   }
 }
 
-// ── Profile Page View ─────────────────────────────────────────────────────────
+// ── Widgets ───────────────────────────────────────────────────────────────────
 
-class _ProfilePageView extends StatelessWidget {
-  const _ProfilePageView({
-    required this.orderedIds,
-    required this.activeProfileId,
-    required this.pageController,
-    required this.currentPage,
-    required this.onPageChanged,
-    required this.onSelect,
-    required this.onEditRifle,
-    required this.onEditAmmo,
-    required this.onEditSight,
-    required this.onDuplicate,
-    required this.onExport,
-    required this.onRemove,
-    required this.onRename,
-  });
+class _IncompleteProfileBanner extends StatelessWidget {
+  const _IncompleteProfileBanner({required this.hint});
 
-  final List<String> orderedIds;
-  final String? activeProfileId;
-  final PageController pageController;
-  final int currentPage;
-  final void Function(int) onPageChanged;
-  final void Function(String) onSelect;
-  final void Function(String) onEditRifle;
-  final void Function(String) onEditAmmo;
-  final void Function(String) onEditSight;
-  final void Function(String) onDuplicate;
-  final void Function(String) onExport;
-  final void Function(String) onRemove;
-  final void Function(String, String) onRename;
+  final String hint;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: PageView(
-            controller: pageController,
-            onPageChanged: onPageChanged,
-            children: orderedIds
-                .map(
-                  (id) => Padding(
-                    key: ValueKey(id),
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                    child: ProfileCard(
-                      profileId: id,
-                      activeProfileId: activeProfileId,
-                      onSelect: () => onSelect(id),
-                      onEditWeapon: () => onEditRifle(id),
-                      onEditAmmo: () => onEditAmmo(id),
-                      onEditSight: () => onEditSight(id),
-                      onDuplicate: () => onDuplicate(id),
-                      onExport: () => onExport(id),
-                      onRemove: () => onRemove(id),
-                      onRename: (name) => onRename(id, name),
-                    ),
-                  ),
-                )
-                .toList(),
+    final cs = Theme.of(context).colorScheme;
+    return ColoredBox(
+      color: cs.errorContainer,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        child: SizedBox(
+          width: double.infinity,
+          child: Text(
+            hint,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: cs.onErrorContainer),
           ),
         ),
-        const SizedBox(height: 12),
-        PageDotsIndicator(
-          current: currentPage,
-          count: orderedIds.length,
-          onPageChanged: (page) {
-            unawaited(
-              pageController.animateToPage(
-                page,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-              ),
-            );
-          },
-        ),
-        const SizedBox(height: 8),
-      ],
+      ),
     );
   }
 }

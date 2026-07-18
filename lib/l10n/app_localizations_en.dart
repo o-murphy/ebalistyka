@@ -39,13 +39,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adjustmentDisplayScreenTitle => 'Adjustment Display';
 
   @override
-  String get myAmmoScreenTitle => 'My Ammo';
+  String get myProfile => 'Profile';
 
   @override
-  String get mySights => 'My Sights';
+  String get profilesListScreenTitle => 'My Profiles';
 
   @override
-  String get myProfiles => 'My Profiles';
+  String get activeProfileLabel => 'Active';
 
   @override
   String get newWeaponScreenTitle => 'New Weapon';
@@ -1170,7 +1170,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String removeProfileContent(String name) {
-    return 'Remove \"$name\" and its weapon?';
+    return 'Remove \"$name\" and its weapon, ammo, and sight?';
   }
 
   @override

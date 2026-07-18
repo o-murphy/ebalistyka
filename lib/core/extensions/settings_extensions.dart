@@ -1,5 +1,5 @@
 import 'package:dart_bclibc/unit.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter/material.dart';
 
 enum AdjustmentDisplayFormat {

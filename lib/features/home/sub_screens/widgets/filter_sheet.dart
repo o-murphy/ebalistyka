@@ -6,7 +6,7 @@ import 'package:ebalistyka/core/providers/filter_providers.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_field.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter/foundation.dart' show setEquals;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -157,7 +157,7 @@ class _AmmoFilterSheetState extends ConsumerState<_AmmoFilterSheet> {
 
     final vendorCounts = <String, int>{};
     for (final a in widget.allItems) {
-      final v = a.vendor ?? '';
+      final v = a.vendor;
       if (v.isNotEmpty) vendorCounts[v] = (vendorCounts[v] ?? 0) + 1;
     }
     final vendors = vendorCounts.keys.toList()..sort();
@@ -303,7 +303,7 @@ class _SightFilterSheetState extends ConsumerState<_SightFilterSheet> {
 
     final vendorCounts = <String, int>{};
     for (final s in widget.allItems) {
-      final v = s.vendor ?? '';
+      final v = s.vendor;
       if (v.isNotEmpty) vendorCounts[v] = (vendorCounts[v] ?? 0) + 1;
     }
     final vendors = vendorCounts.keys.toList()..sort();
@@ -374,13 +374,15 @@ class _WeaponFilterSheetState extends ConsumerState<_WeaponFilterSheet> {
   @override
   void initState() {
     super.initState();
-    _vendors = Set.from(ref.read(weaponCollectionFilterProvider).vendors);
+    _vendors = Set.from(ref.read(weaponCollectionFilterProvider(null)).vendors);
   }
 
   void _reset() => setState(() => _vendors = {});
 
   void _apply() {
-    ref.read(weaponCollectionFilterProvider.notifier).apply(vendors: _vendors);
+    ref
+        .read(weaponCollectionFilterProvider(null).notifier)
+        .apply(vendors: _vendors, calibers: const {});
     Navigator.of(context).pop();
   }
 
@@ -400,7 +402,7 @@ class _WeaponFilterSheetState extends ConsumerState<_WeaponFilterSheet> {
 
     final vendorCounts = <String, int>{};
     for (final w in widget.allItems) {
-      final v = w.vendor ?? '';
+      final v = w.vendor;
       if (v.isNotEmpty) vendorCounts[v] = (vendorCounts[v] ?? 0) + 1;
     }
     final vendors = vendorCounts.keys.toList()..sort();

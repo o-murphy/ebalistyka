@@ -172,19 +172,28 @@ final sightCollectionFilterProvider =
 
 @immutable
 class WeaponFilterState {
-  const WeaponFilterState({this.vendors = const {}});
+  const WeaponFilterState({this.vendors = const {}, this.calibers = const {}});
 
   final Set<String> vendors;
+  final Set<double> calibers;
 
-  bool get isActive => vendors.isNotEmpty;
+  bool get isActive => vendors.isNotEmpty || calibers.isNotEmpty;
 
-  WeaponFilterState copyWith({Set<String>? vendors}) =>
-      WeaponFilterState(vendors: vendors ?? this.vendors);
+  WeaponFilterState copyWith({Set<String>? vendors, Set<double>? calibers}) =>
+      WeaponFilterState(
+        vendors: vendors ?? this.vendors,
+        calibers: calibers ?? this.calibers,
+      );
 }
 
 class WeaponFilterNotifier extends Notifier<WeaponFilterState> {
+  WeaponFilterNotifier(this._defaultCaliberInch);
+  final double? _defaultCaliberInch;
+
   @override
-  WeaponFilterState build() => const WeaponFilterState();
+  WeaponFilterState build() => WeaponFilterState(
+    calibers: _defaultCaliberInch != null ? {_defaultCaliberInch} : {},
+  );
 
   void toggleVendor(String vendor) {
     final s = Set<String>.from(state.vendors);
@@ -196,13 +205,25 @@ class WeaponFilterNotifier extends Notifier<WeaponFilterState> {
     state = state.copyWith(vendors: s);
   }
 
-  void apply({required Set<String> vendors}) =>
-      state = state.copyWith(vendors: vendors);
+  void toggleCaliber(double caliberInch) {
+    final s = Set<double>.from(state.calibers);
+    if (s.contains(caliberInch)) {
+      s.remove(caliberInch);
+    } else {
+      s.add(caliberInch);
+    }
+    state = state.copyWith(calibers: s);
+  }
 
-  void reset() => state = const WeaponFilterState();
+  void apply({required Set<String> vendors, required Set<double> calibers}) =>
+      state = state.copyWith(vendors: vendors, calibers: calibers);
+
+  void reset() => state = WeaponFilterState(
+    calibers: _defaultCaliberInch != null ? {_defaultCaliberInch} : {},
+  );
 }
 
-final weaponCollectionFilterProvider =
-    NotifierProvider.autoDispose<WeaponFilterNotifier, WeaponFilterState>(
-      WeaponFilterNotifier.new,
+final weaponCollectionFilterProvider = NotifierProvider.autoDispose
+    .family<WeaponFilterNotifier, WeaponFilterState, double?>(
+      (arg) => WeaponFilterNotifier(arg),
     );

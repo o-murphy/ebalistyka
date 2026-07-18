@@ -39,13 +39,13 @@ class AppLocalizationsUk extends AppLocalizations {
   String get adjustmentDisplayScreenTitle => 'Відображення поправок';
 
   @override
-  String get myAmmoScreenTitle => 'Мої набої';
+  String get myProfile => 'Профіль';
 
   @override
-  String get mySights => 'Мої приціли';
+  String get profilesListScreenTitle => 'Мої профілі';
 
   @override
-  String get myProfiles => 'Мої профілі';
+  String get activeProfileLabel => 'Активний';
 
   @override
   String get newWeaponScreenTitle => 'Нова зброя';
@@ -1174,7 +1174,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String removeProfileContent(String name) {
-    return 'Видалити \"$name\" та відповідну зброю?';
+    return 'Видалити \"$name\" разом із зброєю, набоєм і прицілом?';
   }
 
   @override

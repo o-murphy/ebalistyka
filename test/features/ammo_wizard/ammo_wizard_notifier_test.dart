@@ -1,10 +1,9 @@
 //   flutter test test/features/ammo_wizard/ammo_wizard_notifier_test.dart
 
-import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/features/home/sub_screens/ammo_wizard_notifier.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:dart_bclibc/unit.dart';
 
 // ── Fixtures ─────────────────────────────────────────────────────────────────
@@ -75,7 +74,7 @@ Ammo _makeAmmo() {
     ..zeroDistance = Distance.meter(100.0)
     ..zeroTemperature = Temperature.celsius(15.0)
     ..zeroPressure = Pressure.hPa(1013.0)
-    ..zeroHumidityFrac = 0.5
+    ..zeroHumidity = Ratio.fraction(0.5)
     ..zeroAltitude = Distance.meter(50.0)
     ..zeroLookAngle = Angular.degree(2.0)
     ..usePowderSensitivity = true
@@ -85,10 +84,10 @@ Ammo _makeAmmo() {
     ..zeroUseCoriolis = true
     ..zeroLatitude = Angular.degree(48.5)
     ..zeroAzimuth = Angular.degree(180.0)
-    ..zeroOffsetX = 0.5
     ..zeroOffsetXUnitValue = Unit.mil
-    ..zeroOffsetY = -0.3
     ..zeroOffsetYUnitValue = Unit.mil;
+  a.ensureZero().offsetX = 0.5;
+  a.ensureZero().offsetY = -0.3;
   return a;
 }
 
@@ -309,7 +308,7 @@ void main() {
       expect(s.bcG7, closeTo(0.317, 0.001));
     });
 
-    test('decodes multiBcG7Table from Float64Lists', () {
+    test('decodes multiBcG7Table from raw lists', () {
       final a = Ammo()
         ..name = 'BC Table'
         ..caliber = Distance.inch(0.308)
@@ -320,7 +319,7 @@ void main() {
         ..zeroDistance = Distance.meter(100.0)
         ..zeroTemperature = Temperature.celsius(15.0)
         ..zeroPressure = Pressure.hPa(1013.0)
-        ..zeroHumidityFrac = 0.0
+        ..zeroHumidity = Ratio.fraction(0.0)
         ..zeroAltitude = Distance.meter(0.0)
         ..zeroLookAngle = Angular.degree(0.0)
         ..zeroPowderTemp = Temperature.celsius(15.0)
@@ -328,9 +327,9 @@ void main() {
         ..zeroAzimuth = Angular.degree(0.0)
         ..dragType = DragType.g7
         ..useMultiBcG7 = true
-        ..bcG7 = 0.317
-        ..multiBcTableG7VMps = Float64List.fromList([900.0, 800.0])
-        ..multiBcTableG7Bc = Float64List.fromList([0.30, 0.32]);
+        ..bcG7 = 0.317;
+      a.multiBcTableG7VMps.addAll([900.0, 800.0]);
+      a.multiBcTableG7Bc.addAll([0.30, 0.32]);
       final st = AmmoWizardState.fromAmmo(a, null);
       expect(st.multiBcG7Table, isNotNull);
       expect(st.multiBcG7Table!.length, 2);
@@ -359,10 +358,10 @@ void main() {
       expect(a.name, '308 Win');
     });
 
-    test('stores null vendor as null (empty vendor → null)', () {
+    test('stores empty vendor as empty string', () {
       final s = _validG1().copyWith(vendor: '');
       final a = s.buildAmmo();
-      expect(a.vendor, isNull);
+      expect(a.vendor, '');
     });
 
     test('converts caliberRaw (mm) to caliberInch', () {
@@ -376,9 +375,10 @@ void main() {
       expect(a.weightGrain, closeTo(175.0, 0.01));
     });
 
-    test('stores weightGrain as -1 when weightRaw is null', () {
+    test('weightGrain is unset when weightRaw is null', () {
       final a = _validG1(weightRaw: null).buildAmmo();
-      expect(a.weightGrain, -1.0);
+      expect(a.weightGrain, 0.0);
+      expect(a.hasWeightGrain(), false);
     });
 
     test('converts lengthRaw (mm) to lengthInch', () {
@@ -386,9 +386,10 @@ void main() {
       expect(a.lengthInch, closeTo(31.0 / 25.4, 0.01));
     });
 
-    test('stores lengthInch as -1 when lengthRaw is null', () {
+    test('lengthInch is unset when lengthRaw is null', () {
       final a = _validG1(lengthRaw: null).buildAmmo();
-      expect(a.lengthInch, -1.0);
+      expect(a.lengthInch, 0.0);
+      expect(a.hasLengthInch(), false);
     });
 
     test('stores mvRaw (m/s) as muzzleVelocityMps — identity', () {
@@ -396,9 +397,10 @@ void main() {
       expect(a.muzzleVelocityMps, closeTo(800.0, 0.01));
     });
 
-    test('stores muzzleVelocityMps as -1 when mvRaw is null', () {
+    test('muzzleVelocityMps is unset when mvRaw is null', () {
       final a = _validG1(mvRaw: null).buildAmmo();
-      expect(a.muzzleVelocityMps, -1.0);
+      expect(a.muzzleVelocityMps, 0.0);
+      expect(a.hasMuzzleVelocityMps(), false);
     });
 
     test('stores bcG1 directly', () {
@@ -406,44 +408,42 @@ void main() {
       expect(a.bcG1, closeTo(0.475, 1e-9));
     });
 
-    test('stores bcG1 as -1 when null', () {
+    test('stores bcG1 as 0 when null', () {
       final a = _validG1(bcG1: null).buildAmmo();
-      expect(a.bcG1, -1.0);
+      expect(a.bcG1, 0.0);
     });
 
-    test('encodes multiBcG1Table to Float64Lists', () {
+    test('encodes multiBcG1Table to raw lists', () {
       final table = [(vMps: 900.0, bc: 0.45), (vMps: 800.0, bc: 0.47)];
       final a = _validG1(
         useMultiBcG1: true,
         bcG1: null,
         multiBcG1Table: table,
       ).buildAmmo();
-      expect(a.multiBcTableG1VMps, isNotNull);
-      expect(a.multiBcTableG1VMps!.length, 2);
-      expect(a.multiBcTableG1VMps![0], closeTo(900.0, 1e-9));
-      expect(a.multiBcTableG1Bc![0], closeTo(0.45, 1e-9));
+      expect(a.multiBcTableG1VMps.length, 2);
+      expect(a.multiBcTableG1VMps[0], closeTo(900.0, 1e-9));
+      expect(a.multiBcTableG1Bc[0], closeTo(0.45, 1e-9));
     });
 
     test('clears G1 table lists when table is null', () {
       final a = _validG1(useMultiBcG1: false, multiBcG1Table: null).buildAmmo();
-      expect(a.multiBcTableG1VMps, isNull);
-      expect(a.multiBcTableG1Bc, isNull);
+      expect(a.multiBcTableG1VMps, isEmpty);
+      expect(a.multiBcTableG1Bc, isEmpty);
     });
 
-    test('encodes customDragTable to Float64Lists', () {
+    test('encodes customDragTable to raw lists', () {
       final a = _validCustom(
         customDragTable: [(mach: 0.5, cd: 0.284), (mach: 1.0, cd: 0.415)],
       ).buildAmmo();
-      expect(a.customDragTableMach, isNotNull);
-      expect(a.customDragTableMach!.length, 2);
-      expect(a.customDragTableMach![0], closeTo(0.5, 1e-9));
-      expect(a.customDragTableCd![1], closeTo(0.415, 1e-9));
+      expect(a.customDragTableMach.length, 2);
+      expect(a.customDragTableMach[0], closeTo(0.5, 1e-9));
+      expect(a.customDragTableCd[1], closeTo(0.415, 1e-9));
     });
 
     test('clears custom table when null', () {
       final a = _validCustom(customDragTable: null).buildAmmo();
-      expect(a.customDragTableMach, isNull);
-      expect(a.customDragTableCd, isNull);
+      expect(a.customDragTableMach, isEmpty);
+      expect(a.customDragTableCd, isEmpty);
     });
 
     test('encodes zero fields correctly', () {
@@ -466,7 +466,7 @@ void main() {
       expect(a.zeroDistance.in_(Unit.meter), closeTo(100.0, 0.01));
       expect(a.zeroTemperature.in_(Unit.celsius), closeTo(20.0, 0.01));
       expect(a.zeroPressure.in_(Unit.hPa), closeTo(1013.0, 0.5));
-      expect(a.zeroHumidityFrac, closeTo(0.5, 0.001));
+      expect(a.zero.humidityFrac, closeTo(0.5, 0.001));
       expect(a.zeroAltitude.in_(Unit.meter), closeTo(150.0, 0.01));
       expect(a.zeroLookAngle.in_(Unit.degree), closeTo(5.0, 0.01));
     });
@@ -488,10 +488,9 @@ void main() {
         powderSensTable: powderTable,
       );
       final a = s.buildAmmo();
-      expect(a.powderSensitivityTC, isNotNull);
-      expect(a.powderSensitivityTC!.length, 2);
-      expect(a.powderSensitivityTC![0], -10.0);
-      expect(a.powderSensitivityVMps![1], closeTo(800.0, 0.01));
+      expect(a.powderSensitivityTc.length, 2);
+      expect(a.powderSensitivityTc[0], -10.0);
+      expect(a.powderSensitivityVMps[1], closeTo(800.0, 0.01));
     });
 
     test('stores dragType', () {

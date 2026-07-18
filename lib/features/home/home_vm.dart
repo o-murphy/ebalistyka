@@ -20,7 +20,8 @@ import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka/core/services/ballistics_service.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
+import 'package:flutter/material.dart';
 import 'package:riverpod/riverpod.dart';
 
 import 'home_builders.dart';
@@ -31,6 +32,8 @@ export 'home_ui_state.dart';
 // ── ViewModel ─────────────────────────────────────────────────────────────────
 
 class HomeViewModel extends AsyncNotifier<HomeUiState> {
+  int _generation = 0;
+
   @override
   Future<HomeUiState> build() async {
     ref.listen<AsyncValue<ShotContext?>>(shotContextProvider, (_, next) {
@@ -52,6 +55,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   }
 
   Future<void> _recalculate() async {
+    final generation = ++_generation;
     final ctx = ref.read(shotContextProvider).value;
     final settings = ref.read(settingsProvider).value;
     final units = ref.read(unitSettingsProvider);
@@ -59,17 +63,15 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final formatter = ref.read(unitFormatterProvider);
 
     if (ctx == null || settings == null) {
+      if (generation != _generation) return;
       state = const AsyncData(HomeUiNoData(type: EmptyStateType.noProfile));
       return;
     }
     final profile = ctx.profile;
     final conditions = ctx.conditions;
-    if (profile.ammo.target == null) {
-      state = const AsyncData(HomeUiNoData(type: EmptyStateType.noAmmo));
-      return;
-    }
 
     if (!profile.isReadyForCalculation) {
+      if (generation != _generation) return;
       state = const AsyncData(
         HomeUiNoData(type: EmptyStateType.incompleteAmmo),
       );
@@ -83,15 +85,17 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final l10n = ref.read(appLocalizationsProvider);
 
     try {
+      final chartStep = settings.homeChartDistanceStep > 0
+          ? settings.homeChartDistanceStep
+          : FC.distanceStep.minRaw;
+      final tableStep = settings.homeTableDistanceStep > 0
+          ? settings.homeTableDistanceStep
+          : FC.distanceStep.minRaw;
       final opts = TargetCalcOptions(
         targetDistM: conditions.distanceMeter,
-        trajectoryEndM:
-            conditions.distanceMeter + 2 * settings.homeTableDistanceStep,
-        stepM: math.min(
-          settings.homeChartDistanceStep,
-          settings.homeTableDistanceStep,
-        ),
-        tableStepM: settings.homeTableDistanceStep,
+        trajectoryEndM: conditions.distanceMeter + 2 * tableStep,
+        stepM: math.min(chartStep, tableStep),
+        tableStepM: tableStep,
       );
 
       final result = await ref
@@ -110,10 +114,12 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         l10n: l10n,
       );
       if (!ref.mounted) return;
+      if (generation != _generation) return;
 
       state = AsyncData(uiState);
-    } catch (e) {
-      if (ref.mounted) {
+    } catch (e, stackTrace) {
+      if (ref.mounted && generation == _generation) {
+        debugPrintStack(stackTrace: stackTrace);
         state = AsyncData(HomeUiError(e.toString()));
       }
     }
@@ -193,10 +199,11 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
   Future<void> updateSightReticleImage(String? imageId) async {
     final ctx = ref.read(shotContextProvider).value;
-    final sight = ctx?.profile.sight.target;
-    if (sight == null) return;
-    sight.reticleImage = imageId;
-    await ref.read(appStateProvider.notifier).saveSight(sight);
+    if (ctx == null) return;
+    final sight = ctx.profile.sight.deepCopy()..reticleImage = imageId ?? '';
+    await ref
+        .read(appStateProvider.notifier)
+        .setProfileSight(ctx.profile.uuid, sight);
   }
 
   Future<void> updateSightClicks({
@@ -206,13 +213,15 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     required Unit hUnit,
   }) async {
     final ctx = ref.read(shotContextProvider).value;
-    final sight = ctx?.profile.sight.target;
-    if (sight == null) return;
-    sight.verticalClickUnitValue = vUnit;
-    sight.verticalClick = Angular(vRaw, FC.adjustment.rawUnit).in_(vUnit);
-    sight.horizontalClickUnitValue = hUnit;
-    sight.horizontalClick = Angular(hRaw, FC.adjustment.rawUnit).in_(hUnit);
-    await ref.read(appStateProvider.notifier).saveSight(sight);
+    if (ctx == null) return;
+    final sight = ctx.profile.sight.deepCopy()
+      ..verticalClickUnitValue = vUnit
+      ..verticalClick = Angular(vRaw, FC.adjustment.rawUnit).in_(vUnit)
+      ..horizontalClickUnitValue = hUnit
+      ..horizontalClick = Angular(hRaw, FC.adjustment.rawUnit).in_(hUnit);
+    await ref
+        .read(appStateProvider.notifier)
+        .setProfileSight(ctx.profile.uuid, sight);
   }
 
   // ── Ready state builder ────────────────────────────────────────────────────
@@ -261,49 +270,37 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
             Unit.mil,
           );
 
-    double horizontalClickSizeMil = 0.0;
-    double verticalClickSizeMil = 0.0;
-    String? adjustedMessageLine;
+    final sight = profile.sight;
+    final horizontalClickSizeMil = Angular(
+      sight.horizontalClick,
+      sight.horizontalClickUnitValue,
+    ).in_(Unit.mil);
+    final verticalClickSizeMil = Angular(
+      sight.verticalClick,
+      sight.verticalClickUnitValue,
+    ).in_(Unit.mil);
+    final adjustedMessageLine = buildAdjustedMessageLine(
+      reticle,
+      vClickSizeMil: verticalClickSizeMil,
+      hClickSizeMil: horizontalClickSizeMil,
+      l10n: l10n,
+    );
 
-    final sight = profile.sight.target;
-    if (sight != null) {
-      horizontalClickSizeMil = Angular(
-        sight.horizontalClick,
-        sight.horizontalClickUnitValue,
-      ).in_(Unit.mil);
-      verticalClickSizeMil = Angular(
-        sight.verticalClick,
-        sight.verticalClickUnitValue,
-      ).in_(Unit.mil);
-      adjustedMessageLine = buildAdjustedMessageLine(
-        reticle,
-        vClickSizeMil: verticalClickSizeMil,
-        hClickSizeMil: horizontalClickSizeMil,
-        l10n: l10n,
-      );
-    }
-
-    double zeroOffsetYMil = 0.0;
-    double zeroOffsetXMil = 0.0;
-    String? zeroOffsetMessageLine;
-
-    final ammo = profile.ammo.target;
-    if (ammo != null) {
-      zeroOffsetYMil = Angular(
-        ammo.zeroOffsetY,
-        ammo.zeroOffsetYUnitValue,
-      ).in_(Unit.mil);
-      zeroOffsetXMil = Angular(
-        ammo.zeroOffsetX,
-        ammo.zeroOffsetXUnitValue,
-      ).in_(Unit.mil);
-      zeroOffsetMessageLine = buildZeroOffsetMessageLine(
-        zeroOffsetYMil: zeroOffsetYMil,
-        zeroOffsetXMil: zeroOffsetXMil,
-        zeroOffsetYUnit: ammo.zeroOffsetYUnitValue,
-        zeroOffsetXUnit: ammo.zeroOffsetXUnitValue,
-      );
-    }
+    final ammo = profile.ammo;
+    final zeroOffsetYMil = Angular(
+      ammo.zero.offsetY,
+      ammo.zeroOffsetYUnitValue,
+    ).in_(Unit.mil);
+    final zeroOffsetXMil = Angular(
+      ammo.zero.offsetX,
+      ammo.zeroOffsetXUnitValue,
+    ).in_(Unit.mil);
+    final zeroOffsetMessageLine = buildZeroOffsetMessageLine(
+      zeroOffsetYMil: zeroOffsetYMil,
+      zeroOffsetXMil: zeroOffsetXMil,
+      zeroOffsetYUnit: ammo.zeroOffsetYUnitValue,
+      zeroOffsetXUnit: ammo.zeroOffsetXUnitValue,
+    );
 
     final elevMil =
         Angular.radian(result.holdRad).in_(Unit.mil) + vAdjMil + zeroOffsetYMil;
@@ -335,7 +332,9 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         : 0.0;
 
     final reticleState = ReticleUiState(
-      reticleId: profile.sight.target?.reticleImage,
+      reticleId: profile.sight.reticleImage.isNotEmpty
+          ? profile.sight.reticleImage
+          : null,
       targetId: reticle.targetImage,
       targetSizeMilAtDistance: targetSizeMilAtDistance,
       adjustedMessageLine: adjustedMessageLine,
@@ -365,8 +364,8 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
     return HomeUiReady(
       profileName: profile.name,
-      weaponName: profile.weapon.target?.name ?? '',
-      ammoName: profile.ammo.target?.name ?? '',
+      weaponName: profile.weapon.name,
+      ammoName: profile.ammo.name,
       conditionsState: conditionsState,
       reticleState: reticleState,
       tableData: tableData,

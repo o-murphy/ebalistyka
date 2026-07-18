@@ -2,7 +2,7 @@ import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -49,9 +49,9 @@ class CollectionSightTileBody extends ConsumerWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (sight.vendor != null && sight.vendor!.isNotEmpty)
+                    if (sight.vendor.isNotEmpty)
                       Text(
-                        sight.vendor!,
+                        sight.vendor,
                         style: const TextStyle(
                           fontSize: 11,
                           color: Colors.grey,
@@ -77,8 +77,8 @@ class CollectionSightTileBody extends ConsumerWidget {
                         const Icon(IconDef.sight, size: 14),
                         const SizedBox(width: 6),
                         Text(
-                          sight.reticleImage?.isNotEmpty == true
-                              ? sight.reticleImage!
+                          sight.reticleImage.isNotEmpty
+                              ? sight.reticleImage
                               : l10n.defaultLabel,
                           style: const TextStyle(fontSize: 12),
                         ),

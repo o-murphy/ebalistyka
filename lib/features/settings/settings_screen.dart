@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:ebalistyka/shared/constants/app_info.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 
-import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
@@ -20,7 +19,7 @@ import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -199,22 +198,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   child: FilledButton.tonalIcon(
                     icon: const Icon(IconDef.export),
                     label: Text(l10n.actionExportBackup),
-                    onPressed: () async {
-                      final file = EbcpService.buildFullExport(ref);
-                      final messenger = ScaffoldMessenger.of(context);
-                      final errorColor = Theme.of(context).colorScheme.error;
-                      try {
-                        await EbcpService.shareFile(file, 'ebalistyka_backup');
-                      } catch (e) {
-                        messenger.showSnackBar(
-                          SnackBar(
-                            content: Text(e.toString()),
-                            backgroundColor: errorColor,
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
-                      }
-                    },
+                    onPressed: () => showNotAvailableSnackBar(
+                      context,
+                      l10n.actionExportBackup,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -222,20 +209,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   child: FilledButton.tonalIcon(
                     icon: const Icon(IconDef.import),
                     label: Text(l10n.actionImportBackup),
-                    onPressed: () async {
-                      try {
-                        final file = await EbcpService.pickAndParse();
-                        if (file == null || !context.mounted) return;
-                        await EbcpService.restoreFromExport(file, ref);
-                      } catch (e) {
-                        if (!context.mounted) return;
-                        showFeedback(
-                          context,
-                          '${l10n.errorImportBackupFailed}: $e',
-                          isError: true,
-                        );
-                      }
-                    },
+                    onPressed: () => showNotAvailableSnackBar(
+                      context,
+                      l10n.actionImportBackup,
+                    ),
                   ),
                 ),
               ],

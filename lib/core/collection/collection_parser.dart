@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:dart_bclibc/unit.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
+import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 
 class BuiltinCollection {
@@ -55,13 +55,13 @@ abstract final class CollectionParser {
 
   static Weapon _parseWeapon(Map<String, dynamic> j) {
     final barrelRaw = j['barrelLengthInch'] as num?;
+    final caliberRaw = j['caliberInch'] as num?;
     return Weapon()
-      ..id = j['id'] as int? ?? 0
       ..name = j['name'] as String
-      ..vendor = j['vendor'] as String?
-      ..notes = j['notes'] as String?
-      ..image = j['image'] as String?
-      ..caliberInch = (j['caliberInch'] as num?)?.toDouble() ?? -1.0
+      ..vendor = j['vendor'] as String? ?? ''
+      ..notes = j['notes'] as String? ?? ''
+      ..image = j['image'] as String? ?? ''
+      ..caliber = caliberRaw == null ? null : Distance.inch(caliberRaw.toDouble())
       ..caliberName = j['caliberName'] as String? ?? ''
       ..twist = Distance.inch((j['twistInch'] as num).toDouble())
       ..barrelLength = barrelRaw == null
@@ -75,18 +75,24 @@ abstract final class CollectionParser {
     final dragType = _dragType(j['dragTypeValue'] as String? ?? 'g1');
 
     final mvRaw = j['muzzleVelocityMps'] as num?;
+    final caliberRaw = j['caliberInch'] as num?;
+    final weightRaw = j['weightGrain'] as num?;
+    final lengthRaw = j['lengthInch'] as num?;
 
     final ammo = Ammo()
-      ..id = j['id'] as int? ?? 0
       ..name = j['name'] as String
-      ..vendor = j['vendor'] as String?
-      ..projectileName = j['projectileName'] as String?
-      ..image = j['image'] as String?
+      ..vendor = j['vendor'] as String? ?? ''
+      ..projectileName = j['projectileName'] as String? ?? ''
+      ..image = j['image'] as String? ?? ''
       ..dragType = dragType
-      ..caliberInch = (j['caliberInch'] as num?)?.toDouble() ?? -1.0
-      ..weightGrain = (j['weightGrain'] as num?)?.toDouble() ?? -1.0
-      ..lengthInch = (j['lengthInch'] as num?)?.toDouble() ?? -1.0
-      ..muzzleVelocityMps = mvRaw?.toDouble() ?? -1.0
+      ..caliber = caliberRaw == null
+          ? null
+          : Distance.inch(caliberRaw.toDouble())
+      ..weight = weightRaw == null ? null : Weight.grain(weightRaw.toDouble())
+      ..length = lengthRaw == null
+          ? null
+          : Distance.inch(lengthRaw.toDouble())
+      ..mv = mvRaw == null ? null : Velocity.mps(mvRaw.toDouble())
       ..mvTemperature = Temperature.celsius(
         (j['muzzleVelocityTemperatureC'] as num? ?? 15.0).toDouble(),
       )
@@ -98,8 +104,8 @@ abstract final class CollectionParser {
     // BC values — useMultiBcG1/G7 inferred from table presence
     final bcG1Raw = j['bcG1'] as num?;
     final bcG7Raw = j['bcG7'] as num?;
-    ammo.bcG7 = bcG7Raw?.toDouble() ?? -1.0;
-    ammo.bcG1 = bcG1Raw?.toDouble() ?? -1.0;
+    ammo.bc7 = bcG7Raw?.toDouble();
+    ammo.bc1 = bcG1Raw?.toDouble();
     _applyMultiBc(ammo, _decodeJsonList(j['multiBcG7Table']), isG7: true);
     _applyMultiBc(ammo, _decodeJsonList(j['multiBcG1Table']), isG7: false);
     _applyCustomDrag(ammo, _decodeJsonList(j['customDragTable']));
@@ -131,17 +137,25 @@ abstract final class CollectionParser {
         .map<double>((r) => ((r as Map)['bc'] as num).toDouble())
         .toList();
     if (isG7) {
-      ammo.multiBcTableG7VMps = Float64List.fromList(vList);
-      ammo.multiBcTableG7Bc = Float64List.fromList(bcList);
-      if (ammo.bcG7 <= 0) {
-        ammo.bcG7 = bcList.first;
+      ammo.multiBcTableG7VMps
+        ..clear()
+        ..addAll(vList);
+      ammo.multiBcTableG7Bc
+        ..clear()
+        ..addAll(bcList);
+      if ((ammo.bc7 ?? 0) <= 0) {
+        ammo.bc7 = bcList.first;
       }
       ammo.useMultiBcG7 = true;
     } else {
-      ammo.multiBcTableG1VMps = Float64List.fromList(vList);
-      ammo.multiBcTableG1Bc = Float64List.fromList(bcList);
-      if (ammo.bcG1 <= 0) {
-        ammo.bcG1 = bcList.first;
+      ammo.multiBcTableG1VMps
+        ..clear()
+        ..addAll(vList);
+      ammo.multiBcTableG1Bc
+        ..clear()
+        ..addAll(bcList);
+      if ((ammo.bc1 ?? 0) <= 0) {
+        ammo.bc1 = bcList.first;
       }
       ammo.useMultiBcG1 = true;
     }
@@ -149,21 +163,25 @@ abstract final class CollectionParser {
 
   static void _applyCustomDrag(Ammo ammo, List rows) {
     if (rows.isEmpty) return;
-    ammo.customDragTableMach = Float64List.fromList(
-      rows.map<double>((r) => ((r as Map)['mach'] as num).toDouble()).toList(),
-    );
-    ammo.customDragTableCd = Float64List.fromList(
-      rows.map<double>((r) => ((r as Map)['cd'] as num).toDouble()).toList(),
-    );
+    ammo.customDragTableMach
+      ..clear()
+      ..addAll(
+        rows.map<double>((r) => ((r as Map)['mach'] as num).toDouble()),
+      );
+    ammo.customDragTableCd
+      ..clear()
+      ..addAll(rows.map<double>((r) => ((r as Map)['cd'] as num).toDouble()));
   }
 
   static void _applyPowderSensTable(Ammo ammo, List rows) {
-    ammo.powderSensitivityTC = Float64List.fromList(
-      rows.map<double>((r) => ((r as Map)['tC'] as num).toDouble()).toList(),
-    );
-    ammo.powderSensitivityVMps = Float64List.fromList(
-      rows.map<double>((r) => ((r as Map)['vMps'] as num).toDouble()).toList(),
-    );
+    ammo.powderSensitivityTc
+      ..clear()
+      ..addAll(rows.map<double>((r) => ((r as Map)['tC'] as num).toDouble()));
+    ammo.powderSensitivityVMps
+      ..clear()
+      ..addAll(
+        rows.map<double>((r) => ((r as Map)['vMps'] as num).toDouble()),
+      );
   }
 
   // ── Sight ──────────────────────────────────────────────────────────────────
@@ -172,12 +190,11 @@ abstract final class CollectionParser {
     final clickY = (j['verticalClick'] as num? ?? 0.1).toDouble();
     final clickX = (j['horizontalClick'] as num? ?? 0.1).toDouble();
     final calibMag = j['calibratedMagnification'] as num?;
-    return Sight()
-      ..id = j['id'] as int? ?? 0
+    final sight = Sight()
       ..name = j['name'] as String
-      ..vendor = j['vendor'] as String?
-      ..image = j['image'] as String?
-      ..reticleImage = j['reticleImage'] as String?
+      ..vendor = j['vendor'] as String? ?? ''
+      ..image = j['image'] as String? ?? ''
+      ..reticleImage = j['reticleImage'] as String? ?? ''
       ..focalPlaneValue = j['focalPlaneValue'] as String? ?? 'ffp'
       ..sightHeightInch = (j['sightHeightInch'] as num? ?? 0.0).toDouble()
       ..sightHorizontalOffsetInch =
@@ -187,8 +204,9 @@ abstract final class CollectionParser {
       ..verticalClickUnit = j['verticalClickUnit'] as String? ?? 'mil'
       ..horizontalClickUnit = j['horizontalClickUnit'] as String? ?? 'mil'
       ..minMagnification = (j['minMagnification'] as num? ?? 0.0).toDouble()
-      ..maxMagnification = (j['maxMagnification'] as num? ?? 0.0).toDouble()
-      ..calibratedMagnification = calibMag?.toDouble() ?? -1.0;
+      ..maxMagnification = (j['maxMagnification'] as num? ?? 0.0).toDouble();
+    if (calibMag != null) sight.calibratedMag = calibMag.toDouble();
+    return sight;
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────

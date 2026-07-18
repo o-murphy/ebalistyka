@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/features/home/sub_screens/sight_wizard_notifier.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:dart_bclibc/unit.dart';
 
 // ── Fixtures ─────────────────────────────────────────────────────────────────
@@ -205,7 +205,7 @@ void main() {
         minMagRaw: 4.0,
         maxMagRaw: 16.0,
       );
-      expect(st.buildSight().vendor, isNull);
+      expect(st.buildSight().vendor, '');
     });
 
     test('null reticleImage preserved', () {
@@ -216,7 +216,7 @@ void main() {
         minMagRaw: 4.0,
         maxMagRaw: 16.0,
       );
-      expect(st.buildSight().reticleImage, isNull);
+      expect(st.buildSight().reticleImage, '');
     });
   });
 }

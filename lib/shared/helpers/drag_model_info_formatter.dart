@@ -1,6 +1,6 @@
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 
 extension AmmoDragModelFormattedInfo on Ammo {
   String get dragModelFormattedInfo {

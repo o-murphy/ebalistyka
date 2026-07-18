@@ -7,12 +7,12 @@
 import 'package:test/test.dart';
 import 'package:ebalistyka/core/services/ballistics_service.dart';
 import 'package:ebalistyka/core/services/ballistics_service_impl.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:dart_bclibc/unit.dart';
 
 // ── Test fixtures ────────────────────────────────────────────────────────────
 
-/// Builds an in-memory Ammo entity — no OB store required.
+/// Builds an in-memory Ammo entity — no store required.
 Ammo _makeAmmo({
   double muzzleVelocityMps = 800.0,
   double zeroDistanceMeter = 100.0,
@@ -31,13 +31,13 @@ Ammo _makeAmmo({
   ..muzzleVelocityTemperatureC = 15.0
   ..powderSensitivityFrac = powderSensitivityFrac
   ..usePowderSensitivity = usePowderSensitivity
-  ..zeroDistanceMeter = zeroDistanceMeter
-  ..zeroTemperatureC = 15.0
-  ..zeroPressurehPa = 1013.25
-  ..zeroAltitudeMeter = 0.0
-  ..zeroHumidityFrac = 0.0
-  ..zeroPowderTemperatureC = zeroPowderTemperatureC
-  ..zeroUseDiffPowderTemperature = zeroUseDiffPowderTemperature;
+  ..ensureZero().distanceMeter = zeroDistanceMeter
+  ..ensureZero().temperatureC = 15.0
+  ..ensureZero().pressureHPa = 1013.25
+  ..ensureZero().altitudeMeter = 0.0
+  ..ensureZero().humidityFrac = 0.0
+  ..ensureZero().powderTemperatureC = zeroPowderTemperatureC
+  ..ensureZero().useDiffPowderTemperature = zeroUseDiffPowderTemperature;
 
 /// Builds an in-memory Weapon entity.
 Weapon _makeWeapon() => Weapon()
@@ -50,14 +50,12 @@ Sight _makeSight() => Sight()
   ..name = 'Test Scope'
   ..sightHeightInch = 1.496; // 38 mm ≈ 1.496 in
 
-/// Assembles a Profile with in-memory ToOne relations.
-Profile _makeProfile({Ammo? ammo, Weapon? weapon, Sight? sight}) {
-  final p = Profile()..name = 'Test Profile';
-  p.ammo.target = ammo ?? _makeAmmo();
-  p.weapon.target = weapon ?? _makeWeapon();
-  p.sight.target = sight ?? _makeSight();
-  return p;
-}
+/// Assembles a Profile with embedded weapon/ammo/sight.
+Profile _makeProfile({Ammo? ammo, Weapon? weapon, Sight? sight}) => Profile()
+  ..name = 'Test Profile'
+  ..ammo = ammo ?? _makeAmmo()
+  ..weapon = weapon ?? _makeWeapon()
+  ..sight = sight ?? _makeSight();
 
 /// Builds a ShootingConditions entity with sensible defaults.
 ShootingConditions _makeConditions({
@@ -73,7 +71,7 @@ ShootingConditions _makeConditions({
   ..distanceMeter = targetM
   ..temperatureC = tempC
   ..altitudeMeter = altM
-  ..pressurehPa = pressHPa
+  ..pressureHPa = pressHPa
   ..humidityFrac = humidity
   ..powderTemperatureC = powderTempC
   ..windSpeedMps = windSpeedMps
@@ -299,6 +297,22 @@ void main() {
         greaterThan(noWindLast.windage.in_(Unit.centimeter).abs() * 5),
         reason: 'Wind should cause much more windage than spin drift alone',
       );
+    });
+
+    test('calculateForTarget (Home-screen path) also applies wind', () async {
+      final result = await service.calculateForTarget(
+        _makeProfile(),
+        _makeConditions(
+          targetM: 300.0,
+          windSpeedMps: 5.0,
+          windDirectionDeg: 90.0,
+        ),
+        const TargetCalcOptions(targetDistM: 300.0, stepM: 10.0),
+      );
+
+      final lastPoint = result.hitResult.trajectory.last;
+      expect(lastPoint.windage.in_(Unit.centimeter).abs(), greaterThan(0.1));
+      expect(lastPoint.windageAngle.in_(Unit.mil).abs(), greaterThan(0.01));
     });
   });
 

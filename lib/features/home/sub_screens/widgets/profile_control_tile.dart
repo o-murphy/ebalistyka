@@ -1,11 +1,9 @@
 import 'package:ebalistyka/l10n/app_localizations.dart';
-import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
 import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
 import 'package:ebalistyka/shared/widgets/weapon_svg_view.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class ProfileControlTile extends StatelessWidget {
   const ProfileControlTile({
@@ -16,7 +14,8 @@ class ProfileControlTile extends StatelessWidget {
     required this.hasSight,
     required this.onDuplicate,
     required this.onExport,
-    required this.onEditWeapon,
+    required this.onSelectAmmo,
+    required this.onSelectSight,
     required this.onRemove,
     required this.onRename,
     super.key,
@@ -29,7 +28,8 @@ class ProfileControlTile extends StatelessWidget {
   final bool hasSight;
   final VoidCallback onDuplicate;
   final VoidCallback onExport;
-  final VoidCallback onEditWeapon;
+  final VoidCallback onSelectAmmo;
+  final VoidCallback onSelectSight;
   final VoidCallback onRemove;
   final ValueChanged<String> onRename;
 
@@ -106,8 +106,7 @@ class ProfileControlTile extends StatelessWidget {
               child: _ButtonWithHint(
                 heroTag: 'sight_btn_$profileId',
                 hasValue: hasSight,
-                onPressed: () =>
-                    context.push(Routes.sightSelect, extra: profileId),
+                onPressed: onSelectSight,
                 buttonIcon: IconDef.sight,
                 buttonColor: hasSight
                     ? cs.secondaryContainer
@@ -128,8 +127,7 @@ class ProfileControlTile extends StatelessWidget {
               child: _ButtonWithHint(
                 heroTag: 'ammo_btn_$profileId',
                 hasValue: hasAmmo,
-                onPressed: () =>
-                    context.push(Routes.ammoSelect, extra: profileId),
+                onPressed: onSelectAmmo,
                 buttonIcon: IconDef.ammo,
                 buttonColor: hasAmmo
                     ? cs.primaryContainer

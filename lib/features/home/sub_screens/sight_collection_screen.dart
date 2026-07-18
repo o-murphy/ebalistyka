@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/models/collection_item.dart';
-import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/core/providers/builtin_collection_provider.dart';
 import 'package:ebalistyka/core/providers/filter_providers.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/collection_body.dart';
@@ -14,6 +13,7 @@ import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/error_display.dart';
 import 'package:ebalistyka/shared/widgets/help_dialog.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -57,7 +57,7 @@ class SightCollectionScreen extends ConsumerWidget {
         data: (collection) {
           final items = collection.sights.where((s) {
             if (filter.vendors.isNotEmpty &&
-                !filter.vendors.contains(s.vendor ?? '')) {
+                !filter.vendors.contains(s.vendor)) {
               return false;
             }
             if (filter.focalPlanes.isNotEmpty &&
@@ -74,13 +74,8 @@ class SightCollectionScreen extends ConsumerWidget {
                     key: ValueKey(sight.name),
                     body: CollectionSightTileBody(sight: sight),
                     item: SightCollectionItem(ref: sight),
-                    searchText: [sight.name, sight.vendor ?? ''].join(' '),
-                    onSelect: () async {
-                      await ref
-                          .read(appStateProvider.notifier)
-                          .saveSight(sight.clone());
-                      if (context.mounted) context.pop();
-                    },
+                    searchText: [sight.name, sight.vendor].join(' '),
+                    onSelect: () => context.pop(sight.deepCopy()),
                   ),
                 )
                 .toList(),

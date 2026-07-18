@@ -1,7 +1,7 @@
 import 'package:dart_bclibc/unit.dart';
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -59,7 +59,7 @@ class SightWizardState {
     final hClickUnit = s.horizontalClickUnitValue;
     return SightWizardState(
       name: s.name,
-      vendor: s.vendor ?? '',
+      vendor: s.vendor,
       sightHeightRaw: s.sightHeight.in_(FC.sightHeight.rawUnit),
       horizontalOffsetRaw: s.horizontalOffset.in_(FC.sightHeight.rawUnit),
       focalPlane: s.focalPlane,
@@ -83,7 +83,7 @@ class SightWizardState {
   Sight buildSight() {
     final sight = initial ?? Sight();
     sight.name = name.trim();
-    sight.vendor = vendor.trim().isEmpty ? null : vendor.trim();
+    sight.vendor = vendor.trim();
     sight.sightHeight = Distance(sightHeightRaw, FC.sightHeight.rawUnit);
     sight.horizontalOffset = Distance(
       horizontalOffsetRaw,
@@ -102,7 +102,7 @@ class SightWizardState {
     ).in_(hClickUnit);
     sight.minMagnification = minMagRaw;
     sight.maxMagnification = maxMagRaw;
-    sight.reticleImage = reticleImage;
+    sight.reticleImage = reticleImage ?? '';
     return sight;
   }
 

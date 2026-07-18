@@ -2,7 +2,7 @@ import 'dart:math' show pi;
 
 import 'package:dart_bclibc/bclibc.dart' as bclibc;
 import 'package:dart_bclibc/unit.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 
 extension ConditionsExtension on ShootingConditions {
   // ── Distance ────────────────────────────────────────────────────────────────
@@ -29,15 +29,17 @@ extension ConditionsExtension on ShootingConditions {
 
   // ── Atmosphere ──────────────────────────────────────────────────────────────
 
-  Temperature get temperature => Temperature.celsius(temperatureC);
+  Temperature get temperature =>
+      Temperature.celsius(hasTemperatureC() && temperatureC != 0 ? temperatureC : 15.0);
   set temperature(Temperature v) => temperatureC = v.in_(Unit.celsius);
 
   Temperature get powderTemperature => Temperature.celsius(powderTemperatureC);
   set powderTemperature(Temperature v) =>
       powderTemperatureC = v.in_(Unit.celsius);
 
-  Pressure get pressure => Pressure.hPa(pressurehPa);
-  set pressure(Pressure v) => pressurehPa = v.in_(Unit.hPa);
+  Pressure get pressure =>
+      Pressure.hPa(hasPressureHPa() && pressureHPa != 0 ? pressureHPa : 1013.25);
+  set pressure(Pressure v) => pressureHPa = v.in_(Unit.hPa);
 
   Ratio get humidity => Ratio.fraction(humidityFrac);
   set humidity(Ratio v) => humidityFrac = v.in_(Unit.fraction);

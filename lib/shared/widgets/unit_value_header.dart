@@ -1,3 +1,4 @@
+import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:flutter/material.dart';
 import 'package:dart_bclibc/unit.dart';
@@ -36,7 +37,7 @@ class UnitValueHeader extends StatelessWidget {
       headerColor = theme.colorScheme.onSurfaceVariant;
     } else {
       final acc = accuracy ?? 2;
-      displayHeader = displayValue.toStringAsFixed(acc);
+      displayHeader = displayValue.toFixedSafe(acc);
       headerColor = theme.colorScheme.primary;
     }
 
