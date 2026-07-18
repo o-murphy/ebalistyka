@@ -3,16 +3,17 @@
 import 'dart:io';
 
 import 'package:ebalistyka/core/providers/db_provider.dart';
+import 'package:ebalistyka/core/providers/db_seed.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:riverpod/riverpod.dart';
 
 void main() {
   late TestWidgetsFlutterBinding binding;
-  late Store store;
   late Directory tmpDir;
+  late File settingsFile;
 
   setUpAll(() {
     binding = TestWidgetsFlutterBinding.ensureInitialized();
@@ -20,17 +21,30 @@ void main() {
 
   setUp(() async {
     tmpDir = await Directory.systemTemp.createTemp('settings_locale_test_');
-    store = await initObjectBox(directory: tmpDir.path);
+    settingsFile = File('${tmpDir.path}/settings.ebcp');
   });
 
   tearDown(() {
     binding.platformDispatcher.clearLocaleTestValue();
-    store.close();
     tmpDir.deleteSync(recursive: true);
   });
 
-  ProviderContainer makeContainer() =>
-      ProviderContainer(overrides: [dbProvider.overrideWithValue(store)]);
+  Future<ProviderContainer> makeContainer() async {
+    final store = MsgStore<SettingsData>(
+      settingsFile,
+      encode: SettingsFile.encode,
+      decode: SettingsFile.decode,
+    );
+    final initial = await store.load(orElseSeed: seedSettings);
+    return ProviderContainer(
+      overrides: [
+        settingsStoreProvider.overrideWithValue(store),
+        settingsDataProvider.overrideWith(
+          () => SettingsDataNotifier(initial),
+        ),
+      ],
+    );
+  }
 
   Future<GeneralSettings> waitForSettings(ProviderContainer c) =>
       c.read(settingsProvider.future);
@@ -39,7 +53,7 @@ void main() {
     test('Ukrainian system locale → languageCode = "uk"', () async {
       binding.platformDispatcher.localeTestValue = const Locale('uk');
 
-      final container = makeContainer();
+      final container = await makeContainer();
       addTearDown(container.dispose);
 
       final settings = await waitForSettings(container);
@@ -49,7 +63,7 @@ void main() {
     test('English system locale → languageCode = "en"', () async {
       binding.platformDispatcher.localeTestValue = const Locale('en');
 
-      final container = makeContainer();
+      final container = await makeContainer();
       addTearDown(container.dispose);
 
       final settings = await waitForSettings(container);
@@ -59,7 +73,7 @@ void main() {
     test('Unsupported system locale → fallback to "en"', () async {
       binding.platformDispatcher.localeTestValue = const Locale('fr');
 
-      final container = makeContainer();
+      final container = await makeContainer();
       addTearDown(container.dispose);
 
       final settings = await waitForSettings(container);
@@ -71,15 +85,18 @@ void main() {
     test(
       'saved "uk" is returned even if system locale changed to "en"',
       () async {
-        // First launch: system = 'uk' → saved to DB
+        // First launch: system = 'uk' → seeded and saved to disk
         binding.platformDispatcher.localeTestValue = const Locale('uk');
-        final c1 = makeContainer();
-        await waitForSettings(c1);
+        final c1 = await makeContainer();
+        final settings1 = await waitForSettings(c1);
+        await c1.read(settingsStoreProvider).save(
+          SettingsData()..generalSettings = settings1,
+        );
         c1.dispose();
 
-        // System locale changes to 'en', but DB already has 'uk'
+        // System locale changes to 'en', but disk already has 'uk'
         binding.platformDispatcher.localeTestValue = const Locale('en');
-        final c2 = makeContainer();
+        final c2 = await makeContainer();
         addTearDown(c2.dispose);
 
         final settings = await waitForSettings(c2);

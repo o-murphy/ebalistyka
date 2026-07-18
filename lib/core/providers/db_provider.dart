@@ -1,35 +1,84 @@
-import 'package:ebalistyka_db/ebalistyka_db.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:async';
 
-/// Holds the open ObjectBox [Store].
+import 'package:ebc_db/ebc_db.dart';
+import 'package:riverpod/riverpod.dart';
+
+/// Holds the [MsgStore] for `settings.ebcp`.
 ///
 /// Must be overridden before [runApp]:
 /// ```dart
-/// final store = await initObjectBox();
 /// runApp(ProviderScope(
-///   overrides: [dbProvider.overrideWithValue(store)],
+///   overrides: [settingsStoreProvider.overrideWithValue(store)],
 ///   child: MyApp(),
 /// ));
 /// ```
-final dbProvider = Provider<Store>((ref) {
-  throw UnimplementedError('dbProvider must be overridden with an open Store');
+final settingsStoreProvider = Provider<MsgStore<SettingsData>>((ref) {
+  throw UnimplementedError(
+    'settingsStoreProvider must be overridden with an open MsgStore',
+  );
 });
 
-/// Set to [true] when the store was corrupted on startup and had to be reset.
-final dbWasResetProvider = Provider<bool>((_) => false);
-
-/// Returns the singleton local [Owner] (token = "local").
-///
-/// Creates it on first run. All local entities are linked to this owner —
-/// ready for a future remote-repository swap without changing query logic.
-final ownerProvider = Provider<Owner>((ref) {
-  final store = ref.watch(dbProvider);
-  final box = store.box<Owner>();
-
-  final existing = box.query(Owner_.token.equals('local')).build().findFirst();
-  if (existing != null) return existing;
-
-  final owner = Owner()..token = 'local';
-  box.put(owner);
-  return owner;
+/// Holds the [MsgStore] for `profiles.ebcp`.
+final profilesStoreProvider = Provider<MsgStore<ProfilesData>>((ref) {
+  throw UnimplementedError(
+    'profilesStoreProvider must be overridden with an open MsgStore',
+  );
 });
+
+/// Set to `true` when either `settings.ebcp` or `profiles.ebcp` existed on
+/// disk but failed to decode and had to be reseeded.
+final dataWasResetProvider = Provider<bool>((_) => false);
+
+class SettingsDataNotifier extends Notifier<SettingsData> {
+  SettingsDataNotifier(this._initial);
+  final SettingsData _initial;
+
+  @override
+  SettingsData build() => _initial;
+
+  SettingsData update(SettingsData Function(SettingsData current) mutate) {
+    final next = mutate(state);
+    state = next;
+    unawaited(ref.read(settingsStoreProvider).save(next));
+    return next;
+  }
+}
+
+class ProfilesNotifier extends Notifier<List<Profile>> {
+  ProfilesNotifier(this._initial);
+  final List<Profile> _initial;
+
+  @override
+  List<Profile> build() => _initial;
+
+  List<Profile> update(List<Profile> Function(List<Profile> current) mutate) {
+    final next = mutate(state);
+    state = next;
+    unawaited(
+      ref
+          .read(profilesStoreProvider)
+          .save(ProfilesData(profiles: next)),
+    );
+    return next;
+  }
+}
+
+/// Must be overridden before [runApp] with the already-loaded [SettingsData].
+final settingsDataProvider =
+    NotifierProvider<SettingsDataNotifier, SettingsData>(() {
+      throw UnimplementedError(
+        'settingsDataProvider must be overridden with an already-loaded SettingsData',
+      );
+    });
+
+/// Must be overridden before [runApp] with the already-loaded profile list.
+final profilesProvider = NotifierProvider<ProfilesNotifier, List<Profile>>(() {
+  throw UnimplementedError(
+    'profilesProvider must be overridden with an already-loaded profile list',
+  );
+});
+
+/// `profiles[0]` — see `packages/ebc_db`'s `activeProfileOf`.
+final activeProfileProvider = Provider<Profile?>(
+  (ref) => activeProfileOf(ref.watch(profilesProvider)),
+);

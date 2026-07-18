@@ -11,7 +11,7 @@ import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
 import 'package:ebalistyka/core/providers/shot_context_provider.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/features/conditions/conditions_vm.dart';
 import 'package:dart_bclibc/unit.dart';
 
@@ -31,9 +31,9 @@ Profile _makeProfile() {
     ..powderSensitivityFrac = 0.001
     ..usePowderSensitivity = true;
 
-  final profile = Profile()..name = 'Test Shot';
-  profile.ammo.target = ammo;
-  return profile;
+  return Profile()
+    ..name = 'Test Shot'
+    ..ammo = ammo;
 }
 
 ShootingConditions _makeConditions({
@@ -48,7 +48,7 @@ ShootingConditions _makeConditions({
   return ShootingConditions()
     ..temperatureC = tempC
     ..altitudeMeter = altM
-    ..pressurehPa = pressHPa
+    ..pressureHPa = pressHPa
     ..humidityFrac = humidity
     ..powderTemperatureC = powderTempC
     ..usePowderSensitivity = usePowderSensitivity
@@ -74,7 +74,7 @@ class _FakeConditionsNotifier extends ShotConditionsNotifier {
   _FakeConditionsNotifier(this._conditions);
 
   @override
-  Future<ShootingConditions> build() async => _conditions;
+  ShootingConditions build() => _conditions;
 
   void push(ShootingConditions c) {
     _conditions = c;

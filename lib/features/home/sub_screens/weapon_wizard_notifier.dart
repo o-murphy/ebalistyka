@@ -1,7 +1,7 @@
 import 'package:dart_bclibc/unit.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -41,14 +41,14 @@ class WeaponWizardState {
         twistRaw: FC.twist.minRaw,
       );
     }
-    final caliberRaw = w.caliberInch > 0
-        ? w.caliber.in_(FC.projectileDiameter.rawUnit)
+    final caliberRaw = w.hasCaliberInch() && w.caliberInch > 0
+        ? w.caliber!.in_(FC.projectileDiameter.rawUnit)
         : Distance.inch(0.338).in_(FC.projectileDiameter.rawUnit);
     final twistAbs = w.twist.in_(FC.twist.rawUnit).abs();
     final barrelLengthRaw = w.barrelLength?.in_(FC.barrelLength.rawUnit);
     return WeaponWizardState(
       name: w.name,
-      vendor: w.vendor ?? '',
+      vendor: w.vendor,
       caliberName: w.caliberName,
       caliberRaw: caliberRaw,
       twistRaw: twistAbs > 0 ? twistAbs : FC.twist.minRaw,
@@ -62,7 +62,7 @@ class WeaponWizardState {
   Weapon buildWeapon() {
     final weapon = initial ?? Weapon();
     weapon.name = name.trim();
-    weapon.vendor = vendor.trim().isEmpty ? null : vendor.trim();
+    weapon.vendor = vendor.trim();
     weapon.caliberName = caliberName.trim();
     weapon.caliber = Distance(caliberRaw, FC.projectileDiameter.rawUnit);
     weapon.twist = Distance(rightHand ? twistRaw : -twistRaw, FC.twist.rawUnit);

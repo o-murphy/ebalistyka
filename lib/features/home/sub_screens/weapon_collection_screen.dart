@@ -12,7 +12,7 @@ import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/error_display.dart';
 import 'package:ebalistyka/shared/widgets/help_dialog.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -24,7 +24,7 @@ class WeaponCollectionScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final collectionAsync = ref.watch(builtinCollectionProvider);
     final l10n = AppLocalizations.of(context)!;
-    final filter = ref.watch(weaponCollectionFilterProvider);
+    final filter = ref.watch(weaponCollectionFilterProvider(null));
 
     return BaseScreen(
       title: l10n.weaponCollectionScreenTitle,
@@ -50,7 +50,7 @@ class WeaponCollectionScreen extends ConsumerWidget {
         data: (collection) {
           final items = collection.weapons.where((w) {
             if (filter.vendors.isNotEmpty &&
-                !filter.vendors.contains(w.vendor ?? '')) {
+                !filter.vendors.contains(w.vendor)) {
               return false;
             }
             return true;
@@ -63,9 +63,9 @@ class WeaponCollectionScreen extends ConsumerWidget {
                     key: ValueKey(weapon.name),
                     body: CollectionWeaponTileBody(weapon: weapon),
                     item: WeaponCollectionItem(ref: weapon),
-                    searchText: [weapon.name, weapon.vendor ?? ''].join(' '),
+                    searchText: [weapon.name, weapon.vendor].join(' '),
                     onSelect: () {
-                      context.pop<Weapon>(weapon.clone());
+                      context.pop<Weapon>(weapon.deepCopy());
                     },
                   ),
                 )

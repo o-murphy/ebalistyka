@@ -1,5 +1,5 @@
 import 'package:dart_bclibc/unit.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 
 enum FocalPlane { ffp, sfp, lwir }
 
@@ -22,6 +22,16 @@ extension SightExtension on Sight {
   Distance get horizontalOffset => Distance.inch(sightHorizontalOffsetInch);
   set horizontalOffset(Distance v) =>
       sightHorizontalOffsetInch = v.in_(Unit.inch);
+
+  double? get calibratedMag =>
+      hasCalibratedMagnification() ? calibratedMagnification : null;
+  set calibratedMag(double? value) {
+    if (value == null) {
+      clearCalibratedMagnification();
+    } else {
+      calibratedMagnification = value;
+    }
+  }
 
   // ── Click units ──────────────────────────────────────────────────────────────
 

@@ -3,7 +3,7 @@ import 'package:dart_bclibc/unit.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:dart_bclibc/bclibc.dart' as bclibc;
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:riverpod/riverpod.dart';
 
 import 'package:ebalistyka/core/services/ballistics_service.dart';
@@ -11,6 +11,7 @@ import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
 import 'package:ebalistyka/core/extensions/profile_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/service_providers.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
@@ -103,10 +104,6 @@ class ShotInfoViewModel extends AsyncNotifier<ShotInfoUiState> {
       if (ctx == null) {
         return const ShotInfoError(type: EmptyStateType.noProfile);
       }
-      if (ctx.profile.ammo.target == null) {
-        return const ShotInfoError(type: EmptyStateType.noAmmo);
-      }
-
       if (!ctx.profile.isReadyForCalculation) {
         return const ShotInfoError(type: EmptyStateType.incompleteAmmo);
       }
@@ -116,7 +113,9 @@ class ShotInfoViewModel extends AsyncNotifier<ShotInfoUiState> {
 
       final opts = TargetCalcOptions(
         targetDistM: conditions.distanceMeter,
-        stepM: settings.homeChartDistanceStep,
+        stepM: settings.homeChartDistanceStep > 0
+            ? settings.homeChartDistanceStep
+            : FC.distanceStep.minRaw,
       );
 
       final result = await ref
@@ -135,8 +134,8 @@ class ShotInfoViewModel extends AsyncNotifier<ShotInfoUiState> {
     UnitFormatter formatter,
     bclibc.HitResult hit,
   ) {
-    final weapon = profile.weapon.target;
-    final sight = profile.sight.target;
+    final weapon = profile.weapon;
+    final sight = profile.sight;
 
     final targetDistM = conditions.distanceMeter;
     final traj = hit.trajectory;
@@ -151,14 +150,11 @@ class ShotInfoViewModel extends AsyncNotifier<ShotInfoUiState> {
         : null;
 
     // Gyroscopic stability
-    final sightHeight = Distance.inch(sight?.sightHeightInch ?? 0.0);
-    final bcWeapon = weapon?.toWeapon(sightHeight);
-    String sgStr = nullStr;
-    if (bcWeapon != null) {
-      final currentShot = profile.toCurrentShot(conditions, bcWeapon);
-      final sg = currentShot.calculateStabilityCoefficient();
-      sgStr = sg.toStringAsFixed(2);
-    }
+    final sightHeight = Distance.inch(sight.sightHeightInch);
+    final bcWeapon = weapon.toWeapon(sightHeight);
+    final currentShot = profile.toCurrentShot(conditions, bcWeapon);
+    final sg = currentShot.calculateStabilityCoefficient();
+    final sgStr = sg.toStringAsFixed(2);
 
     // Trajectory markers
     final firstPoint = traj.isNotEmpty ? traj[0] : null;

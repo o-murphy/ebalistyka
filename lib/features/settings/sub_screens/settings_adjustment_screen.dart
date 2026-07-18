@@ -7,7 +7,7 @@ import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 
 // ─── Adjustment Display Screen ────────────────────────────────────────────────
 

@@ -15,7 +15,7 @@ import 'package:ebalistyka/shared/helpers/drag_model_info_formatter.dart';
 import 'package:ebalistyka/shared/models/adjustment_data.dart';
 import 'package:ebalistyka/shared/models/chart_point.dart';
 import 'package:ebalistyka/shared/models/formatted_row.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 
 import 'home_ui_state.dart';
 
@@ -99,23 +99,23 @@ String buildCartridgeInfoLine(
   UnitFormatter formatter,
   AppLocalizations l10n,
 ) {
-  final ammo = profile.ammo.target!;
-  final weapon = profile.weapon.target;
-  final sight = profile.sight.target;
+  final ammo = profile.ammo;
+  final weapon = profile.weapon;
+  final sight = profile.sight;
 
   final mvStr = formatter.velocity(ammo.mv);
   final dragStr = ammo.dragModelFormattedInfo;
 
   String? sgStr;
-  if (weapon != null && ammo.weightGrain > 0 && ammo.caliberInch > 0) {
-    final sightHeight = sight?.sightHeight ?? Distance.inch(0.0);
-    final bcWeapon = weapon.toWeapon(sightHeight);
+  if (ammo.weightGrain > 0 && ammo.caliberInch > 0) {
+    final bcWeapon = weapon.toWeapon(sight.sightHeight);
     final currentShot = profile.toCurrentShot(conditions, bcWeapon);
     final sg = currentShot.calculateStabilityCoefficient();
     sgStr = '${l10n.sgAbbr} ${sg.toFixedSafe(2)}';
   }
 
-  return '${ammo.projectileName ?? ammo.name};  $mvStr;  $dragStr${sgStr != null ? ';  $sgStr' : ''}';
+  final projectileName = ammo.projectileName;
+  return '${projectileName.isNotEmpty ? projectileName : ammo.name};  $mvStr;  $dragStr${sgStr != null ? ';  $sgStr' : ''}';
 }
 
 AdjustmentData buildAdjustment(
@@ -203,7 +203,9 @@ FormattedTableData buildHomeTable(
   UnitFormatter fmt,
   AppLocalizations l10n,
 ) {
-  final stepM = settings.homeTableDistanceStep;
+  final stepM = settings.homeTableDistanceStep > 0
+      ? settings.homeTableDistanceStep
+      : FC.distanceStep.minRaw;
   final distUnit = units.distanceUnit;
   final dropUnit = units.dropUnit;
   final velUnit = units.velocityUnit;
@@ -346,7 +348,9 @@ ChartData buildChartData(
   double targetM,
   GeneralSettings settings,
 ) {
-  final step = settings.homeChartDistanceStep;
+  final step = settings.homeChartDistanceStep > 0
+      ? settings.homeChartDistanceStep
+      : FC.distanceStep.minRaw;
 
   final points = List.generate((targetM / step).ceil() + 1, (i) => i * step)
       .where((d) => d <= targetM)

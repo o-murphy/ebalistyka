@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/features/home/sub_screens/weapon_wizard_notifier.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:dart_bclibc/unit.dart';
 
 // ── Fixtures ─────────────────────────────────────────────────────────────────
@@ -155,7 +155,7 @@ void main() {
       expect(w.name, 'New Rifle');
       expect(w.vendor, 'Remington');
       expect(w.caliberName, '.308 Win');
-      expect(w.caliber.in_(Unit.inch), closeTo(0.308, 0.001));
+      expect(w.caliber!.in_(Unit.inch), closeTo(0.308, 0.001));
       expect(w.twist.in_(Unit.inch), closeTo(10.0, 0.001));
       expect(w.isRightHandTwist, isTrue);
     });
@@ -179,7 +179,7 @@ void main() {
       expect(w.isRightHandTwist, isFalse);
     });
 
-    test('showExtraFields=false → barrelLength is null (sentinel -1)', () {
+    test('showExtraFields=false → barrelLength is null (unset)', () {
       final st = WeaponWizardState(
         name: 'Rifle',
         caliberRaw: 7.82,
@@ -189,7 +189,7 @@ void main() {
       );
       final w = st.buildWeapon();
       expect(w.barrelLength, isNull);
-      expect(w.barrelLengthInch, -1.0);
+      expect(w.hasBarrelLengthInch(), isFalse);
     });
 
     test('showExtraFields=true with barrelLengthRaw → barrelLength set', () {
@@ -212,7 +212,7 @@ void main() {
         twistRaw: 10.0,
       );
       final w = st.buildWeapon();
-      expect(w.vendor, isNull);
+      expect(w.vendor, '');
     });
   });
 }

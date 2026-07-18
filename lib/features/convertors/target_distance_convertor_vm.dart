@@ -58,18 +58,20 @@ class TargetAtDistanceConvertorViewModel
   TargetAtDistanceConvertorUiState build() {
     final s = ref.watch(convertorStateProvider);
     final l10n = ref.watch(appLocalizationsProvider);
-    final reticleImage = ref
+    final sightReticleImage = ref
         .watch(shotContextProvider)
         .value
         ?.profile
         .sight
-        .target
-        ?.reticleImage;
+        .reticleImage;
+    final reticleImage = sightReticleImage != null && sightReticleImage.isNotEmpty
+        ? sightReticleImage
+        : null;
     final targetImage = ref.watch(reticleSettingsProvider).targetImage;
     return _buildState(
-      sizeInch: s.distanceConvTargetSizeInch,
+      sizeInch: s.distanceConvTargetSize.sizeInch,
       sizeUnit: s.distanceConvTargetSizeUnitValue,
-      angularMil: s.distanceConvTargetSizeAngularMil,
+      angularMil: s.distanceConvTargetSize.sizeAngularMil,
       angularUnit: s.distanceConvTargetSizeAngularUnitValue,
       reticleImageId: reticleImage,
       targetImageId: targetImage,

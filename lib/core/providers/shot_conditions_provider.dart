@@ -1,152 +1,96 @@
 import 'package:dart_bclibc/unit.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/db_provider.dart';
 import 'package:riverpod/riverpod.dart';
 
 class ShotConditionsNotifier extends AsyncNotifier<ShootingConditions> {
-  Store get _store => ref.read(dbProvider);
-  Owner get _owner => ref.read(ownerProvider);
-
   @override
-  Future<ShootingConditions> build() async {
-    final owner = _owner;
-    final cond = _loadOrCreate(owner);
+  ShootingConditions build() =>
+      ref.watch(settingsDataProvider.select((s) => s.shootingConditions));
 
-    final subscription = _store
-        .box<ShootingConditions>()
-        .query(ShootingConditions_.owner.equals(owner.id))
-        .watch(triggerImmediately: false)
-        .listen((query) {
-          final updated = query.findFirst();
-          if (updated != null) state = AsyncData(updated);
-        });
-    ref.onDispose(subscription.cancel);
-
-    return cond;
-  }
-
-  ShootingConditions _loadOrCreate(Owner owner) {
-    final existing = _store
-        .box<ShootingConditions>()
-        .query(ShootingConditions_.owner.equals(owner.id))
-        .build()
-        .findFirst();
-    if (existing != null) return existing;
-    final cond = ShootingConditions()
-      ..owner.target = owner
-      ..humidityFrac = 0.5
-      ..distanceMeter = 450.0;
-    _store.box<ShootingConditions>().put(cond);
-    return cond;
-  }
-
-  ShootingConditions _load() => _loadOrCreate(_owner);
-
-  Future<void> _save(ShootingConditions cond) async {
-    _store.box<ShootingConditions>().put(cond);
-    // Stream triggers state update.
-  }
-
-  Future<void> restore(ConditionsExport export) async {
-    final current = state.value ?? _load();
-    await _save(
-      export.toEntity()
-        ..id = current.id
-        ..owner.target = _owner,
-    );
+  void _update(void Function(ShootingConditions) mutate) {
+    ref.read(settingsDataProvider.notifier).update((s) {
+      final copy = s.deepCopy();
+      mutate(copy.shootingConditions);
+      return copy;
+    });
   }
 
   // ── Distance / geometry ───────────────────────────────────────────────────────
 
   Future<void> updateDistance(double meters) async {
-    final s = state.value ?? _load();
-    s.distanceMeter = meters; // raw — no unit conversion needed
-    await _save(s);
+    final clamped = FC.targetDistance.clamp(meters);
+    _update((s) => s.distanceMeter = clamped); // raw — no unit conversion needed
   }
 
   Future<void> updateLookAngle(double degrees) async {
-    final s = state.value ?? _load();
-    s.lookAngle = Angular.degree(degrees);
-    await _save(s);
+    final clamped = FC.lookAngle.clamp(degrees);
+    _update((s) => s.lookAngle = Angular.degree(clamped));
   }
 
   Future<void> updateAltitude(double meters) async {
-    final s = state.value ?? _load();
-    s.altitudeMeter = meters; // raw — no unit conversion needed
-    await _save(s);
+    final clamped = FC.altitude.clamp(meters);
+    _update((s) => s.altitudeMeter = clamped); // raw — no unit conversion needed
   }
 
   // ── Atmosphere ────────────────────────────────────────────────────────────────
 
   Future<void> updateTemperature(double celsius) async {
-    final s = state.value ?? _load();
-    s.temperature = Temperature.celsius(celsius);
-    await _save(s);
+    final clamped = FC.temperature.clamp(celsius);
+    _update((s) => s.temperature = Temperature.celsius(clamped));
   }
 
   Future<void> updatePressure(double hpa) async {
-    final s = state.value ?? _load();
-    s.pressure = Pressure.hPa(hpa);
-    await _save(s);
+    final clamped = FC.pressure.clamp(hpa);
+    _update((s) => s.pressure = Pressure.hPa(clamped));
   }
 
   Future<void> updateHumidity(double fraction) async {
-    final s = state.value ?? _load();
-    s.humidity = Ratio.fraction(fraction);
-    await _save(s);
+    final clamped = FC.humidity.clamp(fraction);
+    _update((s) => s.humidity = Ratio.fraction(clamped));
   }
 
   Future<void> updatePowderTemperature(double celsius) async {
-    final s = state.value ?? _load();
-    s.powderTemperature = Temperature.celsius(celsius);
-    await _save(s);
+    final clamped = FC.temperature.clamp(celsius);
+    _update((s) => s.powderTemperature = Temperature.celsius(clamped));
   }
 
   // ── Wind ──────────────────────────────────────────────────────────────────────
 
   Future<void> updateWindSpeed(double mps) async {
-    final s = state.value ?? _load();
-    s.windSpeed = Velocity.mps(mps);
-    await _save(s);
+    final clamped = FC.windSpeed.clamp(mps);
+    _update((s) => s.windSpeed = Velocity.mps(clamped));
   }
 
   Future<void> updateWindDirection(double degrees) async {
-    final s = state.value ?? _load();
-    s.windDirection = Angular.degree(degrees);
-    await _save(s);
+    final clamped = FC.windDirection.clamp(degrees);
+    _update((s) => s.windDirection = Angular.degree(clamped));
   }
 
   // ── Flags ─────────────────────────────────────────────────────────────────────
 
   Future<void> updateUsePowderSensitivity(bool value) async {
-    final s = state.value ?? _load();
-    s.usePowderSensitivity = value;
-    await _save(s);
+    _update((s) => s.usePowderSensitivity = value);
   }
 
   Future<void> updateUseDiffPowderTemp(bool value) async {
-    final s = state.value ?? _load();
-    s.useDiffPowderTemp = value;
-    await _save(s);
+    _update((s) => s.useDiffPowderTemp = value);
   }
 
   Future<void> updateUseCoriolis(bool value) async {
-    final s = state.value ?? _load();
-    s.useCoriolis = value;
-    await _save(s);
+    _update((s) => s.useCoriolis = value);
   }
 
   Future<void> updateLatitude(double? degrees) async {
-    final s = state.value ?? _load();
-    s.latitude = Angular.degree(degrees ?? 0.0);
-    await _save(s);
+    final clamped = FC.latitude.clamp(degrees ?? 0.0);
+    _update((s) => s.latitude = Angular.degree(clamped));
   }
 
   Future<void> updateAzimuth(double? degrees) async {
-    final s = state.value ?? _load();
-    s.azimuth = Angular.degree(degrees ?? 0.0);
-    await _save(s);
+    final clamped = FC.azimuth.clamp(degrees ?? 0.0);
+    _update((s) => s.azimuth = Angular.degree(clamped));
   }
 }
 
