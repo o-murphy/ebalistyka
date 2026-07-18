@@ -8,6 +8,9 @@ abstract interface class Constraints {
   double get stepRaw;
   int get accuracy;
   int accuracyFor(Unit displayUnit);
+
+  /// Clamps [raw] (in [rawUnit]) into [minRaw, maxRaw].
+  double clamp(double raw);
 }
 
 /// Constraints for a physical quantity role — used by [UnitValueField]
@@ -51,6 +54,9 @@ class FieldConstraints implements Constraints {
     final d = (-log(step) / ln10).ceil();
     return d < 0 ? 0 : d;
   }
+
+  @override
+  double clamp(double raw) => raw.clamp(minRaw, maxRaw);
 }
 
 /// Extension of [FieldConstraints] with ruler/graph tick configuration.
@@ -83,6 +89,9 @@ class RulerConstraints implements Constraints {
 
   @override
   int accuracyFor(Unit displayUnit) => fc.accuracyFor(displayUnit);
+
+  @override
+  double clamp(double raw) => fc.clamp(raw);
 }
 
 // ─── Role definitions ─────────────────────────────────────────────────────────

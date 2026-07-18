@@ -4,7 +4,7 @@ import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/profile_extensions.dart';
 import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:riverpod/riverpod.dart';
 
 import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
@@ -155,7 +155,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
 
     final tempRaw = conditions.temperatureC;
     final altRaw = conditions.altitudeMeter;
-    final pressRaw = conditions.pressurehPa;
+    final pressRaw = conditions.pressureHPa;
     final humRaw = conditions.humidityFrac;
 
     final powderSensOn = conditions.usePowderSensitivity;
@@ -167,11 +167,10 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
     final curVelocity = profile?.getCalculatedCurrentVelocity(conditions);
     final mvStr = formatter.velocity(curVelocity);
 
-    String sensStr = '';
-    final ammo = profile?.ammo.target;
-    if (ammo != null) {
-      sensStr = formatter.powderSensitivity(ammo.powderSensitivity);
-    }
+    final ammo = profile?.ammo;
+    final sensStr = ammo != null
+        ? formatter.powderSensitivity(ammo.powderSensitivity)
+        : '';
 
     return ConditionsUiState(
       temperature: _field(

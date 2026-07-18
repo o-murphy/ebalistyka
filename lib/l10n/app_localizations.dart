@@ -158,23 +158,23 @@ abstract class AppLocalizations {
   /// **'Adjustment Display'**
   String get adjustmentDisplayScreenTitle;
 
-  /// App bar title for the user's saved ammo list screen
+  /// App bar title for the Current Profile screen
   ///
   /// In en, this message translates to:
-  /// **'My Ammo'**
-  String get myAmmoScreenTitle;
+  /// **'Profile'**
+  String get myProfile;
 
-  /// App bar title for the user's saved sights list screen
-  ///
-  /// In en, this message translates to:
-  /// **'My Sights'**
-  String get mySights;
-
-  /// App bar title for the user's saved profiles list screen
+  /// App bar title for the profiles list screen
   ///
   /// In en, this message translates to:
   /// **'My Profiles'**
-  String get myProfiles;
+  String get profilesListScreenTitle;
+
+  /// Badge label marking the currently active profile in the profiles list
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeProfileLabel;
 
   /// App bar title when creating a new weapon
   ///
@@ -2372,10 +2372,10 @@ abstract class AppLocalizations {
   /// **'From collection'**
   String get fromCollectionAction;
 
-  /// Confirmation dialog body when removing a profile and its associated weapon
+  /// Confirmation dialog body when removing a profile together with its embedded weapon, ammo, and sight
   ///
   /// In en, this message translates to:
-  /// **'Remove \"{name}\" and its weapon?'**
+  /// **'Remove \"{name}\" and its weapon, ammo, and sight?'**
   String removeProfileContent(String name);
 
   /// Action sheet title for choosing the export file format

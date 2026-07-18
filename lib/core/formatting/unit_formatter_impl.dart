@@ -3,7 +3,7 @@ import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';

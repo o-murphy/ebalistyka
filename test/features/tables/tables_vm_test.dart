@@ -13,7 +13,7 @@ import 'package:ebalistyka/core/services/ballistics_service.dart';
 import 'package:ebalistyka/core/providers/service_providers.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_context_provider.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
 import 'package:ebalistyka/features/tables/details_table_mv.dart';
 
@@ -41,13 +41,14 @@ Profile _makeProfile() {
     ..caliberInch = 0.308
     ..lengthInch = 1.22
     ..muzzleVelocityMps = 800.0
-    ..muzzleVelocityTemperatureC = 15.0
-    ..zeroDistanceMeter = 100.0;
+    ..muzzleVelocityTemperatureC = 15.0;
+  ammo.ensureZero().distanceMeter = 100.0;
 
-  final profile = Profile()..name = 'Test Shot';
-  profile.weapon.target = weapon;
-  profile.sight.target = sight;
-  profile.ammo.target = ammo;
+  final profile = Profile()
+    ..name = 'Test Shot'
+    ..weapon = weapon
+    ..sight = sight
+    ..ammo = ammo;
   return profile;
 }
 
@@ -65,7 +66,7 @@ ShootingConditions _makeConditions({
   return ShootingConditions()
     ..temperatureC = tempC
     ..altitudeMeter = altM
-    ..pressurehPa = pressHPa
+    ..pressureHPa = pressHPa
     ..humidityFrac = humidity
     ..powderTemperatureC = powderTempC
     ..windSpeedMps = windMps
@@ -188,7 +189,7 @@ class _FakeSettingsNotifier extends SettingsNotifier {
   final GeneralSettings _settings;
   _FakeSettingsNotifier(this._settings);
   @override
-  Future<GeneralSettings> build() async => _settings;
+  GeneralSettings build() => _settings;
 }
 
 ProviderContainer _createContainer({
@@ -388,7 +389,7 @@ void main() {
         conditions: _makeConditions(),
         service: service2,
         tablesSettings: TablesSettings()
-          ..hiddenCols = ['time', 'velocity', 'mach', 'energy'],
+          ..hiddenCols.addAll(['time', 'velocity', 'mach', 'energy']),
       );
       addTearDown(containerHidden.dispose);
       final stateHidden = await _waitFor<TrajectoryTablesUiReady>(
@@ -501,9 +502,8 @@ class _ThrowingBallisticsService implements BallisticsService {
   Future<BallisticsResult> calculateForTarget(
     Profile profile,
     ShootingConditions conditions,
-    TargetCalcOptions opts, {
-    double? cachedZeroElevRad,
-  }) async {
+    TargetCalcOptions opts,
+  ) async {
     throw Exception('Boom');
   }
 
@@ -511,9 +511,8 @@ class _ThrowingBallisticsService implements BallisticsService {
   Future<BallisticsResult> calculateTable(
     Profile profile,
     ShootingConditions conditions,
-    TableCalcOptions opts, {
-    double? cachedZeroElevRad,
-  }) async {
+    TableCalcOptions opts,
+  ) async {
     throw Exception('Boom');
   }
 }

@@ -9,7 +9,7 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 
 import 'package:ebalistyka/core/services/ballistics_service.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
@@ -64,6 +64,7 @@ class TrajectoryTablesUiError extends TrajectoryTablesUiState {
 class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
   BallisticsResult? _lastResult;
   Profile? _lastProfile;
+  int _generation = 0;
 
   @override
   Future<TrajectoryTablesUiState> build() async {
@@ -90,6 +91,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
   }
 
   Future<void> _recalculate() async {
+    final generation = ++_generation;
     final ctx = ref.read(shotContextProvider).value;
     final tablesSettings = ref.read(tablesSettingsProvider);
     final units = ref.read(unitSettingsProvider);
@@ -97,6 +99,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
     final l10n = ref.read(appLocalizationsProvider);
 
     if (ctx == null) {
+      if (generation != _generation) return;
       state = const AsyncData(
         TrajectoryTablesUiEmpty(type: EmptyStateType.noProfile),
       );
@@ -106,14 +109,10 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
     final profile = ctx.profile;
     final conditions = ctx.conditions;
 
-    if (profile.ammo.target == null) {
-      state = const AsyncData(
-        TrajectoryTablesUiEmpty(type: EmptyStateType.noAmmo),
-      );
-      return;
-    }
-
     if (!profile.isReadyForCalculation) {
+      if (generation != _generation) return;
+      _lastResult = null;
+      _lastProfile = null;
       state = const AsyncData(
         TrajectoryTablesUiEmpty(type: EmptyStateType.incompleteAmmo),
       );
@@ -125,18 +124,20 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
     }
 
     try {
+      final tableStep = tablesSettings.distanceStepMeter > 0
+          ? tablesSettings.distanceStepMeter
+          : FC.distanceStep.minRaw;
       final opts = TableCalcOptions(
         startM: tablesSettings.distanceStartMeter,
         endM: tablesSettings.distanceEndMeter,
-        stepM: tablesSettings.distanceStepMeter < 1.0
-            ? tablesSettings.distanceStepMeter
-            : 1.0,
+        stepM: tableStep < 1.0 ? tableStep : 1.0,
       );
 
       final result = await ref
           .read(ballisticsServiceProvider)
           .calculateTable(profile, conditions, opts);
       if (!ref.mounted) return;
+      if (generation != _generation) return;
       _lastResult = result;
       _lastProfile = profile;
 
@@ -152,6 +153,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
 
       state = AsyncData(uiState);
     } catch (e) {
+      if (generation != _generation) return;
       state = AsyncData(TrajectoryTablesUiError(e.toString()));
     }
   }
@@ -198,28 +200,27 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
   }) {
     final hit = result.hitResult;
 
+    final tableStep = tablesSettings.distanceStepMeter > 0
+        ? tablesSettings.distanceStepMeter
+        : FC.distanceStep.minRaw;
     final filtered = _filterTraj(
       hit.trajectory,
       tablesSettings.distanceStartMeter,
       tablesSettings.distanceEndMeter,
-      tablesSettings.distanceStepMeter,
+      tableStep,
     );
 
-    final zeroDistM = profile.ammo.target!.zeroDistanceMeter;
+    final zeroDistM = profile.ammo.zero.distanceMeter;
 
-    double horizontalClickSizeMil = 0.0;
-    double verticalClickSizeMil = 0.0;
-    final sight = profile.sight.target;
-    if (sight != null) {
-      horizontalClickSizeMil = Angular(
-        sight.horizontalClick,
-        sight.horizontalClickUnitValue,
-      ).in_(Unit.mil);
-      verticalClickSizeMil = Angular(
-        sight.verticalClick,
-        sight.verticalClickUnitValue,
-      ).in_(Unit.mil);
-    }
+    final sight = profile.sight;
+    final horizontalClickSizeMil = Angular(
+      sight.horizontalClick,
+      sight.horizontalClickUnitValue,
+    ).in_(Unit.mil);
+    final verticalClickSizeMil = Angular(
+      sight.verticalClick,
+      sight.verticalClickUnitValue,
+    ).in_(Unit.mil);
 
     final mainTable = _buildTable(
       filtered,

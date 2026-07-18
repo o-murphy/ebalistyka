@@ -17,7 +17,7 @@ import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:flutter/widgets.dart' show Locale;
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 
 import 'package:dart_bclibc/bclibc.dart' as bclibc;
@@ -54,14 +54,15 @@ Profile _makeProfile({
     ..muzzleVelocityMps = 800.0
     ..muzzleVelocityTemperatureC = 15.0
     ..zeroOffsetYUnitValue = Unit.mil
-    ..zeroOffsetY = zeroOffsetYMil
-    ..zeroOffsetXUnitValue = Unit.mil
-    ..zeroOffsetX = zeroOffsetXMil;
+    ..zeroOffsetXUnitValue = Unit.mil;
+  ammo.ensureZero().offsetY = zeroOffsetYMil;
+  ammo.ensureZero().offsetX = zeroOffsetXMil;
 
-  final profile = Profile()..name = 'Test Shot';
-  profile.weapon.target = weapon;
-  profile.sight.target = sight;
-  profile.ammo.target = ammo;
+  final profile = Profile()
+    ..name = 'Test Shot'
+    ..weapon = weapon
+    ..sight = sight
+    ..ammo = ammo;
   return profile;
 }
 
@@ -72,7 +73,7 @@ ShootingConditions _makeConditions({double targetM = 300.0}) =>
       ..windDirectionDeg = 90.0
       ..temperatureC = 20.0
       ..altitudeMeter = 150.0
-      ..pressurehPa = 1013.25
+      ..pressureHPa = 1013.25
       ..humidityFrac = 0.50;
 
 List<bclibc.TrajectoryData> _makeTraj({int points = 31, double stepM = 10.0}) {
@@ -172,7 +173,7 @@ class _FakeSettingsNotifier extends SettingsNotifier {
   final GeneralSettings _s;
   _FakeSettingsNotifier(this._s);
   @override
-  Future<GeneralSettings> build() async => _s;
+  GeneralSettings build() => _s;
 }
 
 ProviderContainer _makeContainer({

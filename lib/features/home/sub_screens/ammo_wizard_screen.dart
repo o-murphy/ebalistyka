@@ -26,7 +26,7 @@ import 'package:ebalistyka/features/home/sub_screens/powder_sens_table_editor_sc
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:ebalistyka/shared/widgets/wizard_action_bar.dart';
 import 'package:ebalistyka/shared/widgets/wizard_name_field.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter/material.dart' hide Velocity;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -37,7 +37,7 @@ class AmmoWizardScreen extends ConsumerStatefulWidget {
   const AmmoWizardScreen({
     this.initial,
     this.caliberInch,
-    this.weaponId,
+    this.profileUuid,
     super.key,
   });
 
@@ -50,10 +50,10 @@ class AmmoWizardScreen extends ConsumerStatefulWidget {
   /// Displayed readonly — never entered manually.
   final double? caliberInch;
 
-  /// ID of the weapon associated with this ammo session.
+  /// uuid of the profile associated with this ammo session.
   /// When set and a caliber mismatch exists, the action sheet offers an
   /// option to update the weapon caliber instead of the ammo.
-  final int? weaponId;
+  final String? profileUuid;
 
   @override
   ConsumerState<AmmoWizardScreen> createState() => _AmmoWizardScreenState();
@@ -108,7 +108,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
 
   void _scheduleCaliberMismatchSheet({required AppLocalizations l10n}) {
     final weaponCaliber = widget.caliberInch;
-    final ammoCaliber = widget.initial?.caliber.in_(Unit.inch);
+    final ammoCaliber = widget.initial?.caliber?.in_(Unit.inch);
     if (weaponCaliber == null || ammoCaliber == null) return;
     if ((weaponCaliber - ammoCaliber).abs() < 0.0001) return;
 
@@ -135,21 +135,25 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
                   ).in_(FC.projectileDiameter.rawUnit),
                 ),
           ),
-          if (widget.weaponId != null)
+          if (widget.profileUuid != null)
             ActionSheetItem(
               icon: IconDef.weapon,
               title: l10n.updateWeaponCaliberAction,
               subtitle: '$weaponStr → $ammoStr',
               onTap: () async {
+                final profileUuid = widget.profileUuid!;
                 final weapon = ref
                     .read(appStateProvider)
                     .value
-                    ?.weapons
-                    .where((w) => w.id == widget.weaponId)
-                    .firstOrNull;
+                    ?.profiles
+                    .where((p) => p.uuid == profileUuid)
+                    .firstOrNull
+                    ?.weapon;
                 if (weapon == null) return;
                 weapon.caliber = Distance.inch(ammoCaliber);
-                await ref.read(appStateProvider.notifier).saveWeapon(weapon);
+                await ref
+                    .read(appStateProvider.notifier)
+                    .setProfileWeapon(profileUuid, weapon);
               },
             ),
         ],

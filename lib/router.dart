@@ -2,7 +2,7 @@ import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/features/convertors/sub_screens/convertors_sub_screens.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/features/home/sub_screens/weapon_wizard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,28 +35,27 @@ abstract final class Routes {
 
   // Profile (profiles) stack
   static const profiles = '/home/profiles';
+  static const profilesList = '/home/profiles/list';
 
   // Profile add — weapon selection
   static const profileAddWeaponCreate = '/home/profiles/weapon-create';
   static const profileAddWeaponCollection = '/home/profiles/weapon-collection';
 
-  // Ammo select (from profile card)
-  static const ammoSelect = '/home/profiles/ammo-select';
-  static const ammoCreate = '/home/profiles/ammo-select/create';
+  // Ammo replace (from Current Profile screen)
+  static const ammoCreate = '/home/profiles/ammo-create';
   static const cartridgeCollection =
-      '/home/profiles/ammo-select/cartridge-collection';
+      '/home/profiles/ammo-create/cartridge-collection';
   static const bulletCollection =
-      '/home/profiles/ammo-select/bullet-collection';
+      '/home/profiles/ammo-create/bullet-collection';
 
-  // Sight select (from profile card)
-  static const sightSelect = '/home/profiles/sight-select';
-  static const sightCreate = '/home/profiles/sight-select/create';
-  static const sightCollection = '/home/profiles/sight-select/collection';
+  // Sight replace (from Current Profile screen)
+  static const sightCreate = '/home/profiles/sight-create';
+  static const sightCollection = '/home/profiles/sight-create/collection';
   static const reticleViewReticlePicker = '/home/reticle-view/reticle-picker';
   static const reticleViewTargetPicker = '/home/reticle-view/target-picker';
 
   static const sightReticlePicker =
-      '/home/profiles/sight-select/create/reticle-picker';
+      '/home/profiles/sight-create/reticle-picker';
 
   // Profile inline edits (from profile card)
   static const profileEditWeapon = '/home/profiles/weapon-edit';
@@ -128,6 +127,11 @@ final appRouter = GoRouter(
                   path: 'profiles',
                   builder: (_, _) => const ProfilesScreen(),
                   routes: [
+                    // ── Profiles list ────────────────────────────────────────
+                    GoRoute(
+                      path: 'list',
+                      builder: (_, _) => const ProfilesListScreen(),
+                    ),
                     // ── Profile add ─────────────────────────────────────────
                     GoRoute(
                       path: 'weapon-create',
@@ -137,52 +141,37 @@ final appRouter = GoRouter(
                       path: 'weapon-collection',
                       builder: (_, _) => const WeaponCollectionScreen(),
                     ),
-                    // ── Ammo select ─────────────────────────────────────────
+                    // ── Ammo replace ─────────────────────────────────────────
                     GoRoute(
-                      path: 'ammo-select',
-                      builder: (_, state) =>
-                          MyAmmoScreen(profileId: state.extra as String?),
-                      routes: [
-                        GoRoute(
-                          path: 'create',
-                          builder: (_, state) => AmmoWizardScreen(
-                            caliberInch: state.extra as double?,
-                          ),
-                        ),
-                        GoRoute(
-                          path: 'cartridge-collection',
-                          builder: (_, state) => AmmoCollectionScreen(
-                            filterBullet: false,
-                            caliberInch: state.extra as double?,
-                          ),
-                        ),
-                        GoRoute(
-                          path: 'bullet-collection',
-                          builder: (_, state) => AmmoCollectionScreen(
-                            filterBullet: true,
-                            caliberInch: state.extra as double?,
-                          ),
-                        ),
-                      ],
-                    ),
-                    // ── Sight select ────────────────────────────────────────
-                    GoRoute(
-                      path: 'sight-select',
-                      builder: (_, state) => MySightsCollectionScreen(
-                        profileId: state.extra as String?,
+                      path: 'ammo-create',
+                      builder: (_, state) => AmmoWizardScreen(
+                        caliberInch: state.extra as double?,
                       ),
+                    ),
+                    GoRoute(
+                      path: 'cartridge-collection',
+                      builder: (_, state) => AmmoCollectionScreen(
+                        filterBullet: false,
+                        caliberInch: state.extra as double?,
+                      ),
+                    ),
+                    GoRoute(
+                      path: 'bullet-collection',
+                      builder: (_, state) => AmmoCollectionScreen(
+                        filterBullet: true,
+                        caliberInch: state.extra as double?,
+                      ),
+                    ),
+                    // ── Sight replace ────────────────────────────────────────
+                    GoRoute(
+                      path: 'sight-create',
+                      builder: (_, _) => const SightWizardScreen(),
                       routes: [
                         GoRoute(
-                          path: 'create',
-                          builder: (_, _) => const SightWizardScreen(),
-                          routes: [
-                            GoRoute(
-                              path: 'reticle-picker',
-                              builder: (_, state) => ReticlePickerScreen(
-                                currentReticleId: state.extra as String?,
-                              ),
-                            ),
-                          ],
+                          path: 'reticle-picker',
+                          builder: (_, state) => ReticlePickerScreen(
+                            currentReticleId: state.extra as String?,
+                          ),
                         ),
                         GoRoute(
                           path: 'collection',
@@ -199,11 +188,11 @@ final appRouter = GoRouter(
                     GoRoute(
                       path: 'ammo-edit',
                       builder: (_, state) {
-                        final extra = state.extra as (Ammo?, double?, int?)?;
+                        final extra = state.extra as (Ammo?, double?, String?)?;
                         return AmmoWizardScreen(
                           initial: extra?.$1,
                           caliberInch: extra?.$2,
-                          weaponId: extra?.$3,
+                          profileUuid: extra?.$3,
                         );
                       },
                       routes: [

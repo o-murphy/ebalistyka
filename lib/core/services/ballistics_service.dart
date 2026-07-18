@@ -1,4 +1,4 @@
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:dart_bclibc/bclibc.dart' as bclibc;
 
 class TableCalcOptions {

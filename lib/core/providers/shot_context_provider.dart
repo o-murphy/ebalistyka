@@ -1,4 +1,4 @@
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
 import 'package:riverpod/riverpod.dart';

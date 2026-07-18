@@ -2,7 +2,7 @@ import 'package:test/test.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter_impl.dart';
 import 'package:ebalistyka/l10n/app_localizations_en.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:dart_bclibc/unit.dart';
 
 final _l10n = AppLocalizationsEn();

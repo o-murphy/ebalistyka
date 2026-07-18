@@ -1,124 +1,125 @@
 import 'package:dart_bclibc/unit.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 
 extension ConvertorsStateExtension on ConvertorsState {
-  Distance get lengthValue => Distance.inch(lengthValueInch);
-  set lengthValue(Distance v) => lengthValueInch = v.in_(Unit.inch);
+  Distance get lengthValue => Distance.inch(length.value);
+  set lengthValue(Distance v) => ensureLength().value = v.in_(Unit.inch);
 
   Unit get lengthUnit => Unit.values.firstWhere(
-    (u) => u.name == lengthLastUnit,
+    (u) => u.name == length.lastUnit,
     orElse: () => Unit.inch,
   );
-  set lengthUnit(Unit v) => lengthLastUnit = v.name;
+  set lengthUnit(Unit v) => ensureLength().lastUnit = v.name;
 
-  Weight get weightValue => Weight.grain(weightValueGrain);
-  set weightValue(Weight v) => weightValueGrain = v.in_(Unit.grain);
+  Weight get weightValue => Weight.grain(weight.value);
+  set weightValue(Weight v) => ensureWeight().value = v.in_(Unit.grain);
 
   Unit get weightUnit => Unit.values.firstWhere(
-    (u) => u.name == weightLastUnit,
+    (u) => u.name == weight.lastUnit,
     orElse: () => Unit.grain,
   );
-  set weightUnit(Unit v) => weightLastUnit = v.name;
+  set weightUnit(Unit v) => ensureWeight().lastUnit = v.name;
 
-  Pressure get pressureValue => Pressure.mmHg(pressureValueMmHg);
-  set pressureValue(Pressure v) => pressureValueMmHg = v.in_(Unit.mmHg);
+  Pressure get pressureValue => Pressure.mmHg(pressure.value);
+  set pressureValue(Pressure v) => ensurePressure().value = v.in_(Unit.mmHg);
 
   Unit get pressureUnit => Unit.values.firstWhere(
-    (u) => u.name == pressureLastUnit,
+    (u) => u.name == pressure.lastUnit,
     orElse: () => Unit.hPa,
   );
-  set pressureUnit(Unit v) => pressureLastUnit = v.name;
+  set pressureUnit(Unit v) => ensurePressure().lastUnit = v.name;
 
-  Temperature get temperatureValue => Temperature.fahrenheit(temperatureValueF);
+  Temperature get temperatureValue => Temperature.fahrenheit(temperature.value);
   set temperatureValue(Temperature v) =>
-      temperatureValueF = v.in_(Unit.fahrenheit);
+      ensureTemperature().value = v.in_(Unit.fahrenheit);
 
   Unit get temperatureUnit => Unit.values.firstWhere(
-    (u) => u.name == temperatureLastUnit,
+    (u) => u.name == temperature.lastUnit,
     orElse: () => Unit.celsius,
   );
-  set temperatureUnit(Unit v) => temperatureLastUnit = v.name;
+  set temperatureUnit(Unit v) => ensureTemperature().lastUnit = v.name;
 
-  Torque get torqueValue => Torque.newtonMeter(torqueValueNewtonMeter);
-  set torqueValue(Torque v) => torqueValueNewtonMeter = v.in_(Unit.newtonMeter);
+  Torque get torqueValue => Torque.newtonMeter(torque.value);
+  set torqueValue(Torque v) => ensureTorque().value = v.in_(Unit.newtonMeter);
 
   Unit get torqueUnit => Unit.values.firstWhere(
-    (u) => u.name == torqueLastUnit,
+    (u) => u.name == torque.lastUnit,
     orElse: () => Unit.newtonMeter,
   );
-  set torqueUnit(Unit v) => torqueLastUnit = v.name;
+  set torqueUnit(Unit v) => ensureTorque().lastUnit = v.name;
 
   Distance get anglesConvDistanceValue =>
-      Distance.meter(anglesConvDistanceValueMeter);
+      Distance.meter(angles.distanceValueMeter);
   set anglesConvDistanceValue(Distance v) =>
-      anglesConvDistanceValueMeter = v.in_(Unit.meter);
+      ensureAngles().distanceValueMeter = v.in_(Unit.meter);
 
   Unit get anglesConvDistanceUnit => Unit.values.firstWhere(
-    (u) => u.name == anglesConvDistanceLastUnit,
+    (u) => u.name == angles.distanceLastUnit,
     orElse: () => Unit.meter,
   );
-  set anglesConvDistanceUnit(Unit v) => anglesConvDistanceLastUnit = v.name;
+  set anglesConvDistanceUnit(Unit v) =>
+      ensureAngles().distanceLastUnit = v.name;
 
-  Angular get anglesConvAngularValue => Angular.mil(anglesConvAngularValueMil);
+  Angular get anglesConvAngularValue => Angular.mil(angles.angularValueMil);
   set anglesConvAngularValue(Angular v) =>
-      anglesConvAngularValueMil = v.in_(Unit.mil);
+      ensureAngles().angularValueMil = v.in_(Unit.mil);
 
   Unit get anglesConvAngularUnit => Unit.values.firstWhere(
-    (u) => u.name == anglesConvAngularLastUnit,
+    (u) => u.name == angles.angularLastUnit,
     orElse: () => Unit.mil,
   );
-  set anglesConvAngularUnit(Unit v) => anglesConvAngularLastUnit = v.name;
+  set anglesConvAngularUnit(Unit v) => ensureAngles().angularLastUnit = v.name;
 
   Unit get anglesConvOutputUnit => Unit.values.firstWhere(
-    (u) => u.name == anglesConvOutputLastUnit,
+    (u) => u.name == angles.outputLastUnit,
     orElse: () => Unit.centimeter,
   );
-  set anglesConvOutputUnit(Unit v) => anglesConvOutputLastUnit = v.name;
+  set anglesConvOutputUnit(Unit v) => ensureAngles().outputLastUnit = v.name;
 
-  Distance get distanceConvTargetSize =>
-      Distance.inch(distanceConvTargetSizeInch);
-  set distanceConvTargetSize(Distance v) =>
-      distanceConvTargetSizeInch = v.in_(Unit.inch);
+  Distance get distanceConvTargetSizeValue =>
+      Distance.inch(distanceConvTargetSize.sizeInch);
+  set distanceConvTargetSizeValue(Distance v) =>
+      ensureDistanceConvTargetSize().sizeInch = v.in_(Unit.inch);
 
   Unit get distanceConvTargetSizeUnitValue => Unit.values.firstWhere(
-    (u) => u.name == distanceConvTargetSizeUnit,
+    (u) => u.name == distanceConvTargetSize.sizeUnit,
     orElse: () => Unit.inch,
   );
   set distanceConvTargetSizeUnitValue(Unit v) =>
-      distanceConvTargetSizeUnit = v.name;
+      ensureDistanceConvTargetSize().sizeUnit = v.name;
 
   Angular get distanceConvTargetSizeAngular =>
-      Angular.mil(distanceConvTargetSizeAngularMil);
+      Angular.mil(distanceConvTargetSize.sizeAngularMil);
   set distanceConvTargetSizeAngular(Angular v) =>
-      distanceConvTargetSizeAngularMil = v.in_(Unit.mil);
+      ensureDistanceConvTargetSize().sizeAngularMil = v.in_(Unit.mil);
 
   Unit get distanceConvTargetSizeAngularUnitValue => Unit.values.firstWhere(
-    (u) => u.name == distanceConvTargetSizeAngularUnit,
+    (u) => u.name == distanceConvTargetSize.sizeAngularUnit,
     orElse: () => Unit.mil,
   );
   set distanceConvTargetSizeAngularUnitValue(Unit v) =>
-      distanceConvTargetSizeAngularUnit = v.name;
+      ensureDistanceConvTargetSize().sizeAngularUnit = v.name;
 
-  Velocity get velocityValue => Velocity.mps(velocityValueMps);
-  set velocityValue(Velocity v) => velocityValueMps = v.in_(Unit.mps);
+  Velocity get velocityValue => Velocity.mps(velocity.valueMps);
+  set velocityValue(Velocity v) => ensureVelocity().valueMps = v.in_(Unit.mps);
 
   Unit get velocityUnit => Unit.values.firstWhere(
-    (u) => u.name == velocityLastUnit,
+    (u) => u.name == velocity.lastUnit,
     orElse: () => Unit.mps,
   );
-  set velocityUnit(Unit v) => velocityLastUnit = v.name;
+  set velocityUnit(Unit v) => ensureVelocity().lastUnit = v.name;
 
   Temperature get velocityAtmoTemperature =>
-      Temperature.celsius(velocityAtmoTemperatureC);
+      Temperature.celsius(velocity.atmoTemperatureC);
   set velocityAtmoTemperature(Temperature v) =>
-      velocityAtmoTemperatureC = v.in_(Unit.celsius);
+      ensureVelocity().atmoTemperatureC = v.in_(Unit.celsius);
 
-  Pressure get velocityAtmoPressure => Pressure.hPa(velocityAtmoPressureHPa);
+  Pressure get velocityAtmoPressure => Pressure.hPa(velocity.atmoPressureHPa);
   set velocityAtmoPressure(Pressure v) =>
-      velocityAtmoPressureHPa = v.in_(Unit.hPa);
+      ensureVelocity().atmoPressureHPa = v.in_(Unit.hPa);
 
   Distance get velocityAtmoAltitude =>
-      Distance.meter(velocityAtmoAltitudeMeter);
+      Distance.meter(velocity.atmoAltitudeMeter);
   set velocityAtmoAltitude(Distance v) =>
-      velocityAtmoAltitudeMeter = v.in_(Unit.meter);
+      ensureVelocity().atmoAltitudeMeter = v.in_(Unit.meter);
 }

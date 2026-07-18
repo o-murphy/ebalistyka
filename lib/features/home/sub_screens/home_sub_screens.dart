@@ -1,7 +1,6 @@
 export 'shot_info_screen.dart';
 export 'my_profiles_screen.dart';
-export 'my_ammo_screen.dart';
-export 'my_sights_screen.dart';
+export 'profiles_list_screen.dart';
 export 'sight_wizard_screen.dart';
 export 'ammo_wizard_screen.dart';
 export 'multi_bc_editor_screen.dart';

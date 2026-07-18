@@ -3,6 +3,7 @@ export 'src/ebcp_validator.dart';
 export 'src/msg_codec.dart';
 export 'src/msg_store.dart';
 export 'src/profiles_file.dart';
+export 'src/profiles_ops.dart';
 export 'src/profiles_validator.dart';
 export 'src/proto/ebcp.pb.dart';
 export 'src/proto/profiles.pb.dart';

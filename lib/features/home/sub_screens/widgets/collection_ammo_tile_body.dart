@@ -13,7 +13,7 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/ammo_svg_view.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -45,9 +45,9 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (ammo.vendor != null && ammo.vendor!.isNotEmpty)
+                      if (ammo.vendor.isNotEmpty)
                         Text(
-                          ammo.vendor!,
+                          ammo.vendor,
                           style: const TextStyle(
                             fontSize: 11,
                             color: Colors.grey,
@@ -64,10 +64,9 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                         overflow: TextOverflow.visible,
                         softWrap: true,
                       ),
-                      if (ammo.projectileName != null &&
-                          ammo.projectileName!.isNotEmpty)
+                      if (ammo.projectileName.isNotEmpty)
                         Text(
-                          ammo.projectileName!,
+                          ammo.projectileName,
                           style: const TextStyle(fontSize: 13),
                           overflow: TextOverflow.visible,
                           softWrap: true,

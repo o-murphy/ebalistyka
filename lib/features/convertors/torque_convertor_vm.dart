@@ -6,7 +6,7 @@ import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
 import 'package:ebalistyka/features/convertors/simple_convertor_vm.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:riverpod/riverpod.dart';
 
 class TorqueConvertorViewModel extends SimpleConvertorVm {
@@ -14,7 +14,7 @@ class TorqueConvertorViewModel extends SimpleConvertorVm {
   Unit get baseUnit => Unit.newtonMeter;
 
   @override
-  double getRawBase(ConvertorsState s) => s.torqueValueNewtonMeter;
+  double getRawBase(ConvertorsState s) => s.torque.value;
 
   @override
   Unit getInputUnit(ConvertorsState s) => s.torqueUnit;

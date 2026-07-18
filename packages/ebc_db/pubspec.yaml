@@ -11,6 +11,7 @@ dependencies:
   protobuf: ^6.0.0
   crypto: ^3.0.3
   json_schema: ^5.2.0
+  uuid: ^4.6.0
   # Only used by bin/generate_proto.dart (a maintainer-only script, not
   # imported by lib/) — a regular dependency rather than a dev_dependency
   # because bin/ scripts are still part of what a `pub global activate`

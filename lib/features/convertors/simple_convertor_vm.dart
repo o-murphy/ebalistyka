@@ -7,7 +7,7 @@ import 'package:ebalistyka/core/providers/convertors_notifier.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/features/convertors/generic_convertor_vm_field.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:riverpod/riverpod.dart';
 
 class ConvertorSection {
