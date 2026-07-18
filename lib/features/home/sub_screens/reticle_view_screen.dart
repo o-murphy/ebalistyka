@@ -78,7 +78,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
     _targetImage = reticle.targetImage;
 
     final ctx = ref.read(shotContextProvider).value;
-    final s = ctx?.profile.sight.target;
+    final s = ctx?.profile.sight;
     _reticleImage = s?.reticleImage;
     _vClickUnit = s?.verticalClickUnitValue ?? Unit.mil;
     _vClickRaw = s != null

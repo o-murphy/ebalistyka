@@ -6,7 +6,7 @@ import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
 import 'package:ebalistyka/features/convertors/simple_convertor_vm.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:riverpod/riverpod.dart';
 
 class LengthConvertorViewModel extends SimpleConvertorVm {
@@ -14,7 +14,7 @@ class LengthConvertorViewModel extends SimpleConvertorVm {
   Unit get baseUnit => Unit.inch;
 
   @override
-  double getRawBase(ConvertorsState s) => s.lengthValueInch;
+  double getRawBase(ConvertorsState s) => s.length.value;
 
   @override
   Unit getInputUnit(ConvertorsState s) => s.lengthUnit;

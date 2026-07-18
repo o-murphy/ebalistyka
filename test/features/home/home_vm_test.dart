@@ -15,7 +15,7 @@ import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:flutter/widgets.dart' show Locale;
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 
 import 'package:dart_bclibc/bclibc.dart' as bclibc;
@@ -44,10 +44,11 @@ Profile _makeProfile() {
     ..muzzleVelocityMps = 800.0
     ..muzzleVelocityTemperatureC = 15.0;
 
-  final profile = Profile()..name = 'Test Shot';
-  profile.weapon.target = weapon;
-  profile.sight.target = sight;
-  profile.ammo.target = ammo;
+  final profile = Profile()
+    ..name = 'Test Shot'
+    ..weapon = weapon
+    ..sight = sight
+    ..ammo = ammo;
   return profile;
 }
 
@@ -66,7 +67,7 @@ ShootingConditions _makeConditions({
     ..windDirectionDeg = windDeg
     ..temperatureC = tempC
     ..altitudeMeter = altM
-    ..pressurehPa = pressHPa
+    ..pressureHPa = pressHPa
     ..humidityFrac = humidity;
 }
 
@@ -181,7 +182,7 @@ class _FakeSettingsNotifier extends SettingsNotifier {
   final GeneralSettings _settings;
   _FakeSettingsNotifier(this._settings);
   @override
-  Future<GeneralSettings> build() async => _settings;
+  GeneralSettings build() => _settings;
 }
 
 ProviderContainer _createContainer({
@@ -456,9 +457,8 @@ class _ThrowingBallisticsService implements BallisticsService {
   Future<BallisticsResult> calculateForTarget(
     Profile profile,
     ShootingConditions conditions,
-    TargetCalcOptions opts, {
-    double? cachedZeroElevRad,
-  }) async {
+    TargetCalcOptions opts,
+  ) async {
     throw Exception('Boom');
   }
 
@@ -466,9 +466,8 @@ class _ThrowingBallisticsService implements BallisticsService {
   Future<BallisticsResult> calculateTable(
     Profile profile,
     ShootingConditions conditions,
-    TableCalcOptions opts, {
-    double? cachedZeroElevRad,
-  }) async {
+    TableCalcOptions opts,
+  ) async {
     throw Exception('Boom');
   }
 }

@@ -1,378 +1,203 @@
 import 'package:dart_bclibc/bclibc.dart';
 import 'package:dart_bclibc/unit.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/providers/db_provider.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod/riverpod.dart';
 
+// Every notifier below is a thin adapter over `settingsDataProvider`
+// (the single source of truth, persisted to settings.ebcp) — build()
+// derives its slice via select() (re-runs only when that slice actually
+// changes, thanks to protobuf's deep `==`), and every mutation method
+// writes through `settingsDataProvider.notifier.update()` rather than
+// holding its own state. No manual `state = ...` assignment is needed in
+// any mutation method; `ref.watch` in build() propagates the change back
+// automatically.
+
 // ── GeneralSettings notifier ──────────────────────────────────────────────────
 
 class SettingsNotifier extends AsyncNotifier<GeneralSettings> {
-  Store get _store => ref.read(dbProvider);
-  Owner get _owner => ref.read(ownerProvider);
-
   @override
-  Future<GeneralSettings> build() async {
-    final owner = _owner;
+  GeneralSettings build() =>
+      ref.watch(settingsDataProvider.select((s) => s.generalSettings));
 
-    void reload() {
-      final settings = _loadOrCreate(owner);
-      state = AsyncData(settings);
-    }
-
-    final subscription = _store
-        .box<GeneralSettings>()
-        .query(GeneralSettings_.owner.equals(owner.id))
-        .watch(triggerImmediately: false)
-        .listen((_) => reload());
-
-    ref.onDispose(subscription.cancel);
-
-    return _loadOrCreate(owner);
-  }
-
-  GeneralSettings _loadOrCreate(Owner owner) {
-    final existing = _store
-        .box<GeneralSettings>()
-        .query(GeneralSettings_.owner.equals(owner.id))
-        .build()
-        .findFirst();
-    if (existing != null) return existing;
-    final systemLocale = WidgetsBinding.instance.platformDispatcher.locale;
-    final resolvedLocale = AppLocalizations.supportedLocales.firstWhere(
-      (l) => l.languageCode == systemLocale.languageCode,
-      orElse: () => const Locale('en'),
-    );
-    final s = GeneralSettings()
-      ..owner.target = owner
-      ..languageCode = resolvedLocale.languageCode
-      ..homeShowMil = true
-      ..homeShowMoa = true
-      ..homeShowCmPer100m = true
-      ..homeShowInClicks = true;
-    _store.box<GeneralSettings>().put(s); // put() returns int, no await needed
-    return s;
-  }
-
-  Future<void> restore(GeneralSettingsExport export) async {
-    final current = _loadOrCreate(_owner);
-    final updated = export.toEntity()
-      ..id = current.id
-      ..owner.target = _owner;
-    _store.box<GeneralSettings>().put(updated); // remove await
-    // reload() will be triggered by watch
+  void _update(void Function(GeneralSettings) mutate) {
+    ref.read(settingsDataProvider.notifier).update((s) {
+      final copy = s.deepCopy();
+      mutate(copy.generalSettings);
+      return copy;
+    });
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {
-    final s = _loadOrCreate(_owner);
-    s.flutterThemeMode = mode;
-    _store.box<GeneralSettings>().put(s); // remove await
+    _update((g) => g.flutterThemeMode = mode);
   }
 
   Future<void> setLanguage(String code) async {
-    final s = _loadOrCreate(_owner);
-    s.languageCode = code;
-    _store.box<GeneralSettings>().put(s); // remove await
+    _update((g) => g.languageCode = code);
   }
 
   Future<void> setAdjustmentFormat(AdjustmentDisplayFormat format) async {
-    final s = _loadOrCreate(_owner);
-    s.adjustmentDisplayFormat = format;
-    _store.box<GeneralSettings>().put(s); // remove await
+    _update((g) => g.adjustmentDisplayFormat = format);
   }
 
   Future<void> setChartDistanceStep(double step) async {
-    final s = _loadOrCreate(_owner);
-    s.homeChartDistanceStep = step;
-    _store.box<GeneralSettings>().put(s); // remove await
+    _update((g) => g.homeChartDistanceStep = step);
   }
 
   Future<void> setHomeTableStep(double step) async {
-    final s = _loadOrCreate(_owner);
-    s.homeTableDistanceStep = step;
-    _store.box<GeneralSettings>().put(s); // remove await
+    _update((g) => g.homeTableDistanceStep = step);
   }
 
   Future<void> setAdjustmentToggle(String key, bool value) async {
-    final s = _loadOrCreate(_owner);
-    switch (key) {
-      case 'showMrad':
-        s.homeShowMrad = value;
-        break;
-      case 'showMoa':
-        s.homeShowMoa = value;
-        break;
-      case 'showMil':
-        s.homeShowMil = value;
-        break;
-      case 'showCmPer100m':
-        s.homeShowCmPer100m = value;
-        break;
-      case 'showInPer100yd':
-        s.homeShowInPer100yd = value;
-        break;
-      case 'subsonicTransition':
-        s.homeShowSubsonicTransition = value;
-        break;
-      case 'showInClicks':
-        s.homeShowInClicks = value;
-        break;
-    }
-    _store.box<GeneralSettings>().put(s); // remove await
+    _update((g) {
+      switch (key) {
+        case 'showMrad':
+          g.homeShowMrad = value;
+        case 'showMoa':
+          g.homeShowMoa = value;
+        case 'showMil':
+          g.homeShowMil = value;
+        case 'showCmPer100m':
+          g.homeShowCmPer100m = value;
+        case 'showInPer100yd':
+          g.homeShowInPer100yd = value;
+        case 'subsonicTransition':
+          g.homeShowSubsonicTransition = value;
+        case 'showInClicks':
+          g.homeShowInClicks = value;
+      }
+    });
   }
 }
 
 // ── UnitSettings notifier ─────────────────────────────────────────────────────
 
 class UnitSettingsNotifier extends AsyncNotifier<UnitSettings> {
-  Store get _store => ref.read(dbProvider);
-  Owner get _owner => ref.read(ownerProvider);
-
   @override
-  Future<UnitSettings> build() async {
-    final owner = _owner;
+  UnitSettings build() =>
+      ref.watch(settingsDataProvider.select((s) => s.unitSettings));
 
-    void reload() {
-      final settings = _loadOrCreate(owner);
-      state = AsyncData(settings);
-    }
-
-    final subscription = _store
-        .box<UnitSettings>()
-        .query(UnitSettings_.owner.equals(owner.id))
-        .watch(triggerImmediately: false)
-        .listen((_) => reload());
-
-    ref.onDispose(subscription.cancel);
-
-    return _loadOrCreate(owner);
-  }
-
-  UnitSettings _loadOrCreate(Owner owner) {
-    final existing = _store
-        .box<UnitSettings>()
-        .query(UnitSettings_.owner.equals(owner.id))
-        .build()
-        .findFirst();
-    if (existing != null) return existing;
-    final s = UnitSettings()..owner.target = owner;
-    _store.box<UnitSettings>().put(s); // put() returns int, no await needed
-    return s;
-  }
-
-  Future<void> restore(UnitSettingsExport export) async {
-    final current = _loadOrCreate(_owner);
-    final updated = export.toEntity()
-      ..id = current.id
-      ..owner.target = _owner;
-    _store.box<UnitSettings>().put(updated); // remove await
+  void _update(void Function(UnitSettings) mutate) {
+    ref.read(settingsDataProvider.notifier).update((s) {
+      final copy = s.deepCopy();
+      mutate(copy.unitSettings);
+      return copy;
+    });
   }
 
   Future<void> setUnit(String key, Unit unit) async {
-    final s = _loadOrCreate(_owner);
-    switch (key) {
-      case 'velocity':
-        s.velocityUnit = unit;
-        break;
-      case 'distance':
-        s.distanceUnit = unit;
-        break;
-      case 'sightHeight':
-        s.sightHeightUnit = unit;
-        break;
-      case 'pressure':
-        s.pressureUnit = unit;
-        break;
-      case 'temperature':
-        s.temperatureUnit = unit;
-        break;
-      case 'diameter':
-        s.diameterUnit = unit;
-        break;
-      case 'length':
-        s.lengthUnit = unit;
-        break;
-      case 'weight':
-        s.weightUnit = unit;
-        break;
-      case 'drop':
-        s.dropUnit = unit;
-        break;
-      case 'energy':
-        s.energyUnit = unit;
-        break;
-      case 'torque':
-        s.torqueUnit = unit;
-        break;
-      case 'targetSize':
-        s.targetSizeUnit = unit;
-        break;
-      case 'angular':
-        s.angularUnit = unit;
-        break;
-    }
-    _store.box<UnitSettings>().put(s); // remove await
+    _update((u) {
+      switch (key) {
+        case 'velocity':
+          u.velocityUnit = unit;
+        case 'distance':
+          u.distanceUnit = unit;
+        case 'sightHeight':
+          u.sightHeightUnit = unit;
+        case 'pressure':
+          u.pressureUnit = unit;
+        case 'temperature':
+          u.temperatureUnit = unit;
+        case 'diameter':
+          u.diameterUnit = unit;
+        case 'length':
+          u.lengthUnit = unit;
+        case 'weight':
+          u.weightUnit = unit;
+        case 'drop':
+          u.dropUnit = unit;
+        case 'energy':
+          u.energyUnit = unit;
+        case 'torque':
+          u.torqueUnit = unit;
+        case 'targetSize':
+          u.targetSizeUnit = unit;
+        case 'angular':
+          u.angularUnit = unit;
+      }
+    });
   }
 }
 
 // ── TablesSettings notifier ───────────────────────────────────────────────────
 
 class TablesSettingsNotifier extends AsyncNotifier<TablesSettings> {
-  Store get _store => ref.read(dbProvider);
-  Owner get _owner => ref.read(ownerProvider);
-
   @override
-  Future<TablesSettings> build() async {
-    final owner = _owner;
+  TablesSettings build() =>
+      ref.watch(settingsDataProvider.select((s) => s.tablesSettings));
 
-    void reload() {
-      final settings = _loadOrCreate(owner);
-      state = AsyncData(settings);
-    }
-
-    final subscription = _store
-        .box<TablesSettings>()
-        .query(TablesSettings_.owner.equals(owner.id))
-        .watch(triggerImmediately: false)
-        .listen((_) => reload());
-
-    ref.onDispose(subscription.cancel);
-
-    return _loadOrCreate(owner);
-  }
-
-  TablesSettings _loadOrCreate(Owner owner) {
-    final existing = _store
-        .box<TablesSettings>()
-        .query(TablesSettings_.owner.equals(owner.id))
-        .build()
-        .findFirst();
-    if (existing != null) return existing;
-    final s = TablesSettings()
-      ..owner.target = owner
-      ..distanceEndMeter = 1000.0
-      ..showMil = true
-      ..showMoa = true
-      ..showCmPer100m = true
-      ..showInClicks = true;
-    _store.box<TablesSettings>().put(s); // put() returns int, no await needed
-    return s;
-  }
-
-  Future<void> restore(TablesSettingsExport export) async {
-    final current = _loadOrCreate(_owner);
-    final updated = export.toEntity()
-      ..id = current.id
-      ..owner.target = _owner;
-    _store.box<TablesSettings>().put(updated); // remove await
+  void _update(void Function(TablesSettings) mutate) {
+    ref.read(settingsDataProvider.notifier).update((s) {
+      final copy = s.deepCopy();
+      mutate(copy.tablesSettings);
+      return copy;
+    });
   }
 
   Future<void> saveSettings(TablesSettings settings) async {
-    final s = _loadOrCreate(_owner);
-    s.distanceStartMeter = settings.distanceStartMeter;
-    s.distanceEndMeter = settings.distanceEndMeter;
-    s.distanceStepMeter = settings.distanceStepMeter;
-    s.showZeros = settings.showZeros;
-    s.showSubsonicTransition = settings.showSubsonicTransition;
-    s.hiddenCols = List<String>.from(settings.hiddenCols);
-    s.showMrad = settings.showMrad;
-    s.showMoa = settings.showMoa;
-    s.showMil = settings.showMil;
-    s.showCmPer100m = settings.showCmPer100m;
-    s.showInPer100yd = settings.showInPer100yd;
-    s.showInClicks = settings.showInClicks;
-    _store.box<TablesSettings>().put(s);
+    _update((t) {
+      t
+        ..distanceStartMeter = settings.distanceStartMeter
+        ..distanceEndMeter = settings.distanceEndMeter
+        ..distanceStepMeter = settings.distanceStepMeter
+        ..showZeros = settings.showZeros
+        ..showSubsonicTransition = settings.showSubsonicTransition
+        ..hiddenCols.clear()
+        ..hiddenCols.addAll(settings.hiddenCols)
+        ..showMrad = settings.showMrad
+        ..showMoa = settings.showMoa
+        ..showMil = settings.showMil
+        ..showCmPer100m = settings.showCmPer100m
+        ..showInPer100yd = settings.showInPer100yd
+        ..showInClicks = settings.showInClicks;
+    });
   }
 }
 
 // ── ReticleSettings notifier ──────────────────────────────────────────────────
 
 class ReticleSettingsNotifier extends AsyncNotifier<ReticleSettings> {
-  Store get _store => ref.read(dbProvider);
-  Owner get _owner => ref.read(ownerProvider);
-
   @override
-  Future<ReticleSettings> build() async {
-    final owner = _owner;
+  ReticleSettings build() =>
+      ref.watch(settingsDataProvider.select((s) => s.reticleSettings));
 
-    void reload() {
-      final settings = _loadOrCreate(owner);
-      state = AsyncData(settings);
-    }
-
-    final subscription = _store
-        .box<ReticleSettings>()
-        .query(ReticleSettings_.owner.equals(owner.id))
-        .watch(triggerImmediately: false)
-        .listen((_) => reload());
-
-    ref.onDispose(subscription.cancel);
-
-    return _loadOrCreate(owner);
-  }
-
-  ReticleSettings _loadOrCreate(Owner owner) {
-    final existing = _store
-        .box<ReticleSettings>()
-        .query(ReticleSettings_.owner.equals(owner.id))
-        .build()
-        .findFirst();
-    if (existing != null) return existing;
-    final s = ReticleSettings()..owner.target = owner;
-    _store.box<ReticleSettings>().put(s); // put() returns int, no await needed
-    return s;
-  }
-
-  Future<void> restore(ReticleSettingsExport export) async {
-    final current = _loadOrCreate(_owner);
-    final updated = export.toEntity()
-      ..id = current.id
-      ..owner.target = _owner;
-    _store.box<ReticleSettings>().put(updated); // remove await
+  void _update(void Function(ReticleSettings) mutate) {
+    ref.read(settingsDataProvider.notifier).update((s) {
+      final copy = s.deepCopy();
+      mutate(copy.reticleSettings);
+      return copy;
+    });
   }
 
   Future<void> setTargetImage(String? imageId) async {
-    final s = _loadOrCreate(_owner);
-    s.targetImage = imageId;
-    _store.box<ReticleSettings>().put(s); // remove await
+    _update((r) => r.targetImage = imageId ?? '');
   }
 
   Future<void> setVerticalAdjustment(double value) async {
-    final s = _loadOrCreate(_owner);
-    s.verticalAdjustment = value;
-    _store.box<ReticleSettings>().put(s); // remove await
+    _update((r) => r.verticalAdjustment = value);
   }
 
   Future<void> setHorizontalAdjustment(double value) async {
-    final s = _loadOrCreate(_owner);
-    s.horizontalAdjustment = value;
-    _store.box<ReticleSettings>().put(s); // remove await
+    _update((r) => r.horizontalAdjustment = value);
   }
 
   Future<void> setVerticalAdjustmentUnit(Unit unit) async {
-    final s = _loadOrCreate(_owner);
-    s.verticalAdjustmentUnit = unit.name;
-    _store.box<ReticleSettings>().put(s); // remove await
+    _update((r) => r.verticalAdjustmentUnitValue = unit);
   }
 
   Future<void> setHorizontalAdjustmentUnit(Unit unit) async {
-    final s = _loadOrCreate(_owner);
-    s.horizontalAdjustmentUnit = unit.name;
-    _store.box<ReticleSettings>().put(s); // remove await
+    _update((r) => r.horizontalAdjustmentUnitValue = unit);
   }
 
   Future<void> setVerticalAdjustmentUnitRaw(String name) async {
-    final s = _loadOrCreate(_owner);
-    s.verticalAdjustmentUnit = name;
-    _store.box<ReticleSettings>().put(s);
+    _update((r) => r.verticalAdjustmentUnit = name);
   }
 
   Future<void> setHorizontalAdjustmentUnitRaw(String name) async {
-    final s = _loadOrCreate(_owner);
-    s.horizontalAdjustmentUnit = name;
-    _store.box<ReticleSettings>().put(s);
+    _update((r) => r.horizontalAdjustmentUnit = name);
   }
 }
 

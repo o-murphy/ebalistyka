@@ -1,7 +1,7 @@
 import 'package:dart_bclibc/bclibc.dart' as bclibc;
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
@@ -68,15 +68,15 @@ DetailsTableData _buildDetails(
   UnitSettings units,
   UnitFormatter formatter,
 ) {
-  final weapon = profile.weapon.target!;
-  final ammo = profile.ammo.target!;
-  final sight = profile.sight.target;
+  final weapon = profile.weapon;
+  final ammo = profile.ammo;
+  final sight = profile.sight;
 
   final zeroVelocity = profile.getCalculatedZeroVelocity();
   final curVelocity = profile.getCalculatedCurrentVelocity(conditions);
 
   // Gyrostability (Miller)
-  final sightHeight = Distance.inch(sight?.sightHeightInch ?? 0.0);
+  final sightHeight = Distance.inch(sight.sightHeightInch);
   final bcWeapon = weapon.toWeapon(sightHeight);
   final currentShot = profile.toCurrentShot(conditions, bcWeapon);
   final sg = currentShot.calculateStabilityCoefficient();
@@ -88,7 +88,7 @@ DetailsTableData _buildDetails(
   );
   final displayBc = ammo.isMultiBC
       ? 0.0
-      : (ammo.dragType == DragType.g7 ? ammo.bcG7 : ammo.bcG1);
+      : (ammo.dragType == DragType.g7 ? ammo.bc7 : ammo.bc1) ?? 0.0;
   final ff = (displayBc > 0) ? sd / displayBc : null;
 
   return DetailsTableData(
@@ -128,9 +128,6 @@ final detailsTableMvProvider = Provider<DetailsTableData?>((ref) {
   final formatter = ref.watch(unitFormatterProvider);
 
   if (ctx == null) return null;
-  if (ctx.profile.weapon.target == null || ctx.profile.ammo.target == null) {
-    return null;
-  }
 
   return _buildDetails(ctx.profile, ctx.conditions, units, formatter);
 });

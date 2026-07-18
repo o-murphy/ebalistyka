@@ -77,9 +77,9 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
     final convertorsState = ref.watch(convertorStateProvider);
     final l10n = ref.watch(appLocalizationsProvider);
     return _buildState(
-      convertorsState.anglesConvDistanceValueMeter,
+      convertorsState.angles.distanceValueMeter,
       convertorsState.anglesConvDistanceUnit,
-      convertorsState.anglesConvAngularValueMil,
+      convertorsState.angles.angularValueMil,
       convertorsState.anglesConvAngularUnit,
       convertorsState.anglesConvOutputUnit,
       l10n,

@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:dart_bclibc/unit.dart';
 
 // ─── Table Configuration Screen ───────────────────────────────────────────────
@@ -29,14 +29,12 @@ class TableConfigScreen extends ConsumerWidget {
 
     void save(void Function(TablesSettings) mutate) {
       final updated = TablesSettings()
-        ..id = cfg.id
-        ..owner.target = cfg.owner.target
         ..distanceStartMeter = cfg.distanceStartMeter
         ..distanceEndMeter = cfg.distanceEndMeter
         ..distanceStepMeter = cfg.distanceStepMeter
         ..showZeros = cfg.showZeros
         ..showSubsonicTransition = cfg.showSubsonicTransition
-        ..hiddenCols = List<String>.from(cfg.hiddenCols)
+        ..hiddenCols.addAll(cfg.hiddenCols)
         ..showMrad = cfg.showMrad
         ..showMoa = cfg.showMoa
         ..showMil = cfg.showMil
@@ -55,7 +53,9 @@ class TableConfigScreen extends ConsumerWidget {
       } else {
         if (!hidden.contains(colId)) hidden.add(colId);
       }
-      save((s) => s.hiddenCols = hidden);
+      save((s) => s
+        ..hiddenCols.clear()
+        ..hiddenCols.addAll(hidden));
     }
 
     return BaseScreen(

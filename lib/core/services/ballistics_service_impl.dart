@@ -1,4 +1,4 @@
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/core/services/ballistics_service.dart';
 import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
 import 'package:ebalistyka/core/extensions/profile_extensions.dart';
@@ -170,16 +170,14 @@ class BallisticsServiceImpl implements BallisticsService {
   double? _cachedZeroElevRad;
 
   List<double> _buildZeroKey(Profile profile, ShootingConditions conditions) {
-    final ammo = profile.ammo.target!;
-    final weapon = profile.weapon.target;
-    final sight = profile.sight.target;
+    final ammo = profile.ammo;
+    final weapon = profile.weapon;
+    final sight = profile.sight;
 
     final bcCount = switch (ammo.dragType) {
-      DragType.g7 =>
-        ammo.isMultiBC ? (ammo.multiBcTableG7VMps?.length ?? 1) : 1,
-      DragType.g1 =>
-        ammo.isMultiBC ? (ammo.multiBcTableG1VMps?.length ?? 1) : 1,
-      DragType.custom => ammo.customDragTableMach?.length ?? 0,
+      DragType.g7 => ammo.isMultiBC ? ammo.multiBcTableG7VMps.length : 1,
+      DragType.g1 => ammo.isMultiBC ? ammo.multiBcTableG1VMps.length : 1,
+      DragType.custom => ammo.customDragTableMach.length,
     };
     final firstBc = switch (ammo.dragType) {
       DragType.g7 => ammo.bcG7,
@@ -188,8 +186,8 @@ class BallisticsServiceImpl implements BallisticsService {
     };
 
     return [
-      sight?.sightHeightInch ?? 0.0,
-      weapon?.twistInch ?? 0.0,
+      sight.sightHeightInch,
+      weapon.twistInch,
       ammo.muzzleVelocityMps,
       ammo.powderSensitivityFrac,
       firstBc,
@@ -197,12 +195,12 @@ class BallisticsServiceImpl implements BallisticsService {
       ammo.caliberInch,
       ammo.lengthInch,
       bcCount.toDouble(),
-      ammo.zeroAltitudeMeter,
-      ammo.zeroPressurehPa,
-      ammo.zeroTemperatureC,
-      ammo.zeroHumidityFrac,
-      ammo.zeroPowderTemperatureC,
-      ammo.zeroDistanceMeter,
+      ammo.zero.altitudeMeter,
+      ammo.zero.pressureHPa,
+      ammo.zero.temperatureC,
+      ammo.zero.humidityFrac,
+      ammo.zero.powderTemperatureC,
+      ammo.zero.distanceMeter,
       conditions.lookAngleRad,
       ammo.usePowderSensitivity ? 1.0 : 0.0,
       ammo.zeroUseDiffPowderTemperature ? 1.0 : 0.0,
@@ -226,12 +224,11 @@ class BallisticsServiceImpl implements BallisticsService {
     _cachedZeroElevRad = zeroElevRad;
   }
 
-  /// Builds bclibc.Weapon from OB entities.
+  /// Builds bclibc.Weapon from the profile's embedded weapon/sight.
   bclibc.Weapon _buildWeapon(Profile profile) {
-    final weapon = profile.weapon.target!;
-    final sight = profile.sight.target;
-    final sightHeight = sight?.sightHeight ?? Distance.inch(0);
-    return weapon.toWeapon(sightHeight);
+    final weapon = profile.weapon;
+    final sight = profile.sight;
+    return weapon.toWeapon(sight.sightHeight);
   }
 
   @override
@@ -244,7 +241,7 @@ class BallisticsServiceImpl implements BallisticsService {
     final bcWeapon = _buildWeapon(profile);
     final zeroShot = profile.toZeroShot(bcWeapon, conditions.lookAngle);
     final currentShot = profile.toCurrentShot(conditions, bcWeapon);
-    final zeroDistance = Distance.meter(profile.ammo.target!.zeroDistanceMeter);
+    final zeroDistance = Distance.meter(profile.ammo.zero.distanceMeter);
 
     final (hit, freshZero) = await compute(_runTableCalculation, (
       zeroShot,
@@ -269,7 +266,7 @@ class BallisticsServiceImpl implements BallisticsService {
     final bcWeapon = _buildWeapon(profile);
     final zeroShot = profile.toZeroShot(bcWeapon, conditions.lookAngle);
     final currentShot = profile.toCurrentShot(conditions, bcWeapon);
-    final zeroDistance = Distance.meter(profile.ammo.target!.zeroDistanceMeter);
+    final zeroDistance = Distance.meter(profile.ammo.zero.distanceMeter);
 
     final (
       hit,

@@ -1,237 +1,158 @@
 import 'package:dart_bclibc/bclibc.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/providers/db_provider.dart';
 import 'package:riverpod/riverpod.dart';
 
 class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
-  Store get _store => ref.read(dbProvider);
-  Owner get _owner => ref.read(ownerProvider);
-
   @override
-  Future<ConvertorsState> build() async {
-    final owner = _owner;
-    final s = _loadOrCreate(owner);
+  ConvertorsState build() =>
+      ref.watch(settingsDataProvider.select((s) => s.convertorsState));
 
-    final subscription = _store
-        .box<ConvertorsState>()
-        .query(ConvertorsState_.owner.equals(owner.id))
-        .watch(triggerImmediately: false)
-        .listen((query) {
-          final updated = query.findFirst();
-          if (updated != null) state = AsyncData(updated);
-        });
-    ref.onDispose(subscription.cancel);
-
-    return s;
-  }
-
-  ConvertorsState _loadOrCreate(Owner owner) {
-    final existing = _store
-        .box<ConvertorsState>()
-        .query(ConvertorsState_.owner.equals(owner.id))
-        .build()
-        .findFirst();
-    if (existing != null) return existing;
-    final s = ConvertorsState()..owner.target = owner;
-    _store.box<ConvertorsState>().put(s);
-    return s;
-  }
-
-  ConvertorsState _load() => _loadOrCreate(_owner);
-
-  Future<void> _save(ConvertorsState s) async {
-    _store.box<ConvertorsState>().put(s);
-    final fresh = _store.box<ConvertorsState>().get(s.id);
-    if (fresh != null) state = AsyncData(fresh);
+  void _update(void Function(ConvertorsState) mutate) {
+    ref.read(settingsDataProvider.notifier).update((s) {
+      final copy = s.deepCopy();
+      mutate(copy.convertorsState);
+      return copy;
+    });
   }
 
   // ── Length ────────────────────────────────────────────────────────────────────
 
   Future<void> updateLengthValue(double? valueInInches) async {
     if (valueInInches == null || valueInInches < 0) return;
-    final s = state.value ?? _load();
-    s.lengthValueInch = valueInInches;
-    await _save(s);
+    _update((c) => c.lengthValue = Distance.inch(valueInInches));
   }
 
   Future<void> updateLengthUnit(Unit unit) async {
-    final s = state.value ?? _load();
-    s.lengthUnit = unit;
-    await _save(s);
+    _update((c) => c.lengthUnit = unit);
   }
 
   // ── Weight ────────────────────────────────────────────────────────────────────
 
   Future<void> updateWeightValue(double? valueInGrains) async {
     if (valueInGrains == null || valueInGrains < 0) return;
-    final s = state.value ?? _load();
-    s.weightValueGrain = valueInGrains;
-    await _save(s);
+    _update((c) => c.weightValue = Weight.grain(valueInGrains));
   }
 
   Future<void> updateWeightUnit(Unit unit) async {
-    final s = state.value ?? _load();
-    s.weightUnit = unit;
-    await _save(s);
+    _update((c) => c.weightUnit = unit);
   }
 
   // ── Pressure ──────────────────────────────────────────────────────────────────
 
   Future<void> updatePressureValue(double? valueInMmHg) async {
     if (valueInMmHg == null || valueInMmHg < 0) return;
-    final s = state.value ?? _load();
-    s.pressureValueMmHg = valueInMmHg;
-    await _save(s);
+    _update((c) => c.pressureValue = Pressure.mmHg(valueInMmHg));
   }
 
   Future<void> updatePressureUnit(Unit unit) async {
-    final s = state.value ?? _load();
-    s.pressureUnit = unit;
-    await _save(s);
+    _update((c) => c.pressureUnit = unit);
   }
 
   // ── Temperature ───────────────────────────────────────────────────────────────
 
   Future<void> updateTemperatureValue(double? valueInFahrenheit) async {
     if (valueInFahrenheit == null) return;
-    final s = state.value ?? _load();
-    s.temperatureValueF = valueInFahrenheit;
-    await _save(s);
+    _update((c) => c.temperatureValue = Temperature.fahrenheit(valueInFahrenheit));
   }
 
   Future<void> updateTemperatureUnit(Unit unit) async {
-    final s = state.value ?? _load();
-    s.temperatureUnit = unit;
-    await _save(s);
+    _update((c) => c.temperatureUnit = unit);
   }
 
   // ── Torque ────────────────────────────────────────────────────────────────────
 
   Future<void> updateTorqueValue(double? valueInNewtonMeter) async {
     if (valueInNewtonMeter == null || valueInNewtonMeter < 0) return;
-    final s = state.value ?? _load();
-    s.torqueValueNewtonMeter = valueInNewtonMeter;
-    await _save(s);
+    _update((c) => c.torqueValue = Torque.newtonMeter(valueInNewtonMeter));
   }
 
   Future<void> updateTorqueUnit(Unit unit) async {
-    final s = state.value ?? _load();
-    s.torqueUnit = unit;
-    await _save(s);
+    _update((c) => c.torqueUnit = unit);
   }
 
   // ── Velocity ──────────────────────────────────────────────────────────────────
 
   Future<void> updateVelocityValue(double? valueInMps) async {
     if (valueInMps == null || valueInMps < 0) return;
-    final s = state.value ?? _load();
-    s.velocityValue = Velocity.mps(valueInMps);
-    await _save(s);
+    _update((c) => c.velocityValue = Velocity.mps(valueInMps));
   }
 
   Future<void> updateVelocityUnit(Unit unit) async {
-    final s = state.value ?? _load();
-    s.velocityUnit = unit;
-    await _save(s);
+    _update((c) => c.velocityUnit = unit);
   }
 
   Future<void> updateVelocityMachInputValue(double mach) async {
-    final s = state.value ?? _load();
-    s.velocityMachInputValue = mach;
-    await _save(s);
+    _update((c) => c.ensureVelocity().machInputValue = mach);
   }
 
   Future<void> updateVelocityMachUseCustomAtmo(bool value) async {
-    final s = state.value ?? _load();
-    s.velocityMachUseCustomAtmo = value;
-    await _save(s);
+    _update((c) => c.ensureVelocity().machUseCustomAtmo = value);
   }
 
   Future<void> updateVelocityAtmoTemperature(Temperature value) async {
-    final s = state.value ?? _load();
-    s.velocityAtmoTemperature = value;
-    await _save(s);
+    _update((c) => c.velocityAtmoTemperature = value);
   }
 
   Future<void> updateVelocityAtmoPressure(Pressure value) async {
-    final s = state.value ?? _load();
-    s.velocityAtmoPressure = value;
-    await _save(s);
+    _update((c) => c.velocityAtmoPressure = value);
   }
 
   Future<void> updateVelocityAtmoHumidityFrac(double valueFrac) async {
-    final s = state.value ?? _load();
-    s.velocityAtmoHumidityFrac = valueFrac;
-    await _save(s);
+    _update((c) => c.ensureVelocity().atmoHumidityFrac = valueFrac);
   }
 
   Future<void> updateVelocityAtmoAltitude(Distance value) async {
-    final s = state.value ?? _load();
-    s.velocityAtmoAltitude = value;
-    await _save(s);
+    _update((c) => c.velocityAtmoAltitude = value);
   }
 
   // ── Target distance convertor ─────────────────────────────────────────────────
 
   Future<void> updateDistanceConvTargetSize(double? valueInInches) async {
     if (valueInInches == null || valueInInches < 0) return;
-    final s = state.value ?? _load();
-    s.distanceConvTargetSizeInch = valueInInches;
-    await _save(s);
+    _update(
+      (c) => c.distanceConvTargetSizeValue = Distance.inch(valueInInches),
+    );
   }
 
   Future<void> updateDistanceConvTargetSizeUnit(Unit unit) async {
-    final s = state.value ?? _load();
-    s.distanceConvTargetSizeUnitValue = unit;
-    await _save(s);
+    _update((c) => c.distanceConvTargetSizeUnitValue = unit);
   }
 
   Future<void> updateDistanceConvTargetSizeAngular(double? valueInMil) async {
     if (valueInMil == null || valueInMil <= 0) return;
-    final s = state.value ?? _load();
-    s.distanceConvTargetSizeAngularMil = valueInMil;
-    await _save(s);
+    _update(
+      (c) => c.distanceConvTargetSizeAngular = Angular.mil(valueInMil),
+    );
   }
 
   Future<void> updateDistanceConvTargetSizeAngularUnit(Unit unit) async {
-    final s = state.value ?? _load();
-    s.distanceConvTargetSizeAngularUnitValue = unit;
-    await _save(s);
+    _update((c) => c.distanceConvTargetSizeAngularUnitValue = unit);
   }
 
   // ── Angles convertor ──────────────────────────────────────────────────────────
 
   Future<void> updateAnglesConvDistanceValue(double? valueInMeters) async {
     if (valueInMeters == null || valueInMeters < 0) return;
-    final s = state.value ?? _load();
-    s.anglesConvDistanceValueMeter = valueInMeters;
-    await _save(s);
+    _update((c) => c.anglesConvDistanceValue = Distance.meter(valueInMeters));
   }
 
   Future<void> updateAnglesConvDistanceUnit(Unit unit) async {
-    final s = state.value ?? _load();
-    s.anglesConvDistanceUnit = unit;
-    await _save(s);
+    _update((c) => c.anglesConvDistanceUnit = unit);
   }
 
   Future<void> updateAnglesConvAngularValue(double? valueInMil) async {
     if (valueInMil == null || valueInMil < 0) return;
-    final s = state.value ?? _load();
-    s.anglesConvAngularValueMil = valueInMil;
-    await _save(s);
+    _update((c) => c.anglesConvAngularValue = Angular.mil(valueInMil));
   }
 
   Future<void> updateAnglesConvAngularUnit(Unit unit) async {
-    final s = state.value ?? _load();
-    s.anglesConvAngularUnit = unit;
-    await _save(s);
+    _update((c) => c.anglesConvAngularUnit = unit);
   }
 
   Future<void> updateAnglesConvOutputUnit(Unit unit) async {
-    final s = state.value ?? _load();
-    s.anglesConvOutputUnit = unit;
-    await _save(s);
+    _update((c) => c.anglesConvOutputUnit = unit);
   }
 }
 

@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:dart_bclibc/ffi/bclibc_ffi.dart';
 import 'package:ebalistyka/shared/constants/app_info.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/shared/helpers/is_desktop.dart';
@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'core/providers/db_provider.dart';
+import 'core/providers/db_seed.dart';
 import 'core/providers/settings_provider.dart';
 import 'l10n/app_localizations.dart';
 import 'router.dart';
@@ -27,18 +28,59 @@ const _windowInitialHeight = 812.0;
 // const _contentMaxWidth = _windowMaxWidth;
 // const _contentMaxHeight = _windowMaxHeight;
 
-Future<(Store, bool)> _openStore(String directory) async {
-  final hadData = await File('$directory/data.mdb').exists();
-  try {
-    return (await initObjectBox(directory: directory), false);
-  } catch (e) {
-    debugPrint('ObjectBox open failed — resetting DB: $e');
-    for (final name in const ['data.mdb', 'lock.mdb']) {
-      final f = File('$directory/$name');
-      if (await f.exists()) await f.delete();
-    }
-    return (await initObjectBox(directory: directory), hadData);
-  }
+/// Opens both `.ebcp` stores, seeding whichever one is missing/corrupt.
+/// Each file's "existed but got reseeded" state is tracked independently —
+/// a crash/corruption in one file must never get blamed on the other.
+Future<(MsgStore<SettingsData>, SettingsData, MsgStore<ProfilesData>, List<Profile>, bool)>
+_openStores(String directory) async {
+  final settingsFile = File('$directory/settings.ebcp');
+  final profilesFile = File('$directory/profiles.ebcp');
+  final settingsStore = MsgStore<SettingsData>(
+    settingsFile,
+    encode: SettingsFile.encode,
+    decode: SettingsFile.decode,
+  );
+  final profilesStore = MsgStore<ProfilesData>(
+    profilesFile,
+    encode: ProfilesFile.encode,
+    decode: ProfilesFile.decode,
+  );
+
+  final hadSettingsFile = await settingsFile.exists();
+  final hadProfilesFile = await profilesFile.exists();
+  var settingsWasSeeded = false;
+  var profilesWasSeeded = false;
+
+  final settings = await settingsStore.load(
+    orElseSeed: () {
+      settingsWasSeeded = true;
+      return seedSettings();
+    },
+  );
+  final profilesData = await profilesStore.load(
+    orElseSeed: () {
+      profilesWasSeeded = true;
+      return ProfilesData(profiles: seedProfiles());
+    },
+  );
+
+  // Persist freshly-seeded data immediately — otherwise a user who closes
+  // the app before touching anything would re-seed (a new random profile
+  // uuid) on every subsequent launch, since load() never writes on its own.
+  if (settingsWasSeeded) await settingsStore.save(settings);
+  if (profilesWasSeeded) await profilesStore.save(profilesData);
+
+  final dataWasReset =
+      (hadSettingsFile && settingsWasSeeded) ||
+      (hadProfilesFile && profilesWasSeeded);
+
+  return (
+    settingsStore,
+    settings,
+    profilesStore,
+    profilesData.profiles,
+    dataWasReset,
+  );
 }
 
 void main() async {
@@ -78,7 +120,13 @@ void main() async {
   }
 
   final appSupport = await getApplicationSupportDirectory();
-  final (store, dbWasReset) = await _openStore(appSupport.path);
+  final (
+    settingsStore,
+    initialSettings,
+    profilesStore,
+    initialProfiles,
+    dataWasReset,
+  ) = await _openStores(appSupport.path);
   debugPrint('DB path: ${appSupport.path}');
 
   debugAppInfoConstants();
@@ -86,8 +134,13 @@ void main() async {
   runApp(
     ProviderScope(
       overrides: [
-        dbProvider.overrideWithValue(store),
-        dbWasResetProvider.overrideWithValue(dbWasReset),
+        settingsStoreProvider.overrideWithValue(settingsStore),
+        profilesStoreProvider.overrideWithValue(profilesStore),
+        settingsDataProvider.overrideWith(
+          () => SettingsDataNotifier(initialSettings),
+        ),
+        profilesProvider.overrideWith(() => ProfilesNotifier(initialProfiles)),
+        dataWasResetProvider.overrideWithValue(dataWasReset),
       ],
       child: const MyApp(),
     ),
@@ -116,7 +169,7 @@ class _DbResetBannerState extends ConsumerState<_DbResetBanner> {
   @override
   void initState() {
     super.initState();
-    if (ref.read(dbWasResetProvider)) {
+    if (ref.read(dataWasResetProvider)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
