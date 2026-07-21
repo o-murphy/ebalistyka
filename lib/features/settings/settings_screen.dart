@@ -161,6 +161,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ],
       );
     } catch (e) {
+      debugPrint('Backup import failed: $e');
       if (!mounted) return;
       showFeedback(context, '${l10n.actionImportBackup}: $e', isError: true);
     }

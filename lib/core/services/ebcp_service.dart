@@ -66,12 +66,20 @@ abstract final class EbcpService {
 
   // ── Import ─────────────────────────────────────────────────────────────────────────
 
-  /// Opens a file picker for `.ebcp` files and returns the parsed, validated
-  /// [EbcpData]. Returns `null` if the user cancels.
+  /// Opens a file picker for `.ebcp` files and returns the parsed [EbcpData].
+  /// Returns `null` if the user cancels.
   ///
   /// Throws [MsgParseException] if the bytes aren't a valid md5+ebcpbuf
-  /// `EbcpData` (corrupt file, or a file from a different format entirely),
-  /// or [EbcpValidationException] if they decode but fail schema validation.
+  /// `EbcpData` (corrupt file, or a file from a different format entirely).
+  ///
+  /// Deliberately does NOT run [EbcpValidator] here: numeric-range
+  /// violations (e.g. a field left at its proto3 zero-default) are the
+  /// "repair", not "reject", gate's job — `sanitizeProfile`/
+  /// `sanitizeSettingsData`, already run by every write path this feeds
+  /// into (`AppStateNotifier.importProfile`, `settingsDataProvider.notifier
+  /// .update()`). Hard-rejecting here would pre-empt that repair and refuse
+  /// files this app's own state can otherwise tolerate and fix on write —
+  /// see docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md Phase 7.
   static Future<EbcpData?> pickAndParse() async {
     final result = await FilePicker.pickFiles(
       type: Platform.isAndroid ? FileType.any : FileType.custom,
@@ -86,9 +94,7 @@ abstract final class EbcpService {
 
     final bytes = await file.readAsBytes();
 
-    final data = EbcpFile.decode(bytes); // throws MsgParseException on error
-    EbcpValidator.validate(data); // throws EbcpValidationException on error
-    return data;
+    return EbcpFile.decode(bytes); // throws MsgParseException on error
   }
 
   // ── Helpers ─────────────────────────────────────────────────────────────────────────

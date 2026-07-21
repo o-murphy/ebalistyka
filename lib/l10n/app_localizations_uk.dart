@@ -1193,9 +1193,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get exportFormatDialogTitle => 'Формат експорту';
 
   @override
-  String get importFormatDialogTitle => 'Формат імпорту';
-
-  @override
   String get selectProfileDialogTitle => 'Вибрати профіль';
 
   @override
