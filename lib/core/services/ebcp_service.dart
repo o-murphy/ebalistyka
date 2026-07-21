@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
@@ -9,10 +9,36 @@ import 'package:share_plus/share_plus.dart';
 abstract final class EbcpService {
   // ── Export ──────────────────────────────────────────────────────────────────────────
 
-  static Future<void> shareFile(EbcpFile file, String fileName) async {
-    final bytes = file.toEbcp();
+  /// Wraps [profile] as a single-profile share — `settings_data` unset, no
+  /// picker. Always mints a fresh `uuid` (export is a copy, same as
+  /// import — see docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md Phase 3.5
+  /// Sketch's `uuid` lifecycle invariant).
+  static EbcpData buildProfileShare(Profile profile) => EbcpData(
+    profilesData: [
+      ProfilesData(profiles: [copyWithFreshUuid(profile)]),
+    ],
+  );
+
+  /// Wraps every local [profiles] plus [settings] as a full backup.
+  static EbcpData buildFullBackup(
+    List<Profile> profiles,
+    SettingsData settings,
+  ) => EbcpData(
+    profilesData: [
+      ProfilesData(profiles: profiles.map(copyWithFreshUuid).toList()),
+    ],
+    settingsData: settings,
+  );
+
+  /// Every [Profile] carried by [data], flattened across its (possibly
+  /// several) `profiles_data` blocks.
+  static List<Profile> profilesOf(EbcpData data) =>
+      data.profilesData.expand((pd) => pd.profiles).toList();
+
+  static Future<void> shareFile(EbcpData data, String fileName) async {
+    final bytes = EbcpFile.encode(data);
     final name =
-        '${EbcpService.sanitizeName(fileName).replaceFirst(RegExp(r'^\.'), '')}.ebcp';
+        '${sanitizeName(fileName).replaceFirst(RegExp(r'^\.'), '')}.ebcp';
 
     if (Platform.isAndroid || Platform.isIOS) {
       final tmp = await getTemporaryDirectory();
@@ -40,9 +66,13 @@ abstract final class EbcpService {
 
   // ── Import ─────────────────────────────────────────────────────────────────────────
 
-  /// Opens a file picker for .ebcp files and returns the parsed [EbcpFile].
-  /// Returns `null` if the user cancels or the file is invalid.
-  static Future<EbcpFile?> pickAndParse() async {
+  /// Opens a file picker for `.ebcp` files and returns the parsed, validated
+  /// [EbcpData]. Returns `null` if the user cancels.
+  ///
+  /// Throws [MsgParseException] if the bytes aren't a valid md5+ebcpbuf
+  /// `EbcpData` (corrupt file, or a file from a different format entirely),
+  /// or [EbcpValidationException] if they decode but fail schema validation.
+  static Future<EbcpData?> pickAndParse() async {
     final result = await FilePicker.pickFiles(
       type: Platform.isAndroid ? FileType.any : FileType.custom,
       allowedExtensions: Platform.isAndroid ? null : ['ebcp'],
@@ -56,15 +86,10 @@ abstract final class EbcpService {
 
     final bytes = await file.readAsBytes();
 
-    return EbcpFile.fromEbcp(bytes);
+    final data = EbcpFile.decode(bytes); // throws MsgParseException on error
+    EbcpValidator.validate(data); // throws EbcpValidationException on error
+    return data;
   }
-
-  // ── Full backup ──────────────────────────────────────────────────────────────────────
-  //
-  // Whole-app backup/export/import against the new ebc_db storage format is
-  // not implemented yet (Phase 3.5) — see ImportNotAvailableException in
-  // app_state_provider.dart. The old buildFullExport/restoreFromExport built
-  // ebalistyka_db (ObjectBox) *Export DTOs and no longer apply.
 
   // ── Helpers ─────────────────────────────────────────────────────────────────────────
 

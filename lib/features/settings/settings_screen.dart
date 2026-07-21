@@ -15,9 +15,15 @@ import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
+import 'package:ebalistyka/core/providers/app_state_provider.dart';
+import 'package:ebalistyka/core/providers/db_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/core/services/ebcp_service.dart';
+import 'package:ebalistyka/features/home/profiles_vm.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/shared/widgets/action_sheet.dart';
+import 'package:ebalistyka/shared/widgets/confirm_dialog.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/shared/widgets/help_dialog.dart';
@@ -94,6 +100,89 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     } finally {
       if (mounted) setState(() => _checkingCollection = false);
     }
+  }
+
+  Future<void> _onExportBackup() async {
+    final profiles = ref.read(appStateProvider).value?.profiles ?? [];
+    final settings = ref.read(settingsDataProvider);
+    try {
+      final now = DateTime.now();
+      final name =
+          'ebalistyka-backup-${now.year}${now.month.toString().padLeft(2, '0')}'
+          '${now.day.toString().padLeft(2, '0')}-${now.hour.toString().padLeft(2, '0')}'
+          '${now.minute.toString().padLeft(2, '0')}';
+      await EbcpService.shareFile(
+        EbcpService.buildFullBackup(profiles, settings),
+        name,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      showFeedback(context, e.toString(), isError: true);
+    }
+  }
+
+  Future<void> _onImportBackup() async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final data = await EbcpService.pickAndParse();
+      if (data == null || !mounted) return;
+
+      final profiles = EbcpService.profilesOf(data);
+      final hasProfiles = profiles.isNotEmpty;
+      final hasSettings = data.hasSettingsData();
+      if (!hasProfiles && !hasSettings) {
+        showFeedback(context, l10n.ebcpFileIsEmpty, isError: true);
+        return;
+      }
+
+      await showActionSheet(
+        context,
+        title: l10n.importScopeDialogTitle,
+        entries: [
+          ActionSheetItem(
+            title: l10n.importAllProfilesAction(profiles.length),
+            isDisabled: !hasProfiles,
+            onTap: () => _importProfiles(profiles),
+          ),
+          ActionSheetItem(
+            title: l10n.importSettingsOnlyAction,
+            isDisabled: !hasSettings,
+            onTap: () => _importSettings(data.settingsData),
+          ),
+          ActionSheetItem(
+            title: l10n.importEverythingAction,
+            isDisabled: !hasProfiles || !hasSettings,
+            onTap: () async {
+              await _importProfiles(profiles);
+              if (!mounted) return;
+              await _importSettings(data.settingsData);
+            },
+          ),
+        ],
+      );
+    } catch (e) {
+      if (!mounted) return;
+      showFeedback(context, '${l10n.actionImportBackup}: $e', isError: true);
+    }
+  }
+
+  Future<void> _importProfiles(List<Profile> profiles) async {
+    for (final profile in profiles) {
+      await ref.read(profilesActionsProvider.notifier).importProfile(profile);
+    }
+  }
+
+  Future<void> _importSettings(SettingsData settings) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showConfirmDialog(
+      context,
+      title: l10n.overwriteSettingsConfirmTitle,
+      content: l10n.overwriteSettingsConfirmContent,
+      confirmLabel: l10n.importSettingsOnlyAction,
+      isDestructive: true,
+    );
+    if (!confirmed || !mounted) return;
+    ref.read(settingsDataProvider.notifier).update((_) => settings);
   }
 
   @override
@@ -198,10 +287,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   child: FilledButton.tonalIcon(
                     icon: const Icon(IconDef.export),
                     label: Text(l10n.actionExportBackup),
-                    onPressed: () => showNotAvailableSnackBar(
-                      context,
-                      l10n.actionExportBackup,
-                    ),
+                    onPressed: _onExportBackup,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -209,10 +295,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   child: FilledButton.tonalIcon(
                     icon: const Icon(IconDef.import),
                     label: Text(l10n.actionImportBackup),
-                    onPressed: () => showNotAvailableSnackBar(
-                      context,
-                      l10n.actionImportBackup,
-                    ),
+                    onPressed: _onImportBackup,
                   ),
                 ),
               ],
