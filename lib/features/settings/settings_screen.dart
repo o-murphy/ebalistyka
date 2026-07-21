@@ -24,6 +24,7 @@ import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
 import 'package:ebalistyka/shared/widgets/confirm_dialog.dart';
+import 'package:ebalistyka/shared/widgets/profile_selection_sheet.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/shared/widgets/help_dialog.dart';
@@ -142,7 +143,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ActionSheetItem(
             title: l10n.importAllProfilesAction(profiles.length),
             isDisabled: !hasProfiles,
-            onTap: () => _importProfiles(profiles),
+            onTap: () => _importSelectedProfiles(profiles),
           ),
           ActionSheetItem(
             title: l10n.importSettingsOnlyAction,
@@ -153,8 +154,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: l10n.importEverythingAction,
             isDisabled: !hasProfiles || !hasSettings,
             onTap: () async {
-              await _importProfiles(profiles);
-              if (!mounted) return;
+              debugPrint('Import everything: starting profile selection');
+              final proceeded = await _importSelectedProfiles(profiles);
+              debugPrint(
+                'Import everything: proceeded=$proceeded mounted=$mounted',
+              );
+              if (!proceeded || !mounted) return;
+              debugPrint('Import everything: importing settings');
               await _importSettings(data.settingsData);
             },
           ),
@@ -167,23 +173,40 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  Future<void> _importProfiles(List<Profile> profiles) async {
-    for (final profile in profiles) {
-      await ref.read(profilesActionsProvider.notifier).importProfile(profile);
+  /// Shows a checkbox picker over [profiles] and imports whatever the user
+  /// leaves checked (in one batched write — see `AppStateNotifier
+  /// .importProfiles`). Returns whether the user actually confirmed a
+  /// (possibly partial) selection, so "everything" only proceeds to
+  /// settings import if the profile step wasn't cancelled.
+  Future<bool> _importSelectedProfiles(List<Profile> profiles) async {
+    final selected = await showProfileSelectionSheet(context, profiles);
+    debugPrint(
+      '_importSelectedProfiles: selected=${selected?.length} (null means dismissed) mounted=$mounted',
+    );
+    // null = dismissed (back/tap-outside) — abort. Empty (user chose
+    // "Skip") is a deliberate no-profiles proceed, distinct from that —
+    // "everything" still continues on to import settings.
+    if (selected == null || !mounted) return false;
+    if (selected.isNotEmpty) {
+      await ref.read(profilesActionsProvider.notifier).importProfiles(selected);
     }
+    return true;
   }
 
   Future<void> _importSettings(SettingsData settings) async {
+    debugPrint('_importSettings: showing overwrite-confirm dialog');
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showConfirmDialog(
       context,
       title: l10n.overwriteSettingsConfirmTitle,
       content: l10n.overwriteSettingsConfirmContent,
-      confirmLabel: l10n.importSettingsOnlyAction,
+      confirmLabel: l10n.overwriteAction,
       isDestructive: true,
     );
+    debugPrint('_importSettings: confirmed=$confirmed mounted=$mounted');
     if (!confirmed || !mounted) return;
     ref.read(settingsDataProvider.notifier).update((_) => settings);
+    debugPrint('_importSettings: settings replaced');
   }
 
   @override

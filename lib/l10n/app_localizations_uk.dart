@@ -1193,9 +1193,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get exportFormatDialogTitle => 'Формат експорту';
 
   @override
-  String get selectProfileDialogTitle => 'Вибрати профіль';
-
-  @override
   String get ebcpFileHasNoProfiles =>
       'У цьому файлі немає профілів для імпорту.';
 
@@ -1204,6 +1201,12 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get importScopeDialogTitle => 'Обсяг імпорту';
+
+  @override
+  String get selectProfilesToImportTitle => 'Виберіть профілі для імпорту';
+
+  @override
+  String get selectAllAction => 'Вибрати всі';
 
   @override
   String importAllProfilesAction(int count) {
@@ -1225,11 +1228,17 @@ class AppLocalizationsUk extends AppLocalizations {
   String get importEverythingAction => 'Усе';
 
   @override
+  String get skipAction => 'Пропустити';
+
+  @override
   String get overwriteSettingsConfirmTitle => 'Перезаписати налаштування?';
 
   @override
   String get overwriteSettingsConfirmContent =>
       'Це замінить ваші поточні налаштування налаштуваннями з імпортованого файлу. Цю дію не можна скасувати.';
+
+  @override
+  String get overwriteAction => 'Перезаписати';
 
   @override
   String get selectRangeDialogTitle => 'Вибрати дистанцію';

@@ -7,12 +7,10 @@ import 'package:flutter/material.dart';
 class ProfileListTileBody extends StatelessWidget {
   const ProfileListTileBody({
     required this.profile,
-    required this.isActive,
     super.key,
   });
 
   final Profile profile;
-  final bool isActive;
 
   @override
   Widget build(BuildContext context) {
@@ -45,20 +43,7 @@ class ProfileListTileBody extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    if (isActive)
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8),
-                        child: Chip(
-                          label: Text(l10n.activeProfileLabel),
-                          labelStyle: TextStyle(
-                            fontSize: 11,
-                            color: cs.onPrimaryContainer,
-                          ),
-                          backgroundColor: cs.primaryContainer,
-                          visualDensity: VisualDensity.compact,
-                          padding: EdgeInsets.zero,
-                        ),
-                      ),
+                    
                   ],
                 ),
                 Text(
