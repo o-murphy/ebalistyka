@@ -2,23 +2,19 @@ import 'package:dart_bclibc/unit.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
-import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebc_db/ebc_db.dart';
-import 'package:flutter/widgets.dart' hide Velocity;
 import 'package:uuid/uuid.dart';
 
 const _uuid = Uuid();
 
+/// `languageCode` is deliberately left unset (empty string = "follow
+/// system") — see `localeProvider`/`MaterialApp.locale` in
+/// `settings_provider.dart`/`main.dart`. Baking a resolved locale in here
+/// would permanently pin the UI locale from first launch onward, bypassing
+/// Flutter's own live, reactive device-locale resolution.
 SettingsData seedSettings() {
-  final systemLocale = WidgetsBinding.instance.platformDispatcher.locale;
-  final resolvedLocale = AppLocalizations.supportedLocales.firstWhere(
-    (l) => l.languageCode == systemLocale.languageCode,
-    orElse: () => const Locale('en'),
-  );
-
   return SettingsData()
     ..generalSettings = (GeneralSettings()
-      ..languageCode = resolvedLocale.languageCode
       ..homeShowMil = true
       ..homeShowMoa = true
       ..homeShowCmPer100m = true
