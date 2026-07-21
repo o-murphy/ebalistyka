@@ -34,9 +34,6 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  ebalistyka_db:
-    path: ./packages/ebalistyka_db
-
   ebc_db:
     path: ./packages/ebc_db
 
