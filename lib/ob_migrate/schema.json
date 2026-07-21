@@ -1,0 +1,1132 @@
+{
+  "entities": [
+    {
+      "entityId": 1,
+      "name": "Ammo",
+      "properties": [
+        {
+          "id": 1,
+          "name": "id",
+          "type": "Long",
+          "vtableSlot": 4
+        },
+        {
+          "id": 2,
+          "name": "name",
+          "type": "String",
+          "vtableSlot": 6
+        },
+        {
+          "id": 6,
+          "name": "dragTypeValue",
+          "type": "String",
+          "vtableSlot": 14
+        },
+        {
+          "id": 7,
+          "name": "bcG1",
+          "type": "Double",
+          "vtableSlot": 16
+        },
+        {
+          "id": 8,
+          "name": "bcG7",
+          "type": "Double",
+          "vtableSlot": 18
+        },
+        {
+          "id": 9,
+          "name": "useMultiBcG1",
+          "type": "Bool",
+          "vtableSlot": 20
+        },
+        {
+          "id": 10,
+          "name": "useMultiBcG7",
+          "type": "Bool",
+          "vtableSlot": 22
+        },
+        {
+          "id": 18,
+          "name": "multiBcTableG1Bc",
+          "type": "DoubleVector",
+          "vtableSlot": 38
+        },
+        {
+          "id": 20,
+          "name": "multiBcTableG7Bc",
+          "type": "DoubleVector",
+          "vtableSlot": 42
+        },
+        {
+          "id": 22,
+          "name": "customDragTableCd",
+          "type": "DoubleVector",
+          "vtableSlot": 46
+        },
+        {
+          "id": 29,
+          "name": "usePowderSensitivity",
+          "type": "Bool",
+          "vtableSlot": 60
+        },
+        {
+          "id": 30,
+          "name": "zeroUseDiffPowderTemperature",
+          "type": "Bool",
+          "vtableSlot": 62
+        },
+        {
+          "id": 31,
+          "name": "zeroUseCoriolis",
+          "type": "Bool",
+          "vtableSlot": 64
+        },
+        {
+          "id": 32,
+          "name": "zeroLatitudeDeg",
+          "type": "Double",
+          "vtableSlot": 66
+        },
+        {
+          "id": 33,
+          "name": "zeroAzimuthDeg",
+          "type": "Double",
+          "vtableSlot": 68
+        },
+        {
+          "id": 36,
+          "name": "projectileName",
+          "type": "String",
+          "vtableSlot": 74
+        },
+        {
+          "id": 37,
+          "name": "vendor",
+          "type": "String",
+          "vtableSlot": 76
+        },
+        {
+          "id": 38,
+          "name": "image",
+          "type": "String",
+          "vtableSlot": 78
+        },
+        {
+          "id": 39,
+          "name": "ownerId",
+          "type": "Relation",
+          "vtableSlot": 80
+        },
+        {
+          "id": 40,
+          "name": "caliberInch",
+          "type": "Double",
+          "vtableSlot": 82
+        },
+        {
+          "id": 41,
+          "name": "weightGrain",
+          "type": "Double",
+          "vtableSlot": 84
+        },
+        {
+          "id": 42,
+          "name": "lengthInch",
+          "type": "Double",
+          "vtableSlot": 86
+        },
+        {
+          "id": 43,
+          "name": "muzzleVelocityMps",
+          "type": "Double",
+          "vtableSlot": 88
+        },
+        {
+          "id": 44,
+          "name": "muzzleVelocityTemperatureC",
+          "type": "Double",
+          "vtableSlot": 90
+        },
+        {
+          "id": 46,
+          "name": "powderSensitivityFrac",
+          "type": "Double",
+          "vtableSlot": 94
+        },
+        {
+          "id": 47,
+          "name": "powderSensitivityTC",
+          "type": "DoubleVector",
+          "vtableSlot": 96
+        },
+        {
+          "id": 48,
+          "name": "powderSensitivityVMps",
+          "type": "DoubleVector",
+          "vtableSlot": 98
+        },
+        {
+          "id": 49,
+          "name": "multiBcTableG1VMps",
+          "type": "DoubleVector",
+          "vtableSlot": 100
+        },
+        {
+          "id": 50,
+          "name": "multiBcTableG7VMps",
+          "type": "DoubleVector",
+          "vtableSlot": 102
+        },
+        {
+          "id": 51,
+          "name": "customDragTableMach",
+          "type": "DoubleVector",
+          "vtableSlot": 104
+        },
+        {
+          "id": 52,
+          "name": "zeroDistanceMeter",
+          "type": "Double",
+          "vtableSlot": 106
+        },
+        {
+          "id": 53,
+          "name": "zeroLookAngleRad",
+          "type": "Double",
+          "vtableSlot": 108
+        },
+        {
+          "id": 54,
+          "name": "zeroTemperatureC",
+          "type": "Double",
+          "vtableSlot": 110
+        },
+        {
+          "id": 55,
+          "name": "zeroPressurehPa",
+          "type": "Double",
+          "vtableSlot": 112
+        },
+        {
+          "id": 56,
+          "name": "zeroHumidityFrac",
+          "type": "Double",
+          "vtableSlot": 114
+        },
+        {
+          "id": 57,
+          "name": "zeroPowderTemperatureC",
+          "type": "Double",
+          "vtableSlot": 116
+        },
+        {
+          "id": 60,
+          "name": "zeroAltitudeMeter",
+          "type": "Double",
+          "vtableSlot": 122
+        },
+        {
+          "id": 62,
+          "name": "zeroOffsetX",
+          "type": "Double",
+          "vtableSlot": 126
+        },
+        {
+          "id": 63,
+          "name": "zeroOffsetY",
+          "type": "Double",
+          "vtableSlot": 128
+        },
+        {
+          "id": 65,
+          "name": "zeroOffsetXUnit",
+          "type": "String",
+          "vtableSlot": 132
+        },
+        {
+          "id": 66,
+          "name": "zeroOffsetYUnit",
+          "type": "String",
+          "vtableSlot": 134
+        }
+      ]
+    },
+    {
+      "entityId": 2,
+      "name": "ConvertorsState",
+      "properties": [
+        {
+          "id": 1,
+          "name": "id",
+          "type": "Long",
+          "vtableSlot": 4
+        },
+        {
+          "id": 2,
+          "name": "lengthValueInch",
+          "type": "Double",
+          "vtableSlot": 6
+        },
+        {
+          "id": 4,
+          "name": "weightValueGrain",
+          "type": "Double",
+          "vtableSlot": 10
+        },
+        {
+          "id": 6,
+          "name": "pressureValueMmHg",
+          "type": "Double",
+          "vtableSlot": 14
+        },
+        {
+          "id": 10,
+          "name": "torqueValueNewtonMeter",
+          "type": "Double",
+          "vtableSlot": 22
+        },
+        {
+          "id": 17,
+          "name": "ownerId",
+          "type": "Relation",
+          "vtableSlot": 36
+        },
+        {
+          "id": 20,
+          "name": "temperatureValueF",
+          "type": "Double",
+          "vtableSlot": 42
+        },
+        {
+          "id": 26,
+          "name": "lengthLastUnit",
+          "type": "String",
+          "vtableSlot": 54
+        },
+        {
+          "id": 27,
+          "name": "weightLastUnit",
+          "type": "String",
+          "vtableSlot": 56
+        },
+        {
+          "id": 28,
+          "name": "pressureLastUnit",
+          "type": "String",
+          "vtableSlot": 58
+        },
+        {
+          "id": 29,
+          "name": "temperatureLastUnit",
+          "type": "String",
+          "vtableSlot": 60
+        },
+        {
+          "id": 30,
+          "name": "torqueLastUnit",
+          "type": "String",
+          "vtableSlot": 62
+        },
+        {
+          "id": 31,
+          "name": "anglesConvDistanceValueMeter",
+          "type": "Double",
+          "vtableSlot": 64
+        },
+        {
+          "id": 32,
+          "name": "anglesConvDistanceLastUnit",
+          "type": "String",
+          "vtableSlot": 66
+        },
+        {
+          "id": 33,
+          "name": "anglesConvAngularValueMil",
+          "type": "Double",
+          "vtableSlot": 68
+        },
+        {
+          "id": 34,
+          "name": "anglesConvAngularLastUnit",
+          "type": "String",
+          "vtableSlot": 70
+        },
+        {
+          "id": 35,
+          "name": "anglesConvOutputLastUnit",
+          "type": "String",
+          "vtableSlot": 72
+        },
+        {
+          "id": 36,
+          "name": "velocityValueMps",
+          "type": "Double",
+          "vtableSlot": 74
+        },
+        {
+          "id": 37,
+          "name": "velocityLastUnit",
+          "type": "String",
+          "vtableSlot": 76
+        },
+        {
+          "id": 38,
+          "name": "velocityMachUseCustomAtmo",
+          "type": "Bool",
+          "vtableSlot": 78
+        },
+        {
+          "id": 39,
+          "name": "velocityAtmoTemperatureC",
+          "type": "Double",
+          "vtableSlot": 80
+        },
+        {
+          "id": 40,
+          "name": "velocityAtmoPressureHPa",
+          "type": "Double",
+          "vtableSlot": 82
+        },
+        {
+          "id": 41,
+          "name": "velocityAtmoHumidityFrac",
+          "type": "Double",
+          "vtableSlot": 84
+        },
+        {
+          "id": 42,
+          "name": "velocityAtmoAltitudeMeter",
+          "type": "Double",
+          "vtableSlot": 86
+        },
+        {
+          "id": 43,
+          "name": "velocityMachInputValue",
+          "type": "Double",
+          "vtableSlot": 88
+        },
+        {
+          "id": 44,
+          "name": "distanceConvTargetSizeInch",
+          "type": "Double",
+          "vtableSlot": 90
+        },
+        {
+          "id": 45,
+          "name": "distanceConvTargetSizeUnit",
+          "type": "String",
+          "vtableSlot": 92
+        },
+        {
+          "id": 46,
+          "name": "distanceConvTargetSizeAngularMil",
+          "type": "Double",
+          "vtableSlot": 94
+        },
+        {
+          "id": 47,
+          "name": "distanceConvTargetSizeAngularUnit",
+          "type": "String",
+          "vtableSlot": 96
+        }
+      ]
+    },
+    {
+      "entityId": 3,
+      "name": "GeneralSettings",
+      "properties": [
+        {
+          "id": 1,
+          "name": "id",
+          "type": "Long",
+          "vtableSlot": 4
+        },
+        {
+          "id": 2,
+          "name": "languageCode",
+          "type": "String",
+          "vtableSlot": 6
+        },
+        {
+          "id": 3,
+          "name": "themeMode",
+          "type": "String",
+          "vtableSlot": 8
+        },
+        {
+          "id": 4,
+          "name": "adjustmentDisplayFormatValue",
+          "type": "String",
+          "vtableSlot": 10
+        },
+        {
+          "id": 5,
+          "name": "homeShowMil",
+          "type": "Bool",
+          "vtableSlot": 12
+        },
+        {
+          "id": 6,
+          "name": "homeShowMrad",
+          "type": "Bool",
+          "vtableSlot": 14
+        },
+        {
+          "id": 7,
+          "name": "homeShowMoa",
+          "type": "Bool",
+          "vtableSlot": 16
+        },
+        {
+          "id": 8,
+          "name": "homeShowCmPer100m",
+          "type": "Bool",
+          "vtableSlot": 18
+        },
+        {
+          "id": 9,
+          "name": "homeShowInPer100yd",
+          "type": "Bool",
+          "vtableSlot": 20
+        },
+        {
+          "id": 10,
+          "name": "homeChartDistanceStep",
+          "type": "Double",
+          "vtableSlot": 22
+        },
+        {
+          "id": 11,
+          "name": "homeTableDistanceStep",
+          "type": "Double",
+          "vtableSlot": 24
+        },
+        {
+          "id": 12,
+          "name": "homeShowSubsonicTransition",
+          "type": "Bool",
+          "vtableSlot": 26
+        },
+        {
+          "id": 14,
+          "name": "ownerId",
+          "type": "Relation",
+          "vtableSlot": 30
+        },
+        {
+          "id": 15,
+          "name": "homeShowInClicks",
+          "type": "Bool",
+          "vtableSlot": 32
+        }
+      ]
+    },
+    {
+      "entityId": 4,
+      "name": "Owner",
+      "properties": [
+        {
+          "id": 1,
+          "name": "id",
+          "type": "Long",
+          "vtableSlot": 4
+        },
+        {
+          "id": 2,
+          "name": "token",
+          "type": "String",
+          "vtableSlot": 6
+        },
+        {
+          "id": 4,
+          "name": "activeProfileId",
+          "type": "Relation",
+          "vtableSlot": 10
+        }
+      ]
+    },
+    {
+      "entityId": 5,
+      "name": "Profile",
+      "properties": [
+        {
+          "id": 1,
+          "name": "id",
+          "type": "Long",
+          "vtableSlot": 4
+        },
+        {
+          "id": 2,
+          "name": "name",
+          "type": "String",
+          "vtableSlot": 6
+        },
+        {
+          "id": 3,
+          "name": "weaponId",
+          "type": "Relation",
+          "vtableSlot": 8
+        },
+        {
+          "id": 4,
+          "name": "sightId",
+          "type": "Relation",
+          "vtableSlot": 10
+        },
+        {
+          "id": 5,
+          "name": "ammoId",
+          "type": "Relation",
+          "vtableSlot": 12
+        },
+        {
+          "id": 6,
+          "name": "ownerId",
+          "type": "Relation",
+          "vtableSlot": 14
+        }
+      ]
+    },
+    {
+      "entityId": 6,
+      "name": "Sight",
+      "properties": [
+        {
+          "id": 1,
+          "name": "id",
+          "type": "Long",
+          "vtableSlot": 4
+        },
+        {
+          "id": 2,
+          "name": "name",
+          "type": "String",
+          "vtableSlot": 6
+        },
+        {
+          "id": 3,
+          "name": "focalPlaneValue",
+          "type": "String",
+          "vtableSlot": 8
+        },
+        {
+          "id": 5,
+          "name": "verticalClick",
+          "type": "Double",
+          "vtableSlot": 12
+        },
+        {
+          "id": 6,
+          "name": "horizontalClick",
+          "type": "Double",
+          "vtableSlot": 14
+        },
+        {
+          "id": 7,
+          "name": "verticalClickUnit",
+          "type": "String",
+          "vtableSlot": 16
+        },
+        {
+          "id": 8,
+          "name": "horizontalClickUnit",
+          "type": "String",
+          "vtableSlot": 18
+        },
+        {
+          "id": 10,
+          "name": "minMagnification",
+          "type": "Double",
+          "vtableSlot": 22
+        },
+        {
+          "id": 11,
+          "name": "maxMagnification",
+          "type": "Double",
+          "vtableSlot": 24
+        },
+        {
+          "id": 12,
+          "name": "reticleImage",
+          "type": "String",
+          "vtableSlot": 26
+        },
+        {
+          "id": 13,
+          "name": "vendor",
+          "type": "String",
+          "vtableSlot": 28
+        },
+        {
+          "id": 14,
+          "name": "notes",
+          "type": "String",
+          "vtableSlot": 30
+        },
+        {
+          "id": 15,
+          "name": "image",
+          "type": "String",
+          "vtableSlot": 32
+        },
+        {
+          "id": 16,
+          "name": "ownerId",
+          "type": "Relation",
+          "vtableSlot": 34
+        },
+        {
+          "id": 17,
+          "name": "sightHeightInch",
+          "type": "Double",
+          "vtableSlot": 36
+        },
+        {
+          "id": 18,
+          "name": "sightHorizontalOffsetInch",
+          "type": "Double",
+          "vtableSlot": 38
+        },
+        {
+          "id": 19,
+          "name": "calibratedMagnification",
+          "type": "Double",
+          "vtableSlot": 40
+        }
+      ]
+    },
+    {
+      "entityId": 7,
+      "name": "TablesSettings",
+      "properties": [
+        {
+          "id": 1,
+          "name": "id",
+          "type": "Long",
+          "vtableSlot": 4
+        },
+        {
+          "id": 5,
+          "name": "showZeros",
+          "type": "Bool",
+          "vtableSlot": 12
+        },
+        {
+          "id": 6,
+          "name": "showSubsonicTransition",
+          "type": "Bool",
+          "vtableSlot": 14
+        },
+        {
+          "id": 7,
+          "name": "hiddenCols",
+          "type": "StringVector",
+          "vtableSlot": 16
+        },
+        {
+          "id": 9,
+          "name": "ownerId",
+          "type": "Relation",
+          "vtableSlot": 20
+        },
+        {
+          "id": 10,
+          "name": "distanceStartMeter",
+          "type": "Double",
+          "vtableSlot": 22
+        },
+        {
+          "id": 11,
+          "name": "distanceEndMeter",
+          "type": "Double",
+          "vtableSlot": 24
+        },
+        {
+          "id": 12,
+          "name": "distanceStepMeter",
+          "type": "Double",
+          "vtableSlot": 26
+        },
+        {
+          "id": 13,
+          "name": "showMil",
+          "type": "Bool",
+          "vtableSlot": 28
+        },
+        {
+          "id": 14,
+          "name": "showMrad",
+          "type": "Bool",
+          "vtableSlot": 30
+        },
+        {
+          "id": 15,
+          "name": "showMoa",
+          "type": "Bool",
+          "vtableSlot": 32
+        },
+        {
+          "id": 16,
+          "name": "showCmPer100m",
+          "type": "Bool",
+          "vtableSlot": 34
+        },
+        {
+          "id": 17,
+          "name": "showInPer100yd",
+          "type": "Bool",
+          "vtableSlot": 36
+        },
+        {
+          "id": 18,
+          "name": "showInClicks",
+          "type": "Bool",
+          "vtableSlot": 38
+        }
+      ]
+    },
+    {
+      "entityId": 8,
+      "name": "UnitSettings",
+      "properties": [
+        {
+          "id": 1,
+          "name": "id",
+          "type": "Long",
+          "vtableSlot": 4
+        },
+        {
+          "id": 2,
+          "name": "angular",
+          "type": "String",
+          "vtableSlot": 6
+        },
+        {
+          "id": 3,
+          "name": "distance",
+          "type": "String",
+          "vtableSlot": 8
+        },
+        {
+          "id": 4,
+          "name": "velocity",
+          "type": "String",
+          "vtableSlot": 10
+        },
+        {
+          "id": 5,
+          "name": "pressure",
+          "type": "String",
+          "vtableSlot": 12
+        },
+        {
+          "id": 6,
+          "name": "temperature",
+          "type": "String",
+          "vtableSlot": 14
+        },
+        {
+          "id": 7,
+          "name": "diameter",
+          "type": "String",
+          "vtableSlot": 16
+        },
+        {
+          "id": 8,
+          "name": "length",
+          "type": "String",
+          "vtableSlot": 18
+        },
+        {
+          "id": 9,
+          "name": "weight",
+          "type": "String",
+          "vtableSlot": 20
+        },
+        {
+          "id": 10,
+          "name": "adjustment",
+          "type": "String",
+          "vtableSlot": 22
+        },
+        {
+          "id": 11,
+          "name": "drop",
+          "type": "String",
+          "vtableSlot": 24
+        },
+        {
+          "id": 12,
+          "name": "energy",
+          "type": "String",
+          "vtableSlot": 26
+        },
+        {
+          "id": 13,
+          "name": "sightHeight",
+          "type": "String",
+          "vtableSlot": 28
+        },
+        {
+          "id": 14,
+          "name": "twist",
+          "type": "String",
+          "vtableSlot": 30
+        },
+        {
+          "id": 15,
+          "name": "barrelLength",
+          "type": "String",
+          "vtableSlot": 32
+        },
+        {
+          "id": 16,
+          "name": "time",
+          "type": "String",
+          "vtableSlot": 34
+        },
+        {
+          "id": 17,
+          "name": "torque",
+          "type": "String",
+          "vtableSlot": 36
+        },
+        {
+          "id": 18,
+          "name": "ownerId",
+          "type": "Relation",
+          "vtableSlot": 38
+        },
+        {
+          "id": 19,
+          "name": "targetSize",
+          "type": "String",
+          "vtableSlot": 40
+        }
+      ]
+    },
+    {
+      "entityId": 9,
+      "name": "Weapon",
+      "properties": [
+        {
+          "id": 1,
+          "name": "id",
+          "type": "Long",
+          "vtableSlot": 4
+        },
+        {
+          "id": 2,
+          "name": "name",
+          "type": "String",
+          "vtableSlot": 6
+        },
+        {
+          "id": 6,
+          "name": "vendor",
+          "type": "String",
+          "vtableSlot": 14
+        },
+        {
+          "id": 7,
+          "name": "image",
+          "type": "String",
+          "vtableSlot": 16
+        },
+        {
+          "id": 8,
+          "name": "ownerId",
+          "type": "Relation",
+          "vtableSlot": 18
+        },
+        {
+          "id": 9,
+          "name": "caliberInch",
+          "type": "Double",
+          "vtableSlot": 20
+        },
+        {
+          "id": 10,
+          "name": "twistInch",
+          "type": "Double",
+          "vtableSlot": 22
+        },
+        {
+          "id": 11,
+          "name": "barrelLengthInch",
+          "type": "Double",
+          "vtableSlot": 24
+        },
+        {
+          "id": 13,
+          "name": "zeroElevationRad",
+          "type": "Double",
+          "vtableSlot": 28
+        },
+        {
+          "id": 14,
+          "name": "caliberName",
+          "type": "String",
+          "vtableSlot": 30
+        },
+        {
+          "id": 15,
+          "name": "notes",
+          "type": "String",
+          "vtableSlot": 32
+        }
+      ]
+    },
+    {
+      "entityId": 11,
+      "name": "ShootingConditions",
+      "properties": [
+        {
+          "id": 1,
+          "name": "id",
+          "type": "Long",
+          "vtableSlot": 4
+        },
+        {
+          "id": 2,
+          "name": "distanceMeter",
+          "type": "Double",
+          "vtableSlot": 6
+        },
+        {
+          "id": 3,
+          "name": "lookAngleRad",
+          "type": "Double",
+          "vtableSlot": 8
+        },
+        {
+          "id": 4,
+          "name": "temperatureC",
+          "type": "Double",
+          "vtableSlot": 10
+        },
+        {
+          "id": 5,
+          "name": "pressurehPa",
+          "type": "Double",
+          "vtableSlot": 12
+        },
+        {
+          "id": 6,
+          "name": "humidityFrac",
+          "type": "Double",
+          "vtableSlot": 14
+        },
+        {
+          "id": 7,
+          "name": "powderTemperatureC",
+          "type": "Double",
+          "vtableSlot": 16
+        },
+        {
+          "id": 8,
+          "name": "usePowderSensitivity",
+          "type": "Bool",
+          "vtableSlot": 18
+        },
+        {
+          "id": 10,
+          "name": "useCoriolis",
+          "type": "Bool",
+          "vtableSlot": 22
+        },
+        {
+          "id": 11,
+          "name": "latitudeDeg",
+          "type": "Double",
+          "vtableSlot": 24
+        },
+        {
+          "id": 12,
+          "name": "azimuthDeg",
+          "type": "Double",
+          "vtableSlot": 26
+        },
+        {
+          "id": 13,
+          "name": "windDirectionDeg",
+          "type": "Double",
+          "vtableSlot": 28
+        },
+        {
+          "id": 14,
+          "name": "windSpeedMps",
+          "type": "Double",
+          "vtableSlot": 30
+        },
+        {
+          "id": 16,
+          "name": "altitudeMeter",
+          "type": "Double",
+          "vtableSlot": 34
+        },
+        {
+          "id": 17,
+          "name": "useDiffPowderTemp",
+          "type": "Bool",
+          "vtableSlot": 36
+        },
+        {
+          "id": 18,
+          "name": "ownerId",
+          "type": "Relation",
+          "vtableSlot": 38
+        }
+      ]
+    },
+    {
+      "entityId": 12,
+      "name": "ReticleSettings",
+      "properties": [
+        {
+          "id": 1,
+          "name": "id",
+          "type": "Long",
+          "vtableSlot": 4
+        },
+        {
+          "id": 4,
+          "name": "targetImage",
+          "type": "String",
+          "vtableSlot": 10
+        },
+        {
+          "id": 6,
+          "name": "ownerId",
+          "type": "Relation",
+          "vtableSlot": 14
+        },
+        {
+          "id": 7,
+          "name": "verticalAdjustment",
+          "type": "Double",
+          "vtableSlot": 16
+        },
+        {
+          "id": 8,
+          "name": "verticalAdjustmentUnit",
+          "type": "String",
+          "vtableSlot": 18
+        },
+        {
+          "id": 9,
+          "name": "horizontalAdjustment",
+          "type": "Double",
+          "vtableSlot": 20
+        },
+        {
+          "id": 10,
+          "name": "horizontalAdjustmentUnit",
+          "type": "String",
+          "vtableSlot": 22
+        }
+      ]
+    }
+  ]
+}

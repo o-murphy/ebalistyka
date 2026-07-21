@@ -66,6 +66,7 @@ dependencies:
   http: ^1.2.2
   flutter_markdown_plus: ^1.0.12
   ota_update: ^7.1.0
+  ob_dump_reader_flutter: ^0.1.0-alpha.2
 
 dev_dependencies:
   flutter_test:
