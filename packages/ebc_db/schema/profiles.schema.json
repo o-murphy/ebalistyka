@@ -5,6 +5,23 @@
   "description": "Canonical schema for the app's protobuf ProfilesData document (snake_case, as produced by ProfilesValidator's hand-written proto→JSON conversion), persisted to profiles.ebcp via ProfilesFile/ProfilesStore. See docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md. Numeric ranges and defaults are ported from lib/core/models/field_constraints.dart (FC) in the main app, converted from FC's rawUnit into the unit each field is actually stored in here (documented per-field below) — FC itself is the single source of truth for these limits, not this file.",
   "$ref": "#/$defs/ProfilesData",
   "$defs": {
+    "CaliberInch": {
+      "description": "Shared bounds for FC.projectileDiameter, mm→inch (1–30mm) — used by both Weapon.caliber_inch and Ammo.caliber_inch.",
+      "type": ["number", "null"], "minimum": 0.03937007874015748, "maximum": 1.1811023622047244, "default": null
+    },
+    "SightHeightInch": {
+      "description": "Shared bounds for FC.sightHeight, mm→inch (0–200mm) — used by both Sight.sight_height_inch and .sight_horizontal_offset_inch.",
+      "type": "number", "minimum": 0, "maximum": 7.874015748031496, "default": 0.0
+    },
+    "BallisticCoefficient": {
+      "description": "Shared bounds for FC.ballisticCoefficient, scalar (0.001–2.000) — used by both Ammo.bc_g1 and .bc_g7.",
+      "type": ["number", "null"], "minimum": 0.001, "maximum": 2.000, "default": null
+    },
+    "MagnificationBounds": {
+      "description": "Bounds only (no type/default — those differ per field) for FC.magnification, scalar (0.5–100), shared by Sight.min_magnification/.max_magnification/.calibrated_magnification.",
+      "minimum": 0.5, "maximum": 100
+    },
+
     "Weapon": {
       "type": "object",
       "additionalProperties": false,
@@ -16,9 +33,7 @@
         "name": { "type": "string", "default": "" },
         "caliber_inch": {
           "description": "FC.projectileDiameter, mm→inch (1–30mm). optional in the .proto — null/absent means unset (ProfilesValidator emits null via hasCaliberInch()).",
-          "type": ["number", "null"],
-          "minimum": 0.03937007874015748, "maximum": 1.1811023622047244,
-          "default": null
+          "$ref": "#/$defs/CaliberInch"
         },
         "caliber_name": { "type": "string", "default": "" },
         "twist_inch": {
@@ -58,11 +73,11 @@
         },
         "sight_height_inch": {
           "description": "FC.sightHeight, mm→inch (0–200mm).",
-          "type": "number", "minimum": 0, "maximum": 7.874015748031496, "default": 0.0
+          "$ref": "#/$defs/SightHeightInch"
         },
         "sight_horizontal_offset_inch": {
           "description": "Reuses FC.sightHeight, mm→inch (0–200mm) — same constraint the wizard applies to this field.",
-          "type": "number", "minimum": 0, "maximum": 7.874015748031496, "default": 0.0
+          "$ref": "#/$defs/SightHeightInch"
         },
         "vertical_click": {
           "description": "Self-describing value+unit pair with vertical_click_unit (stored in whatever unit that field names, see sight_wizard_notifier.dart) — no single fixed-unit bound applies.",
@@ -76,18 +91,19 @@
         "horizontal_click_unit": { "type": "string", "default": "mil" },
         "min_magnification": {
           "description": "FC.magnification, scalar (0.5–100).",
-          "type": "number", "minimum": 0.5, "maximum": 100, "default": 1.0
+          "allOf": [{ "$ref": "#/$defs/MagnificationBounds" }],
+          "type": "number", "default": 1.0
         },
         "max_magnification": {
           "description": "FC.magnification, scalar (0.5–100).",
-          "type": "number", "minimum": 0.5, "maximum": 100, "default": 1.0
+          "allOf": [{ "$ref": "#/$defs/MagnificationBounds" }],
+          "type": "number", "default": 1.0
         },
         "reticle_image": { "type": "string", "default": "" },
         "calibrated_magnification": {
           "description": "No dedicated FC constant; inferred from FC.magnification (0.5–100). optional in the .proto — null/absent means unset.",
-          "type": ["number", "null"],
-          "minimum": 0.5, "maximum": 100,
-          "default": null
+          "allOf": [{ "$ref": "#/$defs/MagnificationBounds" }],
+          "type": ["number", "null"], "default": null
         },
         "vendor": { "type": "string", "default": "" },
         "notes": { "type": "string", "default": "" },
@@ -111,37 +127,45 @@
         },
         "look_angle_rad": {
           "description": "FC.lookAngle, degree→radian (-90°..90°).",
-          "type": "number", "minimum": -1.5707963267948966, "maximum": 1.5707963267948966, "default": 0.0
+          "allOf": [{ "$ref": "#/$defs/LookAngleRad" }],
+          "type": "number", "default": 0.0
         },
         "altitude_meter": {
           "description": "FC.altitude, meter (-500–15000).",
-          "type": "number", "minimum": -500, "maximum": 15000, "default": 0.0
+          "allOf": [{ "$ref": "#/$defs/AltitudeMeter" }],
+          "type": "number", "default": 0.0
         },
         "temperature_c": {
           "description": "FC.temperature, celsius (-100–100).",
-          "type": "number", "minimum": -100, "maximum": 100, "default": 15.0
+          "allOf": [{ "$ref": "#/$defs/TemperatureC" }],
+          "type": "number", "default": 15.0
         },
         "pressure_h_pa": {
           "description": "FC.pressure, hPa (300–1500).",
-          "type": "number", "minimum": 300, "maximum": 1500, "default": 1013.0
+          "allOf": [{ "$ref": "#/$defs/PressureHPa" }],
+          "type": "number", "default": 1013.0
         },
         "humidity_frac": {
           "description": "FC.humidity, fraction (0–1).",
-          "type": "number", "minimum": 0, "maximum": 1, "default": 0.0
+          "allOf": [{ "$ref": "#/$defs/HumidityFrac" }],
+          "type": "number", "default": 0.0
         },
         "use_diff_powder_temperature": { "type": "boolean", "default": false },
         "use_coriolis": { "type": "boolean", "default": false },
         "powder_temperature_c": {
           "description": "FC.temperature, celsius (-100–100).",
-          "type": "number", "minimum": -100, "maximum": 100, "default": 15.0
+          "allOf": [{ "$ref": "#/$defs/TemperatureC" }],
+          "type": "number", "default": 15.0
         },
         "latitude_deg": {
           "description": "FC.latitude, degree (-90–90).",
-          "type": "number", "minimum": -90, "maximum": 90, "default": 0.0
+          "allOf": [{ "$ref": "#/$defs/LatitudeDeg" }],
+          "type": "number", "default": 0.0
         },
         "azimuth_deg": {
           "description": "FC.azimuth, degree (0–360).",
-          "type": "number", "minimum": 0, "maximum": 360, "default": 0.0
+          "allOf": [{ "$ref": "#/$defs/AzimuthDeg" }],
+          "type": "number", "default": 0.0
         },
         "offset_x": {
           "description": "Self-describing value+unit pair with offset_x_unit — no single fixed-unit bound applies (see Sight.vertical_click).",
@@ -174,9 +198,7 @@
         "name": { "type": "string", "default": "" },
         "caliber_inch": {
           "description": "FC.projectileDiameter, mm→inch (1–30mm). optional in the .proto — null/absent means unset.",
-          "type": ["number", "null"],
-          "minimum": 0.03937007874015748, "maximum": 1.1811023622047244,
-          "default": null
+          "$ref": "#/$defs/CaliberInch"
         },
         "weight_grain": {
           "description": "FC.projectileWeight, grain (1–800). optional in the .proto — null/absent means unset.",
@@ -195,15 +217,11 @@
         },
         "bc_g1": {
           "description": "FC.ballisticCoefficient, scalar (0.001–2.000). optional in the .proto — null/absent means unset.",
-          "type": ["number", "null"],
-          "minimum": 0.001, "maximum": 2.000,
-          "default": null
+          "$ref": "#/$defs/BallisticCoefficient"
         },
         "bc_g7": {
           "description": "FC.ballisticCoefficient, scalar (0.001–2.000). optional in the .proto — null/absent means unset.",
-          "type": ["number", "null"],
-          "minimum": 0.001, "maximum": 2.000,
-          "default": null
+          "$ref": "#/$defs/BallisticCoefficient"
         },
         "use_multi_bc_g1": { "type": "boolean", "default": false },
         "use_multi_bc_g7": { "type": "boolean", "default": false },
@@ -215,7 +233,8 @@
         },
         "muzzle_velocity_temperature_c": {
           "description": "FC.temperature, celsius (-100–100).",
-          "type": "number", "minimum": -100, "maximum": 100, "default": 15.0
+          "allOf": [{ "$ref": "#/$defs/TemperatureC" }],
+          "type": "number", "default": 15.0
         },
         "use_powder_sensitivity": { "type": "boolean", "default": false },
         "powder_sensitivity_frac": {
