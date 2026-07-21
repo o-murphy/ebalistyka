@@ -1,4 +1,4 @@
-import 'proto/settings.pb.dart' as proto;
+import '../proto/settings.pb.dart' as proto;
 
 // Converts protobuf settings.* messages into the plain snake_case JSON
 // shape schema/settings.schema.json (and the nested defs in

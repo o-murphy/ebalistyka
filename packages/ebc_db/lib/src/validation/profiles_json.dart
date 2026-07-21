@@ -1,4 +1,4 @@
-import 'proto/profiles.pb.dart' as proto;
+import '../proto/profiles.pb.dart' as proto;
 
 // Converts protobuf profiles.* messages into the plain snake_case JSON
 // shape schema/profiles.schema.json (and the nested defs in

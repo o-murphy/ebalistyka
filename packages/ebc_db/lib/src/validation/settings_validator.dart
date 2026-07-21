@@ -1,7 +1,7 @@
 import 'package:json_schema/json_schema.dart';
 
-import 'generated/settings_schema.g.dart';
-import 'proto/settings.pb.dart' as proto;
+import '../generated/settings_schema.g.dart';
+import '../proto/settings.pb.dart' as proto;
 import 'settings_json.dart';
 
 class SettingsFieldError {

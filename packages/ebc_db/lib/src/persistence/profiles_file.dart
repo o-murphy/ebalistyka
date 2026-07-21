@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
+import '../proto/profiles.pb.dart' as proto;
 import 'msg_codec.dart';
-import 'proto/profiles.pb.dart' as proto;
 
 abstract final class ProfilesFile {
   static final _codec = MsgCodec<proto.ProfilesData>(
