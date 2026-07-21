@@ -2384,12 +2384,6 @@ abstract class AppLocalizations {
   /// **'Export format'**
   String get exportFormatDialogTitle;
 
-  /// Action sheet title for choosing the format of the file to import a profile from
-  ///
-  /// In en, this message translates to:
-  /// **'Import format'**
-  String get importFormatDialogTitle;
-
   /// Action sheet title for picking which profile to import when an .ebcp file contains more than one
   ///
   /// In en, this message translates to:
