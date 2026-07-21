@@ -200,6 +200,10 @@ class ProfilesActions extends Notifier<void> {
   Future<void> renameProfile(String uuid, String name) async {
     await ref.read(appStateProvider.notifier).renameProfile(uuid, name);
   }
+
+  Future<String> importProfile(Profile imported) async {
+    return ref.read(appStateProvider.notifier).importProfile(imported);
+  }
 }
 
 final profilesActionsProvider = NotifierProvider<ProfilesActions, void>(
