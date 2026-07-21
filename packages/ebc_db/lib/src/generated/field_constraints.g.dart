@@ -92,3 +92,15 @@ abstract final class FieldLimits {
   static const targetSizeMil = FieldBounds(minRaw: 0.001, maxRaw: 100);
 
 }
+
+/// Max element counts for Ammo's paired-array (row-wise) fields —
+/// generated from each field's `maxItems` in profiles.schema.json. Only
+/// caps each array's own length; does NOT check that a pair (e.g.
+/// multiBcTableG1's v_mps/bc arrays) agree on length with each other —
+/// see docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md Phase 7.
+abstract final class ArrayLimits {
+  static const int multiBcTableG1MaxItems = 5;
+  static const int multiBcTableG7MaxItems = 5;
+  static const int customDragTableMaxItems = 100;
+  static const int powderSensitivityTableMaxItems = 5;
+}

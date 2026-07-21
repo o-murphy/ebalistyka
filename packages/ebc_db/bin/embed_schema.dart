@@ -193,6 +193,21 @@ const _settingsFieldConstraintDefs = [
   'DistanceConvTargetSize',
 ];
 
+// Role -> every (defName, propertyName) in profiles.schema.json's Ammo
+// sharing one array-length cap (`maxItems`). Each role is a paired-array
+// concept (e.g. multi_bc_table_g1's v_mps/bc arrays are meant to stay the
+// same length row-for-row) — this only caps each array's own length, it
+// does not enforce the two arrays *agreeing* on length (JSON Schema has no
+// keyword for that; see docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md
+// Phase 7 for the array-of-objects redesign that would fix this
+// structurally, tracked but not implemented).
+const _arrayLimitRoles = <String, List<(String, String)>>{
+  'multiBcTableG1': [('Ammo', 'multi_bc_table_g1_v_mps'), ('Ammo', 'multi_bc_table_g1_bc')],
+  'multiBcTableG7': [('Ammo', 'multi_bc_table_g7_v_mps'), ('Ammo', 'multi_bc_table_g7_bc')],
+  'customDragTable': [('Ammo', 'custom_drag_table_mach'), ('Ammo', 'custom_drag_table_cd')],
+  'powderSensitivityTable': [('Ammo', 'powder_sensitivity_tc'), ('Ammo', 'powder_sensitivity_v_mps')],
+};
+
 void _generateFieldConstraints(Directory outDir) {
   final boundsDefs =
       (jsonDecode(File('schema/bounds.schema.json').readAsStringSync()) as Map<String, dynamic>)[r'$defs']
@@ -229,6 +244,14 @@ void _generateFieldConstraints(Directory outDir) {
     into: resolved,
   );
 
+  final arrayLimits = <String, int>{};
+  _resolveArrayLimitRoles(
+    schemaFile: 'schema/profiles.schema.json',
+    defName: 'Ammo',
+    roles: _arrayLimitRoles,
+    into: arrayLimits,
+  );
+
   final buffer = StringBuffer()
     ..writeln('// GENERATED CODE — DO NOT EDIT BY HAND.')
     ..writeln('// Regenerate with: dart run bin/embed_schema.dart')
@@ -254,9 +277,89 @@ void _generateFieldConstraints(Directory outDir) {
   }
   buffer.writeln('}');
 
+  buffer
+    ..writeln()
+    ..writeln('/// Max element counts for Ammo\'s paired-array (row-wise) fields —')
+    ..writeln('/// generated from each field\'s `maxItems` in profiles.schema.json. Only')
+    ..writeln('/// caps each array\'s own length; does NOT check that a pair (e.g.')
+    ..writeln('/// multiBcTableG1\'s v_mps/bc arrays) agree on length with each other —')
+    ..writeln('/// see docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md Phase 7.')
+    ..writeln('abstract final class ArrayLimits {');
+  for (final role in _arrayLimitRoles.keys) {
+    buffer.writeln('  static const int ${role}MaxItems = ${arrayLimits[role]};');
+  }
+  buffer.writeln('}');
+
   final outFile = File('${outDir.path}/field_constraints.g.dart');
   outFile.writeAsStringSync(buffer.toString());
   print('Done. Wrote ${outFile.path}');
+}
+
+/// Walks [defName] within [schemaFile] for array properties with a
+/// `maxItems`, resolving each to its role via [roles] and writing the count
+/// into [into]. Exits loudly on: an array field with `maxItems` but no role
+/// entry, a role entry pointing at a path with no `maxItems`, or a role
+/// whose mapped paths disagree on the count.
+void _resolveArrayLimitRoles({
+  required String schemaFile,
+  required String defName,
+  required Map<String, List<(String, String)>> roles,
+  required Map<String, int> into,
+}) {
+  final defs = (jsonDecode(File(schemaFile).readAsStringSync()) as Map<String, dynamic>)[r'$defs'] as Map<String, dynamic>;
+  final props = (defs[defName] as Map<String, dynamic>)['properties'] as Map<String, dynamic>;
+
+  final pathToRole = <(String, String), String>{
+    for (final entry in roles.entries)
+      for (final path in entry.value) path: entry.key,
+  };
+
+  final unmapped = <String>[];
+  final found = <String, List<(String, int)>>{};
+
+  for (final propEntry in props.entries) {
+    final prop = propEntry.value as Map<String, dynamic>;
+    final maxItems = prop['maxItems'] as int?;
+    if (maxItems == null) continue;
+    final path = (defName, propEntry.key);
+    final role = pathToRole[path];
+    if (role == null) {
+      unmapped.add('$defName.${propEntry.key}');
+      continue;
+    }
+    (found[role] ??= []).add(('$defName.${propEntry.key}', maxItems));
+  }
+
+  if (unmapped.isNotEmpty) {
+    stderr.writeln(
+      '$schemaFile/$defName has array field(s) with maxItems but no '
+      '_arrayLimitRoles mapping entry in bin/embed_schema.dart: ${unmapped.join(', ')}',
+    );
+    exit(1);
+  }
+
+  for (final entry in roles.entries) {
+    final role = entry.key;
+    final actual = found[role];
+    if (actual == null || actual.length != entry.value.length) {
+      stderr.writeln(
+        "_arrayLimitRoles['$role'] references a path with no maxItems in "
+        '$schemaFile/$defName — check for a typo or a renamed field.',
+      );
+      exit(1);
+    }
+    final (_, max0) = actual.first;
+    for (final (path, max) in actual.skip(1)) {
+      if (max != max0) {
+        stderr.writeln(
+          "Array-limit role '$role' has disagreeing maxItems across its "
+          'mapped paths: ${actual.first.$1}=$max0 vs. $path=$max.',
+        );
+        exit(1);
+      }
+    }
+    into[role] = max0;
+  }
 }
 
 /// Walks [defNames] within [schemaFile], resolving each numeric property to
