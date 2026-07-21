@@ -135,6 +135,17 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
     return profile.uuid;
   }
 
+  /// Adds every profile in [imported] as new profiles, each with a fresh
+  /// `uuid`, in **one** state update/disk write — not a loop of
+  /// [importProfile] calls. A loop fires one overlapping, unawaited
+  /// `MsgStore.save()` per iteration (see `ProfilesNotifier.update()`),
+  /// which used to race on `profiles.ebcp.tmp`; batching sidesteps that and
+  /// is the only write for the whole import regardless of profile count.
+  Future<void> importProfiles(List<Profile> imported) async {
+    final fresh = imported.map(copyWithFreshUuid).toList();
+    _updateProfiles((profiles) => [...profiles, ...fresh]);
+  }
+
   // ── Import (Phase 3.5, not yet available) ────────────────────────────────────
 
   Future<String> importAmmo(Object export) async {

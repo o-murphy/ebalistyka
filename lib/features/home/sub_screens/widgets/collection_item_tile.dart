@@ -116,19 +116,20 @@ class CollectionItemTile extends StatelessWidget {
               ),
 
             // Bottom right — select button
-            Positioned(
-              bottom: 8,
-              right: 8,
-              child: FloatingActionButton(
-                elevation: 0,
-                mini: true,
-                heroTag: 'select_btn_${item.id}',
-                onPressed: onSelect,
-                backgroundColor: cs.primaryContainer,
-                foregroundColor: cs.onPrimaryContainer,
-                child: const Icon(IconDef.apply, size: 20),
+            if (isSelected != null && !isSelected)
+              Positioned(
+                bottom: 8,
+                right: 8,
+                child: FloatingActionButton(
+                  elevation: 0,
+                  mini: true,
+                  heroTag: 'select_btn_${item.id}',
+                  onPressed: onSelect,
+                  backgroundColor: cs.primaryContainer,
+                  foregroundColor: cs.onPrimaryContainer,
+                  child: const Icon(IconDef.apply, size: 20),
+                ),
               ),
-            ),
           ],
         ),
       ),

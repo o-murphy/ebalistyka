@@ -254,7 +254,6 @@ class ProfilesListScreen extends ConsumerWidget {
                     key: ValueKey(profile.uuid),
                     body: ProfileListTileBody(
                       profile: profile,
-                      isActive: profile.uuid == activeUuid,
                     ),
                     item: _ProfileCollectionItem(ref: profile),
                     isSelected: profile.uuid == activeUuid,

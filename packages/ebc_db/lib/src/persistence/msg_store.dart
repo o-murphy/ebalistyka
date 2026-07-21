@@ -35,6 +35,13 @@ class MsgStore<T> {
   T? _pending;
   Completer<void>? _pendingCompleter;
 
+  // Serializes calls to _writeNowUnsafe: two overlapping writes both target
+  // the same shared `.tmp` path, so without this a second write's rename()
+  // can race the first's (one write's tmp file vanishing out from under the
+  // other → PathNotFoundException). Chained rather than awaited per-call so
+  // one write's failure doesn't jam the queue for the next.
+  Future<void> _writeQueue = Future.value();
+
   /// Loads [T] from disk. Falls back to [orElseSeed] if the file is
   /// missing, fails to decode, or fails schema validation (validation is
   /// the caller's job — pass a `validate` step inside [orElseSeed]'s
@@ -90,12 +97,23 @@ class MsgStore<T> {
     }
   }
 
+  /// Queues [value] behind any write already in flight, so overlapping
+  /// `save()` calls never race on the shared `.tmp` path (see
+  /// `_writeQueue`'s doc comment). Returns a future for *this* write's own
+  /// outcome — a prior write's failure doesn't propagate here, and this
+  /// write's failure doesn't block whatever's queued after it.
+  Future<void> _writeNow(T value) {
+    final scheduled = _writeQueue.then((_) => _writeNowUnsafe(value));
+    _writeQueue = scheduled.then((_) {}, onError: (_) {});
+    return scheduled;
+  }
+
   /// Atomically persists [value]: write to a temp file, flush, then rename
   /// over the real path (atomic on all target platforms' filesystems). The
   /// previous good file is rotated to `<path>.bak` first, so a crash
   /// mid-write always leaves either the old file or the new one intact,
-  /// never a torn one.
-  Future<void> _writeNow(T value) async {
+  /// never a torn one. Only safe to call one at a time — see [_writeNow].
+  Future<void> _writeNowUnsafe(T value) async {
     final bytes = _encode(value);
 
     final sink = _tmpFile.openWrite();
