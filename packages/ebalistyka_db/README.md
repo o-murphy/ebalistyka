@@ -1,39 +1,22 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# ebalistyka_db — DEPRECATED
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+**This package is no longer used.** It was the app's original ObjectBox-based
+data layer; it has been fully superseded by
+[`packages/ebc_db`](../ebc_db/README.md) (protobuf-backed, no closed-source
+native dependency — see `docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md` for
+the full rationale).
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+As of this notice:
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+- The root app (`pubspec.yaml`) no longer depends on this package.
+- No code under `lib/` references it — including the legacy-data migration
+  in `lib/ob_migrate/` (Phase 5 of the doc above), which deliberately reads
+  old installs' ObjectBox stores via `ob_dump_reader_flutter` (raw
+  LMDB/FlatBuffers) instead, precisely so it never needs this package or
+  its closed-source `objectbox-c` native dependency.
+- It's kept on disk for now only as a historical reference, not because
+  anything still needs it.
 
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
-```dart
-const like = 'sample';
-```
-
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+It will be deleted entirely once Phase 6 of that document runs (see its
+checklist for exactly what that entails). Do not add new code here or take
+a new dependency on it.
