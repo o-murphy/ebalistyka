@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:a7p/a7p.dart';
+import 'package:a7p/a7p.dart' hide Profile;
 import 'package:dart_bclibc/unit.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
@@ -19,11 +19,9 @@ Unit _offsetUnitValue(String value) =>
 ///
 /// Formula: clicks = offset_in_cm100m / click_size_in_cm100m
 /// Stored as: zeroX = clicks × −1000 (sign flip), zeroY = clicks × +1000
-void _setPayloadOffsets(ProfileExport profile, Payload payload) {
-  if (profile.ammo == null || profile.sight == null) return;
-
-  final ammo = profile.ammo!;
-  final sight = profile.sight!;
+void _setPayloadOffsets(Profile profile, Payload payload) {
+  final zero = profile.ammo.zero;
+  final sight = profile.sight;
 
   final clickX = sight.horizontalClick.convert(
     _offsetUnitValue(sight.horizontalClickUnit),
@@ -34,12 +32,12 @@ void _setPayloadOffsets(ProfileExport profile, Payload payload) {
     Unit.cmPer100m,
   );
   final offsetXCm = Angular(
-    ammo.zeroOffsetX,
-    _offsetUnitValue(ammo.zeroOffsetXUnit),
+    zero.offsetX,
+    _offsetUnitValue(zero.offsetXUnit),
   ).in_(Unit.cmPer100m);
   final offsetYCm = Angular(
-    ammo.zeroOffsetY,
-    _offsetUnitValue(ammo.zeroOffsetYUnit),
+    zero.offsetY,
+    _offsetUnitValue(zero.offsetYUnit),
   ).in_(Unit.cmPer100m);
   payload.profile.zeroX = (offsetXCm / clickX * -1000).round().clamp(
     -200000,
@@ -52,10 +50,7 @@ void _setPayloadOffsets(ProfileExport profile, Payload payload) {
 }
 
 abstract final class A7pService {
-  static Future<void> shareFile(
-    ProfileExport profile, [
-    A7pRange? range,
-  ]) async {
+  static Future<void> shareFile(Profile profile, [A7pRange? range]) async {
     final payload = A7pConverter.toPayload(profile, range);
     _setPayloadOffsets(profile, payload);
     final bytes = A7pFile.encode(payload);
@@ -88,7 +83,7 @@ abstract final class A7pService {
 
   /// Returns `null` if the user cancelled.
   /// Throws [A7pParseException] if the file is invalid.
-  static Future<ProfileExport?> pickAndParse() async {
+  static Future<Profile?> pickAndParse() async {
     final result = await FilePicker.pickFiles(
       type: Platform.isAndroid ? FileType.any : FileType.custom,
       allowedExtensions: Platform.isAndroid ? null : ['a7p'],
@@ -106,37 +101,5 @@ abstract final class A7pService {
     // Note: zeroX/zeroY are in dimensionless clicks — cannot reconstruct the
     // angular offset without knowing the sight's click size at import time.
     return A7pConverter.fromPayload(payload, validate: false);
-  }
-
-  /// Opens a single file picker accepting both .ebcp and .a7p files.
-  /// Detects the format by file extension and returns the parsed profiles.
-  /// Returns `null` if the user cancelled.
-  /// Throws [A7pParseException] on invalid .a7p files or [Exception] on other errors.
-  static Future<List<ProfileExport>?> pickAndParseProfiles() async {
-    final result = await FilePicker.pickFiles(
-      type: Platform.isAndroid ? FileType.any : FileType.custom,
-      allowedExtensions: Platform.isAndroid ? null : ['ebcp', 'a7p'],
-    );
-    if (result == null || result.files.isEmpty) return null;
-
-    final file = result.files.single;
-    final bytes = await file.readAsBytes();
-
-    final name = file.name.toLowerCase();
-    if (name.endsWith('.a7p')) {
-      final payload = A7pFile.decode(bytes);
-      return [A7pConverter.fromPayload(payload, validate: false)];
-    } else if (name.endsWith('.ebcp')) {
-      final ebcp = EbcpFile.fromEbcp(bytes);
-      if (ebcp == null) return [];
-      return ebcp.items
-          .map((i) => i.asProfile())
-          .whereType<ProfileExport>()
-          .toList();
-    } else {
-      throw FormatException(
-        'Expected an .a7p or .ebcp file, got: ${file.name}',
-      );
-    }
   }
 }

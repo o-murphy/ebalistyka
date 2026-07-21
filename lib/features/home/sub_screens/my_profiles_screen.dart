@@ -1,4 +1,6 @@
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
+import 'package:ebalistyka/core/services/a7p_converter.dart';
+import 'package:ebalistyka/core/services/a7p_service.dart';
 import 'package:ebalistyka/features/home/profiles_vm.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/profile_control_tile.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/profile_sections.dart';
@@ -69,8 +71,25 @@ class ProfilesScreen extends ConsumerWidget {
             }
           },
         ),
+        ActionSheetItem(
+          icon: IconDef.import,
+          title: l10n.actionImportFromFile,
+          onTap: () => _onImportProfile(context, ref),
+        ),
       ],
     );
+  }
+
+  Future<void> _onImportProfile(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final profile = await A7pService.pickAndParse();
+      if (profile == null || !context.mounted) return;
+      await ref.read(profilesActionsProvider.notifier).importProfile(profile);
+    } catch (e) {
+      if (!context.mounted) return;
+      showFeedback(context, '${l10n.actionImportFromFile}: $e', isError: true);
+    }
   }
 
   Future<void> _onEditWeapon(
@@ -193,8 +212,15 @@ class ProfilesScreen extends ConsumerWidget {
         ActionSheetItem(
           icon: IconDef.import,
           title: l10n.actionImportFromFile,
-          onTap: () async =>
-              showNotAvailableSnackBar(context, l10n.actionImportFromFile),
+          onTap: () => replace(() async {
+            try {
+              final imported = await A7pService.pickAndParse();
+              return imported?.ammo;
+            } catch (e) {
+              if (context.mounted) showFeedback(context, e.toString(), isError: true);
+              return null;
+            }
+          }),
         ),
       ],
     );
@@ -235,8 +261,15 @@ class ProfilesScreen extends ConsumerWidget {
         ActionSheetItem(
           icon: IconDef.import,
           title: l10n.actionImportFromFile,
-          onTap: () async =>
-              showNotAvailableSnackBar(context, l10n.actionImportFromFile),
+          onTap: () => replace(() async {
+            try {
+              final imported = await A7pService.pickAndParse();
+              return imported?.sight;
+            } catch (e) {
+              if (context.mounted) showFeedback(context, e.toString(), isError: true);
+              return null;
+            }
+          }),
         ),
       ],
     );
@@ -277,9 +310,54 @@ class ProfilesScreen extends ConsumerWidget {
     }
   }
 
+  Future<void> _shareA7p(
+    BuildContext context,
+    Profile profile,
+    A7pRange range,
+  ) async {
+    try {
+      await A7pService.shareFile(profile, range);
+    } catch (e) {
+      if (!context.mounted) return;
+      showFeedback(context, e.toString(), isError: true);
+    }
+  }
+
   Future<void> _onExport(BuildContext context, Profile profile) async {
     final l10n = AppLocalizations.of(context)!;
-    showNotAvailableSnackBar(context, l10n.exportAction);
+    // Only .a7p is wired today — .ebcp single-profile share is still Phase
+    // 3.5 (see docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md).
+    await showActionSheet(
+      context,
+      title: l10n.selectRangeDialogTitle,
+      entries: [
+        ActionSheetItem(
+          title: l10n.rangeSubsonic,
+          subtitle: '25-400m',
+          onTap: () => _shareA7p(context, profile, A7pRange.subsonic),
+        ),
+        ActionSheetItem(
+          title: l10n.rangeLow,
+          subtitle: '100-700m',
+          onTap: () => _shareA7p(context, profile, A7pRange.low),
+        ),
+        ActionSheetItem(
+          title: l10n.rangeMiddle,
+          subtitle: '100-1000m',
+          onTap: () => _shareA7p(context, profile, A7pRange.medium),
+        ),
+        ActionSheetItem(
+          title: l10n.rangeLong,
+          subtitle: '100-1700m',
+          onTap: () => _shareA7p(context, profile, A7pRange.long),
+        ),
+        ActionSheetItem(
+          title: l10n.rangeUltraLong,
+          subtitle: '100-2000m',
+          onTap: () => _shareA7p(context, profile, A7pRange.ultra),
+        ),
+      ],
+    );
   }
 
   Future<void> _onRename(
