@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
+import '../proto/settings.pb.dart' as proto;
 import 'msg_codec.dart';
-import 'proto/settings.pb.dart' as proto;
 
 abstract final class SettingsFile {
   static final _codec = MsgCodec<proto.SettingsData>(

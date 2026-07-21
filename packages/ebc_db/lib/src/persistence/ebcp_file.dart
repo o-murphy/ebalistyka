@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
+import '../proto/ebcp.pb.dart' as proto;
 import 'msg_codec.dart';
-import 'proto/ebcp.pb.dart' as proto;
 
 abstract final class EbcpFile {
   static final _codec = MsgCodec<proto.EbcpData>(

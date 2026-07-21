@@ -1,8 +1,8 @@
 import 'package:json_schema/json_schema.dart';
 
-import 'generated/profiles_schema.g.dart';
+import '../generated/profiles_schema.g.dart';
+import '../proto/profiles.pb.dart' as proto;
 import 'profiles_json.dart';
-import 'proto/profiles.pb.dart' as proto;
 
 class ProfilesFieldError {
   final String field;

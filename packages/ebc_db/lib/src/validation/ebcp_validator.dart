@@ -1,8 +1,8 @@
 import 'package:json_schema/json_schema.dart';
 
-import 'generated/ebcp_schema.g.dart';
+import '../generated/ebcp_schema.g.dart';
+import '../proto/ebcp.pb.dart' as proto;
 import 'profiles_json.dart';
-import 'proto/ebcp.pb.dart' as proto;
 import 'settings_json.dart';
 
 class EbcpFieldError {
