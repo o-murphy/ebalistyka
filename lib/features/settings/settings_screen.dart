@@ -228,13 +228,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ListSectionTile(l10n.sectionLanguage),
           ListTile(
             leading: const Icon(Icons.language_outlined),
-            title: Text(_languageName(settings.languageCode)),
+            title: Text(_languageName(_effectiveLanguageCode(context, settings))),
             trailing: const Icon(IconDef.chevronRight),
             dense: true,
             onTap: () => _showLanguageDialog(
               context,
               l10n.sectionLanguage,
-              settings.languageCode,
+              _effectiveLanguageCode(context, settings),
               notifier.setLanguage,
             ),
           ),
@@ -435,6 +435,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 }
 
 // ─── Language helpers ─────────────────────────────────────────────────────────
+
+/// [settings.languageCode] empty means "no explicit user choice" — show
+/// (and pre-select in the picker) the locale that's actually active right
+/// now, resolved by `MaterialApp`'s own device-locale-aware machinery, not
+/// a hardcoded default.
+String _effectiveLanguageCode(BuildContext context, GeneralSettings settings) =>
+    settings.languageCode.isNotEmpty
+        ? settings.languageCode
+        : Localizations.localeOf(context).languageCode;
 
 String _languageName(String code) => switch (code) {
   'uk' => 'Українська',

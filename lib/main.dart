@@ -220,26 +220,17 @@ class MyApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'eBalistyka',
       debugShowCheckedModeBanner: false,
+      // locale: null (no explicit user choice yet) lets Flutter's own
+      // live, device-locale-list-aware resolver (basicLocaleListResolution
+      // + didChangeLocales) handle it — a hand-rolled
+      // localeResolutionCallback here would short-circuit that: whenever
+      // MaterialApp.locale is non-null, Flutter substitutes it for the
+      // real device locale list before invoking the callback, so any
+      // "fall back to device locale" branch becomes dead code and the UI
+      // stops reacting to OS locale changes after the first pin.
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-      localeResolutionCallback: (deviceLocale, supportedLocales) {
-        if (locale != null) {
-          for (final supported in supportedLocales) {
-            if (supported.languageCode == locale.languageCode) {
-              return supported;
-            }
-          }
-        }
-        if (deviceLocale != null) {
-          for (final supported in supportedLocales) {
-            if (supported.languageCode == deviceLocale.languageCode) {
-              return supported;
-            }
-          }
-        }
-        return const Locale('en');
-      },
       routerConfig: appRouter,
       theme: _lightTheme,
       darkTheme: _darkTheme,
