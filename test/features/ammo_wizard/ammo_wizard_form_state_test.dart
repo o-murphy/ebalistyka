@@ -166,8 +166,10 @@ void main() {
     test('multiBcG7Table restored from raw lists', () {
       final a = _make308();
       a.useMultiBcG7 = true;
-      a.multiBcTableG7VMps.addAll([900.0, 800.0]);
-      a.multiBcTableG7Bc.addAll([0.45, 0.47]);
+      a.multiBcTableG7.addAll([
+        MultiBcPoint(vMps: 900.0, bc: 0.45),
+        MultiBcPoint(vMps: 800.0, bc: 0.47),
+      ]);
 
       final s = AmmoWizardFormState.fromAmmo(initial: a, caliberInch: null);
 
@@ -479,9 +481,9 @@ void main() {
             multiBcG1Table: [(vMps: 900.0, bc: 0.45), (vMps: 800.0, bc: 0.47)],
           );
       final ammo = s.buildAmmo(null);
-      expect(ammo.multiBcTableG1VMps.length, 2);
-      expect(ammo.multiBcTableG1VMps[0], closeTo(900.0, 1e-9));
-      expect(ammo.multiBcTableG1Bc[0], closeTo(0.45, 1e-9));
+      expect(ammo.multiBcTableG1.length, 2);
+      expect(ammo.multiBcTableG1[0].vMps, closeTo(900.0, 1e-9));
+      expect(ammo.multiBcTableG1[0].bc, closeTo(0.45, 1e-9));
     });
 
     test('empty table → empty raw lists', () {
@@ -496,8 +498,7 @@ void main() {
             multiBcG1Table: [],
           );
       final ammo = s.buildAmmo(null);
-      expect(ammo.multiBcTableG1VMps, isEmpty);
-      expect(ammo.multiBcTableG1Bc, isEmpty);
+      expect(ammo.multiBcTableG1, isEmpty);
     });
   });
 

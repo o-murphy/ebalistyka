@@ -116,8 +116,8 @@ class AmmoWizardState {
       useMultiBcG7: a.useMultiBcG7,
       bcG1: (a.bc1 ?? 0) > 0 ? a.bc1 : null,
       bcG7: (a.bc7 ?? 0) > 0 ? a.bc7 : null,
-      multiBcG1Table: decodeBcTable(a.multiBcTableG1VMps, a.multiBcTableG1Bc),
-      multiBcG7Table: decodeBcTable(a.multiBcTableG7VMps, a.multiBcTableG7Bc),
+      multiBcG1Table: decodeBcTable(a.multiBcTableG1),
+      multiBcG7Table: decodeBcTable(a.multiBcTableG7),
       customDragTable: decodeCustomDragTable(
         a.customDragTableMach,
         a.customDragTableCd,
@@ -204,19 +204,19 @@ class AmmoWizardState {
     ammo.bc7 = bcG7;
 
     final g1 = multiBcG1Table;
-    ammo.multiBcTableG1VMps.clear();
-    ammo.multiBcTableG1Bc.clear();
+    ammo.multiBcTableG1.clear();
     if (g1 != null && g1.isNotEmpty) {
-      ammo.multiBcTableG1VMps.addAll(g1.map((r) => r.vMps));
-      ammo.multiBcTableG1Bc.addAll(g1.map((r) => r.bc));
+      ammo.multiBcTableG1.addAll(
+        g1.map((r) => MultiBcPoint(vMps: r.vMps, bc: r.bc)),
+      );
     }
 
     final g7 = multiBcG7Table;
-    ammo.multiBcTableG7VMps.clear();
-    ammo.multiBcTableG7Bc.clear();
+    ammo.multiBcTableG7.clear();
     if (g7 != null && g7.isNotEmpty) {
-      ammo.multiBcTableG7VMps.addAll(g7.map((r) => r.vMps));
-      ammo.multiBcTableG7Bc.addAll(g7.map((r) => r.bc));
+      ammo.multiBcTableG7.addAll(
+        g7.map((r) => MultiBcPoint(vMps: r.vMps, bc: r.bc)),
+      );
     }
 
     final custom = customDragTable;

@@ -130,32 +130,28 @@ abstract final class CollectionParser {
 
   static void _applyMultiBc(Ammo ammo, List rows, {required bool isG7}) {
     if (rows.isEmpty) return;
-    final vList = rows
-        .map<double>((r) => ((r as Map)['vMps'] as num).toDouble())
-        .toList();
-    final bcList = rows
-        .map<double>((r) => ((r as Map)['bc'] as num).toDouble())
+    final points = rows
+        .map<MultiBcPoint>(
+          (r) => MultiBcPoint(
+            vMps: ((r as Map)['vMps'] as num).toDouble(),
+            bc: (r['bc'] as num).toDouble(),
+          ),
+        )
         .toList();
     if (isG7) {
-      ammo.multiBcTableG7VMps
+      ammo.multiBcTableG7
         ..clear()
-        ..addAll(vList);
-      ammo.multiBcTableG7Bc
-        ..clear()
-        ..addAll(bcList);
+        ..addAll(points);
       if ((ammo.bc7 ?? 0) <= 0) {
-        ammo.bc7 = bcList.first;
+        ammo.bc7 = points.first.bc;
       }
       ammo.useMultiBcG7 = true;
     } else {
-      ammo.multiBcTableG1VMps
+      ammo.multiBcTableG1
         ..clear()
-        ..addAll(vList);
-      ammo.multiBcTableG1Bc
-        ..clear()
-        ..addAll(bcList);
+        ..addAll(points);
       if ((ammo.bc1 ?? 0) <= 0) {
-        ammo.bc1 = bcList.first;
+        ammo.bc1 = points.first.bc;
       }
       ammo.useMultiBcG1 = true;
     }
