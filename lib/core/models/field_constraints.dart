@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:dart_bclibc/unit.dart';
+import 'package:ebc_db/ebc_db.dart' show FieldLimits;
 
 abstract interface class Constraints {
   Unit get rawUnit;
@@ -98,175 +99,192 @@ class RulerConstraints implements Constraints {
 
 abstract final class FC {
   // Environmental
-  static const temperature = FieldConstraints(
+  // minRaw/maxRaw below are resolved from ebc_db's generated FieldLimits
+  // (single source of truth: schema/profiles.schema.json) wherever the wire
+  // unit matches this role's rawUnit directly — see
+  // docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md Phase 7. These read an
+  // instance field of a const FieldLimits object, which Dart doesn't allow
+  // inside another `const` expression — hence `static final`, not `static
+  // const` (nothing in this app requires FC.x to be compile-time const).
+  static final temperature = FieldConstraints(
     rawUnit: Unit.celsius,
-    minRaw: -100.0,
-    maxRaw: 100.0,
+    minRaw: FieldLimits.temperatureC.minRaw,
+    maxRaw: FieldLimits.temperatureC.maxRaw,
     stepRaw: 1.0,
     accuracy: 0,
   );
 
-  static const altitude = FieldConstraints(
+  static final altitude = FieldConstraints(
     rawUnit: Unit.meter,
-    minRaw: -500.0,
-    maxRaw: 15000.0,
+    minRaw: FieldLimits.altitudeMeter.minRaw,
+    maxRaw: FieldLimits.altitudeMeter.maxRaw,
     stepRaw: 10.0,
     accuracy: 0,
   );
 
-  static const pressure = FieldConstraints(
+  static final pressure = FieldConstraints(
     rawUnit: Unit.hPa,
-    minRaw: 300.0,
-    maxRaw: 1500.0,
+    minRaw: FieldLimits.pressureHPa.minRaw,
+    maxRaw: FieldLimits.pressureHPa.maxRaw,
     stepRaw: 1.0,
     accuracy: 0,
   );
 
   /// Humidity in percent (0–100). rawUnit == displayUnit so toDisplay is identity.
-  static const humidity = FieldConstraints(
+  static final humidity = FieldConstraints(
     rawUnit: Unit.fraction,
-    minRaw: 0.0,
-    maxRaw: 1.0,
+    minRaw: FieldLimits.humidityFrac.minRaw,
+    maxRaw: FieldLimits.humidityFrac.maxRaw,
     stepRaw: 0.01,
     accuracy: 0,
   );
 
   // Ballistic inputs
-  static const windSpeed = FieldConstraints(
+  static final windSpeed = FieldConstraints(
     rawUnit: Unit.mps,
-    minRaw: 0.0,
-    maxRaw: 30.0,
+    minRaw: FieldLimits.windSpeedMps.minRaw,
+    maxRaw: FieldLimits.windSpeedMps.maxRaw,
     stepRaw: 0.5,
     accuracy: 1,
   );
 
-  static const lookAngle = FieldConstraints(
+  /// FieldLimits.lookAngleRad is stored in radians (look_angle_rad); this
+  /// picker works in degrees, so minRaw/maxRaw convert here rather than
+  /// being copied by hand — see Phase 7 in the storage doc.
+  static final lookAngle = FieldConstraints(
     rawUnit: Unit.degree,
-    minRaw: -90.0,
-    maxRaw: 90.0,
+    minRaw: FieldLimits.lookAngleRad.minRaw.convert(Unit.radian, Unit.degree),
+    maxRaw: FieldLimits.lookAngleRad.maxRaw.convert(Unit.radian, Unit.degree),
     stepRaw: 0.1,
     accuracy: 1,
   );
 
-  static const latitude = FieldConstraints(
+  static final latitude = FieldConstraints(
     rawUnit: Unit.degree,
-    minRaw: -90.0,
-    maxRaw: 90.0,
+    minRaw: FieldLimits.latitudeDeg.minRaw,
+    maxRaw: FieldLimits.latitudeDeg.maxRaw,
     stepRaw: 1.0,
     accuracy: 1,
   );
 
-  static const azimuth = FieldConstraints(
+  static final azimuth = FieldConstraints(
     rawUnit: Unit.degree,
-    minRaw: 0.0,
-    maxRaw: 360.0,
+    minRaw: FieldLimits.azimuthDeg.minRaw,
+    maxRaw: FieldLimits.azimuthDeg.maxRaw,
     stepRaw: 1.0,
     accuracy: 1,
   );
 
-  static const windDirection = FieldConstraints(
+  static final windDirection = FieldConstraints(
     rawUnit: Unit.degree,
-    minRaw: 0.0,
-    maxRaw: 360.0,
+    minRaw: FieldLimits.windDirectionDeg.minRaw,
+    maxRaw: FieldLimits.windDirectionDeg.maxRaw,
     stepRaw: 1.0,
     accuracy: 0,
   );
 
-  static const targetDistance = FieldConstraints(
+  static final targetDistance = FieldConstraints(
     rawUnit: Unit.meter,
-    minRaw: 10.0,
-    maxRaw: 3000.0,
+    minRaw: FieldLimits.targetDistanceMeter.minRaw,
+    maxRaw: FieldLimits.targetDistanceMeter.maxRaw,
     stepRaw: 10.0,
     accuracy: 0,
   );
 
   // Weapon / optics
-  static const sightHeight = FieldConstraints(
+  /// FieldLimits.sightHeightInch is stored in inch; this picker works in mm.
+  static final sightHeight = FieldConstraints(
     rawUnit: Unit.millimeter,
-    minRaw: 0.0,
-    maxRaw: 200.0,
+    minRaw: FieldLimits.sightHeightInch.minRaw.convert(Unit.inch, Unit.millimeter),
+    maxRaw: FieldLimits.sightHeightInch.maxRaw.convert(Unit.inch, Unit.millimeter),
     stepRaw: 1.0,
     accuracy: 0,
   );
 
-  static const twist = FieldConstraints(
+  /// FieldLimits.twistInch is signed (-30..30, direction encoded by sign in
+  /// storage) but this picker is a magnitude control paired with a separate
+  /// direction toggle (see weapon_wizard_notifier.dart) — minRaw stays a
+  /// hardcoded 0.0 floor, only maxRaw is resolved from the generated bound.
+  static final twist = FieldConstraints(
     rawUnit: Unit.inch,
     minRaw: 0.0,
-    maxRaw: 30.0,
+    maxRaw: FieldLimits.twistInch.maxRaw,
     stepRaw: 0.25,
     accuracy: 2,
   );
 
-  static const zeroDistance = FieldConstraints(
+  static final zeroDistance = FieldConstraints(
     rawUnit: Unit.meter,
-    minRaw: 10.0,
-    maxRaw: 1000.0,
+    minRaw: FieldLimits.zeroDistanceMeter.minRaw,
+    maxRaw: FieldLimits.zeroDistanceMeter.maxRaw,
     stepRaw: 10.0,
     accuracy: 0,
   );
 
   // Projectile
-  static const muzzleVelocity = FieldConstraints(
+  static final muzzleVelocity = FieldConstraints(
     rawUnit: Unit.mps,
-    minRaw: 100.0,
-    maxRaw: 1800.0,
+    minRaw: FieldLimits.muzzleVelocityMps.minRaw,
+    maxRaw: FieldLimits.muzzleVelocityMps.maxRaw,
     stepRaw: 1.0,
     accuracy: 0,
   );
 
-  static const projectileWeight = FieldConstraints(
+  static final projectileWeight = FieldConstraints(
     rawUnit: Unit.grain,
-    minRaw: 1.0,
-    maxRaw: 800.0,
+    minRaw: FieldLimits.projectileWeightGrain.minRaw,
+    maxRaw: FieldLimits.projectileWeightGrain.maxRaw,
     stepRaw: 0.1,
     accuracy: 1,
   );
 
-  static const projectileLength = FieldConstraints(
+  /// FieldLimits.projectileLengthInch is stored in inch; this picker works in mm.
+  static final projectileLength = FieldConstraints(
     rawUnit: Unit.millimeter,
-    minRaw: 1.0,
-    maxRaw: 100.0,
+    minRaw: FieldLimits.projectileLengthInch.minRaw.convert(Unit.inch, Unit.millimeter),
+    maxRaw: FieldLimits.projectileLengthInch.maxRaw.convert(Unit.inch, Unit.millimeter),
     stepRaw: 0.1,
     accuracy: 1,
   );
 
-  static const projectileDiameter = FieldConstraints(
+  /// FieldLimits.projectileDiameterInch is stored in inch; this picker works in mm.
+  static final projectileDiameter = FieldConstraints(
     rawUnit: Unit.millimeter,
-    minRaw: 1.0,
-    maxRaw: 30.0,
+    minRaw: FieldLimits.projectileDiameterInch.minRaw.convert(Unit.inch, Unit.millimeter),
+    maxRaw: FieldLimits.projectileDiameterInch.maxRaw.convert(Unit.inch, Unit.millimeter),
     stepRaw: 0.1,
     accuracy: 2,
   );
 
   /// Optical magnification (dimensionless scalar, displayed as "x").
-  static const magnification = FieldConstraints(
+  static final magnification = FieldConstraints(
     rawUnit: Unit.scalar,
-    minRaw: 0.5,
-    maxRaw: 100.0,
+    minRaw: FieldLimits.magnification.minRaw,
+    maxRaw: FieldLimits.magnification.maxRaw,
     stepRaw: 0.5,
     accuracy: 1,
   );
 
-  static const ballisticCoefficient = FieldConstraints(
+  static final ballisticCoefficient = FieldConstraints(
     rawUnit: Unit.scalar, // sentinel — dimensionless, no conversion
-    minRaw: 0.001,
-    maxRaw: 2.000,
+    minRaw: FieldLimits.ballisticCoefficient.minRaw,
+    maxRaw: FieldLimits.ballisticCoefficient.maxRaw,
     stepRaw: 0.001,
     accuracy: 3,
   );
 
-  static const powderSensitivity = FieldConstraints(
+  static final powderSensitivity = FieldConstraints(
     rawUnit: Unit.fraction, // sentinel — no conversion used for sensitivity
-    minRaw: 0.0,
-    maxRaw: 5.0, // c_t_coeff max = 5000 ÷ 1000
+    minRaw: FieldLimits.powderSensitivityFrac.minRaw,
+    maxRaw: FieldLimits.powderSensitivityFrac.maxRaw, // c_t_coeff max = 5000 ÷ 1000
     stepRaw: 0.001,
     accuracy: 3,
   );
 
-  static const barrelLength = FieldConstraints(
+  static final barrelLength = FieldConstraints(
     rawUnit: Unit.inch,
-    minRaw: 1.0,
-    maxRaw: 36.0,
+    minRaw: FieldLimits.barrelLengthInch.minRaw,
+    maxRaw: FieldLimits.barrelLengthInch.maxRaw,
     stepRaw: 0.5,
     accuracy: 1,
   );
@@ -309,18 +327,18 @@ abstract final class FC {
     accuracy: 0,
   );
 
-  static const tableRange = FieldConstraints(
+  static final tableRange = FieldConstraints(
     rawUnit: Unit.meter,
-    minRaw: 0.0,
-    maxRaw: 5000.0,
+    minRaw: FieldLimits.tableRangeMeter.minRaw,
+    maxRaw: FieldLimits.tableRangeMeter.maxRaw,
     stepRaw: 1.0,
     accuracy: 0,
   );
 
-  static const distanceStep = FieldConstraints(
+  static final distanceStep = FieldConstraints(
     rawUnit: Unit.meter,
-    minRaw: 1.0,
-    maxRaw: 1000.0,
+    minRaw: FieldLimits.distanceStepMeter.minRaw,
+    maxRaw: FieldLimits.distanceStepMeter.maxRaw,
     stepRaw: 1.0,
     accuracy: 0,
   );
@@ -357,17 +375,17 @@ abstract final class FC {
     accuracy: 0,
   );
 
-  static const convertorDistance = FieldConstraints(
+  static final convertorDistance = FieldConstraints(
     rawUnit: Unit.meter,
-    minRaw: 0.0,
-    maxRaw: 5000.0,
+    minRaw: FieldLimits.convertorDistanceMeter.minRaw,
+    maxRaw: FieldLimits.convertorDistanceMeter.maxRaw,
     stepRaw: 1.0,
     accuracy: 0,
   );
-  static const convertorVelocity = FieldConstraints(
+  static final convertorVelocity = FieldConstraints(
     rawUnit: Unit.mps,
-    minRaw: 0.0,
-    maxRaw: 3000.0,
+    minRaw: FieldLimits.convertorVelocityMps.minRaw,
+    maxRaw: FieldLimits.convertorVelocityMps.maxRaw,
     stepRaw: 1.0,
     accuracy: 1,
   );
@@ -381,18 +399,18 @@ abstract final class FC {
     accuracy: 1,
   );
 
-  static const targetSize = FieldConstraints(
+  static final targetSize = FieldConstraints(
     rawUnit: Unit.mil,
-    minRaw: 0.001,
-    maxRaw: 100,
+    minRaw: FieldLimits.targetSizeMil.minRaw,
+    maxRaw: FieldLimits.targetSizeMil.maxRaw,
     stepRaw: 0.1,
     accuracy: 3,
   );
 
-  static const convertorTargetPhysicalSize = FieldConstraints(
+  static final convertorTargetPhysicalSize = FieldConstraints(
     rawUnit: Unit.inch,
-    minRaw: 0.0,
-    maxRaw: 9999.0,
+    minRaw: FieldLimits.convertorTargetPhysicalSizeInch.minRaw,
+    maxRaw: FieldLimits.convertorTargetPhysicalSizeInch.maxRaw,
     stepRaw: 0.1,
     accuracy: 2,
   );
