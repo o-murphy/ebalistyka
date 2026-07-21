@@ -1,3 +1,10 @@
+@Deprecated(
+  'Superseded by packages/ebc_db — the app no longer depends on this '
+  'package (removed from the root pubspec.yaml). Kept on disk pending '
+  'deletion; see docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md Phase 6.',
+)
+library ebalistyka_db;
+
 import 'dart:io';
 import 'objectbox.g.dart';
 
@@ -21,6 +28,7 @@ export 'objectbox.g.dart';
 ///
 /// The caller is responsible for resolving an appropriate path
 /// (e.g. via `getApplicationSupportDirectory()` from path_provider).
+@Deprecated('Superseded by packages/ebc_db — see this library\'s doc comment.')
 Future<Store> initObjectBox({required String directory}) async {
   await Directory(directory).create(recursive: true);
   return openStore(directory: directory);

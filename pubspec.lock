@@ -249,13 +249,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.13"
-  ebalistyka_db:
-    dependency: "direct main"
-    description:
-      path: "packages/ebalistyka_db"
-      relative: true
-    source: path
-    version: "0.0.1"
   ebc_db:
     dependency: "direct main"
     description:
@@ -643,22 +636,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.1.0-alpha.2"
-  objectbox:
-    dependency: transitive
-    description:
-      name: objectbox
-      sha256: f68d74bfdfa6758cebf4cd319db1f4a4386c79ba8896d19e2e999faf041bac78
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.3.2"
-  objectbox_flutter_libs:
-    dependency: transitive
-    description:
-      name: objectbox_flutter_libs
-      sha256: "604d26fac4548693449c9ea802e007d4adf7f31e361ae3ebf362ac142295078d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.3.2"
   objective_c:
     dependency: transitive
     description:
