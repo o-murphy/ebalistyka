@@ -146,8 +146,8 @@ extension AmmoExtension on Ammo {
 
   /// True when G1/G7 with multiple BC breakpoints (velocity-dependent BC).
   bool get isMultiBC => switch (dragType) {
-    DragType.g1 => useMultiBcG1 && multiBcTableG1VMps.isNotEmpty,
-    DragType.g7 => useMultiBcG7 && multiBcTableG7VMps.isNotEmpty,
+    DragType.g1 => useMultiBcG1 && multiBcTableG1.isNotEmpty,
+    DragType.g7 => useMultiBcG7 && multiBcTableG7.isNotEmpty,
     DragType.custom => false,
   };
 
@@ -177,16 +177,12 @@ extension AmmoExtension on Ammo {
         final bc = (dragType == DragType.g7 ? bc7 : bc1) ?? 0.0;
 
         if (isMultiBC) {
-          final vMps = dragType == DragType.g7
-              ? multiBcTableG7VMps
-              : multiBcTableG1VMps;
-          final bcs = dragType == DragType.g7
-              ? multiBcTableG7Bc
-              : multiBcTableG1Bc;
-          final bcPoints = List.generate(
-            vMps.length,
-            (i) => bclibc.BCPoint(bc: bcs[i], v: Velocity(vMps[i], Unit.mps)),
-          );
+          final points = dragType == DragType.g7
+              ? multiBcTableG7
+              : multiBcTableG1;
+          final bcPoints = points
+              .map((p) => bclibc.BCPoint(bc: p.bc, v: Velocity(p.vMps, Unit.mps)))
+              .toList();
           return bclibc.createDragModelMultiBC(
             bcPoints: bcPoints,
             dragTable: baseTable,

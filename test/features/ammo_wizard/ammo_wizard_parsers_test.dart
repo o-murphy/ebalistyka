@@ -2,6 +2,7 @@
 
 import 'dart:typed_data';
 
+import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ebalistyka/features/home/sub_screens/ammo_wizard_parsers.dart';
 
@@ -9,30 +10,16 @@ void main() {
   // ── decodeBcTable ────────────────────────────────────────────────────────
 
   group('decodeBcTable', () {
-    test('returns null when both lists are null', () {
-      expect(decodeBcTable(null, null), isNull);
+    test('returns null when points is null', () {
+      expect(decodeBcTable(null), isNull);
     });
 
-    test('returns null when vMps is null', () {
-      expect(decodeBcTable(null, Float64List.fromList([0.5])), isNull);
-    });
-
-    test('returns null when bcs is null', () {
-      expect(decodeBcTable(Float64List.fromList([800.0]), null), isNull);
-    });
-
-    test('returns null when vMps is empty', () {
-      expect(
-        decodeBcTable(Float64List(0), Float64List.fromList([0.5])),
-        isNull,
-      );
+    test('returns null when points is empty', () {
+      expect(decodeBcTable(const []), isNull);
     });
 
     test('decodes a single pair correctly', () {
-      final result = decodeBcTable(
-        Float64List.fromList([800.0]),
-        Float64List.fromList([0.475]),
-      );
+      final result = decodeBcTable([MultiBcPoint(vMps: 800.0, bc: 0.475)]);
       expect(result, isNotNull);
       expect(result!.length, 1);
       expect(result[0].vMps, closeTo(800.0, 1e-9));
@@ -40,10 +27,11 @@ void main() {
     });
 
     test('decodes multiple pairs in order', () {
-      final result = decodeBcTable(
-        Float64List.fromList([900.0, 800.0, 700.0]),
-        Float64List.fromList([0.45, 0.47, 0.50]),
-      );
+      final result = decodeBcTable([
+        MultiBcPoint(vMps: 900.0, bc: 0.45),
+        MultiBcPoint(vMps: 800.0, bc: 0.47),
+        MultiBcPoint(vMps: 700.0, bc: 0.50),
+      ]);
       expect(result, isNotNull);
       expect(result!.length, 3);
       expect(result[0], (vMps: 900.0, bc: 0.45));
@@ -52,10 +40,7 @@ void main() {
     });
 
     test('preserves zero velocity entry', () {
-      final result = decodeBcTable(
-        Float64List.fromList([0.0]),
-        Float64List.fromList([0.3]),
-      );
+      final result = decodeBcTable([MultiBcPoint(vMps: 0.0, bc: 0.3)]);
       expect(result![0].vMps, 0.0);
     });
   });
