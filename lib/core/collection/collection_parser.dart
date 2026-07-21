@@ -159,24 +159,28 @@ abstract final class CollectionParser {
 
   static void _applyCustomDrag(Ammo ammo, List rows) {
     if (rows.isEmpty) return;
-    ammo.customDragTableMach
+    ammo.customDragTable
       ..clear()
       ..addAll(
-        rows.map<double>((r) => ((r as Map)['mach'] as num).toDouble()),
+        rows.map<CustomDragPoint>(
+          (r) => CustomDragPoint(
+            mach: ((r as Map)['mach'] as num).toDouble(),
+            cd: (r['cd'] as num).toDouble(),
+          ),
+        ),
       );
-    ammo.customDragTableCd
-      ..clear()
-      ..addAll(rows.map<double>((r) => ((r as Map)['cd'] as num).toDouble()));
   }
 
   static void _applyPowderSensTable(Ammo ammo, List rows) {
-    ammo.powderSensitivityTc
-      ..clear()
-      ..addAll(rows.map<double>((r) => ((r as Map)['tC'] as num).toDouble()));
-    ammo.powderSensitivityVMps
+    ammo.powderSensitivityTable
       ..clear()
       ..addAll(
-        rows.map<double>((r) => ((r as Map)['vMps'] as num).toDouble()),
+        rows.map<PowderSensitivityPoint>(
+          (r) => PowderSensitivityPoint(
+            tc: ((r as Map)['tC'] as num).toDouble(),
+            vMps: (r['vMps'] as num).toDouble(),
+          ),
+        ),
       );
   }
 

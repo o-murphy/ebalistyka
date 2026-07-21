@@ -1,7 +1,5 @@
 //   flutter test test/features/ammo_wizard/ammo_wizard_parsers_test.dart
 
-import 'dart:typed_data';
-
 import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ebalistyka/features/home/sub_screens/ammo_wizard_parsers.dart';
@@ -48,30 +46,18 @@ void main() {
   // ── decodeCustomDragTable ─────────────────────────────────────────────────
 
   group('decodeCustomDragTable', () {
-    test('returns null when both lists are null', () {
-      expect(decodeCustomDragTable(null, null), isNull);
+    test('returns null when points is null', () {
+      expect(decodeCustomDragTable(null), isNull);
     });
 
-    test('returns null when mach is null', () {
-      expect(decodeCustomDragTable(null, Float64List.fromList([0.3])), isNull);
-    });
-
-    test('returns null when cd is null', () {
-      expect(decodeCustomDragTable(Float64List.fromList([0.5]), null), isNull);
-    });
-
-    test('returns null when mach is empty', () {
-      expect(
-        decodeCustomDragTable(Float64List(0), Float64List.fromList([0.3])),
-        isNull,
-      );
+    test('returns null when points is empty', () {
+      expect(decodeCustomDragTable(const []), isNull);
     });
 
     test('decodes a single pair correctly', () {
-      final result = decodeCustomDragTable(
-        Float64List.fromList([0.5]),
-        Float64List.fromList([0.284]),
-      );
+      final result = decodeCustomDragTable([
+        CustomDragPoint(mach: 0.5, cd: 0.284),
+      ]);
       expect(result, isNotNull);
       expect(result!.length, 1);
       expect(result[0].mach, closeTo(0.5, 1e-9));
@@ -79,10 +65,11 @@ void main() {
     });
 
     test('decodes multiple pairs in order', () {
-      final result = decodeCustomDragTable(
-        Float64List.fromList([0.5, 1.0, 2.0]),
-        Float64List.fromList([0.284, 0.415, 0.320]),
-      );
+      final result = decodeCustomDragTable([
+        CustomDragPoint(mach: 0.5, cd: 0.284),
+        CustomDragPoint(mach: 1.0, cd: 0.415),
+        CustomDragPoint(mach: 2.0, cd: 0.320),
+      ]);
       expect(result, isNotNull);
       expect(result!.length, 3);
       expect(result[0], (mach: 0.5, cd: 0.284));
@@ -94,33 +81,18 @@ void main() {
   // ── decodePowderSensTable ─────────────────────────────────────────────────
 
   group('decodePowderSensTable', () {
-    test('returns null when both lists are null', () {
-      expect(decodePowderSensTable(null, null), isNull);
+    test('returns null when points is null', () {
+      expect(decodePowderSensTable(null), isNull);
     });
 
-    test('returns null when tempC is null', () {
-      expect(
-        decodePowderSensTable(null, Float64List.fromList([800.0])),
-        isNull,
-      );
-    });
-
-    test('returns null when vMps is null', () {
-      expect(decodePowderSensTable(Float64List.fromList([20.0]), null), isNull);
-    });
-
-    test('returns null when tempC is empty', () {
-      expect(
-        decodePowderSensTable(Float64List(0), Float64List.fromList([800.0])),
-        isNull,
-      );
+    test('returns null when points is empty', () {
+      expect(decodePowderSensTable(const []), isNull);
     });
 
     test('decodes a single pair correctly', () {
-      final result = decodePowderSensTable(
-        Float64List.fromList([20.0]),
-        Float64List.fromList([800.0]),
-      );
+      final result = decodePowderSensTable([
+        PowderSensitivityPoint(tc: 20.0, vMps: 800.0),
+      ]);
       expect(result, isNotNull);
       expect(result!.length, 1);
       expect(result[0].tempC, closeTo(20.0, 1e-9));
@@ -128,10 +100,11 @@ void main() {
     });
 
     test('decodes multiple pairs in order', () {
-      final result = decodePowderSensTable(
-        Float64List.fromList([-10.0, 15.0, 40.0]),
-        Float64List.fromList([790.0, 800.0, 812.0]),
-      );
+      final result = decodePowderSensTable([
+        PowderSensitivityPoint(tc: -10.0, vMps: 790.0),
+        PowderSensitivityPoint(tc: 15.0, vMps: 800.0),
+        PowderSensitivityPoint(tc: 40.0, vMps: 812.0),
+      ]);
       expect(result, isNotNull);
       expect(result!.length, 3);
       expect(result[0], (tempC: -10.0, vMps: 790.0));
@@ -140,10 +113,9 @@ void main() {
     });
 
     test('handles negative temperature correctly', () {
-      final result = decodePowderSensTable(
-        Float64List.fromList([-40.0]),
-        Float64List.fromList([775.0]),
-      );
+      final result = decodePowderSensTable([
+        PowderSensitivityPoint(tc: -40.0, vMps: 775.0),
+      ]);
       expect(result![0].tempC, -40.0);
     });
   });

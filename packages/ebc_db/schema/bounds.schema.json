@@ -30,6 +30,10 @@
     "LookAngleRad": {
       "description": "FC.lookAngle, degree→radian (-90°..90°). Shared by profiles.schema.json's Zero.look_angle_rad and settings.schema.json's ShootingConditions.look_angle_rad.",
       "minimum": -1.5707963267948966, "maximum": 1.5707963267948966
+    },
+    "VelocityMps": {
+      "description": "FC.muzzleVelocity, mps (100–1800). Shared by profiles.schema.json's MultiBcPoint.v_mps and PowderSensitivityPoint.v_mps (row-level breakpoints, not routed through FC — see docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md Phase 7).",
+      "minimum": 100, "maximum": 1800
     }
   }
 }

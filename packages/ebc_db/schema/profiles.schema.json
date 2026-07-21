@@ -29,11 +29,47 @@
       "properties": {
         "v_mps": {
           "description": "FC.muzzleVelocity, mps (100–1800) — this breakpoint's velocity.",
-          "type": "number", "minimum": 100, "maximum": 1800, "default": 100
+          "allOf": [{ "$ref": "#/$defs/VelocityMps" }],
+          "type": "number", "default": 100
         },
         "bc": {
           "description": "FC.ballisticCoefficient, scalar (0.001–2.000) — this breakpoint's BC. Required (non-null) unlike Ammo.bc_g1/bc_g7, which stay optional for the single-BC case.",
           "type": "number", "minimum": 0.001, "maximum": 2.000, "default": 0.001
+        }
+      }
+    },
+
+    "CustomDragPoint": {
+      "description": "One row of a custom (mach-dependent) drag coefficient table — replaces the old custom_drag_table_mach/_cd parallel-array pair. Used as the items type for Ammo.custom_drag_table, so a mach/cd length mismatch is now structurally impossible rather than merely unchecked (see docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md Phase 7).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mach", "cd"],
+      "properties": {
+        "mach": {
+          "description": "No FC constraint exists for this field in the app today.",
+          "type": "number", "default": 0.0
+        },
+        "cd": {
+          "description": "No FC constraint exists for this field in the app today.",
+          "type": "number", "default": 0.0
+        }
+      }
+    },
+
+    "PowderSensitivityPoint": {
+      "description": "One row of a velocity-dependent powder-sensitivity correction table — replaces the old powder_sensitivity_tc/_v_mps parallel-array pair. Used as the items type for Ammo.powder_sensitivity_table, so a tc/v_mps length mismatch is now structurally impossible rather than merely unchecked (see docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md Phase 7).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tc", "v_mps"],
+      "properties": {
+        "tc": {
+          "description": "No FC constraint exists for this field in the app today.",
+          "type": "number", "default": 0.0
+        },
+        "v_mps": {
+          "description": "FC.muzzleVelocity, mps (100–1800) — this breakpoint's velocity.",
+          "allOf": [{ "$ref": "#/$defs/VelocityMps" }],
+          "type": "number", "default": 100
         }
       }
     },
@@ -204,10 +240,9 @@
         "drag_type_value", "bc_g1", "bc_g7", "use_multi_bc_g1",
         "use_multi_bc_g7", "muzzle_velocity_mps",
         "muzzle_velocity_temperature_c", "use_powder_sensitivity",
-        "powder_sensitivity_frac", "powder_sensitivity_tc",
-        "powder_sensitivity_v_mps", "multi_bc_table_g1",
-        "multi_bc_table_g7", "custom_drag_table_mach",
-        "custom_drag_table_cd", "zero", "projectile_name", "vendor", "image"
+        "powder_sensitivity_frac", "powder_sensitivity_table",
+        "multi_bc_table_g1", "multi_bc_table_g7", "custom_drag_table",
+        "zero", "projectile_name", "vendor", "image"
       ],
       "properties": {
         "name": { "type": "string", "default": "" },
@@ -256,13 +291,9 @@
           "description": "FC.powderSensitivity, fraction (0–5).",
           "type": "number", "minimum": 0, "maximum": 5, "default": 0.0
         },
-        "powder_sensitivity_tc": {
-          "description": "Paired row-wise with powder_sensitivity_v_mps (see MultiValuePairs note in the doc's Phase 7). Not enforced here: the two arrays must be equal length.",
-          "type": "array", "items": { "type": "number" }, "maxItems": 5, "default": []
-        },
-        "powder_sensitivity_v_mps": {
-          "description": "Paired row-wise with powder_sensitivity_tc.",
-          "type": "array", "items": { "type": "number" }, "maxItems": 5, "default": []
+        "powder_sensitivity_table": {
+          "description": "Velocity-dependent powder-sensitivity correction breakpoints — see PowderSensitivityPoint.",
+          "type": "array", "items": { "$ref": "#/$defs/PowderSensitivityPoint" }, "maxItems": 5, "default": []
         },
         "multi_bc_table_g1": {
           "description": "Multi-BC (velocity-dependent) breakpoints for the G1 drag model — see MultiBcPoint.",
@@ -272,13 +303,9 @@
           "description": "Multi-BC (velocity-dependent) breakpoints for the G7 drag model — see MultiBcPoint.",
           "type": "array", "items": { "$ref": "#/$defs/MultiBcPoint" }, "maxItems": 5, "default": []
         },
-        "custom_drag_table_mach": {
-          "description": "Paired row-wise with custom_drag_table_cd. Not enforced here: the two arrays must be equal length.",
-          "type": "array", "items": { "type": "number" }, "maxItems": 100, "default": []
-        },
-        "custom_drag_table_cd": {
-          "description": "Paired row-wise with custom_drag_table_mach.",
-          "type": "array", "items": { "type": "number" }, "maxItems": 100, "default": []
+        "custom_drag_table": {
+          "description": "Custom (mach-dependent) drag coefficient breakpoints — see CustomDragPoint.",
+          "type": "array", "items": { "$ref": "#/$defs/CustomDragPoint" }, "maxItems": 100, "default": []
         },
         "zero": { "$ref": "#/$defs/Zero" },
         "projectile_name": { "type": "string", "default": "" },

@@ -118,14 +118,8 @@ class AmmoWizardState {
       bcG7: (a.bc7 ?? 0) > 0 ? a.bc7 : null,
       multiBcG1Table: decodeBcTable(a.multiBcTableG1),
       multiBcG7Table: decodeBcTable(a.multiBcTableG7),
-      customDragTable: decodeCustomDragTable(
-        a.customDragTableMach,
-        a.customDragTableCd,
-      ),
-      powderSensTable: decodePowderSensTable(
-        a.powderSensitivityTc,
-        a.powderSensitivityVMps,
-      ),
+      customDragTable: decodeCustomDragTable(a.customDragTable),
+      powderSensTable: decodePowderSensTable(a.powderSensitivityTable),
       mvRaw: a.mv?.in_(FC.muzzleVelocity.rawUnit),
       mvTempRaw: a.mvTemperature.in_(FC.temperature.rawUnit),
       zeroDistRaw: a.zeroDistance.in_(FC.zeroDistance.rawUnit),
@@ -220,11 +214,11 @@ class AmmoWizardState {
     }
 
     final custom = customDragTable;
-    ammo.customDragTableMach.clear();
-    ammo.customDragTableCd.clear();
+    ammo.customDragTable.clear();
     if (custom != null && custom.isNotEmpty) {
-      ammo.customDragTableMach.addAll(custom.map((r) => r.mach));
-      ammo.customDragTableCd.addAll(custom.map((r) => r.cd));
+      ammo.customDragTable.addAll(
+        custom.map((r) => CustomDragPoint(mach: r.mach, cd: r.cd)),
+      );
     }
 
     ammo.mv = mvRaw != null
@@ -242,11 +236,11 @@ class AmmoWizardState {
     ammo.powderSensitivity = Ratio.fraction(powderSensRaw);
 
     final psTable = powderSensTable;
-    ammo.powderSensitivityTc.clear();
-    ammo.powderSensitivityVMps.clear();
+    ammo.powderSensitivityTable.clear();
     if (psTable != null && psTable.isNotEmpty) {
-      ammo.powderSensitivityTc.addAll(psTable.map((r) => r.tempC));
-      ammo.powderSensitivityVMps.addAll(psTable.map((r) => r.vMps));
+      ammo.powderSensitivityTable.addAll(
+        psTable.map((r) => PowderSensitivityPoint(tc: r.tempC, vMps: r.vMps)),
+      );
     }
 
     ammo.zeroUseDiffPowderTemperature = zeroUseDiffPowderTemp;
