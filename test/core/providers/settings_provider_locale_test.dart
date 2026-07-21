@@ -49,52 +49,60 @@ void main() {
   Future<GeneralSettings> waitForSettings(ProviderContainer c) =>
       c.read(settingsProvider.future);
 
-  group('first launch — locale auto-resolved from system', () {
-    test('Ukrainian system locale → languageCode = "uk"', () async {
+  // seedSettings() deliberately never bakes a resolved system locale into
+  // languageCode — an empty languageCode means "no explicit user choice",
+  // which lets MaterialApp.locale stay null and defer to Flutter's own
+  // live, device-locale-list-aware resolver (see main.dart/
+  // settings_provider.dart's localeProvider). Baking a locale in here would
+  // permanently pin the UI locale from first launch onward and stop it
+  // reacting to OS locale changes — see docs/backlogs/
+  // 8.PROTOBUF_STORAGE_MIGRATION.md's locale-handling fix.
+  group('first launch — languageCode stays unset regardless of system locale', () {
+    test('Ukrainian system locale → still unset', () async {
       binding.platformDispatcher.localeTestValue = const Locale('uk');
 
       final container = await makeContainer();
       addTearDown(container.dispose);
 
       final settings = await waitForSettings(container);
-      expect(settings.languageCode, 'uk');
+      expect(settings.languageCode, isEmpty);
     });
 
-    test('English system locale → languageCode = "en"', () async {
+    test('English system locale → still unset', () async {
       binding.platformDispatcher.localeTestValue = const Locale('en');
 
       final container = await makeContainer();
       addTearDown(container.dispose);
 
       final settings = await waitForSettings(container);
-      expect(settings.languageCode, 'en');
+      expect(settings.languageCode, isEmpty);
     });
 
-    test('Unsupported system locale → fallback to "en"', () async {
+    test('Unsupported system locale → still unset', () async {
       binding.platformDispatcher.localeTestValue = const Locale('fr');
 
       final container = await makeContainer();
       addTearDown(container.dispose);
 
       final settings = await waitForSettings(container);
-      expect(settings.languageCode, 'en');
+      expect(settings.languageCode, isEmpty);
     });
   });
 
-  group('subsequent launch — reads saved value, ignores system locale', () {
+  group('subsequent launch — an explicit saved choice is preserved, ignoring system locale', () {
     test(
       'saved "uk" is returned even if system locale changed to "en"',
       () async {
-        // First launch: system = 'uk' → seeded and saved to disk
-        binding.platformDispatcher.localeTestValue = const Locale('uk');
+        // First launch: seeded unset, then simulate the user explicitly
+        // picking "uk" (e.g. via the settings screen's language picker).
         final c1 = await makeContainer();
         final settings1 = await waitForSettings(c1);
         await c1.read(settingsStoreProvider).save(
-          SettingsData()..generalSettings = settings1,
+          SettingsData()..generalSettings = (settings1..languageCode = 'uk'),
         );
         c1.dispose();
 
-        // System locale changes to 'en', but disk already has 'uk'
+        // System locale changes to 'en', but disk already has an explicit 'uk'.
         binding.platformDispatcher.localeTestValue = const Locale('en');
         final c2 = await makeContainer();
         addTearDown(c2.dispose);
