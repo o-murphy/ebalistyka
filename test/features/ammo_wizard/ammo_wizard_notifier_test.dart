@@ -328,8 +328,10 @@ void main() {
         ..dragType = DragType.g7
         ..useMultiBcG7 = true
         ..bcG7 = 0.317;
-      a.multiBcTableG7VMps.addAll([900.0, 800.0]);
-      a.multiBcTableG7Bc.addAll([0.30, 0.32]);
+      a.multiBcTableG7.addAll([
+        MultiBcPoint(vMps: 900.0, bc: 0.30),
+        MultiBcPoint(vMps: 800.0, bc: 0.32),
+      ]);
       final st = AmmoWizardState.fromAmmo(a, null);
       expect(st.multiBcG7Table, isNotNull);
       expect(st.multiBcG7Table!.length, 2);
@@ -420,15 +422,14 @@ void main() {
         bcG1: null,
         multiBcG1Table: table,
       ).buildAmmo();
-      expect(a.multiBcTableG1VMps.length, 2);
-      expect(a.multiBcTableG1VMps[0], closeTo(900.0, 1e-9));
-      expect(a.multiBcTableG1Bc[0], closeTo(0.45, 1e-9));
+      expect(a.multiBcTableG1.length, 2);
+      expect(a.multiBcTableG1[0].vMps, closeTo(900.0, 1e-9));
+      expect(a.multiBcTableG1[0].bc, closeTo(0.45, 1e-9));
     });
 
     test('clears G1 table lists when table is null', () {
       final a = _validG1(useMultiBcG1: false, multiBcG1Table: null).buildAmmo();
-      expect(a.multiBcTableG1VMps, isEmpty);
-      expect(a.multiBcTableG1Bc, isEmpty);
+      expect(a.multiBcTableG1, isEmpty);
     });
 
     test('encodes customDragTable to raw lists', () {

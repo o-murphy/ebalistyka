@@ -145,6 +145,19 @@ final $typed_data.Uint8List sightDescriptor = $convert.base64Decode(
     'CgZ2ZW5kb3IYDSABKAlSBnZlbmRvchIUCgVub3RlcxgOIAEoCVIFbm90ZXMSFAoFaW1hZ2UYDy'
     'ABKAlSBWltYWdlQhsKGV9jYWxpYnJhdGVkX21hZ25pZmljYXRpb24=');
 
+@$core.Deprecated('Use multiBcPointDescriptor instead')
+const MultiBcPoint$json = {
+  '1': 'MultiBcPoint',
+  '2': [
+    {'1': 'v_mps', '3': 1, '4': 1, '5': 1, '10': 'vMps'},
+    {'1': 'bc', '3': 2, '4': 1, '5': 1, '10': 'bc'},
+  ],
+};
+
+/// Descriptor for `MultiBcPoint`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List multiBcPointDescriptor = $convert.base64Decode(
+    'CgxNdWx0aUJjUG9pbnQSEwoFdl9tcHMYASABKAFSBHZNcHMSDgoCYmMYAiABKAFSAmJj');
+
 @$core.Deprecated('Use ammoDescriptor instead')
 const Ammo$json = {
   '1': 'Ammo',
@@ -227,32 +240,20 @@ const Ammo$json = {
       '10': 'powderSensitivityVMps'
     },
     {
-      '1': 'multi_bc_table_g1_v_mps',
+      '1': 'multi_bc_table_g1',
       '3': 16,
       '4': 3,
-      '5': 1,
-      '10': 'multiBcTableG1VMps'
+      '5': 11,
+      '6': '.profiles.MultiBcPoint',
+      '10': 'multiBcTableG1'
     },
     {
-      '1': 'multi_bc_table_g1_bc',
-      '3': 17,
-      '4': 3,
-      '5': 1,
-      '10': 'multiBcTableG1Bc'
-    },
-    {
-      '1': 'multi_bc_table_g7_v_mps',
+      '1': 'multi_bc_table_g7',
       '3': 18,
       '4': 3,
-      '5': 1,
-      '10': 'multiBcTableG7VMps'
-    },
-    {
-      '1': 'multi_bc_table_g7_bc',
-      '3': 19,
-      '4': 3,
-      '5': 1,
-      '10': 'multiBcTableG7Bc'
+      '5': 11,
+      '6': '.profiles.MultiBcPoint',
+      '10': 'multiBcTableG7'
     },
     {
       '1': 'custom_drag_table_mach',
@@ -288,6 +289,10 @@ const Ammo$json = {
     {'1': '_bc_g7'},
     {'1': '_muzzle_velocity_mps'},
   ],
+  '9': [
+    {'1': 17, '2': 18},
+    {'1': 19, '2': 20},
+  ],
 };
 
 /// Descriptor for `Ammo`. Decode as a `google.protobuf.DescriptorProto`.
@@ -303,17 +308,16 @@ final $typed_data.Uint8List ammoDescriptor = $convert.base64Decode(
     'd2Rlcl9zZW5zaXRpdml0eRgMIAEoCFIUdXNlUG93ZGVyU2Vuc2l0aXZpdHkSNgoXcG93ZGVyX3'
     'NlbnNpdGl2aXR5X2ZyYWMYDSABKAFSFXBvd2RlclNlbnNpdGl2aXR5RnJhYxIyChVwb3dkZXJf'
     'c2Vuc2l0aXZpdHlfdGMYDiADKAFSE3Bvd2RlclNlbnNpdGl2aXR5VGMSNwoYcG93ZGVyX3Nlbn'
-    'NpdGl2aXR5X3ZfbXBzGA8gAygBUhVwb3dkZXJTZW5zaXRpdml0eVZNcHMSMwoXbXVsdGlfYmNf'
-    'dGFibGVfZzFfdl9tcHMYECADKAFSEm11bHRpQmNUYWJsZUcxVk1wcxIuChRtdWx0aV9iY190YW'
-    'JsZV9nMV9iYxgRIAMoAVIQbXVsdGlCY1RhYmxlRzFCYxIzChdtdWx0aV9iY190YWJsZV9nN192'
-    'X21wcxgSIAMoAVISbXVsdGlCY1RhYmxlRzdWTXBzEi4KFG11bHRpX2JjX3RhYmxlX2c3X2JjGB'
-    'MgAygBUhBtdWx0aUJjVGFibGVHN0JjEjMKFmN1c3RvbV9kcmFnX3RhYmxlX21hY2gYFCADKAFS'
-    'E2N1c3RvbURyYWdUYWJsZU1hY2gSLwoUY3VzdG9tX2RyYWdfdGFibGVfY2QYFSADKAFSEWN1c3'
-    'RvbURyYWdUYWJsZUNkEiIKBHplcm8YFiABKAsyDi5wcm9maWxlcy5aZXJvUgR6ZXJvEicKD3By'
-    'b2plY3RpbGVfbmFtZRgXIAEoCVIOcHJvamVjdGlsZU5hbWUSFgoGdmVuZG9yGBggASgJUgZ2ZW'
-    '5kb3ISFAoFaW1hZ2UYGSABKAlSBWltYWdlQg8KDV9jYWxpYmVyX2luY2hCDwoNX3dlaWdodF9n'
-    'cmFpbkIOCgxfbGVuZ3RoX2luY2hCCAoGX2JjX2cxQggKBl9iY19nN0IWChRfbXV6emxlX3ZlbG'
-    '9jaXR5X21wcw==');
+    'NpdGl2aXR5X3ZfbXBzGA8gAygBUhVwb3dkZXJTZW5zaXRpdml0eVZNcHMSQQoRbXVsdGlfYmNf'
+    'dGFibGVfZzEYECADKAsyFi5wcm9maWxlcy5NdWx0aUJjUG9pbnRSDm11bHRpQmNUYWJsZUcxEk'
+    'EKEW11bHRpX2JjX3RhYmxlX2c3GBIgAygLMhYucHJvZmlsZXMuTXVsdGlCY1BvaW50Ug5tdWx0'
+    'aUJjVGFibGVHNxIzChZjdXN0b21fZHJhZ190YWJsZV9tYWNoGBQgAygBUhNjdXN0b21EcmFnVG'
+    'FibGVNYWNoEi8KFGN1c3RvbV9kcmFnX3RhYmxlX2NkGBUgAygBUhFjdXN0b21EcmFnVGFibGVD'
+    'ZBIiCgR6ZXJvGBYgASgLMg4ucHJvZmlsZXMuWmVyb1IEemVybxInCg9wcm9qZWN0aWxlX25hbW'
+    'UYFyABKAlSDnByb2plY3RpbGVOYW1lEhYKBnZlbmRvchgYIAEoCVIGdmVuZG9yEhQKBWltYWdl'
+    'GBkgASgJUgVpbWFnZUIPCg1fY2FsaWJlcl9pbmNoQg8KDV93ZWlnaHRfZ3JhaW5CDgoMX2xlbm'
+    'd0aF9pbmNoQggKBl9iY19nMUIICgZfYmNfZzdCFgoUX211enpsZV92ZWxvY2l0eV9tcHNKBAgR'
+    'EBJKBAgTEBQ=');
 
 @$core.Deprecated('Use zeroDescriptor instead')
 const Zero$json = {

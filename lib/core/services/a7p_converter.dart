@@ -83,11 +83,10 @@ abstract final class A7pConverter {
           ammo.bcG1 = p.coefRows.first.bcCd / 10000.0;
           if (p.coefRows.length > 1) {
             ammo.useMultiBcG1 = true;
-            ammo.multiBcTableG1VMps.addAll(
-              p.coefRows.map((r) => r.mv / 10.0),
-            );
-            ammo.multiBcTableG1Bc.addAll(
-              p.coefRows.map((r) => r.bcCd / 10000.0),
+            ammo.multiBcTableG1.addAll(
+              p.coefRows.map(
+                (r) => MultiBcPoint(vMps: r.mv / 10.0, bc: r.bcCd / 10000.0),
+              ),
             );
           }
         }
@@ -97,11 +96,10 @@ abstract final class A7pConverter {
           ammo.bcG7 = p.coefRows.first.bcCd / 10000.0;
           if (p.coefRows.length > 1) {
             ammo.useMultiBcG7 = true;
-            ammo.multiBcTableG7VMps.addAll(
-              p.coefRows.map((r) => r.mv / 10.0),
-            );
-            ammo.multiBcTableG7Bc.addAll(
-              p.coefRows.map((r) => r.bcCd / 10000.0),
+            ammo.multiBcTableG7.addAll(
+              p.coefRows.map(
+                (r) => MultiBcPoint(vMps: r.mv / 10.0, bc: r.bcCd / 10000.0),
+              ),
             );
           }
         }
@@ -284,15 +282,14 @@ abstract final class A7pConverter {
   static List<proto.CoefRow> _buildCoefRows(Ammo ammo) {
     switch (ammo.dragTypeValue) {
       case 'g7':
-        if (ammo.useMultiBcG7 &&
-            ammo.multiBcTableG7VMps.isNotEmpty &&
-            ammo.multiBcTableG7Bc.isNotEmpty) {
-          return List.generate(
-            ammo.multiBcTableG7VMps.length,
-            (i) => proto.CoefRow()
-              ..mv = (ammo.multiBcTableG7VMps[i] * 10).round()
-              ..bcCd = (ammo.multiBcTableG7Bc[i] * 10000).round(),
-          );
+        if (ammo.useMultiBcG7 && ammo.multiBcTableG7.isNotEmpty) {
+          return ammo.multiBcTableG7
+              .map(
+                (p) => proto.CoefRow()
+                  ..mv = (p.vMps * 10).round()
+                  ..bcCd = (p.bc * 10000).round(),
+              )
+              .toList();
         }
         return [
           proto.CoefRow()
@@ -317,15 +314,14 @@ abstract final class A7pConverter {
             ..bcCd = 0,
         ];
       default: // g1
-        if (ammo.useMultiBcG1 &&
-            ammo.multiBcTableG1VMps.isNotEmpty &&
-            ammo.multiBcTableG1Bc.isNotEmpty) {
-          return List.generate(
-            ammo.multiBcTableG1VMps.length,
-            (i) => proto.CoefRow()
-              ..mv = (ammo.multiBcTableG1VMps[i] * 10).round()
-              ..bcCd = (ammo.multiBcTableG1Bc[i] * 10000).round(),
-          );
+        if (ammo.useMultiBcG1 && ammo.multiBcTableG1.isNotEmpty) {
+          return ammo.multiBcTableG1
+              .map(
+                (p) => proto.CoefRow()
+                  ..mv = (p.vMps * 10).round()
+                  ..bcCd = (p.bc * 10000).round(),
+              )
+              .toList();
         }
         return [
           proto.CoefRow()

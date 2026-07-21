@@ -1,9 +1,8 @@
-List<({double vMps, double bc})>? decodeBcTable(
-  List<double>? vMps,
-  List<double>? bcs,
-) {
-  if (vMps == null || bcs == null || vMps.isEmpty) return null;
-  return List.generate(vMps.length, (i) => (vMps: vMps[i], bc: bcs[i]));
+import 'package:ebc_db/ebc_db.dart';
+
+List<({double vMps, double bc})>? decodeBcTable(List<MultiBcPoint>? points) {
+  if (points == null || points.isEmpty) return null;
+  return points.map((p) => (vMps: p.vMps, bc: p.bc)).toList();
 }
 
 List<({double mach, double cd})>? decodeCustomDragTable(
