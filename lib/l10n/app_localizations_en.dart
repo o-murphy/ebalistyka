@@ -1335,4 +1335,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get updateWeaponCaliberAction => 'Update weapon caliber';
+
+  @override
+  String get legacyMigrationConfirmTitle => 'Old data found';
+
+  @override
+  String get legacyMigrationConfirmContent =>
+      'We found data from an older version of this app. Would you like to import it?';
+
+  @override
+  String get legacyMigrationConfirmAction => 'Import';
+
+  @override
+  String get legacyMigrationDeclineAction => 'Not now';
+
+  @override
+  String get legacyMigrationInProgress => 'Importing your old data…';
+
+  @override
+  String get legacyMigrationFailedTitle => 'Import failed';
+
+  @override
+  String get legacyMigrationRetryAction => 'Retry';
+
+  @override
+  String get legacyOrphanedDataTitle => 'Some items weren\'t imported';
+
+  @override
+  String legacyOrphanedDataContent(
+    int weaponCount,
+    int ammoCount,
+    int sightCount,
+  ) {
+    return '$weaponCount weapons, $ammoCount ammo, and $sightCount sights from your old library weren\'t part of any profile and weren\'t imported. You can export them as a JSON file to keep for later.';
+  }
+
+  @override
+  String get legacyExportOrphanedDataAction => 'Export as JSON';
+
+  @override
+  String get legacyContinueAction => 'Continue';
 }

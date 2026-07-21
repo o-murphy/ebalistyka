@@ -1343,4 +1343,44 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get updateWeaponCaliberAction => 'Оновити калібр зброї';
+
+  @override
+  String get legacyMigrationConfirmTitle => 'Знайдено старі дані';
+
+  @override
+  String get legacyMigrationConfirmContent =>
+      'Ми знайшли дані з попередньої версії цього додатку. Імпортувати їх?';
+
+  @override
+  String get legacyMigrationConfirmAction => 'Імпортувати';
+
+  @override
+  String get legacyMigrationDeclineAction => 'Не зараз';
+
+  @override
+  String get legacyMigrationInProgress => 'Імпортуємо ваші старі дані…';
+
+  @override
+  String get legacyMigrationFailedTitle => 'Не вдалося імпортувати';
+
+  @override
+  String get legacyMigrationRetryAction => 'Повторити';
+
+  @override
+  String get legacyOrphanedDataTitle => 'Деякі дані не імпортовано';
+
+  @override
+  String legacyOrphanedDataContent(
+    int weaponCount,
+    int ammoCount,
+    int sightCount,
+  ) {
+    return '$weaponCount гвинтівок, $ammoCount патронів і $sightCount прицілів з вашої старої бібліотеки не належали жодному профілю і не були імпортовані. Ви можете експортувати їх у файл JSON, щоб зберегти на потім.';
+  }
+
+  @override
+  String get legacyExportOrphanedDataAction => 'Експортувати як JSON';
+
+  @override
+  String get legacyContinueAction => 'Продовжити';
 }
