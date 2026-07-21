@@ -90,45 +90,10 @@ class ProfilesListScreen extends ConsumerWidget {
         ActionSheetItem(
           icon: IconDef.import,
           title: l10n.actionImportFromFile,
-          onTap: () => _onImportFormatChoice(context, ref),
+          onTap: () => importProfileFromFile(context, ref),
         ),
       ],
     );
-  }
-
-  Future<void> _onImportFormatChoice(
-    BuildContext context,
-    WidgetRef ref,
-  ) async {
-    final l10n = AppLocalizations.of(context)!;
-    await showActionSheet(
-      context,
-      title: l10n.importFormatDialogTitle,
-      entries: [
-        ActionSheetItem(
-          icon: IconDef.import,
-          title: '.ebcp (eBalistyka)',
-          onTap: () => importProfileFromEbcp(context, ref),
-        ),
-        ActionSheetItem(
-          icon: IconDef.import,
-          title: '.a7p (Archer Ballistic Profile)',
-          onTap: () => _onImportProfileA7p(context, ref),
-        ),
-      ],
-    );
-  }
-
-  Future<void> _onImportProfileA7p(BuildContext context, WidgetRef ref) async {
-    final l10n = AppLocalizations.of(context)!;
-    try {
-      final profile = await A7pService.pickAndParse();
-      if (profile == null || !context.mounted) return;
-      await ref.read(profilesActionsProvider.notifier).importProfile(profile);
-    } catch (e) {
-      if (!context.mounted) return;
-      showFeedback(context, '${l10n.actionImportFromFile}: $e', isError: true);
-    }
   }
 
   Future<void> _onRename(
