@@ -37,7 +37,7 @@ runs:
         if [ -n "$FILE" ] && [ -f "$FILE" ]; then
           VERSION=$(tr -d '[:space:]' < "$FILE")
         else
-          VERSION="${{ steps.effective.outputs.version }}"
+          VERSION="${{ inputs.flutter-version }}"
         fi
         echo "version=$VERSION" >> $GITHUB_OUTPUT
 

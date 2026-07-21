@@ -26,7 +26,7 @@ jobs:
           ref: ${{ inputs.tag_name }}
 
       - name: Install Flutter
-        uses: o-murphy/flutpak/.github/actions/flutter@v0.8.2
+        uses: o-murphy/flutpak/.github/actions/flutter@v0.8.3
         with:
           flutter-version-file: .flutter-version
           cache: true
