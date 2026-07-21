@@ -2384,12 +2384,6 @@ abstract class AppLocalizations {
   /// **'Export format'**
   String get exportFormatDialogTitle;
 
-  /// Action sheet title for picking which profile to import when an .ebcp file contains more than one
-  ///
-  /// In en, this message translates to:
-  /// **'Select profile'**
-  String get selectProfileDialogTitle;
-
   /// Error shown when importing an .ebcp file that has no profiles, from a screen that can only import a profile
   ///
   /// In en, this message translates to:
@@ -2407,6 +2401,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Import scope'**
   String get importScopeDialogTitle;
+
+  /// Bottom sheet title for the checkbox list letting the user pick which profiles to import from a full-backup .ebcp file
+  ///
+  /// In en, this message translates to:
+  /// **'Select profiles to import'**
+  String get selectProfilesToImportTitle;
+
+  /// Checkbox label that toggles every item in a list selected/deselected at once
+  ///
+  /// In en, this message translates to:
+  /// **'Select all'**
+  String get selectAllAction;
 
   /// Action sheet item to import every profile from a full-backup .ebcp file
   ///
@@ -2426,6 +2432,12 @@ abstract class AppLocalizations {
   /// **'Everything'**
   String get importEverythingAction;
 
+  /// Confirm button label on the profile-selection sheet when no profile is checked — proceeds without importing any profile
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skipAction;
+
   /// Confirmation dialog title before replacing local settings with an imported backup's settings
   ///
   /// In en, this message translates to:
@@ -2437,6 +2449,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This replaces your current settings with the ones from the imported file. This can\'t be undone.'**
   String get overwriteSettingsConfirmContent;
+
+  /// Confirm button label for the settings-overwrite confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Overwrite'**
+  String get overwriteAction;
 
   /// Action sheet title for choosing the trajectory range when exporting to .a7p
   ///

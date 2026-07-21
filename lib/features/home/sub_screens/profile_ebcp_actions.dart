@@ -5,7 +5,7 @@ import 'package:ebalistyka/core/services/a7p_converter.dart';
 import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/features/home/profiles_vm.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
-import 'package:ebalistyka/shared/widgets/action_sheet.dart';
+import 'package:ebalistyka/shared/widgets/profile_selection_sheet.dart';
 import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:file_picker/file_picker.dart';
@@ -67,36 +67,15 @@ Future<void> importProfileFromFile(BuildContext context, WidgetRef ref) async {
       return;
     }
 
-    final picked = profiles.length == 1
-        ? profiles.single
-        : await _pickProfile(context, profiles);
-    if (picked == null || !context.mounted) return;
+    final selected = profiles.length == 1
+        ? profiles
+        : await showProfileSelectionSheet(context, profiles);
+    if (selected == null || selected.isEmpty || !context.mounted) return;
 
-    await ref.read(profilesActionsProvider.notifier).importProfile(picked);
+    await ref.read(profilesActionsProvider.notifier).importProfiles(selected);
   } catch (e) {
     debugPrint('Profile import failed: $e');
     if (!context.mounted) return;
     showFeedback(context, '${l10n.actionImportFromFile}: $e', isError: true);
   }
-}
-
-Future<Profile?> _pickProfile(
-  BuildContext context,
-  List<Profile> profiles,
-) async {
-  final l10n = AppLocalizations.of(context)!;
-  Profile? picked;
-  await showActionSheet(
-    context,
-    title: l10n.selectProfileDialogTitle,
-    entries: [
-      for (final profile in profiles)
-        ActionSheetItem(
-          title: profile.name,
-          subtitle: profile.weapon.name.isNotEmpty ? profile.weapon.name : null,
-          onTap: () async => picked = profile,
-        ),
-    ],
-  );
-  return picked;
 }

@@ -248,5 +248,24 @@ void main() {
       );
       expect(seeded, isTrue);
     });
+
+    test('many concurrent saves to the same store all succeed, in order', () async {
+      final file = File('${tmpDir.path}/profiles.ebcp');
+      final store = storeFor(file);
+
+      // Regression test: overlapping save() calls (no debounce) used to race
+      // on the shared .tmp path — one write's rename() could find the file
+      // already moved by another, throwing PathNotFoundException. Firing N
+      // saves without awaiting each one first is exactly what a bulk import
+      // (loop of individual saves) does.
+      final saves = [
+        for (var i = 0; i < 20; i++)
+          store.save(_sampleProfilesData()..profiles.first.name = 'Profile $i'),
+      ];
+      await Future.wait(saves); // must not throw
+
+      final loaded = ProfilesFile.decode(await file.readAsBytes());
+      expect(loaded.profiles.single.name, 'Profile 19');
+    });
   });
 }
