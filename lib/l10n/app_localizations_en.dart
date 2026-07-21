@@ -1177,9 +1177,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportFormatDialogTitle => 'Export format';
 
   @override
-  String get importFormatDialogTitle => 'Import format';
-
-  @override
   String get selectProfileDialogTitle => 'Select profile';
 
   @override

@@ -409,7 +409,6 @@
     "fromCollectionAction": "З колекції",
     "removeProfileContent": "Видалити \"{name}\" разом із зброєю, набоєм і прицілом?",
     "exportFormatDialogTitle": "Формат експорту",
-    "importFormatDialogTitle": "Формат імпорту",
     "selectProfileDialogTitle": "Вибрати профіль",
     "ebcpFileHasNoProfiles": "У цьому файлі немає профілів для імпорту.",
     "ebcpFileIsEmpty": "У цьому файлі немає нічого для імпорту.",

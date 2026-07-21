@@ -789,8 +789,6 @@
     "@removeProfileContent": {"description": "Confirmation dialog body when removing a profile together with its embedded weapon, ammo, and sight", "placeholders": {"name": {"type": "String"}}},
     "exportFormatDialogTitle": "Export format",
     "@exportFormatDialogTitle": {"description": "Action sheet title for choosing the export file format"},
-    "importFormatDialogTitle": "Import format",
-    "@importFormatDialogTitle": {"description": "Action sheet title for choosing the format of the file to import a profile from"},
     "selectProfileDialogTitle": "Select profile",
     "@selectProfileDialogTitle": {"description": "Action sheet title for picking which profile to import when an .ebcp file contains more than one"},
     "ebcpFileHasNoProfiles": "This file has no profiles to import.",
