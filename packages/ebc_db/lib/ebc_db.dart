@@ -1,5 +1,7 @@
 export 'src/ebcp_file.dart';
 export 'src/ebcp_validator.dart';
+export 'src/field_bounds.dart';
+export 'src/generated/field_constraints.g.dart';
 export 'src/msg_codec.dart';
 export 'src/msg_store.dart';
 export 'src/profiles_file.dart';

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ebc_db/schema/bounds.schema.json",
+  "description": "Numeric-bounds-only $defs (minimum/maximum only — no type/default, those stay per-field since defaults occasionally differ even when the range doesn't, e.g. pressure_h_pa's 1013.0 default in profiles.schema.json's Zero vs. 1013.25 in settings.schema.json's ShootingConditions/VelocityConv) shared across profiles.schema.json and settings.schema.json via bin/embed_schema.dart's mergeDefsFrom — the same cross-file merge-at-embed-time mechanism ebcp.schema.json already uses for its own $refs, so no source file hand-duplicates a $defs entry it doesn't itself own. Every usage composes one of these via allOf plus its own sibling type/default: {\"allOf\": [{\"$ref\": \"#/$defs/TemperatureC\"}], \"type\": \"number\", \"default\": ...}. Fields whose bounds only ever repeat within a single schema file keep their shared $defs local to that file instead of here (see profiles.schema.json's CaliberInch/SightHeightInch/BallisticCoefficient/MagnificationBounds, or settings.schema.json's DistanceStepMeter/TableRangeMeter).",
+  "$defs": {
+    "TemperatureC": {
+      "description": "FC.temperature, celsius (-100–100). Shared by profiles.schema.json's Zero/Ammo temperature fields and settings.schema.json's ShootingConditions/VelocityConv ones.",
+      "minimum": -100, "maximum": 100
+    },
+    "AltitudeMeter": {
+      "description": "FC.altitude, meter (-500–15000). Shared by profiles.schema.json's Zero.altitude_meter and settings.schema.json's ShootingConditions/VelocityConv altitude fields.",
+      "minimum": -500, "maximum": 15000
+    },
+    "PressureHPa": {
+      "description": "FC.pressure, hPa (300–1500). Shared by profiles.schema.json's Zero.pressure_h_pa and settings.schema.json's ShootingConditions/VelocityConv pressure fields.",
+      "minimum": 300, "maximum": 1500
+    },
+    "HumidityFrac": {
+      "description": "FC.humidity, fraction (0–1). Shared by profiles.schema.json's Zero.humidity_frac and settings.schema.json's ShootingConditions/VelocityConv humidity fields.",
+      "minimum": 0, "maximum": 1
+    },
+    "LatitudeDeg": {
+      "description": "FC.latitude, degree (-90–90). Shared by profiles.schema.json's Zero.latitude_deg and settings.schema.json's ShootingConditions.latitude_deg.",
+      "minimum": -90, "maximum": 90
+    },
+    "AzimuthDeg": {
+      "description": "FC.azimuth, degree (0–360). Shared by profiles.schema.json's Zero.azimuth_deg and settings.schema.json's ShootingConditions.azimuth_deg.",
+      "minimum": 0, "maximum": 360
+    },
+    "LookAngleRad": {
+      "description": "FC.lookAngle, degree→radian (-90°..90°). Shared by profiles.schema.json's Zero.look_angle_rad and settings.schema.json's ShootingConditions.look_angle_rad.",
+      "minimum": -1.5707963267948966, "maximum": 1.5707963267948966
+    }
+  }
+}
