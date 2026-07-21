@@ -2671,6 +2671,76 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Update weapon caliber'**
   String get updateWeaponCaliberAction;
+
+  /// Title of the dialog offering to import data from the app's old (pre-protobuf) database
+  ///
+  /// In en, this message translates to:
+  /// **'Old data found'**
+  String get legacyMigrationConfirmTitle;
+
+  /// Body of the legacy-data-import confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'We found data from an older version of this app. Would you like to import it?'**
+  String get legacyMigrationConfirmContent;
+
+  /// Confirm button on the legacy-data-import dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get legacyMigrationConfirmAction;
+
+  /// Decline button on the legacy-data-import dialog, and the give-up button after a failed migration
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get legacyMigrationDeclineAction;
+
+  /// Label shown under the spinner while legacy data is being migrated
+  ///
+  /// In en, this message translates to:
+  /// **'Importing your old data…'**
+  String get legacyMigrationInProgress;
+
+  /// Title shown when legacy data migration fails
+  ///
+  /// In en, this message translates to:
+  /// **'Import failed'**
+  String get legacyMigrationFailedTitle;
+
+  /// Button to retry a failed legacy data migration
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get legacyMigrationRetryAction;
+
+  /// Title of the screen listing old weapons/ammo/sights that weren't part of any profile and so weren't imported
+  ///
+  /// In en, this message translates to:
+  /// **'Some items weren\'t imported'**
+  String get legacyOrphanedDataTitle;
+
+  /// Body of the orphaned-legacy-data screen
+  ///
+  /// In en, this message translates to:
+  /// **'{weaponCount} weapons, {ammoCount} ammo, and {sightCount} sights from your old library weren\'t part of any profile and weren\'t imported. You can export them as a JSON file to keep for later.'**
+  String legacyOrphanedDataContent(
+    int weaponCount,
+    int ammoCount,
+    int sightCount,
+  );
+
+  /// Button to export orphaned legacy weapons/ammo/sights as a JSON file
+  ///
+  /// In en, this message translates to:
+  /// **'Export as JSON'**
+  String get legacyExportOrphanedDataAction;
+
+  /// Button to proceed past the orphaned-legacy-data screen into the app
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get legacyContinueAction;
 }
 
 class _AppLocalizationsDelegate

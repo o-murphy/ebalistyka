@@ -459,5 +459,17 @@
     "caliberMismatchTitle": "Невідповідність калібру",
     "caliberMismatchWarning": "Патрон: {ammo} · Зброя: {weapon}",
     "updateAmmoCaliberAction": "Оновити калібр патрона",
-    "updateWeaponCaliberAction": "Оновити калібр зброї"
+    "updateWeaponCaliberAction": "Оновити калібр зброї",
+
+    "legacyMigrationConfirmTitle": "Знайдено старі дані",
+    "legacyMigrationConfirmContent": "Ми знайшли дані з попередньої версії цього додатку. Імпортувати їх?",
+    "legacyMigrationConfirmAction": "Імпортувати",
+    "legacyMigrationDeclineAction": "Не зараз",
+    "legacyMigrationInProgress": "Імпортуємо ваші старі дані…",
+    "legacyMigrationFailedTitle": "Не вдалося імпортувати",
+    "legacyMigrationRetryAction": "Повторити",
+    "legacyOrphanedDataTitle": "Деякі дані не імпортовано",
+    "legacyOrphanedDataContent": "{weaponCount} гвинтівок, {ammoCount} патронів і {sightCount} прицілів з вашої старої бібліотеки не належали жодному профілю і не були імпортовані. Ви можете експортувати їх у файл JSON, щоб зберегти на потім.",
+    "legacyExportOrphanedDataAction": "Експортувати як JSON",
+    "legacyContinueAction": "Продовжити"
 }
