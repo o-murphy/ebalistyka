@@ -217,18 +217,17 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
 
           // WHEEL (Visual selection) — hidden while actively typing so it
           // doesn't jump/rebuild on every keystroke (see _isTyping above).
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 150),
-            child: _isTyping
-                ? const SizedBox(key: ValueKey('wheel-hidden'), height: 240)
-                : UnitWheelPickerWidget(
-                    key: const ValueKey('wheel-visible'),
-                    constraints: ctx.constraints,
-                    initialRawValue: _currentRawValue,
-                    displayUnit: ctx.displayUnit,
-                    onChanged: _onWheelChanged,
-                  ),
-          ),
+          // Plain conditional, not AnimatedSwitcher — a cross-fade keeps
+          // both children mounted for the transition, which defeats the
+          // point of unmounting the wheel while typing.
+          _isTyping
+              ? const SizedBox(height: 240)
+              : UnitWheelPickerWidget(
+                  constraints: ctx.constraints,
+                  initialRawValue: _currentRawValue,
+                  displayUnit: ctx.displayUnit,
+                  onChanged: _onWheelChanged,
+                ),
 
           const SizedBox(height: 12),
 
