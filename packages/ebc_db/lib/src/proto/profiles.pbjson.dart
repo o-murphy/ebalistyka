@@ -158,6 +158,34 @@ const MultiBcPoint$json = {
 final $typed_data.Uint8List multiBcPointDescriptor = $convert.base64Decode(
     'CgxNdWx0aUJjUG9pbnQSEwoFdl9tcHMYASABKAFSBHZNcHMSDgoCYmMYAiABKAFSAmJj');
 
+@$core.Deprecated('Use customDragPointDescriptor instead')
+const CustomDragPoint$json = {
+  '1': 'CustomDragPoint',
+  '2': [
+    {'1': 'mach', '3': 1, '4': 1, '5': 1, '10': 'mach'},
+    {'1': 'cd', '3': 2, '4': 1, '5': 1, '10': 'cd'},
+  ],
+};
+
+/// Descriptor for `CustomDragPoint`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List customDragPointDescriptor = $convert.base64Decode(
+    'Cg9DdXN0b21EcmFnUG9pbnQSEgoEbWFjaBgBIAEoAVIEbWFjaBIOCgJjZBgCIAEoAVICY2Q=');
+
+@$core.Deprecated('Use powderSensitivityPointDescriptor instead')
+const PowderSensitivityPoint$json = {
+  '1': 'PowderSensitivityPoint',
+  '2': [
+    {'1': 'tc', '3': 1, '4': 1, '5': 1, '10': 'tc'},
+    {'1': 'v_mps', '3': 2, '4': 1, '5': 1, '10': 'vMps'},
+  ],
+};
+
+/// Descriptor for `PowderSensitivityPoint`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List powderSensitivityPointDescriptor =
+    $convert.base64Decode(
+        'ChZQb3dkZXJTZW5zaXRpdml0eVBvaW50Eg4KAnRjGAEgASgBUgJ0YxITCgV2X21wcxgCIAEoAV'
+        'IEdk1wcw==');
+
 @$core.Deprecated('Use ammoDescriptor instead')
 const Ammo$json = {
   '1': 'Ammo',
@@ -226,18 +254,12 @@ const Ammo$json = {
       '10': 'powderSensitivityFrac'
     },
     {
-      '1': 'powder_sensitivity_tc',
+      '1': 'powder_sensitivity_table',
       '3': 14,
       '4': 3,
-      '5': 1,
-      '10': 'powderSensitivityTc'
-    },
-    {
-      '1': 'powder_sensitivity_v_mps',
-      '3': 15,
-      '4': 3,
-      '5': 1,
-      '10': 'powderSensitivityVMps'
+      '5': 11,
+      '6': '.profiles.PowderSensitivityPoint',
+      '10': 'powderSensitivityTable'
     },
     {
       '1': 'multi_bc_table_g1',
@@ -256,18 +278,12 @@ const Ammo$json = {
       '10': 'multiBcTableG7'
     },
     {
-      '1': 'custom_drag_table_mach',
+      '1': 'custom_drag_table',
       '3': 20,
       '4': 3,
-      '5': 1,
-      '10': 'customDragTableMach'
-    },
-    {
-      '1': 'custom_drag_table_cd',
-      '3': 21,
-      '4': 3,
-      '5': 1,
-      '10': 'customDragTableCd'
+      '5': 11,
+      '6': '.profiles.CustomDragPoint',
+      '10': 'customDragTable'
     },
     {
       '1': 'zero',
@@ -289,10 +305,6 @@ const Ammo$json = {
     {'1': '_bc_g7'},
     {'1': '_muzzle_velocity_mps'},
   ],
-  '9': [
-    {'1': 17, '2': 18},
-    {'1': 19, '2': 20},
-  ],
 };
 
 /// Descriptor for `Ammo`. Decode as a `google.protobuf.DescriptorProto`.
@@ -306,18 +318,17 @@ final $typed_data.Uint8List ammoDescriptor = $convert.base64Decode(
     'X21wcxgKIAEoAUgFUhFtdXp6bGVWZWxvY2l0eU1wc4gBARJBCh1tdXp6bGVfdmVsb2NpdHlfdG'
     'VtcGVyYXR1cmVfYxgLIAEoAVIabXV6emxlVmVsb2NpdHlUZW1wZXJhdHVyZUMSNAoWdXNlX3Bv'
     'd2Rlcl9zZW5zaXRpdml0eRgMIAEoCFIUdXNlUG93ZGVyU2Vuc2l0aXZpdHkSNgoXcG93ZGVyX3'
-    'NlbnNpdGl2aXR5X2ZyYWMYDSABKAFSFXBvd2RlclNlbnNpdGl2aXR5RnJhYxIyChVwb3dkZXJf'
-    'c2Vuc2l0aXZpdHlfdGMYDiADKAFSE3Bvd2RlclNlbnNpdGl2aXR5VGMSNwoYcG93ZGVyX3Nlbn'
-    'NpdGl2aXR5X3ZfbXBzGA8gAygBUhVwb3dkZXJTZW5zaXRpdml0eVZNcHMSQQoRbXVsdGlfYmNf'
-    'dGFibGVfZzEYECADKAsyFi5wcm9maWxlcy5NdWx0aUJjUG9pbnRSDm11bHRpQmNUYWJsZUcxEk'
-    'EKEW11bHRpX2JjX3RhYmxlX2c3GBIgAygLMhYucHJvZmlsZXMuTXVsdGlCY1BvaW50Ug5tdWx0'
-    'aUJjVGFibGVHNxIzChZjdXN0b21fZHJhZ190YWJsZV9tYWNoGBQgAygBUhNjdXN0b21EcmFnVG'
-    'FibGVNYWNoEi8KFGN1c3RvbV9kcmFnX3RhYmxlX2NkGBUgAygBUhFjdXN0b21EcmFnVGFibGVD'
-    'ZBIiCgR6ZXJvGBYgASgLMg4ucHJvZmlsZXMuWmVyb1IEemVybxInCg9wcm9qZWN0aWxlX25hbW'
-    'UYFyABKAlSDnByb2plY3RpbGVOYW1lEhYKBnZlbmRvchgYIAEoCVIGdmVuZG9yEhQKBWltYWdl'
-    'GBkgASgJUgVpbWFnZUIPCg1fY2FsaWJlcl9pbmNoQg8KDV93ZWlnaHRfZ3JhaW5CDgoMX2xlbm'
-    'd0aF9pbmNoQggKBl9iY19nMUIICgZfYmNfZzdCFgoUX211enpsZV92ZWxvY2l0eV9tcHNKBAgR'
-    'EBJKBAgTEBQ=');
+    'NlbnNpdGl2aXR5X2ZyYWMYDSABKAFSFXBvd2RlclNlbnNpdGl2aXR5RnJhYxJaChhwb3dkZXJf'
+    'c2Vuc2l0aXZpdHlfdGFibGUYDiADKAsyIC5wcm9maWxlcy5Qb3dkZXJTZW5zaXRpdml0eVBvaW'
+    '50UhZwb3dkZXJTZW5zaXRpdml0eVRhYmxlEkEKEW11bHRpX2JjX3RhYmxlX2cxGBAgAygLMhYu'
+    'cHJvZmlsZXMuTXVsdGlCY1BvaW50Ug5tdWx0aUJjVGFibGVHMRJBChFtdWx0aV9iY190YWJsZV'
+    '9nNxgSIAMoCzIWLnByb2ZpbGVzLk11bHRpQmNQb2ludFIObXVsdGlCY1RhYmxlRzcSRQoRY3Vz'
+    'dG9tX2RyYWdfdGFibGUYFCADKAsyGS5wcm9maWxlcy5DdXN0b21EcmFnUG9pbnRSD2N1c3RvbU'
+    'RyYWdUYWJsZRIiCgR6ZXJvGBYgASgLMg4ucHJvZmlsZXMuWmVyb1IEemVybxInCg9wcm9qZWN0'
+    'aWxlX25hbWUYFyABKAlSDnByb2plY3RpbGVOYW1lEhYKBnZlbmRvchgYIAEoCVIGdmVuZG9yEh'
+    'QKBWltYWdlGBkgASgJUgVpbWFnZUIPCg1fY2FsaWJlcl9pbmNoQg8KDV93ZWlnaHRfZ3JhaW5C'
+    'DgoMX2xlbmd0aF9pbmNoQggKBl9iY19nMUIICgZfYmNfZzdCFgoUX211enpsZV92ZWxvY2l0eV'
+    '9tcHM=');
 
 @$core.Deprecated('Use zeroDescriptor instead')
 const Zero$json = {

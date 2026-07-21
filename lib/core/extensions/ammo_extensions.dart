@@ -201,12 +201,9 @@ extension AmmoExtension on Ammo {
         );
 
       case DragType.custom:
-        final mach = customDragTableMach;
-        final cd = customDragTableCd;
-        final table = List.generate(
-          mach.length,
-          (i) => (mach: mach[i], cd: cd[i]),
-        );
+        final table = customDragTable
+            .map((p) => (mach: p.mach, cd: p.cd))
+            .toList();
         final sd = (hasWeightGrain() && weightGrain > 0 && hasCaliberInch() && caliberInch > 0)
             ? bclibc.calculateSectionalDensity(weightGrain, caliberInch)
             : 0.0;

@@ -192,7 +192,7 @@ class BallisticsServiceImpl implements BallisticsService {
     final bcCount = switch (ammo.dragType) {
       DragType.g7 => ammo.isMultiBC ? ammo.multiBcTableG7.length : 1,
       DragType.g1 => ammo.isMultiBC ? ammo.multiBcTableG1.length : 1,
-      DragType.custom => ammo.customDragTableMach.length,
+      DragType.custom => ammo.customDragTable.length,
     };
     final firstBc = switch (ammo.dragType) {
       DragType.g7 => ammo.bcG7,
