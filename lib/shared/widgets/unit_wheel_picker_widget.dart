@@ -31,7 +31,14 @@ class _UnitWheelPickerWidgetState extends State<UnitWheelPickerWidget> {
   List<double> _displayValues = [];
   late double _currentRawValue;
   int _currentIndex = 0;
-  final bool _isUpdatingFromWidget = false;
+  // Set around programmatic _controller.jumpToItem() calls (external raw
+  // value sync via didUpdateWidget) so the resulting onSelectedItemChanged
+  // doesn't get treated as a genuine user scroll — was declared `final...
+  // false` before (dead code, never actually set), so a jump triggered by
+  // e.g. the sibling text field being typed into would bounce right back
+  // through widget.onChanged and overwrite what was being typed with the
+  // nearest wheel step.
+  bool _isUpdatingFromWidget = false;
 
   @override
   void initState() {
@@ -80,7 +87,9 @@ class _UnitWheelPickerWidgetState extends State<UnitWheelPickerWidget> {
         _currentIndex = newIndex;
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (_controller.hasClients) {
+            _isUpdatingFromWidget = true;
             _controller.jumpToItem(_currentIndex);
+            _isUpdatingFromWidget = false;
           }
         });
       }
