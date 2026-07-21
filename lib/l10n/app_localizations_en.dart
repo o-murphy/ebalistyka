@@ -1177,6 +1177,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportFormatDialogTitle => 'Export format';
 
   @override
+  String get importFormatDialogTitle => 'Import format';
+
+  @override
+  String get selectProfileDialogTitle => 'Select profile';
+
+  @override
+  String get ebcpFileHasNoProfiles => 'This file has no profiles to import.';
+
+  @override
+  String get ebcpFileIsEmpty => 'This file has nothing to import.';
+
+  @override
+  String get importScopeDialogTitle => 'Import scope';
+
+  @override
+  String importAllProfilesAction(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Import $count profiles',
+      one: 'Import 1 profile',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get importSettingsOnlyAction => 'Settings only';
+
+  @override
+  String get importEverythingAction => 'Everything';
+
+  @override
+  String get overwriteSettingsConfirmTitle => 'Overwrite settings?';
+
+  @override
+  String get overwriteSettingsConfirmContent =>
+      'This replaces your current settings with the ones from the imported file. This can\'t be undone.';
+
+  @override
   String get selectRangeDialogTitle => 'Select range';
 
   @override

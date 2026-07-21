@@ -2384,6 +2384,66 @@ abstract class AppLocalizations {
   /// **'Export format'**
   String get exportFormatDialogTitle;
 
+  /// Action sheet title for choosing the format of the file to import a profile from
+  ///
+  /// In en, this message translates to:
+  /// **'Import format'**
+  String get importFormatDialogTitle;
+
+  /// Action sheet title for picking which profile to import when an .ebcp file contains more than one
+  ///
+  /// In en, this message translates to:
+  /// **'Select profile'**
+  String get selectProfileDialogTitle;
+
+  /// Error shown when importing an .ebcp file that has no profiles, from a screen that can only import a profile
+  ///
+  /// In en, this message translates to:
+  /// **'This file has no profiles to import.'**
+  String get ebcpFileHasNoProfiles;
+
+  /// Error shown when importing an .ebcp file that has neither profiles nor settings
+  ///
+  /// In en, this message translates to:
+  /// **'This file has nothing to import.'**
+  String get ebcpFileIsEmpty;
+
+  /// Action sheet title for choosing what to bring in from a full-backup .ebcp file
+  ///
+  /// In en, this message translates to:
+  /// **'Import scope'**
+  String get importScopeDialogTitle;
+
+  /// Action sheet item to import every profile from a full-backup .ebcp file
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Import 1 profile} other{Import {count} profiles}}'**
+  String importAllProfilesAction(int count);
+
+  /// Action sheet item to import only the settings from a full-backup .ebcp file
+  ///
+  /// In en, this message translates to:
+  /// **'Settings only'**
+  String get importSettingsOnlyAction;
+
+  /// Action sheet item to import both profiles and settings from a full-backup .ebcp file
+  ///
+  /// In en, this message translates to:
+  /// **'Everything'**
+  String get importEverythingAction;
+
+  /// Confirmation dialog title before replacing local settings with an imported backup's settings
+  ///
+  /// In en, this message translates to:
+  /// **'Overwrite settings?'**
+  String get overwriteSettingsConfirmTitle;
+
+  /// Confirmation dialog body before replacing local settings with an imported backup's settings
+  ///
+  /// In en, this message translates to:
+  /// **'This replaces your current settings with the ones from the imported file. This can\'t be undone.'**
+  String get overwriteSettingsConfirmContent;
+
   /// Action sheet title for choosing the trajectory range when exporting to .a7p
   ///
   /// In en, this message translates to:

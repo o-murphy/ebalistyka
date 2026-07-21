@@ -2,6 +2,7 @@ import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/core/services/a7p_converter.dart';
 import 'package:ebalistyka/core/services/a7p_service.dart';
 import 'package:ebalistyka/features/home/profiles_vm.dart';
+import 'package:ebalistyka/features/home/sub_screens/profile_ebcp_actions.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/profile_control_tile.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/profile_sections.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
@@ -74,6 +75,29 @@ class ProfilesScreen extends ConsumerWidget {
         ActionSheetItem(
           icon: IconDef.import,
           title: l10n.actionImportFromFile,
+          onTap: () => _onImportFormatChoice(context, ref),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _onImportFormatChoice(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    await showActionSheet(
+      context,
+      title: l10n.importFormatDialogTitle,
+      entries: [
+        ActionSheetItem(
+          icon: IconDef.import,
+          title: '.ebcp (eBalistyka)',
+          onTap: () => importProfileFromEbcp(context, ref),
+        ),
+        ActionSheetItem(
+          icon: IconDef.import,
+          title: '.a7p (Archer Ballistic Profile)',
           onTap: () => _onImportProfile(context, ref),
         ),
       ],
@@ -325,10 +349,6 @@ class ProfilesScreen extends ConsumerWidget {
 
   Future<void> _onExport(BuildContext context, Profile profile) async {
     final l10n = AppLocalizations.of(context)!;
-    // .ebcp single-profile share is still Phase 3.5 (see
-    // docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md) — shown but stubbed,
-    // same as the "replace ammo/sight" import actions were before .a7p
-    // itself got wired.
     await showActionSheet(
       context,
       title: l10n.exportFormatDialogTitle,
@@ -336,7 +356,7 @@ class ProfilesScreen extends ConsumerWidget {
         ActionSheetItem(
           icon: IconDef.export,
           title: '.ebcp (eBalistyka)',
-          onTap: () async => showNotAvailableSnackBar(context, '.ebcp'),
+          onTap: () => shareProfileAsEbcp(context, profile),
         ),
         ActionSheetItem(
           icon: IconDef.export,
