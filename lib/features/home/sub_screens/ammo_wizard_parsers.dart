@@ -6,17 +6,15 @@ List<({double vMps, double bc})>? decodeBcTable(List<MultiBcPoint>? points) {
 }
 
 List<({double mach, double cd})>? decodeCustomDragTable(
-  List<double>? mach,
-  List<double>? cd,
+  List<CustomDragPoint>? points,
 ) {
-  if (mach == null || cd == null || mach.isEmpty) return null;
-  return List.generate(mach.length, (i) => (mach: mach[i], cd: cd[i]));
+  if (points == null || points.isEmpty) return null;
+  return points.map((p) => (mach: p.mach, cd: p.cd)).toList();
 }
 
 List<({double tempC, double vMps})>? decodePowderSensTable(
-  List<double>? tempC,
-  List<double>? vMps,
+  List<PowderSensitivityPoint>? points,
 ) {
-  if (tempC == null || vMps == null || tempC.isEmpty) return null;
-  return List.generate(tempC.length, (i) => (tempC: tempC[i], vMps: vMps[i]));
+  if (points == null || points.isEmpty) return null;
+  return points.map((p) => (tempC: p.tc, vMps: p.vMps)).toList();
 }

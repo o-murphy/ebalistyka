@@ -461,6 +461,146 @@ class MultiBcPoint extends $pb.GeneratedMessage {
   void clearBc() => $_clearField(2);
 }
 
+/// One row of a custom (mach-dependent) drag coefficient table. Replaces the
+/// earlier custom_drag_table_mach/_cd parallel-array pair — same rationale as
+/// MultiBcPoint above (see docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md
+/// Phase 7's "Repeated-field length" note).
+class CustomDragPoint extends $pb.GeneratedMessage {
+  factory CustomDragPoint({
+    $core.double? mach,
+    $core.double? cd,
+  }) {
+    final result = create();
+    if (mach != null) result.mach = mach;
+    if (cd != null) result.cd = cd;
+    return result;
+  }
+
+  CustomDragPoint._();
+
+  factory CustomDragPoint.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory CustomDragPoint.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'CustomDragPoint',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'profiles'),
+      createEmptyInstance: create)
+    ..aD(1, _omitFieldNames ? '' : 'mach')
+    ..aD(2, _omitFieldNames ? '' : 'cd')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  CustomDragPoint clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  CustomDragPoint copyWith(void Function(CustomDragPoint) updates) =>
+      super.copyWith((message) => updates(message as CustomDragPoint))
+          as CustomDragPoint;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static CustomDragPoint create() => CustomDragPoint._();
+  @$core.override
+  CustomDragPoint createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static CustomDragPoint getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<CustomDragPoint>(create);
+  static CustomDragPoint? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.double get mach => $_getN(0);
+  @$pb.TagNumber(1)
+  set mach($core.double value) => $_setDouble(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasMach() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearMach() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.double get cd => $_getN(1);
+  @$pb.TagNumber(2)
+  set cd($core.double value) => $_setDouble(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasCd() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearCd() => $_clearField(2);
+}
+
+/// One row of a velocity-dependent powder-sensitivity correction table.
+/// Replaces the earlier powder_sensitivity_tc/_v_mps parallel-array pair —
+/// same rationale as MultiBcPoint above.
+class PowderSensitivityPoint extends $pb.GeneratedMessage {
+  factory PowderSensitivityPoint({
+    $core.double? tc,
+    $core.double? vMps,
+  }) {
+    final result = create();
+    if (tc != null) result.tc = tc;
+    if (vMps != null) result.vMps = vMps;
+    return result;
+  }
+
+  PowderSensitivityPoint._();
+
+  factory PowderSensitivityPoint.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory PowderSensitivityPoint.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'PowderSensitivityPoint',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'profiles'),
+      createEmptyInstance: create)
+    ..aD(1, _omitFieldNames ? '' : 'tc')
+    ..aD(2, _omitFieldNames ? '' : 'vMps')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  PowderSensitivityPoint clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  PowderSensitivityPoint copyWith(
+          void Function(PowderSensitivityPoint) updates) =>
+      super.copyWith((message) => updates(message as PowderSensitivityPoint))
+          as PowderSensitivityPoint;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static PowderSensitivityPoint create() => PowderSensitivityPoint._();
+  @$core.override
+  PowderSensitivityPoint createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static PowderSensitivityPoint getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<PowderSensitivityPoint>(create);
+  static PowderSensitivityPoint? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.double get tc => $_getN(0);
+  @$pb.TagNumber(1)
+  set tc($core.double value) => $_setDouble(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasTc() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearTc() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.double get vMps => $_getN(1);
+  @$pb.TagNumber(2)
+  set vMps($core.double value) => $_setDouble(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasVMps() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearVMps() => $_clearField(2);
+}
+
 class Ammo extends $pb.GeneratedMessage {
   factory Ammo({
     $core.String? name,
@@ -476,12 +616,10 @@ class Ammo extends $pb.GeneratedMessage {
     $core.double? muzzleVelocityTemperatureC,
     $core.bool? usePowderSensitivity,
     $core.double? powderSensitivityFrac,
-    $core.Iterable<$core.double>? powderSensitivityTc,
-    $core.Iterable<$core.double>? powderSensitivityVMps,
+    $core.Iterable<PowderSensitivityPoint>? powderSensitivityTable,
     $core.Iterable<MultiBcPoint>? multiBcTableG1,
     $core.Iterable<MultiBcPoint>? multiBcTableG7,
-    $core.Iterable<$core.double>? customDragTableMach,
-    $core.Iterable<$core.double>? customDragTableCd,
+    $core.Iterable<CustomDragPoint>? customDragTable,
     Zero? zero,
     $core.String? projectileName,
     $core.String? vendor,
@@ -504,16 +642,11 @@ class Ammo extends $pb.GeneratedMessage {
       result.usePowderSensitivity = usePowderSensitivity;
     if (powderSensitivityFrac != null)
       result.powderSensitivityFrac = powderSensitivityFrac;
-    if (powderSensitivityTc != null)
-      result.powderSensitivityTc.addAll(powderSensitivityTc);
-    if (powderSensitivityVMps != null)
-      result.powderSensitivityVMps.addAll(powderSensitivityVMps);
+    if (powderSensitivityTable != null)
+      result.powderSensitivityTable.addAll(powderSensitivityTable);
     if (multiBcTableG1 != null) result.multiBcTableG1.addAll(multiBcTableG1);
     if (multiBcTableG7 != null) result.multiBcTableG7.addAll(multiBcTableG7);
-    if (customDragTableMach != null)
-      result.customDragTableMach.addAll(customDragTableMach);
-    if (customDragTableCd != null)
-      result.customDragTableCd.addAll(customDragTableCd);
+    if (customDragTable != null) result.customDragTable.addAll(customDragTable);
     if (zero != null) result.zero = zero;
     if (projectileName != null) result.projectileName = projectileName;
     if (vendor != null) result.vendor = vendor;
@@ -547,18 +680,15 @@ class Ammo extends $pb.GeneratedMessage {
     ..aD(11, _omitFieldNames ? '' : 'muzzleVelocityTemperatureC')
     ..aOB(12, _omitFieldNames ? '' : 'usePowderSensitivity')
     ..aD(13, _omitFieldNames ? '' : 'powderSensitivityFrac')
-    ..p<$core.double>(
-        14, _omitFieldNames ? '' : 'powderSensitivityTc', $pb.PbFieldType.KD)
-    ..p<$core.double>(
-        15, _omitFieldNames ? '' : 'powderSensitivityVMps', $pb.PbFieldType.KD)
+    ..pPM<PowderSensitivityPoint>(
+        14, _omitFieldNames ? '' : 'powderSensitivityTable',
+        subBuilder: PowderSensitivityPoint.create)
     ..pPM<MultiBcPoint>(16, _omitFieldNames ? '' : 'multiBcTableG1',
         subBuilder: MultiBcPoint.create)
     ..pPM<MultiBcPoint>(18, _omitFieldNames ? '' : 'multiBcTableG7',
         subBuilder: MultiBcPoint.create)
-    ..p<$core.double>(
-        20, _omitFieldNames ? '' : 'customDragTableMach', $pb.PbFieldType.KD)
-    ..p<$core.double>(
-        21, _omitFieldNames ? '' : 'customDragTableCd', $pb.PbFieldType.KD)
+    ..pPM<CustomDragPoint>(20, _omitFieldNames ? '' : 'customDragTable',
+        subBuilder: CustomDragPoint.create)
     ..aOM<Zero>(22, _omitFieldNames ? '' : 'zero', subBuilder: Zero.create)
     ..aOS(23, _omitFieldNames ? '' : 'projectileName')
     ..aOS(24, _omitFieldNames ? '' : 'vendor')
@@ -701,58 +831,53 @@ class Ammo extends $pb.GeneratedMessage {
   void clearPowderSensitivityFrac() => $_clearField(13);
 
   @$pb.TagNumber(14)
-  $pb.PbList<$core.double> get powderSensitivityTc => $_getList(13);
-
-  @$pb.TagNumber(15)
-  $pb.PbList<$core.double> get powderSensitivityVMps => $_getList(14);
+  $pb.PbList<PowderSensitivityPoint> get powderSensitivityTable =>
+      $_getList(13);
 
   @$pb.TagNumber(16)
-  $pb.PbList<MultiBcPoint> get multiBcTableG1 => $_getList(15);
+  $pb.PbList<MultiBcPoint> get multiBcTableG1 => $_getList(14);
 
   @$pb.TagNumber(18)
-  $pb.PbList<MultiBcPoint> get multiBcTableG7 => $_getList(16);
+  $pb.PbList<MultiBcPoint> get multiBcTableG7 => $_getList(15);
 
   @$pb.TagNumber(20)
-  $pb.PbList<$core.double> get customDragTableMach => $_getList(17);
-
-  @$pb.TagNumber(21)
-  $pb.PbList<$core.double> get customDragTableCd => $_getList(18);
+  $pb.PbList<CustomDragPoint> get customDragTable => $_getList(16);
 
   @$pb.TagNumber(22)
-  Zero get zero => $_getN(19);
+  Zero get zero => $_getN(17);
   @$pb.TagNumber(22)
   set zero(Zero value) => $_setField(22, value);
   @$pb.TagNumber(22)
-  $core.bool hasZero() => $_has(19);
+  $core.bool hasZero() => $_has(17);
   @$pb.TagNumber(22)
   void clearZero() => $_clearField(22);
   @$pb.TagNumber(22)
-  Zero ensureZero() => $_ensure(19);
+  Zero ensureZero() => $_ensure(17);
 
   @$pb.TagNumber(23)
-  $core.String get projectileName => $_getSZ(20);
+  $core.String get projectileName => $_getSZ(18);
   @$pb.TagNumber(23)
-  set projectileName($core.String value) => $_setString(20, value);
+  set projectileName($core.String value) => $_setString(18, value);
   @$pb.TagNumber(23)
-  $core.bool hasProjectileName() => $_has(20);
+  $core.bool hasProjectileName() => $_has(18);
   @$pb.TagNumber(23)
   void clearProjectileName() => $_clearField(23);
 
   @$pb.TagNumber(24)
-  $core.String get vendor => $_getSZ(21);
+  $core.String get vendor => $_getSZ(19);
   @$pb.TagNumber(24)
-  set vendor($core.String value) => $_setString(21, value);
+  set vendor($core.String value) => $_setString(19, value);
   @$pb.TagNumber(24)
-  $core.bool hasVendor() => $_has(21);
+  $core.bool hasVendor() => $_has(19);
   @$pb.TagNumber(24)
   void clearVendor() => $_clearField(24);
 
   @$pb.TagNumber(25)
-  $core.String get image => $_getSZ(22);
+  $core.String get image => $_getSZ(20);
   @$pb.TagNumber(25)
-  set image($core.String value) => $_setString(22, value);
+  set image($core.String value) => $_setString(20, value);
   @$pb.TagNumber(25)
-  $core.bool hasImage() => $_has(22);
+  $core.bool hasImage() => $_has(20);
   @$pb.TagNumber(25)
   void clearImage() => $_clearField(25);
 }

@@ -195,20 +195,18 @@ const _settingsFieldConstraintDefs = [
 ];
 
 // Role -> every (defName, propertyName) in profiles.schema.json's Ammo
-// sharing one array-length cap (`maxItems`). customDragTable/
-// powderSensitivityTable are still paired-array concepts (their two arrays
-// are meant to stay the same length row-for-row, but nothing enforces that
-// agreement — JSON Schema has no keyword for it). multiBcTableG1/G7 no
-// longer have this problem: each is one `repeated MultiBcPoint` array of
-// {v_mps, bc} objects (see docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md
-// Phase 7's "Repeated-field length" note), so a length mismatch between
-// v_mps and bc is structurally impossible rather than merely unchecked —
-// still one path each below since `maxItems` still needs resolving per role.
+// sharing one array-length cap (`maxItems`). All four roles below are one
+// `repeated <Point>` array of a paired-fields object (MultiBcPoint,
+// CustomDragPoint, PowderSensitivityPoint), not two parallel arrays — see
+// docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md Phase 7's "Repeated-field
+// length" note. A length mismatch between a pair's two values is
+// structurally impossible rather than merely unchecked; still one path each
+// below since `maxItems` still needs resolving per role.
 const _arrayLimitRoles = <String, List<(String, String)>>{
   'multiBcTableG1': [('Ammo', 'multi_bc_table_g1')],
   'multiBcTableG7': [('Ammo', 'multi_bc_table_g7')],
-  'customDragTable': [('Ammo', 'custom_drag_table_mach'), ('Ammo', 'custom_drag_table_cd')],
-  'powderSensitivityTable': [('Ammo', 'powder_sensitivity_tc'), ('Ammo', 'powder_sensitivity_v_mps')],
+  'customDragTable': [('Ammo', 'custom_drag_table')],
+  'powderSensitivityTable': [('Ammo', 'powder_sensitivity_table')],
 };
 
 void _generateFieldConstraints(Directory outDir) {

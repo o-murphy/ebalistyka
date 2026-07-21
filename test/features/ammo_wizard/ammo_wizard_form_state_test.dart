@@ -182,8 +182,10 @@ void main() {
     test('customDragTable restored from raw lists', () {
       final a = _make308();
       a.dragType = DragType.custom;
-      a.customDragTableMach.addAll([0.5, 1.0]);
-      a.customDragTableCd.addAll([0.284, 0.415]);
+      a.customDragTable.addAll([
+        CustomDragPoint(mach: 0.5, cd: 0.284),
+        CustomDragPoint(mach: 1.0, cd: 0.415),
+      ]);
 
       final s = AmmoWizardFormState.fromAmmo(initial: a, caliberInch: null);
 
@@ -195,8 +197,11 @@ void main() {
 
     test('powderSensTable restored from raw lists', () {
       final a = _make308();
-      a.powderSensitivityTc.addAll([-10.0, 15.0, 40.0]);
-      a.powderSensitivityVMps.addAll([790.0, 800.0, 812.0]);
+      a.powderSensitivityTable.addAll([
+        PowderSensitivityPoint(tc: -10.0, vMps: 790.0),
+        PowderSensitivityPoint(tc: 15.0, vMps: 800.0),
+        PowderSensitivityPoint(tc: 40.0, vMps: 812.0),
+      ]);
 
       final s = AmmoWizardFormState.fromAmmo(initial: a, caliberInch: null);
 
@@ -531,9 +536,9 @@ void main() {
             ],
           );
       final ammo = s.buildAmmo(null);
-      expect(ammo.powderSensitivityTc, isNotEmpty);
-      expect(ammo.powderSensitivityTc[0], closeTo(-10.0, 1e-9));
-      expect(ammo.powderSensitivityVMps[1], closeTo(800.0, 1e-9));
+      expect(ammo.powderSensitivityTable, isNotEmpty);
+      expect(ammo.powderSensitivityTable[0].tc, closeTo(-10.0, 1e-9));
+      expect(ammo.powderSensitivityTable[1].vMps, closeTo(800.0, 1e-9));
     });
   });
 

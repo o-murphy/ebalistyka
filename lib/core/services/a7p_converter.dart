@@ -107,8 +107,11 @@ abstract final class A7pConverter {
         ammo.dragTypeValue = 'custom';
         final sorted = List.of(p.coefRows)
           ..sort((a, b) => a.mv.compareTo(b.mv));
-        ammo.customDragTableMach.addAll(sorted.map((r) => r.mv / 10000.0));
-        ammo.customDragTableCd.addAll(sorted.map((r) => r.bcCd / 10000.0));
+        ammo.customDragTable.addAll(
+          sorted.map(
+            (r) => CustomDragPoint(mach: r.mv / 10000.0, cd: r.bcCd / 10000.0),
+          ),
+        );
       default:
         ammo.dragTypeValue = 'g1';
     }
@@ -297,14 +300,14 @@ abstract final class A7pConverter {
             ..bcCd = (ammo.bcG7 * 10000).round(),
         ];
       case 'custom':
-        if (ammo.customDragTableMach.isNotEmpty &&
-            ammo.customDragTableCd.isNotEmpty) {
-          final rows = List.generate(
-            ammo.customDragTableMach.length,
-            (i) => proto.CoefRow()
-              ..mv = (ammo.customDragTableMach[i] * 10000).round()
-              ..bcCd = (ammo.customDragTableCd[i] * 10000).round(),
-          );
+        if (ammo.customDragTable.isNotEmpty) {
+          final rows = ammo.customDragTable
+              .map(
+                (p) => proto.CoefRow()
+                  ..mv = (p.mach * 10000).round()
+                  ..bcCd = (p.cd * 10000).round(),
+              )
+              .toList();
           rows.sort((a, b) => a.mv.compareTo(b.mv));
           return rows;
         }
