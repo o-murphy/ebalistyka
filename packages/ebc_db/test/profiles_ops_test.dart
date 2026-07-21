@@ -67,4 +67,56 @@ void main() {
       expect(copy1.uuid, isNot(copy2.uuid));
     });
   });
+
+  group('sanitizeProfile', () {
+    Profile outOfRangeProfile() =>
+        Profile()
+          ..uuid = 'a'
+          ..weapon = (Weapon()
+            ..twistInch = 999 // signed range is [-30, 30]
+            ..barrelLengthInch = 999)
+          ..sight = (Sight()
+            ..sightHeightInch = 999
+            ..minMagnification = 999)
+          ..ammo = (Ammo()
+            ..weightGrain = 999
+            ..muzzleVelocityTemperatureC = 999
+            ..zero = (Zero()
+              ..lookAngleRad = 999
+              ..humidityFrac = 999));
+
+    test('clamps out-of-range fields into their FieldLimits role', () {
+      final next = sanitizeProfile(outOfRangeProfile());
+      expect(next.weapon.twistInch, FieldLimits.twistInch.maxRaw);
+      expect(next.weapon.barrelLengthInch, FieldLimits.barrelLengthInch.maxRaw);
+      expect(next.sight.sightHeightInch, FieldLimits.sightHeightInch.maxRaw);
+      expect(next.sight.minMagnification, FieldLimits.magnification.maxRaw);
+      expect(next.ammo.weightGrain, FieldLimits.projectileWeightGrain.maxRaw);
+      expect(next.ammo.muzzleVelocityTemperatureC, FieldLimits.temperatureC.maxRaw);
+      expect(next.ammo.zero.lookAngleRad, FieldLimits.lookAngleRad.maxRaw);
+      expect(next.ammo.zero.humidityFrac, FieldLimits.humidityFrac.maxRaw);
+    });
+
+    test('leaves in-range fields untouched', () {
+      final profile = _profile('a')
+        ..weapon = (Weapon()..twistInch = 5)
+        ..ammo = (Ammo()..zero = (Zero()..humidityFrac = 0.5));
+      final next = sanitizeProfile(profile);
+      expect(next.weapon.twistInch, 5);
+      expect(next.ammo.zero.humidityFrac, 0.5);
+    });
+
+    test('leaves unset optional fields unset (no clamp on absent values)', () {
+      final profile = _profile('a')..weapon = Weapon();
+      final next = sanitizeProfile(profile);
+      expect(next.weapon.hasCaliberInch(), isFalse);
+      expect(next.ammo.hasBcG1(), isFalse);
+    });
+
+    test('does not mutate the original', () {
+      final profile = outOfRangeProfile();
+      sanitizeProfile(profile);
+      expect(profile.weapon.twistInch, 999);
+    });
+  });
 }

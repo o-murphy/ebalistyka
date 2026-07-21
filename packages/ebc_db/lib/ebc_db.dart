@@ -11,4 +11,5 @@ export 'src/proto/ebcp.pb.dart';
 export 'src/proto/profiles.pb.dart';
 export 'src/proto/settings.pb.dart';
 export 'src/settings_file.dart';
+export 'src/settings_ops.dart';
 export 'src/settings_validator.dart';

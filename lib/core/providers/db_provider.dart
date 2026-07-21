@@ -37,7 +37,11 @@ class SettingsDataNotifier extends Notifier<SettingsData> {
   SettingsData build() => _initial;
 
   SettingsData update(SettingsData Function(SettingsData current) mutate) {
-    final next = mutate(state);
+    // sanitizeSettingsData is the one gate every write goes through — see
+    // docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md Phase 7 ("no
+    // centralized reject invalid writes gate"). Callers no longer need to
+    // clamp their own field before calling update().
+    final next = sanitizeSettingsData(mutate(state));
     state = next;
     unawaited(ref.read(settingsStoreProvider).save(next));
     return next;
@@ -52,7 +56,11 @@ class ProfilesNotifier extends Notifier<List<Profile>> {
   List<Profile> build() => _initial;
 
   List<Profile> update(List<Profile> Function(List<Profile> current) mutate) {
-    final next = mutate(state);
+    // sanitizeProfile is the one gate every write goes through — see
+    // docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md Phase 7 ("no
+    // centralized reject invalid writes gate"). Callers no longer need to
+    // clamp their own field before calling update().
+    final next = mutate(state).map(sanitizeProfile).toList();
     state = next;
     unawaited(
       ref

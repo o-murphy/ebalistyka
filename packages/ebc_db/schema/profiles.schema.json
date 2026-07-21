@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ebc_db/schema/profiles.schema.json",
   "title": "eBalistyka ProfilesData",
-  "description": "Canonical schema for the app's protobuf ProfilesData document (snake_case, as produced by ProfilesValidator's hand-written proto→JSON conversion), persisted to profiles.ebcp via ProfilesFile/ProfilesStore. See docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md. Numeric ranges and defaults are ported from lib/core/models/field_constraints.dart (FC) in the main app, converted from FC's rawUnit into the unit each field is actually stored in here (documented per-field below) — FC itself is the single source of truth for these limits, not this file.",
+  "description": "Canonical schema for the app's protobuf ProfilesData document (snake_case, as produced by ProfilesValidator's hand-written proto→JSON conversion), persisted to profiles.ebcp via ProfilesFile/ProfilesStore. See docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md Phase 7. For every field whose description below names an FC.* role, THIS schema (plus schema/bounds.schema.json for the cross-file-shared ones) is now the single source of truth for that role's numeric bounds — packages/ebc_db/bin/embed_schema.dart generates lib/src/generated/field_constraints.g.dart's FieldLimits from these numbers, and lib/core/models/field_constraints.dart's FC reads FieldLimits (converting units where the picker's unit differs from the wire unit documented here). The FC.* names in descriptions are pointers to that consuming role, not a claim that FC is authoritative — it no longer is, for anything generated. Exceptions still hand-authored, not generated: ConvertorsState's own direct fields (length/weight/pressure/temperature/torque — see settings.schema.json), and roles with no schema field at all (drop/windage/adjustment/velocity/energy, zero_elevation_rad).",
   "$ref": "#/$defs/ProfilesData",
   "$defs": {
     "CaliberInch": {
@@ -241,14 +241,38 @@
           "description": "FC.powderSensitivity, fraction (0–5).",
           "type": "number", "minimum": 0, "maximum": 5, "default": 0.0
         },
-        "powder_sensitivity_tc": { "type": "array", "items": { "type": "number" }, "default": [] },
-        "powder_sensitivity_v_mps": { "type": "array", "items": { "type": "number" }, "default": [] },
-        "multi_bc_table_g1_v_mps": { "type": "array", "items": { "type": "number" }, "default": [] },
-        "multi_bc_table_g1_bc": { "type": "array", "items": { "type": "number" }, "default": [] },
-        "multi_bc_table_g7_v_mps": { "type": "array", "items": { "type": "number" }, "default": [] },
-        "multi_bc_table_g7_bc": { "type": "array", "items": { "type": "number" }, "default": [] },
-        "custom_drag_table_mach": { "type": "array", "items": { "type": "number" }, "default": [] },
-        "custom_drag_table_cd": { "type": "array", "items": { "type": "number" }, "default": [] },
+        "powder_sensitivity_tc": {
+          "description": "Paired row-wise with powder_sensitivity_v_mps (see MultiValuePairs note in the doc's Phase 7). Not enforced here: the two arrays must be equal length.",
+          "type": "array", "items": { "type": "number" }, "maxItems": 5, "default": []
+        },
+        "powder_sensitivity_v_mps": {
+          "description": "Paired row-wise with powder_sensitivity_tc.",
+          "type": "array", "items": { "type": "number" }, "maxItems": 5, "default": []
+        },
+        "multi_bc_table_g1_v_mps": {
+          "description": "Paired row-wise with multi_bc_table_g1_bc. Not enforced here: the two arrays must be equal length.",
+          "type": "array", "items": { "type": "number" }, "maxItems": 5, "default": []
+        },
+        "multi_bc_table_g1_bc": {
+          "description": "Paired row-wise with multi_bc_table_g1_v_mps.",
+          "type": "array", "items": { "type": "number" }, "maxItems": 5, "default": []
+        },
+        "multi_bc_table_g7_v_mps": {
+          "description": "Paired row-wise with multi_bc_table_g7_bc. Not enforced here: the two arrays must be equal length.",
+          "type": "array", "items": { "type": "number" }, "maxItems": 5, "default": []
+        },
+        "multi_bc_table_g7_bc": {
+          "description": "Paired row-wise with multi_bc_table_g7_v_mps.",
+          "type": "array", "items": { "type": "number" }, "maxItems": 5, "default": []
+        },
+        "custom_drag_table_mach": {
+          "description": "Paired row-wise with custom_drag_table_cd. Not enforced here: the two arrays must be equal length.",
+          "type": "array", "items": { "type": "number" }, "maxItems": 100, "default": []
+        },
+        "custom_drag_table_cd": {
+          "description": "Paired row-wise with custom_drag_table_mach.",
+          "type": "array", "items": { "type": "number" }, "maxItems": 100, "default": []
+        },
         "zero": { "$ref": "#/$defs/Zero" },
         "projectile_name": { "type": "string", "default": "" },
         "vendor": { "type": "string", "default": "" },
