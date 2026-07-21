@@ -221,10 +221,10 @@ packages:
     dependency: "direct main"
     description:
       name: dart_bclibc
-      sha256: ba44ee703bf09fae16d52fa5c44802322fdb87e948c098a2d722c58140c9f3bf
+      sha256: eab4aa328b86a00e91a464af04bda6836fd878556ee09f25a5f14a793281eb44
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.0"
+    version: "0.1.1"
   dart_style:
     dependency: transitive
     description:
