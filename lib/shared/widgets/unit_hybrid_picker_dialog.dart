@@ -215,12 +215,19 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
 
           const SizedBox(height: 4),
 
-          // WHEEL (Visual selection)
-          UnitWheelPickerWidget(
-            constraints: ctx.constraints,
-            initialRawValue: _currentRawValue,
-            displayUnit: ctx.displayUnit,
-            onChanged: _onWheelChanged,
+          // WHEEL (Visual selection) — hidden while actively typing so it
+          // doesn't jump/rebuild on every keystroke (see _isTyping above).
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 150),
+            child: _isTyping
+                ? const SizedBox(key: ValueKey('wheel-hidden'), height: 240)
+                : UnitWheelPickerWidget(
+                    key: const ValueKey('wheel-visible'),
+                    constraints: ctx.constraints,
+                    initialRawValue: _currentRawValue,
+                    displayUnit: ctx.displayUnit,
+                    onChanged: _onWheelChanged,
+                  ),
           ),
 
           const SizedBox(height: 12),

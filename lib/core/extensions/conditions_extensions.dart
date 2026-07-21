@@ -18,14 +18,24 @@ extension ConditionsExtension on ShootingConditions {
   Angular get lookAngle => Angular.radian(lookAngleRad);
   set lookAngle(Angular v) => lookAngleRad = v.in_(Unit.radian);
 
+  // windDirection/azimuth are compass bearings, stored as [0,360) — but
+  // Angular's own raw representation is always normalized to (-180,180]
+  // (see dart_bclibc's Angular._toRaw), so e.g. Angular.degree(240).in_
+  // (Unit.degree) comes back as -120.0, not 240.0. Re-normalize into
+  // [0,360) here, at the one place these fields cross from Angular into
+  // storage — otherwise a bearing past 180° gets stored negative, which
+  // FieldLimits.windDirectionDeg/.azimuthDeg's [0,360] *clamp* (not a
+  // wrap) then collapses to 0 instead of the equivalent positive bearing.
   Angular get windDirection => Angular.degree(windDirectionDeg);
-  set windDirection(Angular v) => windDirectionDeg = v.in_(Unit.degree);
+  set windDirection(Angular v) =>
+      windDirectionDeg = ((v.in_(Unit.degree) % 360) + 360) % 360;
 
   Angular get latitude => Angular.degree(latitudeDeg);
   set latitude(Angular v) => latitudeDeg = v.in_(Unit.degree);
 
   Angular get azimuth => Angular.degree(azimuthDeg);
-  set azimuth(Angular v) => azimuthDeg = v.in_(Unit.degree);
+  set azimuth(Angular v) =>
+      azimuthDeg = ((v.in_(Unit.degree) % 360) + 360) % 360;
 
   // ── Atmosphere ──────────────────────────────────────────────────────────────
 

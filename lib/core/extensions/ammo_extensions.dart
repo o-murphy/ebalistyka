@@ -121,8 +121,14 @@ extension AmmoExtension on Ammo {
   Angular get zeroLatitude => Angular.degree(zero.latitudeDeg);
   set zeroLatitude(Angular v) => ensureZero().latitudeDeg = v.in_(Unit.degree);
 
+  // See conditions_extensions.dart's windDirection/azimuth setters for why
+  // this re-normalizes into [0,360) instead of using v.in_(Unit.degree)
+  // directly — Angular's raw form is always (-180,180], so a bearing past
+  // 180° would otherwise come back negative and get clamped to 0 by
+  // FieldLimits.azimuthDeg's [0,360] clamp instead of wrapping correctly.
   Angular get zeroAzimuth => Angular.degree(zero.azimuthDeg);
-  set zeroAzimuth(Angular v) => ensureZero().azimuthDeg = v.in_(Unit.degree);
+  set zeroAzimuth(Angular v) =>
+      ensureZero().azimuthDeg = ((v.in_(Unit.degree) % 360) + 360) % 360;
 
   Unit get zeroOffsetXUnitValue => Unit.values.firstWhere(
     (u) => u.name == zero.offsetXUnit,
