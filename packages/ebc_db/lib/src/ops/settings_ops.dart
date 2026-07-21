@@ -1,5 +1,5 @@
-import 'generated/field_constraints.g.dart';
-import 'proto/settings.pb.dart';
+import '../generated/field_constraints.g.dart';
+import '../proto/settings.pb.dart';
 
 /// Clamps every numeric field this package generates a [FieldLimits] role
 /// for into range, on a copy of [data] — the "reject/repair invalid writes"

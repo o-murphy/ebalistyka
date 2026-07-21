@@ -256,7 +256,7 @@ void _generateFieldConstraints(Directory outDir) {
     ..writeln('// GENERATED CODE — DO NOT EDIT BY HAND.')
     ..writeln('// Regenerate with: dart run bin/embed_schema.dart')
     ..writeln()
-    ..writeln("import '../field_bounds.dart';")
+    ..writeln("import '../validation/field_bounds.dart';")
     ..writeln()
     ..writeln('/// Numeric bounds for persisted field roles, generated from')
     ..writeln('/// schema/bounds.schema.json, schema/profiles.schema.json and')

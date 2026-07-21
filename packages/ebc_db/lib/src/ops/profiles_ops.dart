@@ -1,7 +1,7 @@
 import 'package:uuid/uuid.dart';
 
-import 'generated/field_constraints.g.dart';
-import 'proto/profiles.pb.dart';
+import '../generated/field_constraints.g.dart';
+import '../proto/profiles.pb.dart';
 
 // The "index 0 is active" convention and the "every copy gets a fresh
 // uuid" invariant are facts about ProfilesData's shape — encoded once

@@ -1,7 +1,7 @@
 // GENERATED CODE — DO NOT EDIT BY HAND.
 // Regenerate with: dart run bin/embed_schema.dart
 
-import '../field_bounds.dart';
+import '../validation/field_bounds.dart';
 
 /// Numeric bounds for persisted field roles, generated from
 /// schema/bounds.schema.json, schema/profiles.schema.json and
