@@ -436,15 +436,14 @@ void main() {
       final a = _validCustom(
         customDragTable: [(mach: 0.5, cd: 0.284), (mach: 1.0, cd: 0.415)],
       ).buildAmmo();
-      expect(a.customDragTableMach.length, 2);
-      expect(a.customDragTableMach[0], closeTo(0.5, 1e-9));
-      expect(a.customDragTableCd[1], closeTo(0.415, 1e-9));
+      expect(a.customDragTable.length, 2);
+      expect(a.customDragTable[0].mach, closeTo(0.5, 1e-9));
+      expect(a.customDragTable[1].cd, closeTo(0.415, 1e-9));
     });
 
     test('clears custom table when null', () {
       final a = _validCustom(customDragTable: null).buildAmmo();
-      expect(a.customDragTableMach, isEmpty);
-      expect(a.customDragTableCd, isEmpty);
+      expect(a.customDragTable, isEmpty);
     });
 
     test('encodes zero fields correctly', () {
@@ -489,9 +488,9 @@ void main() {
         powderSensTable: powderTable,
       );
       final a = s.buildAmmo();
-      expect(a.powderSensitivityTc.length, 2);
-      expect(a.powderSensitivityTc[0], -10.0);
-      expect(a.powderSensitivityVMps[1], closeTo(800.0, 0.01));
+      expect(a.powderSensitivityTable.length, 2);
+      expect(a.powderSensitivityTable[0].tc, -10.0);
+      expect(a.powderSensitivityTable[1].vMps, closeTo(800.0, 0.01));
     });
 
     test('stores dragType', () {

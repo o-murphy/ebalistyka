@@ -43,6 +43,23 @@ message MultiBcPoint {
   double bc = 2;
 }
 
+// One row of a custom (mach-dependent) drag coefficient table. Replaces the
+// earlier custom_drag_table_mach/_cd parallel-array pair — same rationale as
+// MultiBcPoint above (see docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md
+// Phase 7's "Repeated-field length" note).
+message CustomDragPoint {
+  double mach = 1;
+  double cd = 2;
+}
+
+// One row of a velocity-dependent powder-sensitivity correction table.
+// Replaces the earlier powder_sensitivity_tc/_v_mps parallel-array pair —
+// same rationale as MultiBcPoint above.
+message PowderSensitivityPoint {
+  double tc = 1;
+  double v_mps = 2;
+}
+
 message Ammo {
   string name = 1;
   optional double caliber_inch = 2;
@@ -57,14 +74,10 @@ message Ammo {
   double muzzle_velocity_temperature_c = 11;
   bool use_powder_sensitivity = 12;
   double powder_sensitivity_frac = 13;
-  repeated double powder_sensitivity_tc = 14;
-  repeated double powder_sensitivity_v_mps = 15;
+  repeated PowderSensitivityPoint powder_sensitivity_table = 14;
   repeated MultiBcPoint multi_bc_table_g1 = 16;
-  reserved 17; // was multi_bc_table_g1_bc (repeated double)
   repeated MultiBcPoint multi_bc_table_g7 = 18;
-  reserved 19; // was multi_bc_table_g7_bc (repeated double)
-  repeated double custom_drag_table_mach = 20;
-  repeated double custom_drag_table_cd = 21;
+  repeated CustomDragPoint custom_drag_table = 20;
   Zero zero = 22;
   string projectile_name = 23;
   string vendor = 24;

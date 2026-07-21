@@ -63,6 +63,18 @@ Map<String, dynamic> multiBcPointToJson(proto.MultiBcPoint p) => {
   'bc': p.bc,
 };
 
+Map<String, dynamic> customDragPointToJson(proto.CustomDragPoint p) => {
+  'mach': p.mach,
+  'cd': p.cd,
+};
+
+Map<String, dynamic> powderSensitivityPointToJson(
+  proto.PowderSensitivityPoint p,
+) => {
+  'tc': p.tc,
+  'v_mps': p.vMps,
+};
+
 Map<String, dynamic> ammoToJson(proto.Ammo a) => {
   'name': a.name,
   'caliber_inch': a.hasCaliberInch() ? a.caliberInch : null,
@@ -77,12 +89,12 @@ Map<String, dynamic> ammoToJson(proto.Ammo a) => {
   'muzzle_velocity_temperature_c': a.muzzleVelocityTemperatureC,
   'use_powder_sensitivity': a.usePowderSensitivity,
   'powder_sensitivity_frac': a.powderSensitivityFrac,
-  'powder_sensitivity_tc': a.powderSensitivityTc,
-  'powder_sensitivity_v_mps': a.powderSensitivityVMps,
+  'powder_sensitivity_table': a.powderSensitivityTable
+      .map(powderSensitivityPointToJson)
+      .toList(),
   'multi_bc_table_g1': a.multiBcTableG1.map(multiBcPointToJson).toList(),
   'multi_bc_table_g7': a.multiBcTableG7.map(multiBcPointToJson).toList(),
-  'custom_drag_table_mach': a.customDragTableMach,
-  'custom_drag_table_cd': a.customDragTableCd,
+  'custom_drag_table': a.customDragTable.map(customDragPointToJson).toList(),
   'zero': zeroToJson(a.zero),
   'projectile_name': a.projectileName,
   'vendor': a.vendor,
