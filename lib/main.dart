@@ -14,6 +14,7 @@ import 'core/providers/db_provider.dart';
 import 'core/providers/db_seed.dart';
 import 'core/providers/settings_provider.dart';
 import 'l10n/app_localizations.dart';
+import 'ob_migrate/ob_migrate.dart';
 import 'router.dart';
 
 // Constants for window sizes
@@ -131,6 +132,8 @@ void main() async {
 
   debugAppInfoConstants();
 
+  final showMigrationGate = await hasUnmigratedLegacyData(appSupport.path);
+
   runApp(
     ProviderScope(
       overrides: [
@@ -142,7 +145,9 @@ void main() async {
         profilesProvider.overrideWith(() => ProfilesNotifier(initialProfiles)),
         dataWasResetProvider.overrideWithValue(dataWasReset),
       ],
-      child: const MyApp(),
+      child: showMigrationGate
+          ? MigrationGate(objectboxDir: appSupport.path, child: const MyApp())
+          : const MyApp(),
     ),
   );
 }
