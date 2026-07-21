@@ -8,6 +8,7 @@
 //   dart run bin/embed_schema.dart
 import 'dart:convert';
 import 'dart:io';
+import 'dart:developer' as developer;
 
 class _Schema {
   final String schemaFile;
@@ -93,7 +94,7 @@ void main() {
 const String ${schema.constName} = '$escaped';
 ''');
 
-    print('Done. Wrote ${outFile.path}');
+    developer.log('Done. Wrote ${outFile.path}');
   }
 
   _generateFieldConstraints(outDir);

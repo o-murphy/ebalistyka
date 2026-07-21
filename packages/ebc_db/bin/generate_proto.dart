@@ -8,6 +8,7 @@
 //   sudo apt-get install -y protobuf-compiler   # or `brew install protobuf`
 //   dart pub global activate protoc_plugin
 import 'dart:io';
+import 'dart:developer' as developer;
 
 import 'package:path/path.dart' as p;
 
@@ -56,7 +57,7 @@ void main() {
   stdout.write(result.stdout);
   stderr.write(result.stderr);
   if (result.exitCode != 0) exit(result.exitCode);
-  print('Done. Files written to lib/src/proto/');
+  developer.log('Done. Files written to lib/src/proto/');
 }
 
 /// Resolves `protoc` via PATH — [Process.runSync] doesn't do PATH lookup
