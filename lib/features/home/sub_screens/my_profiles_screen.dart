@@ -325,8 +325,30 @@ class ProfilesScreen extends ConsumerWidget {
 
   Future<void> _onExport(BuildContext context, Profile profile) async {
     final l10n = AppLocalizations.of(context)!;
-    // Only .a7p is wired today — .ebcp single-profile share is still Phase
-    // 3.5 (see docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md).
+    // .ebcp single-profile share is still Phase 3.5 (see
+    // docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md) — shown but stubbed,
+    // same as the "replace ammo/sight" import actions were before .a7p
+    // itself got wired.
+    await showActionSheet(
+      context,
+      title: l10n.exportFormatDialogTitle,
+      entries: [
+        ActionSheetItem(
+          icon: IconDef.export,
+          title: '.ebcp (eBalistyka)',
+          onTap: () async => showNotAvailableSnackBar(context, '.ebcp'),
+        ),
+        ActionSheetItem(
+          icon: IconDef.export,
+          title: '.a7p (Archer Ballistic Profile)',
+          onTap: () => _onExportA7p(context, profile),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _onExportA7p(BuildContext context, Profile profile) async {
+    final l10n = AppLocalizations.of(context)!;
     await showActionSheet(
       context,
       title: l10n.selectRangeDialogTitle,
