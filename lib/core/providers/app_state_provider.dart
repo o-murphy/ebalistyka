@@ -123,11 +123,19 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
     // from whatever is now at index 0, no separate "was active" bookkeeping.
   }
 
-  // ── Import (Phase 3.5, not yet available) ────────────────────────────────────
+  // ── Import ────────────────────────────────────────────────────────────────────
 
-  Future<String> importProfile(Object export) async {
-    throw const ImportNotAvailableException();
+  /// Adds [imported] as a new profile. Always mints a fresh `uuid` — an
+  /// incoming profile's own `uuid` (if it has one at all) is never trusted,
+  /// same invariant `duplicateProfile`/export/import all share (see
+  /// docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md Phase 3.5 Sketch).
+  Future<String> importProfile(Profile imported) async {
+    final profile = copyWithFreshUuid(imported);
+    _updateProfiles((profiles) => [...profiles, profile]);
+    return profile.uuid;
   }
+
+  // ── Import (Phase 3.5, not yet available) ────────────────────────────────────
 
   Future<String> importAmmo(Object export) async {
     throw const ImportNotAvailableException();
