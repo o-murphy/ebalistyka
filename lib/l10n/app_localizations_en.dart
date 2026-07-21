@@ -1177,9 +1177,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportFormatDialogTitle => 'Export format';
 
   @override
-  String get selectProfileDialogTitle => 'Select profile';
-
-  @override
   String get ebcpFileHasNoProfiles => 'This file has no profiles to import.';
 
   @override
@@ -1187,6 +1184,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get importScopeDialogTitle => 'Import scope';
+
+  @override
+  String get selectProfilesToImportTitle => 'Select profiles to import';
+
+  @override
+  String get selectAllAction => 'Select all';
 
   @override
   String importAllProfilesAction(int count) {
@@ -1206,11 +1209,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importEverythingAction => 'Everything';
 
   @override
+  String get skipAction => 'Skip';
+
+  @override
   String get overwriteSettingsConfirmTitle => 'Overwrite settings?';
 
   @override
   String get overwriteSettingsConfirmContent =>
       'This replaces your current settings with the ones from the imported file. This can\'t be undone.';
+
+  @override
+  String get overwriteAction => 'Overwrite';
 
   @override
   String get selectRangeDialogTitle => 'Select range';

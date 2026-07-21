@@ -204,6 +204,10 @@ class ProfilesActions extends Notifier<void> {
   Future<String> importProfile(Profile imported) async {
     return ref.read(appStateProvider.notifier).importProfile(imported);
   }
+
+  Future<void> importProfiles(List<Profile> imported) async {
+    await ref.read(appStateProvider.notifier).importProfiles(imported);
+  }
 }
 
 final profilesActionsProvider = NotifierProvider<ProfilesActions, void>(
