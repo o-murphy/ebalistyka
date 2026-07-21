@@ -1,7 +1,6 @@
 import 'package:dart_bclibc/unit.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
-import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/db_provider.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -10,6 +9,11 @@ class ShotConditionsNotifier extends AsyncNotifier<ShootingConditions> {
   ShootingConditions build() =>
       ref.watch(settingsDataProvider.select((s) => s.shootingConditions));
 
+  // No per-field clamp needed here — settingsDataProvider.notifier.update()
+  // runs sanitizeSettingsData() on every write (see db_provider.dart), which
+  // clamps ShootingConditions against the same FieldLimits these setters
+  // used to clamp against by hand. See
+  // docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md Phase 7.
   void _update(void Function(ShootingConditions) mutate) {
     ref.read(settingsDataProvider.notifier).update((s) {
       final copy = s.deepCopy();
@@ -21,52 +25,43 @@ class ShotConditionsNotifier extends AsyncNotifier<ShootingConditions> {
   // ── Distance / geometry ───────────────────────────────────────────────────────
 
   Future<void> updateDistance(double meters) async {
-    final clamped = FC.targetDistance.clamp(meters);
-    _update((s) => s.distanceMeter = clamped); // raw — no unit conversion needed
+    _update((s) => s.distanceMeter = meters); // raw — no unit conversion needed
   }
 
   Future<void> updateLookAngle(double degrees) async {
-    final clamped = FC.lookAngle.clamp(degrees);
-    _update((s) => s.lookAngle = Angular.degree(clamped));
+    _update((s) => s.lookAngle = Angular.degree(degrees));
   }
 
   Future<void> updateAltitude(double meters) async {
-    final clamped = FC.altitude.clamp(meters);
-    _update((s) => s.altitudeMeter = clamped); // raw — no unit conversion needed
+    _update((s) => s.altitudeMeter = meters); // raw — no unit conversion needed
   }
 
   // ── Atmosphere ────────────────────────────────────────────────────────────────
 
   Future<void> updateTemperature(double celsius) async {
-    final clamped = FC.temperature.clamp(celsius);
-    _update((s) => s.temperature = Temperature.celsius(clamped));
+    _update((s) => s.temperature = Temperature.celsius(celsius));
   }
 
   Future<void> updatePressure(double hpa) async {
-    final clamped = FC.pressure.clamp(hpa);
-    _update((s) => s.pressure = Pressure.hPa(clamped));
+    _update((s) => s.pressure = Pressure.hPa(hpa));
   }
 
   Future<void> updateHumidity(double fraction) async {
-    final clamped = FC.humidity.clamp(fraction);
-    _update((s) => s.humidity = Ratio.fraction(clamped));
+    _update((s) => s.humidity = Ratio.fraction(fraction));
   }
 
   Future<void> updatePowderTemperature(double celsius) async {
-    final clamped = FC.temperature.clamp(celsius);
-    _update((s) => s.powderTemperature = Temperature.celsius(clamped));
+    _update((s) => s.powderTemperature = Temperature.celsius(celsius));
   }
 
   // ── Wind ──────────────────────────────────────────────────────────────────────
 
   Future<void> updateWindSpeed(double mps) async {
-    final clamped = FC.windSpeed.clamp(mps);
-    _update((s) => s.windSpeed = Velocity.mps(clamped));
+    _update((s) => s.windSpeed = Velocity.mps(mps));
   }
 
   Future<void> updateWindDirection(double degrees) async {
-    final clamped = FC.windDirection.clamp(degrees);
-    _update((s) => s.windDirection = Angular.degree(clamped));
+    _update((s) => s.windDirection = Angular.degree(degrees));
   }
 
   // ── Flags ─────────────────────────────────────────────────────────────────────
@@ -84,13 +79,11 @@ class ShotConditionsNotifier extends AsyncNotifier<ShootingConditions> {
   }
 
   Future<void> updateLatitude(double? degrees) async {
-    final clamped = FC.latitude.clamp(degrees ?? 0.0);
-    _update((s) => s.latitude = Angular.degree(clamped));
+    _update((s) => s.latitude = Angular.degree(degrees ?? 0.0));
   }
 
   Future<void> updateAzimuth(double? degrees) async {
-    final clamped = FC.azimuth.clamp(degrees ?? 0.0);
-    _update((s) => s.azimuth = Angular.degree(clamped));
+    _update((s) => s.azimuth = Angular.degree(degrees ?? 0.0));
   }
 }
 
