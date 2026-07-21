@@ -37,6 +37,15 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
   bool _isUpdatingFromWheel = false;
   bool _isUpdatingFromText = false;
 
+  // While the user is actively typing, the wheel is hidden and doesn't sync
+  // to every keystroke — only once typing pauses for _debounceDuration. The
+  // wheel's own didUpdateWidget jumps to whatever raw value it's given, so
+  // syncing it on every keystroke was fighting the text field (visible
+  // jumps mid-typing).
+  static const _debounceDuration = Duration(milliseconds: 500);
+  Timer? _debounceTimer;
+  bool _isTyping = false;
+
   @override
   void initState() {
     super.initState();
@@ -70,6 +79,15 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
       _errorText = error;
       needsUpdate = true;
     }
+
+    if (!_isTyping) {
+      _isTyping = true;
+      needsUpdate = true;
+    }
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(_debounceDuration, () {
+      if (mounted) setState(() => _isTyping = false);
+    });
 
     if (error == null) {
       final newIsNullValue = raw == null;
@@ -142,6 +160,7 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _textController.dispose();
     super.dispose();
   }

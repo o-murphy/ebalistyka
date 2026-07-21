@@ -5,6 +5,7 @@ import 'package:ebalistyka/core/extensions/profile_extensions.dart';
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show compute, listEquals;
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart'
     show DragType, AmmoExtension;
@@ -125,10 +126,22 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
     ];
     final tableHolds = tableDists.map((d) {
       if (d <= 0) return double.nan;
-      return calc
-              .barrelElevationForTarget(currentShot, Distance.meter(d))
-              .in_(Unit.radian) -
-          zeroElevRad;
+      // barrelElevationForTarget is a native FFI call (findZeroAngleShot)
+      // that can fail to converge for some distances (e.g. one of the ±2
+      // step columns landing somewhere the solver rejects) without that
+      // being predictable from `d` alone — catch it per-column into NaN,
+      // same as the `d <= 0` case above, instead of letting one bad column
+      // abort the whole calculation (and, via that, the whole home screen —
+      // `HomeViewModel` falls back to `HomeUiError`, which drops fields
+      // like `windAngleDeg` back to their UI defaults).
+      try {
+        return calc
+                .barrelElevationForTarget(currentShot, Distance.meter(d))
+                .in_(Unit.radian) -
+            zeroElevRad;
+      } catch (_) {
+        return double.nan;
+      }
     }).toList();
 
     // Hold for the target (center column) — same as tableHolds[2].
@@ -145,6 +158,8 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
     );
     return (result, freshZeroElevRad, holdRad, tableHolds);
   } catch (e, st) {
+    debugPrint(e.toString());
+    debugPrintStack(stackTrace: st);
     throw CalculationException('Home calculation failed', e, st);
   }
 }
