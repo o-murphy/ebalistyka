@@ -32,6 +32,17 @@ message Sight {
   string image = 15;
 }
 
+// One velocity/BC breakpoint of a multi-BC (velocity-dependent) drag table.
+// Replaces the earlier multi_bc_table_g{1,7}_v_mps/_bc parallel-array pair —
+// a single repeated field makes a v_mps/bc length mismatch inexpressible,
+// rather than merely unchecked (see
+// docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md Phase 7's "Repeated-field
+// length" note).
+message MultiBcPoint {
+  double v_mps = 1;
+  double bc = 2;
+}
+
 message Ammo {
   string name = 1;
   optional double caliber_inch = 2;
@@ -48,10 +59,10 @@ message Ammo {
   double powder_sensitivity_frac = 13;
   repeated double powder_sensitivity_tc = 14;
   repeated double powder_sensitivity_v_mps = 15;
-  repeated double multi_bc_table_g1_v_mps = 16;
-  repeated double multi_bc_table_g1_bc = 17;
-  repeated double multi_bc_table_g7_v_mps = 18;
-  repeated double multi_bc_table_g7_bc = 19;
+  repeated MultiBcPoint multi_bc_table_g1 = 16;
+  reserved 17; // was multi_bc_table_g1_bc (repeated double)
+  repeated MultiBcPoint multi_bc_table_g7 = 18;
+  reserved 19; // was multi_bc_table_g7_bc (repeated double)
   repeated double custom_drag_table_mach = 20;
   repeated double custom_drag_table_cd = 21;
   Zero zero = 22;

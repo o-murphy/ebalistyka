@@ -58,6 +58,11 @@ Map<String, dynamic> zeroToJson(proto.Zero z) => {
   'offset_y_unit': z.offsetYUnit,
 };
 
+Map<String, dynamic> multiBcPointToJson(proto.MultiBcPoint p) => {
+  'v_mps': p.vMps,
+  'bc': p.bc,
+};
+
 Map<String, dynamic> ammoToJson(proto.Ammo a) => {
   'name': a.name,
   'caliber_inch': a.hasCaliberInch() ? a.caliberInch : null,
@@ -74,10 +79,8 @@ Map<String, dynamic> ammoToJson(proto.Ammo a) => {
   'powder_sensitivity_frac': a.powderSensitivityFrac,
   'powder_sensitivity_tc': a.powderSensitivityTc,
   'powder_sensitivity_v_mps': a.powderSensitivityVMps,
-  'multi_bc_table_g1_v_mps': a.multiBcTableG1VMps,
-  'multi_bc_table_g1_bc': a.multiBcTableG1Bc,
-  'multi_bc_table_g7_v_mps': a.multiBcTableG7VMps,
-  'multi_bc_table_g7_bc': a.multiBcTableG7Bc,
+  'multi_bc_table_g1': a.multiBcTableG1.map(multiBcPointToJson).toList(),
+  'multi_bc_table_g7': a.multiBcTableG7.map(multiBcPointToJson).toList(),
   'custom_drag_table_mach': a.customDragTableMach,
   'custom_drag_table_cd': a.customDragTableCd,
   'zero': zeroToJson(a.zero),
