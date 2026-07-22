@@ -31,21 +31,24 @@ class IconValueButton extends StatelessWidget {
               backgroundColor: cs.primaryContainer,
               foregroundColor: cs.onPrimaryContainer,
               elevation: 1,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(icon, size: 22),
-                  if (value.isNotEmpty) ...[
-                    const SizedBox(height: 2),
-                    Text(
-                      value,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(icon, size: 22),
+                    if (value.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        value,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ),
