@@ -1,20 +1,17 @@
-import 'dart:io';
 import 'dart:ui';
 
-import 'package:dart_bclibc/ffi/bclibc_ffi.dart';
 import 'package:ebalistyka/shared/constants/app_info.dart';
-import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/shared/helpers/is_desktop.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'core/app_bootstrap_io.dart'
+    if (dart.library.js_interop) 'core/app_bootstrap_web.dart';
 import 'core/providers/db_provider.dart';
 import 'core/providers/db_seed.dart';
 import 'core/providers/settings_provider.dart';
 import 'l10n/app_localizations.dart';
-import 'ob_migrate/ob_migrate.dart';
 import 'router.dart';
 
 // Constants for window sizes
@@ -30,12 +27,7 @@ const _windowInitialHeight = 812.0;
 // const _contentMaxHeight = _windowMaxHeight;
 
 void main() async {
-  try {
-    BcLibC.open();
-  } catch (e) {
-    stderr.writeln('Fatal: native library unavailable: $e');
-    exit(1);
-  }
+  await initNativeLibrary();
 
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -65,32 +57,27 @@ void main() async {
     });
   }
 
-  final appSupport = await getApplicationSupportDirectory();
-  final opened = await openEbcDbStores(
-    appSupport.path,
+  final bootstrap = await bootstrapApp(
     seedSettings: seedSettings,
     seedProfiles: seedProfiles,
   );
-  debugPrint('DB path: ${appSupport.path}');
 
   debugAppInfoConstants();
-
-  final showMigrationGate = await hasUnmigratedLegacyData(appSupport.path);
 
   runApp(
     ProviderScope(
       overrides: [
-        settingsStoreProvider.overrideWithValue(opened.settingsStore),
-        profilesStoreProvider.overrideWithValue(opened.profilesStore),
+        settingsStoreProvider.overrideWithValue(bootstrap.stores.settingsStore),
+        profilesStoreProvider.overrideWithValue(bootstrap.stores.profilesStore),
         settingsDataProvider.overrideWith(
-          () => SettingsDataNotifier(opened.settings),
+          () => SettingsDataNotifier(bootstrap.stores.settings),
         ),
-        profilesProvider.overrideWith(() => ProfilesNotifier(opened.profiles)),
-        dataWasResetProvider.overrideWithValue(opened.dataWasReset),
+        profilesProvider.overrideWith(
+          () => ProfilesNotifier(bootstrap.stores.profiles),
+        ),
+        dataWasResetProvider.overrideWithValue(bootstrap.stores.dataWasReset),
       ],
-      child: showMigrationGate
-          ? MigrationGate(objectboxDir: appSupport.path, child: const MyApp())
-          : const MyApp(),
+      child: bootstrap.wrapRoot(const MyApp()),
     ),
   );
 }

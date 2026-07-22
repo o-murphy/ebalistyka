@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ebalistyka/core/collection/collection_parser.dart';
@@ -10,6 +9,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
+
+import 'apk_abi_suffix_io.dart'
+    if (dart.library.js_interop) 'apk_abi_suffix_web.dart';
 
 enum LinuxInstallerType { snap, flatpak, deb, rpm, aur, appImage, portable }
 
@@ -37,6 +39,12 @@ LinuxInstallerType _detectLinuxInstallerType() {
 enum NewVersionState { firstRun, updated, none }
 
 Future<NewVersionState> checkVersionState() async {
+  // dart:io's Platform.operatingSystem/getApplicationSupportDirectory()
+  // (path_provider) both throw on web — there's no installed-version marker
+  // file to compare against in a browser tab anyway (see docs/backlogs/
+  // 8.PROTOBUF_STORAGE_MIGRATION.md Phase 9's update-checker UX item).
+  if (kIsWeb) return NewVersionState.none;
+
   final info = await PackageInfo.fromPlatform();
   final currentVersion = info.version;
 
@@ -44,7 +52,7 @@ Future<NewVersionState> checkVersionState() async {
   debugPrint(
     'OS: ${Platform.operatingSystem} ${Platform.operatingSystemVersion}',
   );
-  debugPrint('Arch: ${Abi.current()}');
+  debugPrint('Arch: ${Platform.version}');
   debugPrint('Version: $currentVersion');
   if (Platform.isLinux) {
     debugPrint('Installer: ${_detectLinuxInstallerType().name}');
@@ -186,7 +194,7 @@ Future<GithubRelease?> _fetchIfNewer(
   );
   final assets = matchedEntry['assets'] as List<dynamic>? ?? [];
   if (assets.isNotEmpty) {
-    final preferredSuffix = _apkSuffixForCurrentAbi();
+    final preferredSuffix = apkSuffixForCurrentAbi();
     String? abiMatch;
     String? universalMatch;
     String? anyApk;
@@ -279,18 +287,6 @@ final updateCheckerProvider = FutureProvider<GithubRelease?>((ref) async {
     return null;
   }
 });
-
-/// Returns the filename suffix that matches the current device ABI.
-/// Corresponds to the naming used in build-android.sh:
-///   arm64-v8a  → _arm64.apk
-///   armeabi-v7a → _armeabi_v7a.apk
-///   x86_64     → _x86_64.apk
-String _apkSuffixForCurrentAbi() => switch (Abi.current()) {
-  Abi.androidArm64 => '_arm64.apk',
-  Abi.androidArm => '_armeabi_v7a.apk',
-  Abi.androidX64 => '_x86_64.apk',
-  _ => '_universal.apk',
-};
 
 bool _isNewer(String latest, String current) {
   final l = _parseSemver(latest);
