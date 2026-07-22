@@ -29,61 +29,6 @@ const _windowInitialHeight = 812.0;
 // const _contentMaxWidth = _windowMaxWidth;
 // const _contentMaxHeight = _windowMaxHeight;
 
-/// Opens both `.ebcp` stores, seeding whichever one is missing/corrupt.
-/// Each file's "existed but got reseeded" state is tracked independently —
-/// a crash/corruption in one file must never get blamed on the other.
-Future<(MsgStore<SettingsData>, SettingsData, MsgStore<ProfilesData>, List<Profile>, bool)>
-_openStores(String directory) async {
-  final settingsFile = File('$directory/settings.ebcp');
-  final profilesFile = File('$directory/profiles.ebcp');
-  final settingsStore = MsgStore<SettingsData>(
-    settingsFile,
-    encode: SettingsFile.encode,
-    decode: SettingsFile.decode,
-  );
-  final profilesStore = MsgStore<ProfilesData>(
-    profilesFile,
-    encode: ProfilesFile.encode,
-    decode: ProfilesFile.decode,
-  );
-
-  final hadSettingsFile = await settingsFile.exists();
-  final hadProfilesFile = await profilesFile.exists();
-  var settingsWasSeeded = false;
-  var profilesWasSeeded = false;
-
-  final settings = await settingsStore.load(
-    orElseSeed: () {
-      settingsWasSeeded = true;
-      return seedSettings();
-    },
-  );
-  final profilesData = await profilesStore.load(
-    orElseSeed: () {
-      profilesWasSeeded = true;
-      return ProfilesData(profiles: seedProfiles());
-    },
-  );
-
-  // Persist freshly-seeded data immediately — otherwise a user who closes
-  // the app before touching anything would re-seed (a new random profile
-  // uuid) on every subsequent launch, since load() never writes on its own.
-  if (settingsWasSeeded) await settingsStore.save(settings);
-  if (profilesWasSeeded) await profilesStore.save(profilesData);
-
-  final dataWasReset =
-      (hadSettingsFile && settingsWasSeeded) ||
-      (hadProfilesFile && profilesWasSeeded);
-
-  return (
-    settingsStore,
-    settings,
-    profilesStore,
-    profilesData.profiles,
-    dataWasReset,
-  );
-}
-
 void main() async {
   try {
     BcLibC.open();
@@ -121,13 +66,11 @@ void main() async {
   }
 
   final appSupport = await getApplicationSupportDirectory();
-  final (
-    settingsStore,
-    initialSettings,
-    profilesStore,
-    initialProfiles,
-    dataWasReset,
-  ) = await _openStores(appSupport.path);
+  final opened = await openEbcDbStores(
+    appSupport.path,
+    seedSettings: seedSettings,
+    seedProfiles: seedProfiles,
+  );
   debugPrint('DB path: ${appSupport.path}');
 
   debugAppInfoConstants();
@@ -137,13 +80,13 @@ void main() async {
   runApp(
     ProviderScope(
       overrides: [
-        settingsStoreProvider.overrideWithValue(settingsStore),
-        profilesStoreProvider.overrideWithValue(profilesStore),
+        settingsStoreProvider.overrideWithValue(opened.settingsStore),
+        profilesStoreProvider.overrideWithValue(opened.profilesStore),
         settingsDataProvider.overrideWith(
-          () => SettingsDataNotifier(initialSettings),
+          () => SettingsDataNotifier(opened.settings),
         ),
-        profilesProvider.overrideWith(() => ProfilesNotifier(initialProfiles)),
-        dataWasResetProvider.overrideWithValue(dataWasReset),
+        profilesProvider.overrideWith(() => ProfilesNotifier(opened.profiles)),
+        dataWasResetProvider.overrideWithValue(opened.dataWasReset),
       ],
       child: showMigrationGate
           ? MigrationGate(objectboxDir: appSupport.path, child: const MyApp())
