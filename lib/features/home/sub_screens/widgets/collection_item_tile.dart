@@ -116,7 +116,7 @@ class CollectionItemTile extends StatelessWidget {
               ),
 
             // Bottom right — select button
-            if (isSelected != null && !isSelected)
+            if (!isSelected)
               Positioned(
                 bottom: 8,
                 right: 8,
