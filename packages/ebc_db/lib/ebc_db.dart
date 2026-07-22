@@ -1,6 +1,7 @@
 export 'src/generated/field_constraints.g.dart';
 export 'src/ops/profiles_ops.dart';
 export 'src/ops/settings_ops.dart';
+export 'src/persistence/ebc_stores.dart';
 export 'src/persistence/ebcp_file.dart';
 export 'src/persistence/msg_codec.dart';
 export 'src/persistence/msg_store.dart';
