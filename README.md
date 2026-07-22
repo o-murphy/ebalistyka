@@ -457,10 +457,13 @@ On Android, `file_picker` cannot filter by custom extensions (`.ebcp`, `.a7p`) b
 
 ### `dart_bclibc`
 
-| Package                                                         | Role                                                             |
-| --------------------------------------------------------------- | ---------------------------------------------------------------- |
-| [dart_bclibc](https://pub.dev/packages/dart_bclibc)             | Dart FFI package — bundles bclibc C++ solver (3-DOF, RK4) LGPL-3 |
-| [ffi](https://pub.dev/packages/ffi)                             | Dart ↔ C FFI bindings                                            |
+The app depends directly on [`dart_bclibc_flutter`](https://pub.dev/packages/dart_bclibc_flutter), the Flutter plugin wrapper; `dart_bclibc` itself is pulled in transitively.
+
+| Package                                                                        | Role                                                                                                                      |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| [dart_bclibc_flutter](https://pub.dev/packages/dart_bclibc_flutter)              | Flutter plugin wrapper — bundles the native bclibc solver for Android/iOS/Linux/macOS/Windows plus a wasm build for web |
+| [dart_bclibc](https://pub.dev/packages/dart_bclibc)                              | Dart FFI package — bclibc C++ solver (3-DOF, RK4) LGPL-3, bindings, unit types                                          |
+| [ffi](https://pub.dev/packages/ffi)                                              | Dart ↔ C FFI bindings                                                                                                     |
 
 ### `packages/ebalistyka_db`
 

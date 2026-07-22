@@ -218,13 +218,21 @@ packages:
     source: hosted
     version: "1.0.0+8.4.0"
   dart_bclibc:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: dart_bclibc
-      sha256: eab4aa328b86a00e91a464af04bda6836fd878556ee09f25a5f14a793281eb44
+      sha256: "8699698edf2319cda83891c8a39019e222e335af705f5649699b955fcd7e162d"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.1"
+    version: "0.2.0-beta.1"
+  dart_bclibc_flutter:
+    dependency: "direct main"
+    description:
+      name: dart_bclibc_flutter
+      sha256: "75a5c41a86ae607064f39011780f5e300b0fb979e2ee169ef9dc377ab4f1dab2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0-beta.1"
   dart_style:
     dependency: transitive
     description:
@@ -624,18 +632,18 @@ packages:
     dependency: transitive
     description:
       name: ob_dump_reader
-      sha256: ad584126873b93615779a24fdacf0eb42113ebe86c8e3ab666263019c232b1d1
+      sha256: d8dc34e6485e9b7bb1df98f88809331ad69b9d5c9b11f6936d81eba060d21a26
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.0-alpha.2"
+    version: "0.1.0-beta.1"
   ob_dump_reader_flutter:
     dependency: "direct main"
     description:
       name: ob_dump_reader_flutter
-      sha256: "9b3f88caca914831fda5781a5e56085ff025dbf62b59ed4ccc3785e3e5288376"
+      sha256: "56a4d45df4837d29a00be022fcde4104c5518558a686103ea7d24784657aa3d5"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.0-alpha.2"
+    version: "0.1.0-beta.1"
   objective_c:
     dependency: transitive
     description:
