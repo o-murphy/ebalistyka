@@ -39,7 +39,7 @@ dependencies:
 
   a7p: ^1.2.4
 
-  dart_bclibc: ^0.1.1
+  dart_bclibc_flutter: ^0.2.0-beta.1
   # dart_bclibc:
   #   path: ../dart_bclibc
 
@@ -63,7 +63,7 @@ dependencies:
   http: ^1.2.2
   flutter_markdown_plus: ^1.0.12
   ota_update: ^7.1.0
-  ob_dump_reader_flutter: ^0.1.0-alpha.2
+  ob_dump_reader_flutter: ^0.1.0-beta.1
 
 dev_dependencies:
   flutter_test:
