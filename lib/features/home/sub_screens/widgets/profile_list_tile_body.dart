@@ -1,4 +1,3 @@
-import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/widgets/weapon_svg_view.dart';
 import 'package:ebc_db/ebc_db.dart';
@@ -14,7 +13,6 @@ class ProfileListTileBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final cs = Theme.of(context).colorScheme;
     final weapon = profile.weapon;
     final ammo = profile.ammo;
