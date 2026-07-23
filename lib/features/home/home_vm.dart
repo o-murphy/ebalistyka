@@ -32,62 +32,37 @@ export 'home_ui_state.dart';
 // ── ViewModel ─────────────────────────────────────────────────────────────────
 
 class HomeViewModel extends AsyncNotifier<HomeUiState> {
-  int _generation = 0;
-
   @override
   Future<HomeUiState> build() async {
-    // `build()` computes and returns the real initial state itself (via
-    // `_calculate()`, same shape as `shot_details_vm.dart`'s
-    // `ShotInfoViewModel`) instead of returning a hardcoded placeholder and
-    // relying on these listeners to overwrite it. That placeholder-then-
-    // overwrite shape is what caused a real bug in `trajectory_tables_vm
-    // .dart`: with `fireImmediately: true`, a listener can fire
-    // *synchronously inside this same `build()` call* if the watched
-    // provider already has a value by the time it's registered (e.g.
-    // because some other screen already resolved `shotContextProvider`
-    // earlier) — and a `state =` write made before `build()`'s own Future
-    // resolves gets silently clobbered back to the placeholder the moment
-    // it does resolve. Since `build()`'s return value *is* the correct
-    // answer here, there's no placeholder for a synchronous listener fire
-    // to race against.
-    ref.listen<AsyncValue<ShotContext?>>(shotContextProvider, (_, next) {
-      if (next.hasValue) unawaited(_recalculate());
-    });
+    // Every dependency below is `ref.watch`ed (not a manual `ref.listen` +
+    // `state =`/`_recalculate()`), so Riverpod's own dependency tracking
+    // re-runs this whole `build()` — once, in an orderly single-flight
+    // way — whenever any of them change. That's what fixes two real bugs
+    // the old shape had: (1) a `state =` write made synchronously inside
+    // `build()` (possible with `ref.listen(..., fireImmediately: true)`
+    // if the watched provider already had a value) got silently clobbered
+    // back to whatever `build()` itself returned, the moment build()'s
+    // own Future resolved; (2) `build()` computing its own initial result
+    // *and* a `fireImmediately` listener independently reacting to the
+    // exact same first-resolution of `shotContextProvider` meant the
+    // (expensive) ballistics calculation ran twice on startup.
+    //
+    // `GeneralSettings` is the one exception, kept as a manual `ref.listen`
+    // — most of its fields (theme, language, ...) don't affect this
+    // calculation at all, so a plain `ref.watch` would rebuild on every
+    // unrelated settings change. `ref.invalidateSelf()` schedules a fresh
+    // `build()` only when `generalNeedsRecalc` says something that
+    // actually matters changed, and — unlike calling `_recalculate()`
+    // directly — doesn't create a second computation racing against this
+    // one; it just marks the provider dirty for Riverpod's own scheduler.
     ref.listen<AsyncValue<GeneralSettings>>(settingsProvider, (prev, next) {
       if (!next.hasValue) return;
       if (generalNeedsRecalc(prev?.value, next.value!)) {
-        unawaited(_recalculate());
+        ref.invalidateSelf();
       }
     });
-    ref.listen<UnitSettings>(unitSettingsProvider, (prev, next) {
-      if (prev != null) unawaited(_recalculate());
-    });
-    ref.listen<ReticleSettings>(reticleSettingsProvider, (prev, next) {
-      if (prev != null) unawaited(_recalculate());
-    });
-    return _calculate();
-  }
 
-  Future<void> _recalculate() async {
-    final generation = ++_generation;
-    try {
-      final result = await _calculate();
-      if (!ref.mounted || generation != _generation) return;
-      state = AsyncData(result);
-    } catch (e, stackTrace) {
-      if (!ref.mounted || generation != _generation) return;
-      debugPrintStack(stackTrace: stackTrace);
-      state = AsyncData(HomeUiError(e.toString()));
-    }
-  }
-
-  Future<HomeUiState> _calculate() async {
-    final ctx = await ref.read(shotContextProvider.future);
-    final settings = await ref.read(settingsProvider.future);
-    final units = ref.read(unitSettingsProvider);
-    final reticle = ref.read(reticleSettingsProvider);
-    final formatter = ref.read(unitFormatterProvider);
-
+    final ctx = await ref.watch(shotContextProvider.future);
     if (ctx == null) {
       return const HomeUiNoData(type: EmptyStateType.noProfile);
     }
@@ -101,35 +76,44 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       );
     }
 
-    final l10n = ref.read(appLocalizationsProvider);
+    final settings = await ref.watch(settingsProvider.future);
+    final units = ref.watch(unitSettingsProvider);
+    final reticle = ref.watch(reticleSettingsProvider);
+    final formatter = ref.watch(unitFormatterProvider);
+    final l10n = ref.watch(appLocalizationsProvider);
 
-    final chartStep = settings.homeChartDistanceStep > 0
-        ? settings.homeChartDistanceStep
-        : FC.distanceStep.minRaw;
-    final tableStep = settings.homeTableDistanceStep > 0
-        ? settings.homeTableDistanceStep
-        : FC.distanceStep.minRaw;
-    final opts = TargetCalcOptions(
-      targetDistM: conditions.distanceMeter,
-      trajectoryEndM: conditions.distanceMeter + 2 * tableStep,
-      stepM: math.min(chartStep, tableStep),
-      tableStepM: tableStep,
-    );
+    try {
+      final chartStep = settings.homeChartDistanceStep > 0
+          ? settings.homeChartDistanceStep
+          : FC.distanceStep.minRaw;
+      final tableStep = settings.homeTableDistanceStep > 0
+          ? settings.homeTableDistanceStep
+          : FC.distanceStep.minRaw;
+      final opts = TargetCalcOptions(
+        targetDistM: conditions.distanceMeter,
+        trajectoryEndM: conditions.distanceMeter + 2 * tableStep,
+        stepM: math.min(chartStep, tableStep),
+        tableStepM: tableStep,
+      );
 
-    final result = await ref
-        .read(ballisticsServiceProvider)
-        .calculateForTarget(profile, conditions, opts);
+      final result = await ref
+          .read(ballisticsServiceProvider)
+          .calculateForTarget(profile, conditions, opts);
 
-    return _buildReadyState(
-      profile: profile,
-      conditions: conditions,
-      settings: settings,
-      reticle: reticle,
-      units: units,
-      formatter: formatter,
-      result: result,
-      l10n: l10n,
-    );
+      return await _buildReadyState(
+        profile: profile,
+        conditions: conditions,
+        settings: settings,
+        reticle: reticle,
+        units: units,
+        formatter: formatter,
+        result: result,
+        l10n: l10n,
+      );
+    } catch (e, stackTrace) {
+      debugPrintStack(stackTrace: stackTrace);
+      return HomeUiError(e.toString());
+    }
   }
 
   void selectChartPoint(int index) {
