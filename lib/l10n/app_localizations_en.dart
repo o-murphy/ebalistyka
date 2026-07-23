@@ -1074,6 +1074,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noSightsFoundInFile => 'No sights found in file';
 
   @override
+  String get emptyStateNoProfile => 'No profile selected';
+
+  @override
+  String get emptyStateNoAmmo => 'No ammo selected';
+
+  @override
+  String get emptyStateNoSight => 'No sight selected';
+
+  @override
+  String get emptyStateIncompleteAmmo => 'Ammo data is incomplete';
+
+  @override
+  String get emptyStateError => 'Something went wrong';
+
+  @override
+  String get emptyStateNoData => 'No data';
+
+  @override
   String get ammoDuplicateDialogTitle => 'Duplicate Ammo';
 
   @override
