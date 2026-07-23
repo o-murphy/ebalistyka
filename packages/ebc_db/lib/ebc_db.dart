@@ -3,6 +3,7 @@ export 'src/ops/profiles_ops.dart';
 export 'src/ops/settings_ops.dart';
 export 'src/persistence/ebc_stores.dart';
 export 'src/persistence/ebcp_file.dart';
+export 'src/persistence/file_msg_store.dart';
 export 'src/persistence/msg_codec.dart';
 export 'src/persistence/msg_store.dart';
 export 'src/persistence/profiles_file.dart';

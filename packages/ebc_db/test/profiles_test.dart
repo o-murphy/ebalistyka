@@ -125,8 +125,8 @@ void main() {
   group('MsgStore<ProfilesData>', () {
     late Directory tmpDir;
 
-    MsgStore<ProfilesData> storeFor(File file, {Duration debounce = Duration.zero}) =>
-        MsgStore<ProfilesData>(
+    FileMsgStore<ProfilesData> storeFor(File file, {Duration debounce = Duration.zero}) =>
+        FileMsgStore<ProfilesData>(
           file,
           encode: ProfilesFile.encode,
           decode: ProfilesFile.decode,

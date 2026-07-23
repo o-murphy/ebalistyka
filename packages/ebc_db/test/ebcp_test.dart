@@ -185,7 +185,7 @@ void main() {
   group('MsgStore<EbcpData>', () {
     late Directory tmpDir;
 
-    MsgStore<EbcpData> storeFor(File file) => MsgStore<EbcpData>(
+    FileMsgStore<EbcpData> storeFor(File file) => FileMsgStore<EbcpData>(
       file,
       encode: EbcpFile.encode,
       decode: EbcpFile.decode,

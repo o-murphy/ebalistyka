@@ -17,6 +17,11 @@ dependencies:
   # because bin/ scripts are still part of what a `pub global activate`
   # install fetches, unlike test/.
   path: ^1.9.0
+  # Only used by src/persistence/indexed_db_msg_store.dart (web-only, not
+  # exported from the main barrel — see that file's own doc comment). A
+  # plain Dart dependency, not Flutter-specific: works for any Dart-to-JS/
+  # wasm compile target.
+  web: ^1.1.1
 
 dev_dependencies:
   lints: ^6.0.0
