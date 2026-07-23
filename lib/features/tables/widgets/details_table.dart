@@ -1,3 +1,4 @@
+import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka/features/tables/details_table_mv.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
@@ -15,7 +16,12 @@ class DetailsTable extends ConsumerWidget {
     final details = ref.watch(detailsTableMvProvider);
 
     if (details == null) {
-      return const EmptyStatePlaceholder();
+      final profile = ref.watch(shotContextProvider).value?.profile;
+      return EmptyStatePlaceholder(
+        type: profile == null
+            ? EmptyStateType.noProfile
+            : missingProfileDataType(profile),
+      );
     }
 
     return DetailsTableContent(details: details);

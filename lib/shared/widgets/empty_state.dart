@@ -1,6 +1,22 @@
+import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
+import 'package:ebalistyka/core/extensions/profile_extensions.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter/material.dart';
+
+/// Which specific piece of [profile] is missing/incomplete, in the priority
+/// order the app asks the user to fill things in (weapon always exists
+/// first, then ammo, then sight — see `selectAmmoSightHint`). Only call
+/// this when `!profile.isReadyForCalculation` — it doesn't itself check
+/// readiness, just explains why it's false.
+EmptyStateType missingProfileDataType(Profile profile) {
+  if (!profile.isWeaponSelected) return EmptyStateType.incompleteWeapon;
+  if (!profile.ammo.isReadyForCalculation) {
+    return EmptyStateType.incompleteAmmo;
+  }
+  return EmptyStateType.noSight;
+}
 
 enum EmptyStateType {
   noProfile,
