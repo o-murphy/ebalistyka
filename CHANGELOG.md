@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
 ### Changed
+- **Duplicate-profile naming** — every "Duplicate profile" entry point (`ProfilesScreen`, `ProfilesListScreen`, and the new hotswap duplicate-first flow below) now prefixes the copy's name with `[COPY]` instead of the old localized "Copy of"/"Копія" prefix (the `copyOf` string is now dead and has been removed from both ARB files).
+- **Action sheet subtitle color** — now uses `colorScheme.tertiary` instead of `onSurfaceVariant`, matching the rest of the app's warning/attention styling (button hints, the non-destructive `showConfirmDialog` button).
+- **`ProfileControlTile`** (My Profile screen) — the profile's name is now shown above the card; previously it wasn't displayed anywhere on this screen. `ProfilesScreen`'s Weapon/Ammo/Sight detail sections are now hidden entirely for whichever component hasn't been set on the profile, instead of rendering an empty/placeholder section.
+- **Home screen** — the button that opens the profiles screen now shows the profile's name even when the profile is incomplete (missing ammo/sight); it previously fell back to a placeholder dash in that state.
+- **`ProfilesListScreen`'s "Edit" action** — relabeled to "Edit Profile Name", matching what it actually does (rename) instead of the generic "Edit" label, which implied opening the full profile editor.
 - **Storage engine — ObjectBox replaced with two embedded protobuf files.** `packages/ebalistyka_db` (ObjectBox entities, `ToOne<Owner>` relations, `Query.watch()` streams) is replaced by the new `packages/ebc_db` package: persisted state is now `settings.ebcp`/`profiles.ebcp`, two independent "md5+ebcpbuf" protobuf files (`SettingsData`/`ProfilesData`) written atomically (tmp+flush+rename+`.bak`) to `<applicationSupportDirectory>`, with no relational ids or `Owner` singleton. `Profile` is now 1 weapon : 1 ammo : 1 sight (no nested lists), addressed by a client-generated `uuid`; the active profile is `profiles[0]`. Riverpod providers (`settingsDataProvider`/`profilesProvider`/`activeProfileProvider`) replace every ObjectBox-stream-backed provider. Existing installs are migrated automatically on first launch after upgrade via a new `MigrationGate` (`lib/ob_migrate/`), which reads the old ObjectBox store with [`ob_dump_reader_flutter`](https://github.com/o-murphy/ob-dump) (no `objectbox` dependency needed to read it back out) and writes the new files; the old `data.mdb`/`lock.mdb` are left on disk untouched. See `docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md` for the full design/execution log.
 - **flutpak** - refs updated to v0.8.3
 - **flutter sdk** - upgraded to `3.44.8`
@@ -26,12 +31,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   - Windows: MZ PE-header check via `od` for `bclibc_ffi.dll`
 
 ### Added
+- **Weapon hotswap action** on the My Profile screen — mirrors the existing ammo/sight create-new / from-collection / import-from-file action sheet, wired to a new bottom-left button on `ProfileControlTile` (mirrors the sight button's top-left treatment). After swapping in a new weapon, if the profile's ammo has a different caliber, offers to update the ammo's caliber to match (mirrors `AmmoWizardScreen`'s own caliber-mismatch sheet, triggered from the weapon side this time).
+- **Data-loss warning before any hotswap** (weapon/ammo/sight) — replacing a component that already has data now opens an action sheet offering **Replace** (destructive, same profile) or **Duplicate** (one tap, no name prompt, auto-named `[COPY] <name>`; the hotswap then lands on the duplicate, which is made active immediately so the change is visible) instead of silently discarding the old data.
 - **Native library smoke tests** in CI across all build formats — verify that the shared library is present, valid, and loads cleanly at startup:
   - `build.yml` (Linux): runs the app binary, checks stderr for `"Fatal: native library"`
   - `build.yml` (Windows): `Start-Process` + stderr check for the same message
   - `build-android.yml`: unzips APK/AAB and checks `libbclibc_ffi.so` ELF for each ABI (`arm64-v8a`, `armeabi-v7a`, `x86_64`)
   - `build-flatpak.yml`: installs bundle via `flatpak install`, checks ELF, runs app under `dbus-run-session`
   - `build-snap.yml`: `unsquashfs` extraction + ELF check
+
+### Fixed
+- **Broken "Select cartridge/bullet from collection" routes** — `Routes.cartridgeCollection`/`bulletCollection` pointed at paths nested under `ammo-create`, but the routes themselves were registered as siblings in `router.dart`'s route tree, so tapping either action threw `GoException: no routes for location: ...`. Routes are now correctly nested under `ammo-create`, matching the equivalent `sight-create`/`collection` pattern.
+- **Crash on bare `/`** — no route existed for the app's root path, so any navigation that landed on `/` (e.g. loading the web build at its bare domain) threw `GoException: no routes for location: /`. Added a redirect to `Routes.home`.
+- **Ammo/bullet collection cards** — card content appeared shifted/misaligned compared to the weapon/sight collection cards. `CollectionAmmoTileBody` used a `Wrap` plus an extra `Expanded` wrapper plus explicit `TextOverflow.visible` that the (working) weapon/sight tile bodies don't use; normalized to the same `Row`-based layout.
 
 ### Removed
 - `packages/ebalistyka_db/` local package (ObjectBox entities + old ZIP+JSON `.ebcp` DTOs — superseded by `packages/ebc_db`)

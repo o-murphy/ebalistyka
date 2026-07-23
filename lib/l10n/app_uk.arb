@@ -203,6 +203,7 @@
 
     "editAction": "Редагувати",
     "duplicateAction": "Створити копію",
+    "replaceAction": "Замінити",
     "exportAction": "Експортувати",
     "importAction": "Імпортувати",
     "removeAction": "Видалити",
@@ -212,6 +213,7 @@
     "actions": "Дії",
     "actionAddAmmo": "Додати набій",
     "actionAddSight": "Додати приціл",
+    "actionAddWeapon": "Додати зброю",
     "actionExportBackup": "Експортувати",
     "actionImportBackup": "Імпортувати",
     "actionImportFromFile": "Імпортувати з файлу",
@@ -358,7 +360,6 @@
     "newCartridge": "Новий патрон",
     "newProjectile": "Новий снаряд",
     "newBullet": "Нова куля",
-    "copyOf": "Копія",
 
     "editProfile": "Редагувати профіль",
     "profileName": "Назва профілю",
@@ -376,6 +377,7 @@
     "selectAmmoSightHint": "Спершу оберіть набій і приціл",
     "selectSightHint": "Оберіть приціл",
     "selectAmmoHint": "Оберіть набій",
+    "selectWeaponHint": "Оберіть зброю",
 
     "placeholderSearch": "Пошук",
     "notYetAvaliable": "поки що не доступно",
@@ -460,6 +462,15 @@
     "caliberMismatchWarning": "Патрон: {ammo} · Зброя: {weapon}",
     "updateAmmoCaliberAction": "Оновити калібр патрона",
     "updateWeaponCaliberAction": "Оновити калібр зброї",
+
+    "replaceWeaponWarningTitle": "Замінити зброю?",
+    "replaceWeaponWarningContent": "Це видалить поточні дані зброї. Спершу створіть копію профілю, якщо хочете їх зберегти.",
+    "replaceAmmoWarningTitle": "Замінити набій?",
+    "replaceAmmoWarningContent": "Це видалить поточні дані набою (таблиці БК, дані пристрілки, чутливість пороху тощо). Спершу створіть копію профілю, якщо хочете їх зберегти.",
+    "replaceSightWarningTitle": "Замінити приціл?",
+    "replaceSightWarningContent": "Це видалить поточні дані прицілу (значення кліків, пристрілку тощо). Спершу створіть копію профілю, якщо хочете їх зберегти.",
+
+    "weaponAmmoCaliberMismatchContent": "Калібр нової зброї ({weapon}) не відповідає калібру поточного набою ({ammo}). Оновити калібр набою відповідно?",
 
     "legacyMigrationConfirmTitle": "Знайдено старі дані",
     "legacyMigrationConfirmContent": "Ми знайшли дані з попередньої версії цього додатку. Імпортувати їх?",

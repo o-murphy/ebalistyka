@@ -87,7 +87,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final vmAsync = ref.watch(homeVmProvider);
     final vmState = vmAsync.value;
 
-    final profileName = vmState is HomeUiReady ? vmState.profileName : nullStr;
+    final profileName = switch (vmState) {
+      HomeUiReady() => vmState.profileName,
+      HomeUiNoData(:final profileName?) => profileName,
+      _ => nullStr,
+    };
     final cs = vmState is HomeUiReady ? vmState.conditionsState : null;
     final tempStr = cs?.tempDisplay ?? nullStr;
     final altStr = cs?.altDisplay ?? nullStr;

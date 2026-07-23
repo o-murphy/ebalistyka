@@ -591,6 +591,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get duplicateAction => 'Duplicate';
 
   @override
+  String get replaceAction => 'Replace';
+
+  @override
   String get exportAction => 'Export';
 
   @override
@@ -616,6 +619,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get actionAddSight => 'Add Sight';
+
+  @override
+  String get actionAddWeapon => 'Add Weapon';
 
   @override
   String get actionExportBackup => 'Export';
@@ -1035,9 +1041,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newBullet => 'New Bullet';
 
   @override
-  String get copyOf => 'Copy of';
-
-  @override
   String get editProfile => 'Edit Profile';
 
   @override
@@ -1078,6 +1081,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectAmmoHint => 'Select ammo';
+
+  @override
+  String get selectWeaponHint => 'Select weapon';
 
   @override
   String get placeholderSearch => 'Search';
@@ -1335,6 +1341,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get updateWeaponCaliberAction => 'Update weapon caliber';
+
+  @override
+  String get replaceWeaponWarningTitle => 'Replace weapon?';
+
+  @override
+  String get replaceWeaponWarningContent =>
+      'This will discard the current weapon\'s data. Duplicate the profile first if you want to keep it.';
+
+  @override
+  String get replaceAmmoWarningTitle => 'Replace ammo?';
+
+  @override
+  String get replaceAmmoWarningContent =>
+      'This will discard the current ammo\'s data (BC tables, zero data, powder sensitivity, etc.). Duplicate the profile first if you want to keep it.';
+
+  @override
+  String get replaceSightWarningTitle => 'Replace sight?';
+
+  @override
+  String get replaceSightWarningContent =>
+      'This will discard the current sight\'s data (click values, zero, etc.). Duplicate the profile first if you want to keep it.';
+
+  @override
+  String weaponAmmoCaliberMismatchContent(String weapon, String ammo) {
+    return 'The new weapon\'s caliber ($weapon) doesn\'t match the current ammo\'s caliber ($ammo). Update the ammo\'s caliber to match?';
+  }
 
   @override
   String get legacyMigrationConfirmTitle => 'Old data found';

@@ -15,6 +15,8 @@ import 'package:ebalistyka/shared/widgets/error_display.dart';
 import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
+import 'package:dart_bclibc/unit.dart';
+import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,6 +34,60 @@ class ProfilesScreen extends ConsumerWidget {
       labelText: l10n.profileName,
       confirmLabel: l10n.nextButton,
     );
+  }
+
+  /// Warns that swapping in a new weapon/ammo/sight discards whatever is
+  /// currently there, and offers a way out: duplicate the profile first
+  /// (auto-named `[COPY] <name>`, no extra prompt — this is a one-tap
+  /// escape hatch, not the deliberate "Duplicate" action) and apply the
+  /// hotswap to the copy instead. The copy is made active immediately —
+  /// otherwise the hotswap would land on a profile that isn't the one on
+  /// screen, and the *original* (now untouched) would still be showing,
+  /// making it look like nothing happened. Returns the uuid the hotswap
+  /// should target, or null if the sheet was dismissed without a choice.
+  Future<String?> _resolveHotswapTargetUuid(
+    BuildContext context,
+    WidgetRef ref,
+    Profile profile, {
+    required bool hasExisting,
+    required String warningTitle,
+    required String warningContent,
+  }) async {
+    if (!hasExisting) return profile.uuid;
+
+    final l10n = AppLocalizations.of(context)!;
+    String? targetUuid;
+    await showActionSheet(
+      context,
+      title: warningTitle,
+      subtitle: warningContent,
+      entries: [
+        ActionSheetItem(
+          icon: IconDef.copy,
+          title: l10n.duplicateAction,
+          onTap: () async {
+            final uuid = await ref
+                .read(profilesActionsProvider.notifier)
+                .duplicateProfile(profile.uuid, '[COPY] ${profile.name}');
+            if (uuid != null) {
+              await ref
+                  .read(profilesActionsProvider.notifier)
+                  .selectProfile(uuid);
+            }
+            targetUuid = uuid;
+          },
+        ),
+        ActionSheetItem(
+          icon: IconDef.replace,
+          title: l10n.replaceAction,
+          isDestructive: true,
+          onTap: () async {
+            targetUuid = profile.uuid;
+          },
+        ),
+      ],
+    );
+    return targetUuid;
   }
 
   Future<void> _onAddTap(BuildContext context, WidgetRef ref) {
@@ -134,23 +190,147 @@ class ProfilesScreen extends ConsumerWidget {
     }
   }
 
+  /// After swapping in a new weapon, if the target profile already has ammo
+  /// whose caliber no longer matches the new weapon, offer to update the
+  /// ammo's caliber to match — mirrors [AmmoWizardScreen]'s own
+  /// caliber-mismatch sheet, just triggered from the weapon side instead of
+  /// the ammo side. [targetUuid]/[currentAmmo] are the profile the hotswap
+  /// actually landed on (the original, or its duplicate — see
+  /// [_resolveHotswapTargetUuid]), not necessarily the profile the sheet was
+  /// opened from.
+  Future<void> _maybeWarnWeaponAmmoCaliberMismatch(
+    BuildContext context,
+    WidgetRef ref,
+    String targetUuid,
+    Ammo currentAmmo,
+    Weapon newWeapon,
+  ) async {
+    if (currentAmmo.name.isEmpty) return;
+    if (!newWeapon.hasCaliberInch() || !currentAmmo.hasCaliberInch()) return;
+    final weaponCaliberInch = newWeapon.caliberInch;
+    final ammoCaliberInch = currentAmmo.caliberInch;
+    if ((weaponCaliberInch - ammoCaliberInch).abs() < 0.0001) return;
+    if (!context.mounted) return;
+
+    final l10n = AppLocalizations.of(context)!;
+    final formatter = ref.read(unitFormatterProvider);
+    final confirmed = await showConfirmDialog(
+      context,
+      title: l10n.caliberMismatchTitle,
+      content: l10n.weaponAmmoCaliberMismatchContent(
+        formatter.diameter(Distance.inch(weaponCaliberInch)),
+        formatter.diameter(Distance.inch(ammoCaliberInch)),
+      ),
+      confirmLabel: l10n.updateAmmoCaliberAction,
+    );
+    if (confirmed && context.mounted) {
+      final updatedAmmo = currentAmmo.deepCopy()
+        ..caliberInch = weaponCaliberInch;
+      await ref
+          .read(appStateProvider.notifier)
+          .setProfileAmmo(targetUuid, updatedAmmo);
+    }
+  }
+
+  Future<void> _onReplaceWeapon(
+    BuildContext context,
+    WidgetRef ref,
+    Profile profile,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    final targetUuid = await _resolveHotswapTargetUuid(
+      context,
+      ref,
+      profile,
+      hasExisting: profile.weapon.name.isNotEmpty,
+      warningTitle: l10n.replaceWeaponWarningTitle,
+      warningContent: l10n.replaceWeaponWarningContent,
+    );
+    if (targetUuid == null || !context.mounted) return;
+
+    Future<void> replace(Future<Weapon?> Function() pick) async {
+      final result = await pick();
+      if (result != null && context.mounted) {
+        await ref
+            .read(appStateProvider.notifier)
+            .setProfileWeapon(targetUuid, result);
+        if (!context.mounted) return;
+        await _maybeWarnWeaponAmmoCaliberMismatch(
+          context,
+          ref,
+          targetUuid,
+          profile.ammo,
+          result,
+        );
+      }
+    }
+
+    return showActionSheet(
+      context,
+      title: l10n.actionAddWeapon,
+      entries: [
+        ActionSheetItem(
+          icon: IconDef.addCircle,
+          title: l10n.createNewAction,
+          onTap: () => replace(
+            () => context.push<Weapon?>(Routes.profileAddWeaponCreate),
+          ),
+        ),
+        ActionSheetItem(
+          icon: IconDef.openCollection,
+          title: l10n.fromCollectionAction,
+          onTap: () => replace(
+            () => context.push<Weapon?>(Routes.profileAddWeaponCollection),
+          ),
+        ),
+        ActionSheetItem(
+          icon: IconDef.import,
+          title: l10n.actionImportFromFile,
+          onTap: () => replace(() async {
+            try {
+              final imported = await A7pService.pickAndParse();
+              return imported?.weapon;
+            } catch (e) {
+              debugPrint('Weapon import failed: $e');
+              if (context.mounted) {
+                showFeedback(context, e.toString(), isError: true);
+              }
+              return null;
+            }
+          }),
+        ),
+      ],
+    );
+  }
+
   Future<void> _onReplaceAmmo(
     BuildContext context,
     WidgetRef ref,
     Profile profile,
-  ) {
+  ) async {
     final l10n = AppLocalizations.of(context)!;
     final weapon = profile.weapon;
     final defaultCaliberInch = weapon.hasCaliberInch()
         ? weapon.caliberInch
         : null;
 
+    final targetUuid = await _resolveHotswapTargetUuid(
+      context,
+      ref,
+      profile,
+      hasExisting: profile.ammo.name.isNotEmpty,
+      warningTitle: l10n.replaceAmmoWarningTitle,
+      warningContent: l10n.replaceAmmoWarningContent,
+    );
+    if (targetUuid == null || !context.mounted) return;
+
     Future<void> replace(Future<Ammo?> Function() pick) async {
       final result = await pick();
       if (result != null && context.mounted) {
         await ref
             .read(appStateProvider.notifier)
-            .setProfileAmmo(profile.uuid, result);
+            .setProfileAmmo(targetUuid, result);
       }
     }
 
@@ -179,7 +359,7 @@ class ProfilesScreen extends ConsumerWidget {
             if (template == null || !context.mounted) return null;
             return context.push<Ammo?>(
               Routes.profileEditAmmo,
-              extra: (template, defaultCaliberInch, profile.uuid),
+              extra: (template, defaultCaliberInch, targetUuid),
             );
           }),
         ),
@@ -194,7 +374,7 @@ class ProfilesScreen extends ConsumerWidget {
             if (template == null || !context.mounted) return null;
             return context.push<Ammo?>(
               Routes.profileEditAmmo,
-              extra: (template, defaultCaliberInch, profile.uuid),
+              extra: (template, defaultCaliberInch, targetUuid),
             );
           }),
         ),
@@ -220,15 +400,25 @@ class ProfilesScreen extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     Profile profile,
-  ) {
+  ) async {
     final l10n = AppLocalizations.of(context)!;
+
+    final targetUuid = await _resolveHotswapTargetUuid(
+      context,
+      ref,
+      profile,
+      hasExisting: profile.sight.name.isNotEmpty,
+      warningTitle: l10n.replaceSightWarningTitle,
+      warningContent: l10n.replaceSightWarningContent,
+    );
+    if (targetUuid == null || !context.mounted) return;
 
     Future<void> replace(Future<Sight?> Function() pick) async {
       final result = await pick();
       if (result != null && context.mounted) {
         await ref
             .read(appStateProvider.notifier)
-            .setProfileSight(profile.uuid, result);
+            .setProfileSight(targetUuid, result);
       }
     }
 
@@ -273,7 +463,7 @@ class ProfilesScreen extends ConsumerWidget {
   ) async {
     final name = await _askProfileName(
       context,
-      initial: '${AppLocalizations.of(context)!.copyOf} ${profile.name}',
+      initial: '[COPY] ${profile.name}',
     );
     if (name == null) return;
     await ref
@@ -427,10 +617,13 @@ class ProfilesScreen extends ConsumerWidget {
                       profileId: profile.uuid,
                       profileName: data.name,
                       weaponImage: data.weaponImage,
+                      hasWeapon: profile.weapon.name.isNotEmpty,
                       hasAmmo: profile.ammo.name.isNotEmpty,
                       hasSight: profile.sight.name.isNotEmpty,
                       onDuplicate: () => _onDuplicate(context, ref, profile),
                       onExport: () => _onExport(context, profile),
+                      onSelectWeapon: () =>
+                          _onReplaceWeapon(context, ref, profile),
                       onSelectAmmo: () => _onReplaceAmmo(context, ref, profile),
                       onSelectSight: () =>
                           _onReplaceSight(context, ref, profile),
@@ -438,18 +631,21 @@ class ProfilesScreen extends ConsumerWidget {
                       onRename: (name) =>
                           _onRename(context, ref, profile, name),
                     ),
-                    ProfileWeaponSection(
-                      data: data,
-                      onEdit: () => _onEditWeapon(context, ref, profile),
-                    ),
-                    ProfileAmmoSection(
-                      data: data,
-                      onEdit: () => _onEditAmmo(context, ref, profile),
-                    ),
-                    ProfileSightSection(
-                      data: data,
-                      onEdit: () => _onEditSight(context, ref, profile),
-                    ),
+                    if (profile.weapon.name.isNotEmpty)
+                      ProfileWeaponSection(
+                        data: data,
+                        onEdit: () => _onEditWeapon(context, ref, profile),
+                      ),
+                    if (profile.ammo.name.isNotEmpty)
+                      ProfileAmmoSection(
+                        data: data,
+                        onEdit: () => _onEditAmmo(context, ref, profile),
+                      ),
+                    if (profile.sight.name.isNotEmpty)
+                      ProfileSightSection(
+                        data: data,
+                        onEdit: () => _onEditSight(context, ref, profile),
+                      ),
                   ],
                 ),
               ),

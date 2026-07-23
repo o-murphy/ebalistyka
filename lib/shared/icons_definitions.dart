@@ -64,6 +64,7 @@ class IconDef {
   static const IconData edit = Icons.edit_outlined;
   static const IconData copy = Icons.copy_outlined;
   static const IconData remove = Icons.delete_forever_outlined;
+  static const IconData replace = Icons.find_replace_outlined;
   static const IconData clear = Icons.clear_outlined;
   static const IconData dropDown = Icons.arrow_drop_down_outlined;
   static const IconData openCollection = Icons.folder_open_outlined;
