@@ -393,6 +393,8 @@
     "@editAction": {"description": "Context action label to edit an item"},
     "duplicateAction": "Duplicate",
     "@duplicateAction": {"description": "Context action label to duplicate / copy an item"},
+    "replaceAction": "Replace",
+    "@replaceAction": {"description": "Context action label to replace an item, discarding what's currently there"},
     "exportAction": "Export",
     "@exportAction": {"description": "Context action label to export an item"},
     "importAction": "Import",
@@ -411,6 +413,8 @@
     "@actionAddAmmo": {"description": "Action to add / import ammo into the current profile"},
     "actionAddSight": "Add Sight",
     "@actionAddSight": {"description": "Action to add / import a sight into the current profile"},
+    "actionAddWeapon": "Add Weapon",
+    "@actionAddWeapon": {"description": "Action to add / import a weapon into the current profile"},
     "actionExportBackup": "Export",
     "@actionExportBackup": {"description": "Settings action to export a full backup of all data"},
     "actionImportBackup": "Import",
@@ -694,8 +698,6 @@
     "@newProjectile": {"description": "Default name for a newly created projectile"},
     "newBullet": "New Bullet",
     "@newBullet": {"description": "Default name for a newly created bullet"},
-    "copyOf": "Copy of",
-    "@copyOf": {"description": "Prefix prepended to the name when duplicating an entity (e.g. 'Copy of My Ammo')"},
 
     "editProfile": "Edit Profile",
     "@editProfile": {"description": "Screen title / action label when editing an existing profile"},
@@ -727,6 +729,8 @@
     "@selectSightHint": {"description": "Hint shown on the profile card when no sight is selected"},
     "selectAmmoHint": "Select ammo",
     "@selectAmmoHint": {"description": "Hint shown on the profile card when no ammo is selected"},
+    "selectWeaponHint": "Select weapon",
+    "@selectWeaponHint": {"description": "Hint shown on the profile card when no weapon is selected"},
 
     "placeholderSearch": "Search",
     "@placeholderSearch": {"description": "Placeholder text for search input fields"},
@@ -894,6 +898,28 @@
     "@updateAmmoCaliberAction": {"description": "Action sheet option to set the ammo caliber to match the weapon"},
     "updateWeaponCaliberAction": "Update weapon caliber",
     "@updateWeaponCaliberAction": {"description": "Action sheet option to set the weapon caliber to match the ammo"},
+
+    "replaceWeaponWarningTitle": "Replace weapon?",
+    "@replaceWeaponWarningTitle": {"description": "Confirm dialog title before the weapon hotswap action discards the current weapon"},
+    "replaceWeaponWarningContent": "This will discard the current weapon's data. Duplicate the profile first if you want to keep it.",
+    "@replaceWeaponWarningContent": {"description": "Confirm dialog body before the weapon hotswap action discards the current weapon"},
+    "replaceAmmoWarningTitle": "Replace ammo?",
+    "@replaceAmmoWarningTitle": {"description": "Confirm dialog title before the ammo hotswap action discards the current ammo"},
+    "replaceAmmoWarningContent": "This will discard the current ammo's data (BC tables, zero data, powder sensitivity, etc.). Duplicate the profile first if you want to keep it.",
+    "@replaceAmmoWarningContent": {"description": "Confirm dialog body before the ammo hotswap action discards the current ammo"},
+    "replaceSightWarningTitle": "Replace sight?",
+    "@replaceSightWarningTitle": {"description": "Confirm dialog title before the sight hotswap action discards the current sight"},
+    "replaceSightWarningContent": "This will discard the current sight's data (click values, zero, etc.). Duplicate the profile first if you want to keep it.",
+    "@replaceSightWarningContent": {"description": "Confirm dialog body before the sight hotswap action discards the current sight"},
+
+    "weaponAmmoCaliberMismatchContent": "The new weapon's caliber ({weapon}) doesn't match the current ammo's caliber ({ammo}). Update the ammo's caliber to match?",
+    "@weaponAmmoCaliberMismatchContent": {
+        "description": "Confirm dialog body shown after a weapon hotswap when the new weapon's caliber differs from the profile's current ammo",
+        "placeholders": {
+            "weapon": {"type": "String"},
+            "ammo": {"type": "String"}
+        }
+    },
 
     "legacyMigrationConfirmTitle": "Old data found",
     "@legacyMigrationConfirmTitle": {"description": "Title of the dialog offering to import data from the app's old (pre-protobuf) database"},

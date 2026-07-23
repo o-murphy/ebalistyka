@@ -595,6 +595,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get duplicateAction => 'Створити копію';
 
   @override
+  String get replaceAction => 'Замінити';
+
+  @override
   String get exportAction => 'Експортувати';
 
   @override
@@ -620,6 +623,9 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get actionAddSight => 'Додати приціл';
+
+  @override
+  String get actionAddWeapon => 'Додати зброю';
 
   @override
   String get actionExportBackup => 'Експортувати';
@@ -1038,9 +1044,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get newBullet => 'Нова куля';
 
   @override
-  String get copyOf => 'Копія';
-
-  @override
   String get editProfile => 'Редагувати профіль';
 
   @override
@@ -1081,6 +1084,9 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get selectAmmoHint => 'Оберіть набій';
+
+  @override
+  String get selectWeaponHint => 'Оберіть зброю';
 
   @override
   String get placeholderSearch => 'Пошук';
@@ -1343,6 +1349,32 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get updateWeaponCaliberAction => 'Оновити калібр зброї';
+
+  @override
+  String get replaceWeaponWarningTitle => 'Замінити зброю?';
+
+  @override
+  String get replaceWeaponWarningContent =>
+      'Це видалить поточні дані зброї. Спершу створіть копію профілю, якщо хочете їх зберегти.';
+
+  @override
+  String get replaceAmmoWarningTitle => 'Замінити набій?';
+
+  @override
+  String get replaceAmmoWarningContent =>
+      'Це видалить поточні дані набою (таблиці БК, дані пристрілки, чутливість пороху тощо). Спершу створіть копію профілю, якщо хочете їх зберегти.';
+
+  @override
+  String get replaceSightWarningTitle => 'Замінити приціл?';
+
+  @override
+  String get replaceSightWarningContent =>
+      'Це видалить поточні дані прицілу (значення кліків, пристрілку тощо). Спершу створіть копію профілю, якщо хочете їх зберегти.';
+
+  @override
+  String weaponAmmoCaliberMismatchContent(String weapon, String ammo) {
+    return 'Калібр нової зброї ($weapon) не відповідає калібру поточного набою ($ammo). Оновити калібр набою відповідно?';
+  }
 
   @override
   String get legacyMigrationConfirmTitle => 'Знайдено старі дані';

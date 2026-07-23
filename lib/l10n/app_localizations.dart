@@ -1244,6 +1244,12 @@ abstract class AppLocalizations {
   /// **'Duplicate'**
   String get duplicateAction;
 
+  /// Context action label to replace an item, discarding what's currently there
+  ///
+  /// In en, this message translates to:
+  /// **'Replace'**
+  String get replaceAction;
+
   /// Context action label to export an item
   ///
   /// In en, this message translates to:
@@ -1297,6 +1303,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add Sight'**
   String get actionAddSight;
+
+  /// Action to add / import a weapon into the current profile
+  ///
+  /// In en, this message translates to:
+  /// **'Add Weapon'**
+  String get actionAddWeapon;
 
   /// Settings action to export a full backup of all data
   ///
@@ -2120,12 +2132,6 @@ abstract class AppLocalizations {
   /// **'New Bullet'**
   String get newBullet;
 
-  /// Prefix prepended to the name when duplicating an entity (e.g. 'Copy of My Ammo')
-  ///
-  /// In en, this message translates to:
-  /// **'Copy of'**
-  String get copyOf;
-
   /// Screen title / action label when editing an existing profile
   ///
   /// In en, this message translates to:
@@ -2209,6 +2215,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select ammo'**
   String get selectAmmoHint;
+
+  /// Hint shown on the profile card when no weapon is selected
+  ///
+  /// In en, this message translates to:
+  /// **'Select weapon'**
+  String get selectWeaponHint;
 
   /// Placeholder text for search input fields
   ///
@@ -2671,6 +2683,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Update weapon caliber'**
   String get updateWeaponCaliberAction;
+
+  /// Confirm dialog title before the weapon hotswap action discards the current weapon
+  ///
+  /// In en, this message translates to:
+  /// **'Replace weapon?'**
+  String get replaceWeaponWarningTitle;
+
+  /// Confirm dialog body before the weapon hotswap action discards the current weapon
+  ///
+  /// In en, this message translates to:
+  /// **'This will discard the current weapon\'s data. Duplicate the profile first if you want to keep it.'**
+  String get replaceWeaponWarningContent;
+
+  /// Confirm dialog title before the ammo hotswap action discards the current ammo
+  ///
+  /// In en, this message translates to:
+  /// **'Replace ammo?'**
+  String get replaceAmmoWarningTitle;
+
+  /// Confirm dialog body before the ammo hotswap action discards the current ammo
+  ///
+  /// In en, this message translates to:
+  /// **'This will discard the current ammo\'s data (BC tables, zero data, powder sensitivity, etc.). Duplicate the profile first if you want to keep it.'**
+  String get replaceAmmoWarningContent;
+
+  /// Confirm dialog title before the sight hotswap action discards the current sight
+  ///
+  /// In en, this message translates to:
+  /// **'Replace sight?'**
+  String get replaceSightWarningTitle;
+
+  /// Confirm dialog body before the sight hotswap action discards the current sight
+  ///
+  /// In en, this message translates to:
+  /// **'This will discard the current sight\'s data (click values, zero, etc.). Duplicate the profile first if you want to keep it.'**
+  String get replaceSightWarningContent;
+
+  /// Confirm dialog body shown after a weapon hotswap when the new weapon's caliber differs from the profile's current ammo
+  ///
+  /// In en, this message translates to:
+  /// **'The new weapon\'s caliber ({weapon}) doesn\'t match the current ammo\'s caliber ({ammo}). Update the ammo\'s caliber to match?'**
+  String weaponAmmoCaliberMismatchContent(String weapon, String ammo);
 
   /// Title of the dialog offering to import data from the app's old (pre-protobuf) database
   ///
