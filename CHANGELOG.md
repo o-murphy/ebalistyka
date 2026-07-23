@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
 ### Changed
+- **Storage engine — ObjectBox replaced with two embedded protobuf files.** `packages/ebalistyka_db` (ObjectBox entities, `ToOne<Owner>` relations, `Query.watch()` streams) is replaced by the new `packages/ebc_db` package: persisted state is now `settings.ebcp`/`profiles.ebcp`, two independent "md5+ebcpbuf" protobuf files (`SettingsData`/`ProfilesData`) written atomically (tmp+flush+rename+`.bak`) to `<applicationSupportDirectory>`, with no relational ids or `Owner` singleton. `Profile` is now 1 weapon : 1 ammo : 1 sight (no nested lists), addressed by a client-generated `uuid`; the active profile is `profiles[0]`. Riverpod providers (`settingsDataProvider`/`profilesProvider`/`activeProfileProvider`) replace every ObjectBox-stream-backed provider. Existing installs are migrated automatically on first launch after upgrade via a new `MigrationGate` (`lib/ob_migrate/`), which reads the old ObjectBox store with [`ob_dump_reader_flutter`](https://github.com/o-murphy/ob-dump) (no `objectbox` dependency needed to read it back out) and writes the new files; the old `data.mdb`/`lock.mdb` are left on disk untouched. See `docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md` for the full design/execution log.
 - **flutpak** - refs updated to v0.8.3
 - **flutter sdk** - upgraded to `3.44.8`
 - **A7P format dependency** — replaced `packages/a7p` (local path package) with [`a7p ^1.2.3`](https://pub.dev/packages/a7p) from pub.dev. `A7pConverter`/`A7pRange` (the proto ↔ `ProfileExport` conversion, plus the distance-range tables — app-specific, and not part of the standalone `a7p` package) now live in `lib/core/services/a7p_converter.dart`.
@@ -33,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   - `build-snap.yml`: `unsquashfs` extraction + ELF check
 
 ### Removed
+- `packages/ebalistyka_db/` local package (ObjectBox entities + old ZIP+JSON `.ebcp` DTOs — superseded by `packages/ebc_db`)
 - `packages/a7p/` local package (superseded by `a7p` on pub.dev)
 - `generate-a7p` Makefile target (protobuf bindings now ship inside the `a7p` package itself)
 - `packages/bclibc_ffi/` local package (superseded by `dart_bclibc` on pub.dev)
