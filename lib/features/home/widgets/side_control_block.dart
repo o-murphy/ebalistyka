@@ -4,7 +4,7 @@ class SideControlBlock extends StatelessWidget {
   final IconData topIcon;
   final IconData bottomIcon;
   final List<(IconData, Color, String, String)> infoRows;
-  final VoidCallback onTopPressed;
+  final VoidCallback? onTopPressed;
   final VoidCallback onBottomPressed;
 
   const SideControlBlock({
@@ -65,7 +65,7 @@ class _SideControlFab extends StatelessWidget {
   const _SideControlFab(this.icon, this.onPressed);
 
   final IconData icon;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
