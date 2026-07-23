@@ -437,19 +437,55 @@ void main() {
   });
 
   group('HomeViewModel — initial state', () {
-    test('starts with no-data before shot context resolves', () async {
-      final service = _FakeBallisticsService(_makeResult());
-      final container = _createContainer(
-        profile: _makeProfile(),
-        conditions: _makeConditions(),
-        service: service,
-      );
-      addTearDown(container.dispose);
+    test(
+      'resolves straight to HomeUiReady when shot context already has a '
+      'ready profile — no intermediate placeholder step',
+      () async {
+        final service = _FakeBallisticsService(_makeResult());
+        final container = _createContainer(
+          profile: _makeProfile(),
+          conditions: _makeConditions(),
+          service: service,
+        );
+        addTearDown(container.dispose);
 
-      final state = await container.read(homeVmProvider.future);
-      expect(state, isA<HomeUiNoData>());
-    });
+        final state = await container.read(homeVmProvider.future);
+        expect(state, isA<HomeUiReady>());
+      },
+    );
+
+    test(
+      'stays in AsyncLoading (not a premature empty state) while shot '
+      'context genuinely hasn\'t resolved yet',
+      () async {
+        final service = _FakeBallisticsService(_makeResult());
+        final container = ProviderContainer(
+          overrides: [
+            shotContextProvider.overrideWith(
+              () => _PendingShotContextNotifier(),
+            ),
+            settingsProvider.overrideWith(
+              () => _FakeSettingsNotifier(_defaultSettings()),
+            ),
+            unitSettingsProvider.overrideWith((ref) => UnitSettings()),
+            ballisticsServiceProvider.overrideWithValue(service),
+            appLocalizationsProvider.overrideWithValue(
+              lookupAppLocalizations(const Locale('en')),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        expect(container.read(homeVmProvider).isLoading, isTrue);
+        expect(service.callCount, 0);
+      },
+    );
   });
+}
+
+class _PendingShotContextNotifier extends ShotContextNotifier {
+  @override
+  Future<ShotContext?> build() => Completer<ShotContext?>().future;
 }
 
 class _ThrowingBallisticsService implements BallisticsService {
