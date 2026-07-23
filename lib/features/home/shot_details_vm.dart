@@ -71,8 +71,13 @@ class ShotInfoReady extends ShotInfoUiState {
 class ShotInfoViewModel extends AsyncNotifier<ShotInfoUiState> {
   @override
   Future<ShotInfoUiState> build() async {
-    ref.listen<AsyncValue<ShotContext?>>(shotContextProvider, (_, next) {
-      if (next.hasValue) unawaited(_recalculate());
+    ref.listen<AsyncValue<ShotContext?>>(shotContextProvider, (prev, next) {
+      // `prev != null` guard matches the `unitSettingsProvider` listener
+      // below — without it, this fires for shotContextProvider's *very
+      // first* resolution too, which `build()`'s own `_calculate()` below
+      // already handles by awaiting it directly. Skipping that redundant
+      // fire avoids running the (expensive) calculation twice on startup.
+      if (next.hasValue && prev != null) unawaited(_recalculate());
     }, fireImmediately: true);
     ref.listen<AsyncValue<GeneralSettings>>(settingsProvider, (prev, next) {
       if (!next.hasValue) return;

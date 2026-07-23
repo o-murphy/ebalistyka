@@ -28,7 +28,7 @@ enum EmptyStateType {
   noData,
 }
 
-extension _EmptyStateTypeProps on EmptyStateType {
+extension EmptyStateTypeProps on EmptyStateType {
   IconData get icon => switch (this) {
     EmptyStateType.noProfile => Icons.military_tech_outlined,
     EmptyStateType.noAmmo => IconDef.ammo,
