@@ -100,7 +100,7 @@ _UI/UX inspired by the [**Strilets**](https://download.strilets.tech/) ballistic
 - [Dependencies](#dependencies)
   - [App (`ebalistyka`)](#app-ebalistyka)
   - [`dart_bclibc`](#dart_bclibc)
-  - [`packages/ebalistyka_db`](#packagesebalistyka_db)
+  - [`packages/ebc_db`](#packagesebc_db)
   - [`tools/reticle_gen`](#toolsreticle_gen)
 - [License](#license)
 
@@ -319,7 +319,7 @@ ebalistyka/
 │   │   └── settings/          # App settings (units, adjustments, theme, locale)
 │   ├── core/
 │   │   ├── providers/         # Riverpod providers (app state, settings, DB, l10n)
-│   │   ├── extensions/        # Typed getters/setters on ObjectBox entities
+│   │   ├── extensions/        # Typed getters/setters on ebc_db protobuf messages
 │   │   ├── formatting/        # UnitFormatterImpl — localized value formatting
 │   │   ├── models/            # FieldConstraints and other shared models
 │   │   ├── services/          # A7pService/A7pConverter, import/export orchestration
@@ -333,14 +333,14 @@ ebalistyka/
 │   ├── update/                # Update checker and utilities
 │   └── l10n/                  # Generated AppLocalizations (EN + UA)
 ├── packages/
-│   └── ebalistyka_db/         # ObjectBox schema + .ebcp export DTOs
+│   └── ebc_db/                # Protobuf schema + .ebcp storage/export (settings.ebcp, profiles.ebcp)
 └── tools/
     └── reticle_gen/           # SVG mil-reticle generator
 ```
 
 **State management:** Riverpod  
 **Navigation:** go_router  
-**Local database:** ObjectBox  
+**Local database:** two embedded protobuf files (`settings.ebcp`/`profiles.ebcp`), via `packages/ebc_db`  
 **Ballistic engine:** [dart_bclibc](https://pub.dev/packages/dart_bclibc) (pub.dev package, bundles bclibc C++ solver via FFI)  
 **Localisation:** Flutter ARB / `flutter_localizations` (EN + UA)
 
@@ -465,13 +465,14 @@ The app depends directly on [`dart_bclibc_flutter`](https://pub.dev/packages/dar
 | [dart_bclibc](https://pub.dev/packages/dart_bclibc)                              | Dart FFI package — bclibc C++ solver (3-DOF, RK4) LGPL-3, bindings, unit types                                          |
 | [ffi](https://pub.dev/packages/ffi)                                              | Dart ↔ C FFI bindings                                                                                                     |
 
-### `packages/ebalistyka_db`
+### `packages/ebc_db`
 
-| Package                                                      | Role                           |
-| ------------------------------------------------------------ | ------------------------------ |
-| [objectbox](https://pub.dev/packages/objectbox_flutter_libs) | Local database                 |
-| [archive](https://pub.dev/packages/archive)                  | `.ebcp` zip archive read/write |
-| [json_annotation](https://pub.dev/packages/json_annotation)  | Export DTO serialisation       |
+| Package                                                      | Role                                          |
+| ------------------------------------------------------------ | --------------------------------------------- |
+| [protobuf](https://pub.dev/packages/protobuf)                | `ProfilesData`/`SettingsData`/`EbcpData` wire format |
+| [crypto](https://pub.dev/packages/crypto)                    | MD5 integrity check (`.ebcp`'s "md5+ebcpbuf")  |
+| [json_schema](https://pub.dev/packages/json_schema)          | Schema validation against embedded JSON Schema |
+| [uuid](https://pub.dev/packages/uuid)                        | Client-generated `Profile.uuid`                |
 
 ### `tools/reticle_gen`
 
