@@ -5,7 +5,7 @@ class SideControlBlock extends StatelessWidget {
   final IconData bottomIcon;
   final List<(IconData, Color, String, String)> infoRows;
   final VoidCallback? onTopPressed;
-  final VoidCallback onBottomPressed;
+  final VoidCallback? onBottomPressed;
 
   const SideControlBlock({
     super.key,

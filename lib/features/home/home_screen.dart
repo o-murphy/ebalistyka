@@ -265,9 +265,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                             altStr,
                                           ),
                                         ],
-                                        onTopPressed: vmState is HomeUiReady
-                                            ? () => context.push(Routes.shotInfo)
-                                            : null,
+                                        onTopPressed: () {
+                                          if (vmState is HomeUiReady) {
+                                            context.push(Routes.shotInfo);
+                                          } else {
+                                            final type = vmState is HomeUiNoData
+                                                ? vmState.type
+                                                : EmptyStateType.noProfile;
+                                            showFeedback(
+                                              context,
+                                              type.defaultMessage(l10n),
+                                              isError: true
+                                            );
+                                          }
+                                        },
                                         onBottomPressed: () =>
                                             showNotAvailableSnackBar(
                                               context,

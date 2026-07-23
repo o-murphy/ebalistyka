@@ -2,6 +2,8 @@ import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/features/convertors/sub_screens/convertors_sub_screens.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/widgets/empty_state.dart';
+import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/features/home/sub_screens/weapon_wizard_screen.dart';
 import 'package:flutter/material.dart';
@@ -393,8 +395,12 @@ class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
     super.initState();
   }
 
-  void _onTabSelected(int i, bool tablesReady) {
-    if (i == _tablesTabIndex && !tablesReady) return;
+  void _onTabSelected(int i, bool tablesReady, EmptyStateType tablesEmptyType) {
+    if (i == _tablesTabIndex && !tablesReady) {
+      final l10n = AppLocalizations.of(context)!;
+      showFeedback(context, tablesEmptyType.defaultMessage(l10n), isError: true);
+      return;
+    }
     widget.shell.goBranch(i, initialLocation: true);
   }
 
@@ -408,7 +414,11 @@ class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
     // avoids ever landing on an empty/loading Tables screen in the first
     // place instead of having every consumer of the profile handle that
     // case on its own.
-    final tablesReady = ref.watch(homeVmProvider).value is HomeUiReady;
+    final homeVmState = ref.watch(homeVmProvider).value;
+    final tablesReady = homeVmState is HomeUiReady;
+    final tablesEmptyType = homeVmState is HomeUiNoData
+        ? homeVmState.type
+        : EmptyStateType.noProfile;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -421,7 +431,8 @@ class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
         ),
         child: NavigationBar(
           selectedIndex: widget.shell.currentIndex,
-          onDestinationSelected: (i) => _onTabSelected(i, tablesReady),
+          onDestinationSelected: (i) =>
+              _onTabSelected(i, tablesReady, tablesEmptyType),
           destinations: [
             NavigationDestination(
               icon: Icon(IconDef.home),
