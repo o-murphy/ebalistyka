@@ -17,7 +17,7 @@ import 'package:ebalistyka/router.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
-import 'package:dart_bclibc/unit.dart';
+import 'package:dart_bclibc_flutter/unit.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/features/home/widgets/home_chart_page.dart';
 import 'package:ebalistyka/features/home/widgets/home_reticle_page.dart';

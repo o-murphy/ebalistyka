@@ -15,7 +15,7 @@ import 'package:ebalistyka/shared/widgets/error_display.dart';
 import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
-import 'package:dart_bclibc/unit.dart';
+import 'package:dart_bclibc_flutter/unit.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter/material.dart';

@@ -2,7 +2,7 @@
 
 import 'dart:math' as math;
 
-import 'package:dart_bclibc/unit.dart';
+import 'package:dart_bclibc_flutter/unit.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 
 class UnitConversionHelper {

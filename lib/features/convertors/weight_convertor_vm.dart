@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:dart_bclibc/unit.dart';
+import 'package:dart_bclibc_flutter/unit.dart';
 import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';

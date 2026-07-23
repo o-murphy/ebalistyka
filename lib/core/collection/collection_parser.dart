@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:dart_bclibc/unit.dart';
+import 'package:dart_bclibc_flutter/unit.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';

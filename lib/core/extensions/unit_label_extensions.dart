@@ -1,4 +1,4 @@
-import 'package:dart_bclibc/unit.dart';
+import 'package:dart_bclibc_flutter/unit.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 
 extension UnitLocalizationExtension on Unit {
