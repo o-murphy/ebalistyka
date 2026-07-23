@@ -92,38 +92,39 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
 
   Future<void> _recalculate() async {
     final generation = ++_generation;
-    final ctx = ref.read(shotContextProvider).value;
-    final tablesSettings = ref.read(tablesSettingsProvider);
-    final units = ref.read(unitSettingsProvider);
-    final formatter = ref.read(unitFormatterProvider);
-    final l10n = ref.read(appLocalizationsProvider);
-
-    if (ctx == null) {
-      if (generation != _generation) return;
-      state = const AsyncData(
-        TrajectoryTablesUiEmpty(type: EmptyStateType.noProfile),
-      );
-      return;
-    }
-
-    final profile = ctx.profile;
-    final conditions = ctx.conditions;
-
-    if (!profile.isReadyForCalculation) {
-      if (generation != _generation) return;
-      _lastResult = null;
-      _lastProfile = null;
-      state = const AsyncData(
-        TrajectoryTablesUiEmpty(type: EmptyStateType.incompleteAmmo),
-      );
-      return;
-    }
-
-    if (state.value is! TrajectoryTablesUiReady) {
-      state = const AsyncData(TrajectoryTablesUiLoading());
-    }
 
     try {
+      final ctx = ref.read(shotContextProvider).value;
+      final tablesSettings = ref.read(tablesSettingsProvider);
+      final units = ref.read(unitSettingsProvider);
+      final formatter = ref.read(unitFormatterProvider);
+      final l10n = ref.read(appLocalizationsProvider);
+
+      if (ctx == null) {
+        if (generation != _generation) return;
+        state = const AsyncData(
+          TrajectoryTablesUiEmpty(type: EmptyStateType.noProfile),
+        );
+        return;
+      }
+
+      final profile = ctx.profile;
+      final conditions = ctx.conditions;
+
+      if (!profile.isReadyForCalculation) {
+        if (generation != _generation) return;
+        _lastResult = null;
+        _lastProfile = null;
+        state = const AsyncData(
+          TrajectoryTablesUiEmpty(type: EmptyStateType.incompleteAmmo),
+        );
+        return;
+      }
+
+      if (state.value is! TrajectoryTablesUiReady) {
+        state = const AsyncData(TrajectoryTablesUiLoading());
+      }
+
       final tableStep = tablesSettings.distanceStepMeter > 0
           ? tablesSettings.distanceStepMeter
           : FC.distanceStep.minRaw;

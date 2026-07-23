@@ -2174,6 +2174,42 @@ abstract class AppLocalizations {
   /// **'No sights found in file'**
   String get noSightsFoundInFile;
 
+  /// Empty-state placeholder message when no profile is active
+  ///
+  /// In en, this message translates to:
+  /// **'No profile selected'**
+  String get emptyStateNoProfile;
+
+  /// Empty-state placeholder message when the active profile has no ammo
+  ///
+  /// In en, this message translates to:
+  /// **'No ammo selected'**
+  String get emptyStateNoAmmo;
+
+  /// Empty-state placeholder message when the active profile has no sight
+  ///
+  /// In en, this message translates to:
+  /// **'No sight selected'**
+  String get emptyStateNoSight;
+
+  /// Empty-state placeholder message when the active profile's ammo isn't ready for calculation
+  ///
+  /// In en, this message translates to:
+  /// **'Ammo data is incomplete'**
+  String get emptyStateIncompleteAmmo;
+
+  /// Generic empty-state placeholder message for an error condition
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong'**
+  String get emptyStateError;
+
+  /// Generic empty-state placeholder message when there's nothing to show
+  ///
+  /// In en, this message translates to:
+  /// **'No data'**
+  String get emptyStateNoData;
+
   /// Dialog title for confirming ammo duplication
   ///
   /// In en, this message translates to:
