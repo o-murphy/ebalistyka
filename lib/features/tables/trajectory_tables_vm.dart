@@ -71,11 +71,26 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
     ref.listen<AsyncValue<ShotContext?>>(shotContextProvider, (_, next) {
       if (!next.hasValue) return;
       if (next.value == null) {
-        state = const AsyncData(
-          TrajectoryTablesUiEmpty(type: EmptyStateType.noProfile),
+        // Deferred (`Future(...)`, not a direct assignment) for the same
+        // reason the recalculate branch below is deferred: with
+        // `fireImmediately: true`, this callback can run synchronously
+        // *during* this same `build()` call (if shotContextProvider
+        // already has a value by the time this listener is registered) —
+        // a `state =` write made before `build()`'s own Future resolves
+        // gets silently clobbered the moment it does resolve, since the
+        // framework then applies `build()`'s return value
+        // (`TrajectoryTablesUiLoading()`) as the "official" state. Scheduling
+        // via `Future(...)` pushes the write to a later microtask, safely
+        // after `build()` has already settled.
+        unawaited(
+          Future(() {
+            state = const AsyncData(
+              TrajectoryTablesUiEmpty(type: EmptyStateType.noProfile),
+            );
+          }),
         );
       } else {
-        unawaited(_recalculate());
+        unawaited(Future(_recalculate));
       }
     }, fireImmediately: true);
     ref.listen<TablesSettings>(tablesSettingsProvider, (prev, next) {

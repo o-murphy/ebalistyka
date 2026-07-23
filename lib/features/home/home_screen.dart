@@ -265,8 +265,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                             altStr,
                                           ),
                                         ],
-                                        onTopPressed: () =>
-                                            context.push(Routes.shotInfo),
+                                        onTopPressed: vmState is HomeUiReady
+                                            ? () => context.push(Routes.shotInfo)
+                                            : null,
                                         onBottomPressed: () =>
                                             showNotAvailableSnackBar(
                                               context,

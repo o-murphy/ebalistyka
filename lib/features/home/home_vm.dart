@@ -36,96 +36,100 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
   @override
   Future<HomeUiState> build() async {
+    // `build()` computes and returns the real initial state itself (via
+    // `_calculate()`, same shape as `shot_details_vm.dart`'s
+    // `ShotInfoViewModel`) instead of returning a hardcoded placeholder and
+    // relying on these listeners to overwrite it. That placeholder-then-
+    // overwrite shape is what caused a real bug in `trajectory_tables_vm
+    // .dart`: with `fireImmediately: true`, a listener can fire
+    // *synchronously inside this same `build()` call* if the watched
+    // provider already has a value by the time it's registered (e.g.
+    // because some other screen already resolved `shotContextProvider`
+    // earlier) — and a `state =` write made before `build()`'s own Future
+    // resolves gets silently clobbered back to the placeholder the moment
+    // it does resolve. Since `build()`'s return value *is* the correct
+    // answer here, there's no placeholder for a synchronous listener fire
+    // to race against.
     ref.listen<AsyncValue<ShotContext?>>(shotContextProvider, (_, next) {
       if (next.hasValue) unawaited(_recalculate());
-    }, fireImmediately: true);
+    });
     ref.listen<AsyncValue<GeneralSettings>>(settingsProvider, (prev, next) {
       if (!next.hasValue) return;
       if (generalNeedsRecalc(prev?.value, next.value!)) {
         unawaited(_recalculate());
       }
-    }, fireImmediately: true);
+    });
     ref.listen<UnitSettings>(unitSettingsProvider, (prev, next) {
       if (prev != null) unawaited(_recalculate());
-    }, fireImmediately: true);
+    });
     ref.listen<ReticleSettings>(reticleSettingsProvider, (prev, next) {
       if (prev != null) unawaited(_recalculate());
-    }, fireImmediately: true);
-    return const HomeUiNoData(type: EmptyStateType.noProfile);
+    });
+    return _calculate();
   }
 
   Future<void> _recalculate() async {
     final generation = ++_generation;
-    final ctx = ref.read(shotContextProvider).value;
-    final settings = ref.read(settingsProvider).value;
+    try {
+      final result = await _calculate();
+      if (!ref.mounted || generation != _generation) return;
+      state = AsyncData(result);
+    } catch (e, stackTrace) {
+      if (!ref.mounted || generation != _generation) return;
+      debugPrintStack(stackTrace: stackTrace);
+      state = AsyncData(HomeUiError(e.toString()));
+    }
+  }
+
+  Future<HomeUiState> _calculate() async {
+    final ctx = await ref.read(shotContextProvider.future);
+    final settings = await ref.read(settingsProvider.future);
     final units = ref.read(unitSettingsProvider);
     final reticle = ref.read(reticleSettingsProvider);
     final formatter = ref.read(unitFormatterProvider);
 
-    if (ctx == null || settings == null) {
-      if (generation != _generation) return;
-      state = const AsyncData(HomeUiNoData(type: EmptyStateType.noProfile));
-      return;
+    if (ctx == null) {
+      return const HomeUiNoData(type: EmptyStateType.noProfile);
     }
     final profile = ctx.profile;
     final conditions = ctx.conditions;
 
     if (!profile.isReadyForCalculation) {
-      if (generation != _generation) return;
-      state = AsyncData(
-        HomeUiNoData(
-          type: missingProfileDataType(profile),
-          profileName: profile.name,
-        ),
+      return HomeUiNoData(
+        type: missingProfileDataType(profile),
+        profileName: profile.name,
       );
-      return;
-    }
-
-    if (state.value is! HomeUiReady) {
-      state = const AsyncLoading<HomeUiState>();
     }
 
     final l10n = ref.read(appLocalizationsProvider);
 
-    try {
-      final chartStep = settings.homeChartDistanceStep > 0
-          ? settings.homeChartDistanceStep
-          : FC.distanceStep.minRaw;
-      final tableStep = settings.homeTableDistanceStep > 0
-          ? settings.homeTableDistanceStep
-          : FC.distanceStep.minRaw;
-      final opts = TargetCalcOptions(
-        targetDistM: conditions.distanceMeter,
-        trajectoryEndM: conditions.distanceMeter + 2 * tableStep,
-        stepM: math.min(chartStep, tableStep),
-        tableStepM: tableStep,
-      );
+    final chartStep = settings.homeChartDistanceStep > 0
+        ? settings.homeChartDistanceStep
+        : FC.distanceStep.minRaw;
+    final tableStep = settings.homeTableDistanceStep > 0
+        ? settings.homeTableDistanceStep
+        : FC.distanceStep.minRaw;
+    final opts = TargetCalcOptions(
+      targetDistM: conditions.distanceMeter,
+      trajectoryEndM: conditions.distanceMeter + 2 * tableStep,
+      stepM: math.min(chartStep, tableStep),
+      tableStepM: tableStep,
+    );
 
-      final result = await ref
-          .read(ballisticsServiceProvider)
-          .calculateForTarget(profile, conditions, opts);
-      if (!ref.mounted) return;
+    final result = await ref
+        .read(ballisticsServiceProvider)
+        .calculateForTarget(profile, conditions, opts);
 
-      final uiState = await _buildReadyState(
-        profile: profile,
-        conditions: conditions,
-        settings: settings,
-        reticle: reticle,
-        units: units,
-        formatter: formatter,
-        result: result,
-        l10n: l10n,
-      );
-      if (!ref.mounted) return;
-      if (generation != _generation) return;
-
-      state = AsyncData(uiState);
-    } catch (e, stackTrace) {
-      if (ref.mounted && generation == _generation) {
-        debugPrintStack(stackTrace: stackTrace);
-        state = AsyncData(HomeUiError(e.toString()));
-      }
-    }
+    return _buildReadyState(
+      profile: profile,
+      conditions: conditions,
+      settings: settings,
+      reticle: reticle,
+      units: units,
+      formatter: formatter,
+      result: result,
+      l10n: l10n,
+    );
   }
 
   void selectChartPoint(int index) {

@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'features/home/home_screen.dart';
+import 'features/home/home_vm.dart';
 import 'features/home/sub_screens/home_sub_screens.dart';
 import 'update/update_sheet.dart';
 import 'features/conditions/conditions_screen.dart';
@@ -385,18 +386,29 @@ class _ScaffoldWithNav extends ConsumerStatefulWidget {
 }
 
 class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
+  static const _tablesTabIndex = 2;
+
   @override
   void initState() {
     super.initState();
   }
 
-  void _onTabSelected(int i) {
+  void _onTabSelected(int i, bool tablesReady) {
+    if (i == _tablesTabIndex && !tablesReady) return;
     widget.shell.goBranch(i, initialLocation: true);
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
+    // Tables (both its Trajectory and Details tabs) has nothing meaningful
+    // to show without a profile that's actually ready for calculation —
+    // gating the tab itself, same as the Home screen's "info" button,
+    // avoids ever landing on an empty/loading Tables screen in the first
+    // place instead of having every consumer of the profile handle that
+    // case on its own.
+    final tablesReady = ref.watch(homeVmProvider).value is HomeUiReady;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -409,7 +421,7 @@ class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
         ),
         child: NavigationBar(
           selectedIndex: widget.shell.currentIndex,
-          onDestinationSelected: _onTabSelected,
+          onDestinationSelected: (i) => _onTabSelected(i, tablesReady),
           destinations: [
             NavigationDestination(
               icon: Icon(IconDef.home),
@@ -420,7 +432,10 @@ class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
               label: l10n.conditionsScreenTitle,
             ),
             NavigationDestination(
-              icon: Icon(IconDef.tables),
+              icon: Icon(
+                IconDef.tables,
+                color: tablesReady ? null : cs.onSurface.withAlpha(97),
+              ),
               label: l10n.tablesScreenTitle,
             ),
             NavigationDestination(
