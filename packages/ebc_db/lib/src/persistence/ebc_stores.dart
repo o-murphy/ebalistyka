@@ -2,6 +2,7 @@ import 'dart:io';
 
 import '../proto/profiles.pb.dart';
 import '../proto/settings.pb.dart';
+import 'file_msg_store.dart';
 import 'msg_store.dart';
 import 'profiles_file.dart';
 import 'settings_file.dart';
@@ -43,12 +44,12 @@ Future<OpenedEbcStores> openEbcDbStores(
 }) async {
   final settingsFile = File('$directory/settings.ebcp');
   final profilesFile = File('$directory/profiles.ebcp');
-  final settingsStore = MsgStore<SettingsData>(
+  final settingsStore = FileMsgStore<SettingsData>(
     settingsFile,
     encode: SettingsFile.encode,
     decode: SettingsFile.decode,
   );
-  final profilesStore = MsgStore<ProfilesData>(
+  final profilesStore = FileMsgStore<ProfilesData>(
     profilesFile,
     encode: ProfilesFile.encode,
     decode: ProfilesFile.decode,

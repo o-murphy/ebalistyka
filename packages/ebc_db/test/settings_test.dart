@@ -112,8 +112,8 @@ void main() {
   group('MsgStore<SettingsData>', () {
     late Directory tmpDir;
 
-    MsgStore<SettingsData> storeFor(File file, {Duration debounce = Duration.zero}) =>
-        MsgStore<SettingsData>(
+    FileMsgStore<SettingsData> storeFor(File file, {Duration debounce = Duration.zero}) =>
+        FileMsgStore<SettingsData>(
           file,
           encode: SettingsFile.encode,
           decode: SettingsFile.decode,
