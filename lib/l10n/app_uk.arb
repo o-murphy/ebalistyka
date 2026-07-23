@@ -373,6 +373,7 @@
     "emptyStateNoAmmo": "Набій не обрано",
     "emptyStateNoSight": "Приціл не обрано",
     "emptyStateIncompleteAmmo": "Дані набою неповні",
+    "emptyStateIncompleteWeapon": "Дані зброї неповні",
     "emptyStateError": "Щось пішло не так",
     "emptyStateNoData": "Немає даних",
 

@@ -1077,6 +1077,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get emptyStateIncompleteAmmo => 'Дані набою неповні';
 
   @override
+  String get emptyStateIncompleteWeapon => 'Дані зброї неповні';
+
+  @override
   String get emptyStateError => 'Щось пішло не так';
 
   @override

@@ -1074,6 +1074,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emptyStateIncompleteAmmo => 'Ammo data is incomplete';
 
   @override
+  String get emptyStateIncompleteWeapon => 'Weapon data is incomplete';
+
+  @override
   String get emptyStateError => 'Something went wrong';
 
   @override
