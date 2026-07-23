@@ -17,31 +17,30 @@ class TrajectoryTable extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final vmAsync = ref.watch(trajectoryTablesVmProvider);
-    final vmState = vmAsync.value;
 
-    if (vmState is TrajectoryTablesUiLoading || vmState == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (vmState is TrajectoryTablesUiEmpty) {
-      return EmptyStatePlaceholder(
-        type: vmState.type,
-        message: vmState.message,
-      );
-    }
-
-    if (vmState is TrajectoryTablesUiError) {
-      return ErrorDisplay(error: vmState.message);
-    }
-
-    if (vmState is TrajectoryTablesUiReady) {
-      return TrajectoryTableContent(
-        mainTable: vmState.mainTable,
-        zeroCrossings: vmState.zeroCrossings,
-      );
-    }
-
-    return const EmptyStatePlaceholder();
+    // Exhaustive on both axes: the outer AsyncValue (loading/error/data —
+    // `.value == null` used to be treated as "still loading", which also
+    // silently swallowed a real AsyncError with no cached data) and the
+    // inner sealed TrajectoryTablesUiState (data case).
+    return switch (vmAsync) {
+      AsyncData(:final value) => switch (value) {
+        TrajectoryTablesUiLoading() => const Center(
+          child: CircularProgressIndicator(),
+        ),
+        TrajectoryTablesUiEmpty(:final type, :final message) =>
+          EmptyStatePlaceholder(type: type, message: message),
+        TrajectoryTablesUiError(:final message) => ErrorDisplay(
+          error: message,
+        ),
+        TrajectoryTablesUiReady(:final mainTable, :final zeroCrossings) =>
+          TrajectoryTableContent(
+            mainTable: mainTable,
+            zeroCrossings: zeroCrossings,
+          ),
+      },
+      AsyncError(:final error) => ErrorDisplay(error: error.toString()),
+      _ => const Center(child: CircularProgressIndicator()),
+    };
   }
 }
 
