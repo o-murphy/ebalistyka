@@ -1,4 +1,4 @@
-import 'package:dart_bclibc/unit.dart';
+import 'package:dart_bclibc_flutter/unit.dart';
 import 'package:ebalistyka/features/convertors/pressure_convertor_vm.dart';
 import 'package:ebalistyka/features/convertors/sub_screens/simple_convertor_screen.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';

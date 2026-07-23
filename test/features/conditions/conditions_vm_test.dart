@@ -13,7 +13,7 @@ import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
 import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/features/conditions/conditions_vm.dart';
-import 'package:dart_bclibc/unit.dart';
+import 'package:dart_bclibc_flutter/unit.dart';
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 
