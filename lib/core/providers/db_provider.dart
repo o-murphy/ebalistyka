@@ -34,7 +34,7 @@ class SettingsDataNotifier extends Notifier<SettingsData> {
   final SettingsData _initial;
 
   @override
-  SettingsData build() => _initial;
+  SettingsData build() => sanitizeSettingsData(_initial);
 
   SettingsData update(SettingsData Function(SettingsData current) mutate) {
     // sanitizeSettingsData is the one gate every write goes through — see
@@ -53,7 +53,7 @@ class ProfilesNotifier extends Notifier<List<Profile>> {
   final List<Profile> _initial;
 
   @override
-  List<Profile> build() => _initial;
+  List<Profile> build() => _initial.map(sanitizeProfile).toList();
 
   List<Profile> update(List<Profile> Function(List<Profile> current) mutate) {
     // sanitizeProfile is the one gate every write goes through — see
