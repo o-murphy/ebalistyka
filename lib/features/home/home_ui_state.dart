@@ -100,7 +100,12 @@ class HomeUiReady extends HomeUiState {
 class HomeUiNoData extends HomeUiState {
   final String? message;
   final EmptyStateType type;
-  const HomeUiNoData({this.message, this.type = EmptyStateType.noData});
+  final String? profileName;
+  const HomeUiNoData({
+    this.message,
+    this.type = EmptyStateType.noData,
+    this.profileName,
+  });
 }
 
 class HomeUiError extends HomeUiState {
