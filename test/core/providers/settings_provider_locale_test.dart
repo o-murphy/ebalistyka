@@ -30,7 +30,7 @@ void main() {
   });
 
   Future<ProviderContainer> makeContainer() async {
-    final store = MsgStore<SettingsData>(
+    final store = FileMsgStore<SettingsData>(
       settingsFile,
       encode: SettingsFile.encode,
       decode: SettingsFile.decode,
