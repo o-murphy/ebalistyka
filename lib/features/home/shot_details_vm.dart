@@ -105,7 +105,7 @@ class ShotInfoViewModel extends AsyncNotifier<ShotInfoUiState> {
         return const ShotInfoError(type: EmptyStateType.noProfile);
       }
       if (!ctx.profile.isReadyForCalculation) {
-        return const ShotInfoError(type: EmptyStateType.incompleteAmmo);
+        return ShotInfoError(type: missingProfileDataType(ctx.profile));
       }
 
       final profile = ctx.profile;

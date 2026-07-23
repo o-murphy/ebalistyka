@@ -127,7 +127,7 @@ final detailsTableMvProvider = Provider<DetailsTableData?>((ref) {
   final units = ref.watch(unitSettingsProvider);
   final formatter = ref.watch(unitFormatterProvider);
 
-  if (ctx == null) return null;
+  if (ctx == null || !ctx.profile.isReadyForCalculation) return null;
 
   return _buildDetails(ctx.profile, ctx.conditions, units, formatter);
 });
