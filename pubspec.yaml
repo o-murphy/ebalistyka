@@ -145,10 +145,13 @@ flutter_launcher_icons:
   remove_alpha_ios: true
   windows:
     generate: true
-    image_path: "app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png"
-    icon_size: 512
+    image_path: "app/share/icons/hicolor/256x256/apps/io.github.o_murphy.ebalistyka.png"
+    icon_size: 256
   macos:
     generate: true
+  web:
+    generate: true
+    image_path: "app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png"
 
 msix_config:
   display_name: eBalistyka
