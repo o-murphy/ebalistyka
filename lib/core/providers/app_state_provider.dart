@@ -6,15 +6,6 @@ import 'package:uuid/uuid.dart';
 
 const _uuid = Uuid();
 
-/// Thrown by the still-stubbed `.ebcp`/`.a7p` import methods (Phase 3.5).
-/// UI call sites should catch this and show a "not available yet" state.
-class ImportNotAvailableException implements Exception {
-  const ImportNotAvailableException();
-
-  @override
-  String toString() => 'Import is not available yet.';
-}
-
 // ── AppState ──────────────────────────────────────────────────────────────────
 
 class AppState {
@@ -144,16 +135,6 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
   Future<void> importProfiles(List<Profile> imported) async {
     final fresh = imported.map(copyWithFreshUuid).toList();
     _updateProfiles((profiles) => [...profiles, ...fresh]);
-  }
-
-  // ── Import (Phase 3.5, not yet available) ────────────────────────────────────
-
-  Future<String> importAmmo(Object export) async {
-    throw const ImportNotAvailableException();
-  }
-
-  Future<String> importSight(Object export) async {
-    throw const ImportNotAvailableException();
   }
 }
 
