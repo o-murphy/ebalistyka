@@ -1065,6 +1065,24 @@ class AppLocalizationsUk extends AppLocalizations {
   String get noSightsFoundInFile => 'Прицілів у файлі не знайдено';
 
   @override
+  String get emptyStateNoProfile => 'Профіль не обрано';
+
+  @override
+  String get emptyStateNoAmmo => 'Набій не обрано';
+
+  @override
+  String get emptyStateNoSight => 'Приціл не обрано';
+
+  @override
+  String get emptyStateIncompleteAmmo => 'Дані набою неповні';
+
+  @override
+  String get emptyStateError => 'Щось пішло не так';
+
+  @override
+  String get emptyStateNoData => 'Немає даних';
+
+  @override
   String get ammoDuplicateDialogTitle => 'Копіювати набій';
 
   @override

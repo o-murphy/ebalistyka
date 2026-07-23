@@ -369,6 +369,13 @@
     "noProfiles": "Немає профілів. Натисніть + щоб додати.",
     "noSightsFoundInFile": "Прицілів у файлі не знайдено",
 
+    "emptyStateNoProfile": "Профіль не обрано",
+    "emptyStateNoAmmo": "Набій не обрано",
+    "emptyStateNoSight": "Приціл не обрано",
+    "emptyStateIncompleteAmmo": "Дані набою неповні",
+    "emptyStateError": "Щось пішло не так",
+    "emptyStateNoData": "Немає даних",
+
     "ammoDuplicateDialogTitle": "Копіювати набій",
     "ammoRemoveDialogTitle": "Видалити набій",
     "sightDuplicateDialogTitle": "Копіювати приціл",
