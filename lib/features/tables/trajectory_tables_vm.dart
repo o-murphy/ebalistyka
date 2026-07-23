@@ -20,8 +20,8 @@ import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/shared/models/formatted_row.dart';
 
-import 'package:dart_bclibc/unit.dart';
-import 'package:dart_bclibc/bclibc.dart' as bclibc;
+import 'package:dart_bclibc_flutter/unit.dart';
+import 'package:dart_bclibc_flutter/bclibc.dart' as bclibc;
 
 // ── State ────────────────────────────────────────────────────────────────────
 

@@ -1,5 +1,5 @@
-import 'package:dart_bclibc/bclibc.dart' as bclibc;
-import 'package:dart_bclibc/unit.dart';
+import 'package:dart_bclibc_flutter/bclibc.dart' as bclibc;
+import 'package:dart_bclibc_flutter/unit.dart';
 import 'package:ebc_db/ebc_db.dart';
 
 enum DragType { g1, g7, custom }

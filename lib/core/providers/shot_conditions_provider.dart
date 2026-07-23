@@ -1,4 +1,4 @@
-import 'package:dart_bclibc/unit.dart';
+import 'package:dart_bclibc_flutter/unit.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
 import 'package:ebalistyka/core/providers/db_provider.dart';
