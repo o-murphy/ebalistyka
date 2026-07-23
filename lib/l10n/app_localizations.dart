@@ -2198,6 +2198,12 @@ abstract class AppLocalizations {
   /// **'Ammo data is incomplete'**
   String get emptyStateIncompleteAmmo;
 
+  /// Empty-state placeholder message when the active profile's weapon isn't ready for calculation
+  ///
+  /// In en, this message translates to:
+  /// **'Weapon data is incomplete'**
+  String get emptyStateIncompleteWeapon;
+
   /// Generic empty-state placeholder message for an error condition
   ///
   /// In en, this message translates to:

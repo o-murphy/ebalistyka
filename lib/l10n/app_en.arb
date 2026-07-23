@@ -722,6 +722,8 @@
     "@emptyStateNoSight": {"description": "Empty-state placeholder message when the active profile has no sight"},
     "emptyStateIncompleteAmmo": "Ammo data is incomplete",
     "@emptyStateIncompleteAmmo": {"description": "Empty-state placeholder message when the active profile's ammo isn't ready for calculation"},
+    "emptyStateIncompleteWeapon": "Weapon data is incomplete",
+    "@emptyStateIncompleteWeapon": {"description": "Empty-state placeholder message when the active profile's weapon isn't ready for calculation"},
     "emptyStateError": "Something went wrong",
     "@emptyStateError": {"description": "Generic empty-state placeholder message for an error condition"},
     "emptyStateNoData": "No data",

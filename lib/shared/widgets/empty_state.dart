@@ -7,6 +7,7 @@ enum EmptyStateType {
   noAmmo,
   noSight,
   incompleteAmmo,
+  incompleteWeapon,
   error,
   noData,
 }
@@ -17,6 +18,7 @@ extension _EmptyStateTypeProps on EmptyStateType {
     EmptyStateType.noAmmo => IconDef.ammo,
     EmptyStateType.noSight => IconDef.sight,
     EmptyStateType.incompleteAmmo => IconDef.ammo,
+    EmptyStateType.incompleteWeapon => IconDef.weapon,
     EmptyStateType.error => Icons.error_outline,
     EmptyStateType.noData => Icons.inbox_outlined,
   };
@@ -26,6 +28,7 @@ extension _EmptyStateTypeProps on EmptyStateType {
     EmptyStateType.noAmmo => l10n.emptyStateNoAmmo,
     EmptyStateType.noSight => l10n.emptyStateNoSight,
     EmptyStateType.incompleteAmmo => l10n.emptyStateIncompleteAmmo,
+    EmptyStateType.incompleteWeapon => l10n.emptyStateIncompleteWeapon,
     EmptyStateType.error => l10n.emptyStateError,
     EmptyStateType.noData => l10n.emptyStateNoData,
   };
