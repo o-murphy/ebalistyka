@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/features/home/sub_screens/ammo_wizard_notifier.dart';
 import 'package:ebc_db/ebc_db.dart';
-import 'package:dart_bclibc/unit.dart';
+import 'package:dart_bclibc_flutter/unit.dart';
 
 // ── Fixtures ─────────────────────────────────────────────────────────────────
 

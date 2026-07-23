@@ -9,8 +9,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show compute, listEquals;
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart'
     show DragType, AmmoExtension;
-import 'package:dart_bclibc/unit.dart';
-import 'package:dart_bclibc/bclibc.dart' as bclibc;
+import 'package:dart_bclibc_flutter/unit.dart';
+import 'package:dart_bclibc_flutter/bclibc.dart' as bclibc;
 
 // ── Isolate top-level functions ──────────────────────────────────────────────
 

@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 import 'package:ebalistyka/core/services/ballistics_service.dart';
 import 'package:ebalistyka/core/services/ballistics_service_impl.dart';
 import 'package:ebc_db/ebc_db.dart';
-import 'package:dart_bclibc/unit.dart';
+import 'package:dart_bclibc_flutter/unit.dart';
 
 // ── Test fixtures ────────────────────────────────────────────────────────────
 

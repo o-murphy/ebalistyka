@@ -1,4 +1,4 @@
-import 'package:dart_bclibc/bclibc.dart' as bclibc;
+import 'package:dart_bclibc_flutter/bclibc.dart' as bclibc;
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebc_db/ebc_db.dart';
@@ -12,7 +12,7 @@ import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 
-import 'package:dart_bclibc/unit.dart';
+import 'package:dart_bclibc_flutter/unit.dart';
 
 // ── Spoiler data ─────────────────────────────────────────────────────────────
 

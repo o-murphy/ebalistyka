@@ -221,18 +221,18 @@ packages:
     dependency: transitive
     description:
       name: dart_bclibc
-      sha256: "8699698edf2319cda83891c8a39019e222e335af705f5649699b955fcd7e162d"
+      sha256: "1a617b94f59c984668213ae18ab848a1b071b5a45b1122df5f097f669f05b0a4"
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.0-beta.1"
+    version: "0.2.0-beta.3"
   dart_bclibc_flutter:
     dependency: "direct main"
     description:
       name: dart_bclibc_flutter
-      sha256: "75a5c41a86ae607064f39011780f5e300b0fb979e2ee169ef9dc377ab4f1dab2"
+      sha256: "6aa3629b9ba7edb221c506000a54a3516595a44bf82cb581e53fbf91ecfe1de1"
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.0-beta.1"
+    version: "0.2.0-beta.3"
   dart_style:
     dependency: transitive
     description:
