@@ -120,10 +120,9 @@ class ProfilesListScreen extends ConsumerWidget {
     String uuid,
     String currentName,
   ) async {
-    final l10n = AppLocalizations.of(context)!;
     final name = await _askProfileName(
       context,
-      initial: '${l10n.copyOf} $currentName',
+      initial: '[COPY] $currentName',
     );
     if (name == null) return;
     await ref
@@ -261,6 +260,7 @@ class ProfilesListScreen extends ConsumerWidget {
                     onSelect: () => _onSelect(context, ref, profile.uuid),
                     onEdit: () =>
                         _onRename(context, ref, profile.uuid, profile.name),
+                    editLabel: l10n.editProfileName,
                     onDuplicate: () =>
                         _onDuplicate(context, ref, profile.uuid, profile.name),
                     onExport: () => _onExport(context, profile),

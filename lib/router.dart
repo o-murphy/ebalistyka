@@ -91,6 +91,7 @@ final appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: Routes.home,
   routes: [
+    GoRoute(path: '/', redirect: (_, _) => Routes.home),
     StatefulShellRoute.indexedStack(
       builder: (context, state, shell) => _ScaffoldWithNav(shell: shell),
       branches: [
@@ -147,20 +148,22 @@ final appRouter = GoRouter(
                       builder: (_, state) => AmmoWizardScreen(
                         caliberInch: state.extra as double?,
                       ),
-                    ),
-                    GoRoute(
-                      path: 'cartridge-collection',
-                      builder: (_, state) => AmmoCollectionScreen(
-                        filterBullet: false,
-                        caliberInch: state.extra as double?,
-                      ),
-                    ),
-                    GoRoute(
-                      path: 'bullet-collection',
-                      builder: (_, state) => AmmoCollectionScreen(
-                        filterBullet: true,
-                        caliberInch: state.extra as double?,
-                      ),
+                      routes: [
+                        GoRoute(
+                          path: 'cartridge-collection',
+                          builder: (_, state) => AmmoCollectionScreen(
+                            filterBullet: false,
+                            caliberInch: state.extra as double?,
+                          ),
+                        ),
+                        GoRoute(
+                          path: 'bullet-collection',
+                          builder: (_, state) => AmmoCollectionScreen(
+                            filterBullet: true,
+                            caliberInch: state.extra as double?,
+                          ),
+                        ),
+                      ],
                     ),
                     // ── Sight replace ────────────────────────────────────────
                     GoRoute(

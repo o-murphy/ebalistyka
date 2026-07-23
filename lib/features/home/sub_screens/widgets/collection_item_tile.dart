@@ -10,6 +10,7 @@ class CollectionItemTile extends StatelessWidget {
     this.body,
     required this.onSelect,
     this.onEdit,
+    this.editLabel,
     this.onRemove,
     this.onDuplicate,
     this.onExport,
@@ -22,6 +23,7 @@ class CollectionItemTile extends StatelessWidget {
   final Widget? body;
   final VoidCallback onSelect;
   final VoidCallback? onEdit;
+  final String? editLabel;
   final VoidCallback? onRemove;
   final VoidCallback? onDuplicate;
   final VoidCallback? onExport;
@@ -44,7 +46,7 @@ class CollectionItemTile extends StatelessWidget {
         if (onEdit != null)
           ActionSheetItem(
             icon: IconDef.edit,
-            title: l10n.editAction,
+            title: editLabel ?? l10n.editAction,
             onTap: () async => onEdit!(),
           ),
         if (onDuplicate != null)
@@ -77,7 +79,7 @@ class CollectionItemTile extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
 
     return SizedBox(
-      height: 200,
+      height: 170,
       child: Card(
         shape: isSelected
             ? RoundedRectangleBorder(
