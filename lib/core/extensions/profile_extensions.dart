@@ -5,7 +5,20 @@ import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
 import 'package:ebc_db/ebc_db.dart';
 
 extension ProfileExtension on Profile {
-  bool get isReadyForCalculation => ammo.isReadyForCalculation;
+  // Named to avoid colliding with protobuf's own generated `hasWeapon()`/
+  // `hasSight()` methods, which check wire presence, not `.name`.
+  bool get isWeaponSelected => weapon.name.isNotEmpty;
+  bool get isSightSelected => sight.name.isNotEmpty;
+
+  /// `sight.sightHeightInch` feeds directly into [toZeroShot]'s
+  /// `bclibc.Weapon.sightHeight` (see `ballistics_service_impl.dart`'s
+  /// `weapon.toWeapon(sight.sightHeight)`) — an unset `Sight` silently
+  /// defaults it to `0`, which still "calculates" but against a bogus
+  /// sight height, not a genuine absence-of-data error. So a missing
+  /// sight has to gate readiness here, same as ammo/weapon, rather than
+  /// being left to produce a quietly wrong trajectory.
+  bool get isReadyForCalculation =>
+      isWeaponSelected && isSightSelected && ammo.isReadyForCalculation;
 
   Velocity getCalculatedZeroVelocity() =>
       ammo.toZeroAmmo().getVelocityForTemp(ammo.toZeroAtmo().powderTemp);

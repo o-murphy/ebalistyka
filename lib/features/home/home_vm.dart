@@ -74,7 +74,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       if (generation != _generation) return;
       state = AsyncData(
         HomeUiNoData(
-          type: EmptyStateType.incompleteAmmo,
+          type: missingProfileDataType(profile),
           profileName: profile.name,
         ),
       );

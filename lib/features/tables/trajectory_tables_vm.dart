@@ -115,8 +115,8 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
         if (generation != _generation) return;
         _lastResult = null;
         _lastProfile = null;
-        state = const AsyncData(
-          TrajectoryTablesUiEmpty(type: EmptyStateType.incompleteAmmo),
+        state = AsyncData(
+          TrajectoryTablesUiEmpty(type: missingProfileDataType(profile)),
         );
         return;
       }
