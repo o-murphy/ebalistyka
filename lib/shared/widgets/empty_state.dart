@@ -1,3 +1,4 @@
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:flutter/material.dart';
 
@@ -20,13 +21,13 @@ extension _EmptyStateTypeProps on EmptyStateType {
     EmptyStateType.noData => Icons.inbox_outlined,
   };
 
-  String get defaultMessage => switch (this) {
-    EmptyStateType.noProfile => 'No profile selected',
-    EmptyStateType.noAmmo => 'No ammo selected',
-    EmptyStateType.noSight => 'No sight selected',
-    EmptyStateType.incompleteAmmo => 'Ammo data is incomplete',
-    EmptyStateType.error => 'Something went wrong',
-    EmptyStateType.noData => 'No data',
+  String defaultMessage(AppLocalizations l10n) => switch (this) {
+    EmptyStateType.noProfile => l10n.emptyStateNoProfile,
+    EmptyStateType.noAmmo => l10n.emptyStateNoAmmo,
+    EmptyStateType.noSight => l10n.emptyStateNoSight,
+    EmptyStateType.incompleteAmmo => l10n.emptyStateIncompleteAmmo,
+    EmptyStateType.error => l10n.emptyStateError,
+    EmptyStateType.noData => l10n.emptyStateNoData,
   };
 }
 
@@ -45,6 +46,7 @@ class EmptyStatePlaceholder extends StatelessWidget {
     final theme = Theme.of(context);
     final (cs, tt) = (theme.colorScheme, theme.textTheme);
     final color = type == EmptyStateType.error ? cs.error : cs.outline;
+    final l10n = AppLocalizations.of(context)!;
 
     return Center(
       child: Column(
@@ -53,7 +55,7 @@ class EmptyStatePlaceholder extends StatelessWidget {
           Icon(type.icon, size: 40, color: color.withAlpha(127)),
           const SizedBox(height: 12),
           Text(
-            message ?? type.defaultMessage,
+            message ?? type.defaultMessage(l10n),
             style: tt.bodyMedium?.copyWith(color: color),
             textAlign: TextAlign.center,
           ),
