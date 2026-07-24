@@ -35,7 +35,7 @@ jobs:
         run: flutter pub get
 
       - name: Install flutpak
-        uses: o-murphy/flutpak/.github/actions/setup-flutpak@v0.8.2
+        uses: o-murphy/flutpak/.github/actions/setup-flutpak@v0.8.3
 
       - name: Generate Flathub manifest
         run: flutpak generate --tag "${{ inputs.tag_name }}"
