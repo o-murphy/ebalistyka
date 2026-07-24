@@ -38,7 +38,7 @@ dependencies:
     path: ./packages/ebc_db
 
   a7p: ^1.2.4
-  dart_bclibc_flutter: ^0.2.0-beta.3
+  dart_bclibc_flutter: ^0.2.0
   ob_dump_reader_flutter: ^0.1.0-beta.1
 
   # The following adds the Cupertino Icons font to your application.
