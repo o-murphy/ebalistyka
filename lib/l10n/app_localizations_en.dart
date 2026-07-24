@@ -1319,6 +1319,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get checkForUpdatesLabel => 'Check for updates';
 
   @override
+  String get downloadAppAction => 'Download the app';
+
+  @override
   String get upToDateMessage => 'You\'re up to date';
 
   @override

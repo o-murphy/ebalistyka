@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>eBalistyka — Download</title>
+<meta name="description" content="Download eBalistyka — a high performance cross-platform ballistic calculator — for Linux, Windows and Android.">
+<link rel="icon" href="https://raw.githubusercontent.com/o-murphy/ebalistyka/main/assets/svg/logo/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-icons-font@v16/font/simple-icons.min.css" type="text/css">
+<style>
+  :root {
+    --bg: #f4f6f8;
+    --surface: #ffffff;
+    --surface-2: #eef1f4;
+    --text: #14181c;
+    --text-dim: #55606a;
+    --border: #dfe4e9;
+    --accent: #0057b7;
+    --accent-2: #ffd700;
+    --code-bg: #f0f2f5;
+    --shadow: 0 1px 2px rgba(20, 24, 28, 0.06), 0 4px 12px rgba(20, 24, 28, 0.04);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14181c;
+      --surface: #1b2126;
+      --surface-2: #222a30;
+      --text: #eef1f4;
+      --text-dim: #9aa7b0;
+      --border: #2c353c;
+      --accent: #4d9fff;
+      --accent-2: #ffd700;
+      --code-bg: #10151a;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.25);
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; max-width: 100%; overflow-x: hidden; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  main { max-width: 720px; margin: 0 auto; padding: 32px 22px 48px; }
+
+  .si { font-size: 1.05em; }
+  .winget-icon { width: 1.05em; height: 1.05em; vertical-align: -0.15em; flex-shrink: 0; }
+
+  /* Windows was dropped from simple-icons entirely in 2024 ("Remove
+     Microsoft brands", simple-icons/simple-icons@73c31c0) — no logo in
+     the font or the current SVG set. Embedded inline below, sourced from
+     the last commit before that removal. */
+  .win-icon { width: 1em; height: 1em; vertical-align: -0.15em; flex-shrink: 0; }
+
+  header.hero { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+  header.hero img.logo { width: 56px; height: 56px; flex-shrink: 0; }
+  header.hero .titles h1 { margin: 0; font-size: 1.65rem; letter-spacing: -0.01em; }
+  header.hero .titles p.tagline { margin: 2px 0 0; color: var(--text-dim); font-size: 0.95rem; }
+
+  .badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+  .badges img { height: 20px; }
+
+  .alpha-banner {
+    display: flex; gap: 9px; align-items: center;
+    background: var(--surface-2);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 0 0 20px;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+  }
+  .alpha-banner strong { color: var(--text); }
+
+  /* ---- Tabs ---- */
+  .tabs input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
+  .tab-bar {
+    display: flex;
+    gap: 6px;
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 5px;
+    margin-bottom: 20px;
+  }
+  .tab-bar label {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 11px 8px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    color: var(--text-dim);
+    user-select: none;
+  }
+  #tab-linux:checked ~ .tab-bar label[for="tab-linux"],
+  #tab-windows:checked ~ .tab-bar label[for="tab-windows"],
+  #tab-android:checked ~ .tab-bar label[for="tab-android"] {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow);
+  }
+  .panel { display: none; }
+  #tab-linux:checked ~ .panel-linux,
+  #tab-windows:checked ~ .panel-windows,
+  #tab-android:checked ~ .panel-android { display: block; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 16px;
+    border-radius: 9px;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    font-weight: 600;
+    font-size: 0.97rem;
+    box-shadow: var(--shadow);
+    white-space: nowrap;
+  }
+  .btn:hover { filter: brightness(1.08); text-decoration: none; }
+  .btn.secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); font-weight: 500; }
+  .btn.small { padding: 7px 12px; font-size: 0.85rem; border-radius: 7px; }
+  .btn small { font-weight: 400; opacity: 0.85; }
+
+  .method-list { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); overflow: hidden; }
+  .method-row {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap;
+    padding: 13px 15px;
+    border-bottom: 1px solid var(--border);
+  }
+  .method-row:last-child { border-bottom: none; }
+  .method-row .info { min-width: 0; flex: 1 1 200px; }
+  .method-row .label { display: flex; align-items: center; gap: 7px; font-weight: 600; font-size: 0.97rem; }
+  .method-row .note { color: var(--text-dim); font-size: 0.84rem; margin-top: 2px; }
+  .method-row .note code.inline-note {
+    background: var(--code-bg); border-radius: 4px; padding: 1px 5px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.9em;
+  }
+  .method-row .actions { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
+
+  .code-wrap { position: relative; margin-top: 8px; }
+  .method-row > .code-wrap { flex: 1 1 100%; }
+  code.block {
+    display: block; background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 7px; padding: 9px 40px 9px 12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.85rem; overflow-x: auto; white-space: pre; color: var(--text);
+  }
+  .copy-btn {
+    position: absolute; top: 6px; right: 6px;
+    width: 26px; height: 26px; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+    color: var(--text-dim); cursor: pointer;
+  }
+  .copy-btn:hover { color: var(--text); background: var(--surface-2); }
+  .copy-btn.copied { color: #2ecc71; border-color: #2ecc71; }
+
+  .more-link { display: block; text-align: center; margin-top: 12px; font-size: 0.86rem; }
+
+  footer {
+    margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border);
+    text-align: center; color: var(--text-dim); font-size: 0.86rem;
+  }
+  footer p { margin: 4px 0; }
+  footer .footer-links {
+    display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+    gap: 6px;
+  }
+  footer a { display: inline-flex; align-items: center; gap: 5px; }
+</style>
+</head>
+<body>
+<main>
+
+  <header class="hero">
+    <img class="logo" src="https://raw.githubusercontent.com/o-murphy/ebalistyka/main/assets/svg/logo/favicon.svg" alt="eBalistyka logo">
+    <div class="titles">
+      <h1>eBalistyka</h1>
+      <p class="tagline">A high performance cross-platform ballistic calculator</p>
+    </div>
+  </header>
+
+  <div class="badges">
+    <img src="https://img.shields.io/github/v/release/o-murphy/ebalistyka?logo=github&cacheSeconds=0" alt="Latest release">
+    <img src="https://img.shields.io/badge/status-alpha-orange" alt="Status: alpha">
+    <img src="https://img.shields.io/badge/License-GPL%20v3-blue.svg" alt="License GPL v3">
+    <a href="https://github.com/ballistics-lab/bclibc"><img src="https://img.shields.io/badge/bclibc-0d1228?logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI%2FPgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDIwMDEwOTA0Ly9FTiIgImh0dHA6Ly93d3cudzMub3JnL1RSLzIwMDEvUkVDLVNWRy0yMDAxMDkwNC9EVEQvc3ZnMTAuZHRkIj4KPHN2ZyB2ZXJzaW9uPSIxLjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMjQuMDAwMDAwcHQiIGhlaWdodD0iMTAyNC4wMDAwMDBwdCIgdmlld0JveD0iMCAwIDEwMjQuMDAwMDAwIDEwMjQuMDAwMDAwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCBtZWV0Ij4KCTxjaXJjbGUgY3g9IjUxMiIgY3k9IjUxMiIgcj0iNTEyIiBmaWxsPSIjMGQxMjI4IiAvPgoJPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTEwMCwxMTI0KSBzY2FsZSgwLjEyMDAwMCwtMC4xMjAwMDApIiBmaWxsPSIjRkZGRkZGIiBzdHJva2U9Im5vbmUiPgoJCTxwYXRoIGQ9Ik01MDU1IDgwNzEgYy0xNjcgLTMzMyAtMjczIC03NjggLTI5MiAtMTE5OCBsLTYgLTE0MyAzNDYgMCAzNDcgMCAwCjYzIGMwIDI3NSAtODAgNzMxIC0xNzUgMTAwNyAtMzkgMTEyIC0xNDUgMzQzIC0xNjMgMzU0IC03IDQgLTI5IC0yOCAtNTcgLTgzegptLTE1IC0yODkgYy00NiAtMjI1IC05MCAtNjYzIC05MCAtODk0IDAgLTEwNCAtMiAtMTA4IC02MSAtMTA4IGwtNDkgMCAwIDc4CmMxIDE1OSA0OCA0ODIgMTAxIDY5MCAzNCAxMzQgMTE5IDM5NiAxMjUgMzg5IDMgLTMgLTkgLTcyIC0yNiAtMTU1eiIgLz4KCQk8cGF0aCBkPSJNNDcxMCA2NDA2IGwwIC0yNDQgMjMgLTYgYzEyIC0zIDMyIC02IDQ1IC02IGwyMiAwIDAgMjI1IDAgMjI1IDY1IDAKNjUgMCAwIC0yMjUgMCAtMjI1IDI4MyAyIDI4MiAzIDMgMjQ4IDIgMjQ3IC0zOTUgMCAtMzk1IDAgMCAtMjQ0eiIgLz4KCQk8cGF0aCBkPSJNNDQyNCA2MTExIGMtMTggLTUgLTQ4IC0xOCAtNjggLTMwIC0xMzcgLTg1IC0xMjAgLTMwMCAyOSAtMzcwIGw0NgotMjEgLTMgLTUzMyAtMyAtNTMyIC0yMyAtNTggYy0xOCAtNDUgLTU0NSAtODUwIC04NzkgLTEzNDMgLTc2IC0xMTMgLTExMgotMjkxIC04MyAtNDE1IDQxIC0xNzcgMTY5IC0zMTIgMzQwIC0zNTkgNTkgLTE3IDI1OTMgLTE1IDI2NTUgMiAxMTQgMzAgMjMzCjEyMiAyODcgMjI0IDc2IDE0MiA3NyAzNDMgMyA0ODYgLTI4IDU0IC0xMzMgMjEzIC01NzMgODc1IC0xNzYgMjY2IC0zMzEgNTA5Ci0zNDQgNTQwIC0yMyA1OCAtMjMgNjAgLTI2IDU4OCBsLTMgNTMwIDQ1IDE4IGM1MiAyMiAxMDEgODAgMTE3IDE0MSAyNCA5MAotMjMgMTk2IC0xMDYgMjM2IC01NCAyNiAtMTk5IDM1IC0yMDEgMTMgLTEgLTcgLTIgLTE3IC0zIC0yMiAwIC01IC04OCAtNwotMjA4IC0zIC0xNTQgNCAtMjA0IDIgLTE5OSAtNiA0IC03IDE1IC0xMiAyNiAtMTIgMTAgMCA5MiAtMTMgMTgxIC0yOSA5MCAtMTYKMjA2IC0zMyAyNTggLTM3IDEwOSAtNyAxNDEgLTI3IDE0MSAtODYgLTEgLTYwIC00OCAtOTggLTEyNSAtOTggbC00NiAwIDMKLTU5MiAzIC01OTMgMjUgLTcwIGMxOCAtNTIgODAgLTE1NCAyNDEgLTM5NSA0NzYgLTcxNCA2ODkgLTEwNDMgNzEwIC0xMDk3IDE2Ci00NCAyMiAtNzkgMjIgLTE0MyAwIC0xNzQgLTgxIC0yOTMgLTIzNyAtMzQ3IC00OCAtMTcgLTEyNSAtMTggLTEzMzEgLTE4CmwtMTI4MCAwIC02NSAzMSBjLTc5IDM4IC0xMzEgODkgLTE2OCAxNjMgLTI1IDUxIC0yNyA2NiAtMjcgMTcxIDAgOTggMyAxMjIKMjIgMTYzIDEzIDI3IDExNiAxODkgMjI5IDM2MCAxMTQgMTcyIDMwOCA0NjQgNDMyIDY1MCAxMjMgMTg1IDIzNiAzNjMgMjUyCjM5NSA1NCAxMTEgNTUgMTIwIDU1IDc0MiBsMCA1NzUgLTUwIDYgYy0yNyAzIC01OCA5IC02OCAxNCAtMjcgMTEgLTQ5IDYyIC00Mgo5NCAxMCA0OCA0MyA2OSAxMTAgNzMgbDYwIDMgMCA2MCAwIDYwIC01MCAyIGMtMjcgMSAtNjQgLTIgLTgxIC02eiIgLz4KCQk8cGF0aCBkPSJNNDcwMCA1MzY5IGMwIC00MjggLTQgLTcwNyAtMTEgLTc1MiAtMjMgLTE1NyAtNTggLTIzMCAtMjYzIC01NDAKLTg0IC0xMjggLTE5NSAtMjk3IC0yNDggLTM3NyAtNTIgLTgwIC0xNjYgLTI1MyAtMjUzIC0zODUgLTg3IC0xMzIgLTE2OSAtMjYwCi0xODIgLTI4NCAtNDMgLTgyIC0yNiAtMTk3IDM5IC0yNTggNTkgLTU2IC03IC01MyAxMzI3IC01MyBsMTIyOSAwIDUyIDI4IGM5OAo1MSAxMzIgMTc2IDc3IDI4MiAtMjMgNDUgLTI2MSA0MTAgLTYzMyA5NzUgLTIzOCAzNjEgLTI1OCAzOTUgLTMwMiA1NDQgLTE0CjQ5IC0xNyAxMzkgLTIyIDcxNiBsLTUgNjYwIC0xMTUgMTcgYy02MyAxMCAtMTg1IDI5IC0yNzEgNDMgLTIxNyAzNSAtMTk5IDM5Ci0xOTkgLTQ4IDAgLTQxIC00IC0xNTQgLTEwIC0yNTMgLTUgLTk4IC0xNyAtMzEyIC0yNSAtNDc0IC05IC0xNjIgLTIwIC0zNDcKLTI1IC00MTAgLTUgLTYzIC0xMCAtMTQ1IC0xMCAtMTgyIDAgLTM4IC00IC02OCAtOCAtNjggLTggMCAtMjggNTcwIC0zOSAxMTU3CmwtNiAzMzEgLTMwIDYgYy0xNiAzIC0zOCA2IC00OCA2IC0xOCAwIC0xOSAtMjIgLTE5IC02ODF6IG0xMDMyIC0xNDI2IGM5IC0xMAo3NCAtMTA2IDE0NCAtMjE1IDcxIC0xMDggMjAzIC0zMDkgMjk0IC00NDcgMjEwIC0zMTggMjAyIC0zMDUgMjA0IC0zNTMgMSAtMzIKLTUgLTQ1IC0yNyAtNjQgbC0yOCAtMjQgLTEyMTUgMCAtMTIxNSAwIC0yNCAyNSBjLTE5IDE4IC0yNSAzNSAtMjUgNjggMCA0MQoxNyA2OSAyMDYgMzU4IDExNCAxNzMgMjU5IDM5NCAzMjMgNDkxIGwxMTYgMTc4IDYxNiAwIGM1NzQgMCA2MTcgLTEgNjMxIC0xN3oiIC8%2BCgk8L2c%2BCjwvc3ZnPgo%3D&label=powered%20by%20bclibc" alt="powered by bclibc"></a>
+  </div>
+
+  <div class="alpha-banner">⚠️ <div><strong>Alpha software.</strong> Expect breaking changes and rough edges.</div></div>
+
+  <div class="tabs">
+    <input type="radio" name="platform-tab" id="tab-linux" checked>
+    <input type="radio" name="platform-tab" id="tab-windows">
+    <input type="radio" name="platform-tab" id="tab-android">
+
+    <div class="tab-bar">
+      <label for="tab-linux"><i class="si si-linux si--color"></i>Linux</label>
+      <label for="tab-windows"><svg class="win-icon" viewBox="0 0 24 24" fill="#0078D4" xmlns="http://www.w3.org/2000/svg"><path d="M0,0H11.377V11.372H0ZM12.623,0H24V11.372H12.623ZM0,12.623H11.377V24H0Zm12.623,0H24V24H12.623"/></svg>Windows</label>
+      <label for="tab-android"><i class="si si-android si--color"></i>Android</label>
+    </div>
+
+    <!-- ==================== LINUX ==================== -->
+    <section class="panel panel-linux">
+      <div class="method-list">
+        <div class="method-row">
+          <div class="info">
+            <div class="label"><i class="si si-appimage si--color"></i>AppImage</div>
+            <div class="note">no FUSE 2? run with <code class="inline-note">--appimage-extract-and-run</code> instead</div>
+          </div>
+          <div class="actions">
+            <a class="btn small secondary" href="https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_x86_64.AppImage">x86_64</a>
+            <a class="btn small secondary" href="https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_aarch64.AppImage">arm64</a>
+          </div>
+          <div class="code-wrap">
+            <code class="block">chmod +x ebalistyka_linux_x86_64.AppImage
+./ebalistyka_linux_x86_64.AppImage</code>
+            <button class="copy-btn" type="button" aria-label="Copy command"></button>
+          </div>
+        </div>
+
+        <div class="method-row">
+          <div class="info">
+            <div class="label"><i class="si si-snapcraft si--color"></i>Snap Store</div>
+            <div class="note">auto-updates included</div>
+          </div>
+          <div class="actions">
+            <a class="btn small secondary" href="https://snapcraft.io/ebalistyka">Snap Store</a>
+          </div>
+          <div class="code-wrap">
+            <code class="block">sudo snap install ebalistyka</code>
+            <button class="copy-btn" type="button" aria-label="Copy command"></button>
+          </div>
+        </div>
+
+        <div class="method-row">
+          <div class="info">
+            <div class="label"><i class="si si-flatpak si--color"></i>Flatpak</div>
+            <div class="code-wrap">
+              <code class="block">flatpak remote-add --if-not-exists o-murphy https://o-murphy.github.io/flatpak-repo/o_murphy.flatpakrepo
+flatpak install o-murphy io.github.o_murphy.ebalistyka</code>
+              <button class="copy-btn" type="button" aria-label="Copy command"></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="method-row">
+          <div class="info">
+            <div class="label">Portable .tar.gz</div>
+            <div class="note">no FUSE required</div>
+          </div>
+          <div class="actions">
+            <a class="btn small secondary" href="https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_x86_64.tar.gz">x86_64</a>
+            <a class="btn small secondary" href="https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_aarch64.tar.gz">arm64</a>
+          </div>
+          <div class="code-wrap">
+            <code class="block">mkdir ebalistyka && tar -xzf ebalistyka_linux_x86_64.tar.gz -C ebalistyka
+cd ebalistyka && ./ebalistyka</code>
+            <button class="copy-btn" type="button" aria-label="Copy command"></button>
+          </div>
+        </div>
+
+        <div class="method-row">
+          <div class="info">
+            <div class="label"><i class="si si-debian si--color"></i>deb — Debian / Ubuntu</div>
+          </div>
+          <div class="actions">
+            <a class="btn small secondary" href="https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_x86_64.deb">x86_64</a>
+            <a class="btn small secondary" href="https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_aarch64.deb">arm64</a>
+          </div>
+          <div class="code-wrap">
+            <code class="block">sudo dpkg -i ebalistyka_*.deb</code>
+            <button class="copy-btn" type="button" aria-label="Copy command"></button>
+          </div>
+        </div>
+
+        <div class="method-row">
+          <div class="info">
+            <div class="label"><i class="si si-fedora si--color"></i>rpm — Fedora / RHEL / openSUSE</div>
+          </div>
+          <div class="actions">
+            <a class="btn small secondary" href="https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_x86_64.rpm">x86_64</a>
+            <a class="btn small secondary" href="https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_aarch64.rpm">arm64</a>
+          </div>
+          <div class="code-wrap">
+            <code class="block">sudo rpm -i ebalistyka_*.rpm</code>
+            <button class="copy-btn" type="button" aria-label="Copy command"></button>
+          </div>
+        </div>
+
+        <div class="method-row">
+          <div class="info">
+            <div class="label"><i class="si si-archlinux si--color"></i>AUR — Arch / Manjaro</div>
+            <div class="code-wrap">
+              <code class="block">yay -S ebalistyka-bin</code>
+              <button class="copy-btn" type="button" aria-label="Copy command"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <a class="more-link" href="https://github.com/o-murphy/ebalistyka#download--installation">Full install/uninstall/update steps in the README ↗</a>
+    </section>
+
+    <!-- ==================== WINDOWS ==================== -->
+    <section class="panel panel-windows">
+      <div class="method-list">
+        <div class="method-row">
+          <div class="info">
+            <div class="label"><img class="winget-icon" src="data:image/png;base64,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" alt="">winget</div>
+            <div class="code-wrap">
+              <code class="block">winget install -e --id o-murphy.ebalistyka</code>
+              <button class="copy-btn" type="button" aria-label="Copy command"></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="method-row">
+          <div class="info">
+            <div class="label">MSIX</div>
+            <div class="note">self-signed — install the cert first, then trust it as a Local Machine Root CA</div>
+          </div>
+          <div class="actions">
+            <a class="btn small secondary" href="https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_windows_x86_64.msix">Download MSIX</a>
+            <a class="btn small secondary" href="https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_cert.cer">Download .cer</a>
+          </div>
+        </div>
+
+        <div class="method-row">
+          <div class="info"><div class="label">Portable .zip</div></div>
+          <div class="actions">
+            <a class="btn small secondary" href="https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_windows_x86_64.zip">Download</a>
+          </div>
+        </div>
+      </div>
+
+      <a class="more-link" href="https://github.com/o-murphy/ebalistyka#windows--install-msix">Full install steps in the README ↗</a>
+    </section>
+
+    <!-- ==================== ANDROID ==================== -->
+    <section class="panel panel-android">
+      <div class="method-list">
+        <div class="method-row">
+          <div class="info">
+            <div class="label"><i class="si si-googleplay"></i>Google Play</div>
+            <div class="note">internal test — registration required</div>
+          </div>
+          <div class="actions">
+            <a class="btn small secondary" href="https://docs.google.com/forms/d/e/1FAIpQLSdMKHwnBLuwSo9BkqPXRPx4eZwio6RiaNxWEyrvyEpK0dLcuA/viewform?usp=dialog">Register</a>
+          </div>
+        </div>
+
+        <div class="method-row">
+          <div class="info">
+            <div class="label"><i class="si si-android si--color"></i>APK</div>
+            <div class="note">enable "install from unknown sources" — pick your device's ABI, or <code class="inline-note">universal</code> if unsure</div>
+          </div>
+          <div class="actions">
+            <a class="btn small secondary" href="https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_android_universal.apk">universal</a>
+            <a class="btn small secondary" href="https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_android_arm64.apk">arm64</a>
+            <a class="btn small secondary" href="https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_android_armeabi_v7a.apk">armv7</a>
+            <a class="btn small secondary" href="https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_android_x86_64.apk">x86_64</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <p class="footer-links">
+      <a href="https://github.com/o-murphy/ebalistyka"><i class="si si-github si--color"></i>github.com/o-murphy/ebalistyka</a>
+      <span>·</span>
+      <a href="https://github.com/o-murphy/ebalistyka/releases">all releases</a>
+    </p>
+    <p>GPL v3 · Made in Ukraine 🇺🇦</p>
+  </footer>
+
+</main>
+
+<script>
+(function () {
+  var ua = navigator.userAgent || '';
+  var plat = ((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || '').toLowerCase();
+  var id = 'tab-linux';
+  if (/android/i.test(ua)) {
+    id = 'tab-android';
+  } else if (/win/i.test(plat) || /windows/i.test(ua)) {
+    id = 'tab-windows';
+  } else if (/linux/i.test(plat) || /linux/i.test(ua)) {
+    id = 'tab-linux';
+  }
+  var el = document.getElementById(id);
+  if (el) el.checked = true;
+})();
+
+(function () {
+  var COPY_ICON = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+  var CHECK_ICON = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+  document.querySelectorAll('.copy-btn').forEach(function (btn) {
+    btn.innerHTML = COPY_ICON;
+    btn.addEventListener('click', function () {
+      var code = btn.previousElementSibling;
+      if (!code) return;
+      navigator.clipboard.writeText(code.textContent).then(function () {
+        btn.innerHTML = CHECK_ICON;
+        btn.classList.add('copied');
+        setTimeout(function () {
+          btn.innerHTML = COPY_ICON;
+          btn.classList.remove('copied');
+        }, 1500);
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
