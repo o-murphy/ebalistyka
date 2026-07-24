@@ -868,6 +868,8 @@
     "@downloadFailed": {"description": "Error message shown when APK download fails"},
     "checkForUpdatesLabel": "Check for updates",
     "@checkForUpdatesLabel": {"description": "Settings list tile label for the manual update check button"},
+    "downloadAppAction": "Download the app",
+    "@downloadAppAction": {"description": "Settings list tile label shown on web instead of the update checker — opens the downloads page listing native installers"},
     "upToDateMessage": "You're up to date",
     "@upToDateMessage": {"description": "SnackBar message shown when no newer version is available"},
     "prereleaseWarningTitle": "Prerelease Version",

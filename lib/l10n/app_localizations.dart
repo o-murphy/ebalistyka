@@ -2618,6 +2618,12 @@ abstract class AppLocalizations {
   /// **'Check for updates'**
   String get checkForUpdatesLabel;
 
+  /// Settings list tile label shown on web instead of the update checker — opens the downloads page listing native installers
+  ///
+  /// In en, this message translates to:
+  /// **'Download the app'**
+  String get downloadAppAction;
+
   /// SnackBar message shown when no newer version is available
   ///
   /// In en, this message translates to:
