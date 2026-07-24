@@ -9,6 +9,7 @@ import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:ebalistyka/update/update_checker.dart';
 import 'package:ebalistyka/update/update_sheet.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -406,19 +407,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
             dense: true,
           ),
-          ListTile(
-            leading: _checkingUpdate
-                ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.system_update_outlined),
-            title: Text(l10n.checkForUpdatesLabel),
-            dense: true,
-            onTap: _checkingUpdate ? null : _checkForUpdates,
-            onLongPress: _checkingUpdate ? null : _onCheckForUpdatesLongPress,
-          ),
+          if (kIsWeb)
+            ListTile(
+              leading: const Icon(Icons.download_outlined),
+              title: Text(l10n.downloadAppAction),
+              dense: true,
+              onTap: () =>
+                  _launchUrl(
+                    Uri.base.resolve('download/index.html').toString(),
+                  ),
+            )
+          else
+            ListTile(
+              leading: _checkingUpdate
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.system_update_outlined),
+              title: Text(l10n.checkForUpdatesLabel),
+              dense: true,
+              onTap: _checkingUpdate ? null : _checkForUpdates,
+              onLongPress: _checkingUpdate
+                  ? null
+                  : _onCheckForUpdatesLongPress,
+            ),
           ListTile(
             leading: const Icon(Icons.history_outlined),
             title: Text(l10n.labelChangelog),

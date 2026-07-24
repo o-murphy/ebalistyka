@@ -1315,6 +1315,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get checkForUpdatesLabel => 'Перевірити оновлення';
 
   @override
+  String get downloadAppAction => 'Завантажити застосунок';
+
+  @override
   String get upToDateMessage => 'У вас остання версія';
 
   @override
