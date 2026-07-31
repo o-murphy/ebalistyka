@@ -39,7 +39,7 @@ dependencies:
 
   a7p: ^1.2.4
 
-  dart_bclibc: ^0.1.1
+  dart_bclibc: ^0.2.0
   # dart_bclibc:
   #   path: ../dart_bclibc
 
