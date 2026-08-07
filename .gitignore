@@ -90,3 +90,6 @@ flutpak
 
 # objectbox downloads
 download/objectbox*
+
+# packages pubspec.lock
+packages/**/pubspec.lock
