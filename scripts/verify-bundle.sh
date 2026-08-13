@@ -61,17 +61,19 @@ if [ "$PLATFORM" = "linux" ]; then
   fi
   echo "✓ libbclibc_ffi.so: $(file -L "$BCLIBC_SO" | cut -d: -f2- | xargs)"
 
-  # Critical: objectbox
-  OBJECTBOX_SO=$(find "$BUNDLE_DIR/lib" -name "libobjectbox*.so*" | head -1)
-  if [ -z "$OBJECTBOX_SO" ]; then
-    echo "ERROR: libobjectbox not found in lib/ — database will not initialize"
-    exit 1
-  fi
-  if [ ! -f "$OBJECTBOX_SO" ]; then
-    echo "ERROR: $(basename "$OBJECTBOX_SO") is a broken symlink"
-    exit 1
-  fi
-  echo "✓ $(basename "$OBJECTBOX_SO"): $(file -L "$OBJECTBOX_SO" | cut -d: -f2- | xargs)"
+  # FIXME: DEPRECATED DUE TO OBJECTBOX WAS REMOVED AS A DEPENDENCY
+  # REMOVE THIS SECTION AFTER SUCCESSFULL MERGE TO THE MAIN BRANCH
+  # # Critical: objectbox
+  # OBJECTBOX_SO=$(find "$BUNDLE_DIR/lib" -name "libobjectbox*.so*" | head -1)
+  # if [ -z "$OBJECTBOX_SO" ]; then
+  #   echo "ERROR: libobjectbox not found in lib/ — database will not initialize"
+  #   exit 1
+  # fi
+  # if [ ! -f "$OBJECTBOX_SO" ]; then
+  #   echo "ERROR: $(basename "$OBJECTBOX_SO") is a broken symlink"
+  #   exit 1
+  # fi
+  # echo "✓ $(basename "$OBJECTBOX_SO"): $(file -L "$OBJECTBOX_SO" | cut -d: -f2- | xargs)"
 
 else
   DLL_COUNT=$(find "$BUNDLE_DIR" -maxdepth 1 -name "*.dll" 2>/dev/null | wc -l)
