@@ -12,14 +12,13 @@ pass") during the Riverpod/`ebc_db` integration:
   `docs/backlogs/9.FIELD_CONSTRAINTS_UX_WEB.md` has the checkbox marked
   `[x]` with the full writeup. The app-side `_serialized()` queue
   workaround is left in place as a harmless belt-and-suspenders.
-- App hangs on close — **no commit or doc evidence of a fix found.**
-  Searched all tracked history (`git log -p --all -S"App hangs on
-  close"`) — the line was only ever added (8.3impl.md, then copied here),
-  never removed or referenced again anywhere. Marked Implemented per
-  project owner's confirmation, but noting this specifically wasn't
-  independently verifiable the way the spinner fix was — worth a
-  double-check that this is the same bug being recalled and not conflated
-  with the (confirmed) spinner fix.
+- App hangs on close — **confirmed resolved by the project owner**: no
+  longer reproduces, after several attempted fixes across other work.
+  Exact fixing commit not tracked here — nothing in the diff history
+  names it directly (searched via `git log -p --all -S"App hangs on
+  close"`, which only shows the line being added, never removed or
+  referenced again), so whichever change fixed it did so as a side effect
+  of something else, not a dedicated fix commit.
 
 (The centralized reject-invalid-writes gate that 8.3impl.md also flagged
 as missing was later added — `sanitizeProfile`/`sanitizeSettingsData` in
