@@ -9,6 +9,8 @@ shipped:
 - Display of corrections in clicks (Home AdjPanel, Tables, ReticleViewScreen)
 - `ammo.zeroOffset` (`zeroOffsetX/Y` in Ammo, UI in AmmoWizard)
 - Filter panel (Weapon/Ammo/Sight lists + collections)
+- Image picker / camera UI in wizard screens (Weapon, Sight, Ammo) — blocked
+  on [0007]'s `entity.image` format decision
 - Notepad — Note button on Home (currently `showNotAvailableSnackBar`);
   storage TBD
 - Help Overlay — coach marks; library TBD
@@ -21,5 +23,6 @@ shipped:
 - Platform builds & signing: Android APK, macOS, iOS, Windows
 - Auto-update: Windows msix, macOS, Android Play Store, Linux
   Flatpak/deb/rpm/Winget (see [0008] for the Windows msix blocker
-  specifically)
+  specifically); iOS ships via App Store only, no sideload autoupdates
 - Database resilience — corruption handling
+- CI smoke test with `xvfb-run` for the Linux packaging pipeline
