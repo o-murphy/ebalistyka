@@ -1,6 +1,8 @@
 # ebc_db migration residue — app-close hang & Tables spinner root cause
 
-**Status:** Proposed
+**Status:** Implemented — resolved since this record was written (per
+project owner, 2026-09-06); kept for the history of what the bug was and
+where it was flagged.
 
 Surfaced in `docs/backlogs/8.3impl.md` ("Still open, not addressed by this
 pass") during the Riverpod/`ebc_db` integration and never picked back up
