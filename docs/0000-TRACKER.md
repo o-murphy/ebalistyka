@@ -24,6 +24,11 @@ that's also where new decisions get logged as they're made.
 - [ ] [0006] Open question — localization scope beyond UK+EN
 - [ ] [0007] Open question — Weapon/Sight/Ammo `image` field format
 - [ ] [0008] Windows msix auto-update blocked by self-signed cert
+- [ ] [0009] ebc_db migration residue — app-close hang & Tables spinner
+      root cause
+- [ ] [0010] Profile reordering vs. "index 0 = active" convention
+- [ ] [0011] Web IndexedDB backend — cross-tab write coordination
+      undesigned
 
 ## Implemented
 
