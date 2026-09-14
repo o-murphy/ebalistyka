@@ -293,7 +293,7 @@ void _generateFieldConstraints(Directory outDir) {
 
   final outFile = File('${outDir.path}/field_constraints.g.dart');
   outFile.writeAsStringSync(buffer.toString());
-  print('Done. Wrote ${outFile.path}');
+  stdout.writeln('Done. Wrote ${outFile.path}');
 }
 
 /// Walks [defName] within [schemaFile] for array properties with a

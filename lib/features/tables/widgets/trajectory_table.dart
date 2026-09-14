@@ -3,7 +3,7 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka/shared/widgets/error_display.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:data_table_2/data_table_2.dart';
 
 import 'package:ebalistyka/shared/models/formatted_row.dart';

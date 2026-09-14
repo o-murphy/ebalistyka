@@ -6,7 +6,7 @@ import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/help_dialog.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 

@@ -6,7 +6,7 @@ import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/features/home/sub_screens/weapon_wizard_screen.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 

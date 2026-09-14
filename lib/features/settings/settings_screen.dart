@@ -10,7 +10,7 @@ import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:ebalistyka/update/update_checker.dart';
 import 'package:ebalistyka/update/update_sheet.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';

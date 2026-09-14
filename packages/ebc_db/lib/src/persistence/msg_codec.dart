@@ -26,10 +26,9 @@ class MsgCodec<T> {
   final T Function(Uint8List) _fromBuffer;
 
   const MsgCodec({
-    required Uint8List Function(T) toBuffer,
-    required T Function(Uint8List) fromBuffer,
-  }) : _toBuffer = toBuffer,
-       _fromBuffer = fromBuffer;
+    required this._toBuffer,
+    required this._fromBuffer,
+  });
 
   Uint8List encode(T message) {
     final pb = _toBuffer(message);

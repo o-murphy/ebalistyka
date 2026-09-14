@@ -1,5 +1,5 @@
 import 'package:ebalistyka/shared/widgets/screen_top_bar.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class BaseScreen extends StatelessWidget {
   const BaseScreen({

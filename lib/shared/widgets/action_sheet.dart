@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 // ── Entries ───────────────────────────────────────────────────────────────────

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class OffsetsMessage extends StatelessWidget {
   const OffsetsMessage(this.message, {super.key});

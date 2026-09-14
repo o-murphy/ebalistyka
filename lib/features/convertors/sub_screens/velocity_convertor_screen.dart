@@ -6,7 +6,7 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_with_unit_picker_tile.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
-import 'package:flutter/material.dart' hide Velocity;
+import 'package:material_ui/material_ui.dart' hide Velocity;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dart_bclibc_flutter/unit.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';

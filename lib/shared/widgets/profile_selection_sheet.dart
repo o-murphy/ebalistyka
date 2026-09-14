@@ -1,6 +1,6 @@
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebc_db/ebc_db.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Checkbox bottom sheet letting the user pick a subset of [profiles] to
 /// import — shared by the Profiles-screen single-profile import flow

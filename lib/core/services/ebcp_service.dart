@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:ebc_db/ebc_db.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -52,15 +51,12 @@ abstract final class EbcpService {
         ),
       );
     } else {
-      final savePath = await FilePicker.saveFile(
+      await FilePicker.saveFile(
         fileName: name,
         type: FileType.custom,
         allowedExtensions: ['ebcp'],
         bytes: bytes,
       );
-      if (savePath != null && !kIsWeb) {
-        await File(savePath).writeAsBytes(bytes);
-      }
     }
   }
 
@@ -81,13 +77,11 @@ abstract final class EbcpService {
   /// files this app's own state can otherwise tolerate and fix on write —
   /// see docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md Phase 7.
   static Future<EbcpData?> pickAndParse() async {
-    final result = await FilePicker.pickFiles(
+    final file = await FilePicker.pickFile(
       type: Platform.isAndroid ? FileType.any : FileType.custom,
       allowedExtensions: Platform.isAndroid ? null : ['ebcp'],
     );
-    if (result == null || result.files.isEmpty) return null;
-
-    final file = result.files.single;
+    if (file == null) return null;
     if (!file.name.toLowerCase().endsWith('.ebcp')) {
       throw FormatException('Expected an .ebcp file, got: ${file.name}');
     }

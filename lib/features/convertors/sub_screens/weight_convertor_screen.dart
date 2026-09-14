@@ -2,7 +2,7 @@ import 'package:dart_bclibc_flutter/unit.dart';
 import 'package:ebalistyka/features/convertors/sub_screens/simple_convertor_screen.dart';
 import 'package:ebalistyka/features/convertors/weight_convertor_vm.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class WeightConvertorScreen extends ConsumerWidget {

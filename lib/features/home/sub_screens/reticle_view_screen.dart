@@ -27,7 +27,7 @@ import 'package:ebalistyka/shared/widgets/offsets_edit.dart';
 import 'package:ebalistyka/shared/widgets/reticle_view.dart';
 import 'package:ebalistyka/shared/widgets/adjustment_input_with_clicks.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_with_unit_picker_tile.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 

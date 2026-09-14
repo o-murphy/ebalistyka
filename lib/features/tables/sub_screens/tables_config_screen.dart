@@ -6,7 +6,7 @@ import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
