@@ -12,7 +12,7 @@ import 'package:ebalistyka/shared/widgets/icon_value_button.dart';
 import 'package:dart_bclibc_flutter/unit.dart';
 import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/unit_hybrid_picker_dialog.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class QuickActionsPanel extends ConsumerWidget {

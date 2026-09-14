@@ -6,7 +6,7 @@ import 'package:ebalistyka/core/providers/db_provider.dart';
 import 'package:ebalistyka/core/providers/db_seed.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebc_db/ebc_db.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:riverpod/riverpod.dart';
 

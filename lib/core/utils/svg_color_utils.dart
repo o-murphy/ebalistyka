@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Replaces SVG color-role placeholders with actual hex colors from [cs].
 ///

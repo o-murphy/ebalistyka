@@ -350,7 +350,7 @@ ebalistyka/
 
 ### Prerequisites
 
-- [Flutter](https://docs.flutter.dev/get-started/install) ≥ 3.41.7 (stable channel)
+- [Flutter](https://docs.flutter.dev/get-started/install) ≥ 3.47.4 (stable channel)
 - CMake ≥ 3.13
 - C++17 compiler (GCC / Clang on Linux, MSVC 2022 on Windows)
 
@@ -505,7 +505,7 @@ See [LICENSE](LICENSE) for the full text. See [CHANGELOG](CHANGELOG.md) for rele
 [Made in Ukraine]:https://img.shields.io/badge/made_in-Ukraine-ffd700.svg?labelColor=0057b7&style=flat-square
 [SWUBadge]: https://stand-with-ukraine.pp.ua
 
-[Flutter Shield]: https://img.shields.io/badge/Flutter-3.41.7-02569B?logo=flutter
+[Flutter Shield]: https://img.shields.io/badge/Flutter-3.47.4-02569B?logo=flutter
 [Flutter]: https://flutter.dev
 
 [Release]: https://img.shields.io/github/v/release/o-murphy/ebalistyka?logo=github&cacheSeconds=0
