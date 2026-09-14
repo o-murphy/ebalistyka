@@ -8,7 +8,7 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/ui_dimensions.dart';
 import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebalistyka/shared/widgets/two_column_table_editor.dart';
-import 'package:flutter/material.dart' hide Velocity;
+import 'package:material_ui/material_ui.dart' hide Velocity;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 

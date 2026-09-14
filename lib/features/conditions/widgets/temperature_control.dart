@@ -3,7 +3,7 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/unit_hybrid_picker_dialog.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:dart_bclibc_flutter/unit.dart';

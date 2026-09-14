@@ -9,7 +9,7 @@ import 'package:ebalistyka/shared/widgets/profile_selection_sheet.dart';
 import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Shared single-profile export/import handlers — used by both
@@ -37,13 +37,11 @@ Future<void> shareProfileAsEbcp(BuildContext context, Profile profile) async {
 Future<void> importProfileFromFile(BuildContext context, WidgetRef ref) async {
   final l10n = AppLocalizations.of(context)!;
   try {
-    final result = await FilePicker.pickFiles(
+    final file = await FilePicker.pickFile(
       type: Platform.isAndroid ? FileType.any : FileType.custom,
       allowedExtensions: Platform.isAndroid ? null : ['ebcp', 'a7p'],
     );
-    if (result == null || result.files.isEmpty) return;
-
-    final file = result.files.single;
+    if (file == null) return;
     final lowerName = file.name.toLowerCase();
     final bytes = await file.readAsBytes();
 

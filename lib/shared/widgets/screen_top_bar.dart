@@ -1,7 +1,7 @@
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ebalistyka/router.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class ScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
   const ScreenTopBar({

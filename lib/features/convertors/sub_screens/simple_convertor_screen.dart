@@ -6,7 +6,7 @@ import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_with_unit_picker_tile.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 class SimpleConvertorScreen extends StatelessWidget {

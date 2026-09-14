@@ -4,7 +4,7 @@ import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/providers/db_provider.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:riverpod/riverpod.dart';
 
 // Every notifier below is a thin adapter over `settingsDataProvider`

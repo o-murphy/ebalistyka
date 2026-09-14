@@ -17,11 +17,10 @@ import 'dart:typed_data';
 /// here.
 abstract class MsgStore<T> {
   MsgStore({
-    required Uint8List Function(T) encode,
-    required T Function(Uint8List) decode,
+    required this._encode,
+    required this._decode,
     this.debounce = Duration.zero,
-  }) : _encode = encode,
-       _decode = decode;
+  });
 
   /// Coalesces rapid [save] calls into one write. `Duration.zero` (the
   /// default) writes immediately on every call. The UI layer already

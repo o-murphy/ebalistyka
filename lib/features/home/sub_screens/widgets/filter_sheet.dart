@@ -8,7 +8,7 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_field.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter/foundation.dart' show setEquals;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ── Public entry points ───────────────────────────────────────────────────────

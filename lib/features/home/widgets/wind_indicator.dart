@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class WindIndicator extends StatefulWidget {
   final double initialAngle;

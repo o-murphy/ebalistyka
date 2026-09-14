@@ -8,7 +8,7 @@ import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dar
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/unit_value_header.dart';
 import 'package:ebalistyka/shared/widgets/unit_wheel_picker_widget.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class UnitWheelPicker extends StatefulWidget {
   const UnitWheelPicker({

@@ -5,7 +5,7 @@ import 'package:dart_bclibc_flutter/unit.dart';
 import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Widget for selecting a unit of measurement from BottomSheet
 class UnitPickerButton extends StatelessWidget {

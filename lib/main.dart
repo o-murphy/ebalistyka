@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:ebalistyka/shared/constants/app_info.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/shared/helpers/is_desktop.dart';
 import 'package:window_manager/window_manager.dart';
@@ -160,14 +160,25 @@ class MyApp extends ConsumerWidget {
       // stops reacting to OS locale changes after the first pin.
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      // gen-l10n's AppLocalizations.localizationsDelegates still wires the
+      // legacy flutter_localizations delegates; material_ui widgets need its own.
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
+      ],
       routerConfig: appRouter,
       theme: _lightTheme,
       darkTheme: _darkTheme,
       themeMode: themeMode,
       scrollBehavior: _AppScrollBehavior(),
       builder: (context, child) {
-        final inner = _DbResetBanner(child: child!);
+        // Bridges ThemeData/MaterialLocalizations for dependencies still on
+        // package:flutter/material.dart (flutter_markdown_plus, window_manager,
+        // sticky_headers). Drop once they migrate to material_ui.
+        // ignore: deprecated_member_use
+        final inner = MaterialUiCompatibilityBridge(
+          child: _DbResetBanner(child: child!),
+        );
         if (isDesktop) {
           return Center(child: Container(child: inner));
         }

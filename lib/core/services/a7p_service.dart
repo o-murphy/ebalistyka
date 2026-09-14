@@ -4,7 +4,6 @@ import 'package:a7p/a7p.dart' hide Profile;
 import 'package:dart_bclibc_flutter/unit.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -69,28 +68,23 @@ abstract final class A7pService {
         ),
       );
     } else {
-      final savePath = await FilePicker.saveFile(
+      await FilePicker.saveFile(
         fileName: name,
         type: FileType.custom,
         allowedExtensions: ['a7p'],
         bytes: bytes,
       );
-      if (savePath != null && !kIsWeb) {
-        await File(savePath).writeAsBytes(bytes);
-      }
     }
   }
 
   /// Returns `null` if the user cancelled.
   /// Throws [A7pParseException] if the file is invalid.
   static Future<Profile?> pickAndParse() async {
-    final result = await FilePicker.pickFiles(
+    final file = await FilePicker.pickFile(
       type: Platform.isAndroid ? FileType.any : FileType.custom,
       allowedExtensions: Platform.isAndroid ? null : ['a7p'],
     );
-    if (result == null || result.files.isEmpty) return null;
-
-    final file = result.files.single;
+    if (file == null) return null;
     if (!file.name.toLowerCase().endsWith('.a7p')) {
       throw FormatException('Expected an .a7p file, got: ${file.name}');
     }

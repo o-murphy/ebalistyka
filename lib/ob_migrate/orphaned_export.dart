@@ -10,7 +10,6 @@ import 'package:ebc_db/ebc_db.dart';
 import 'package:ebc_db/src/validation/profiles_json.dart'
     show ammoToJson, sightToJson, weaponToJson;
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -42,14 +41,11 @@ Future<void> shareOrphanedDataJson({
       ShareParams(files: [XFile(path, mimeType: 'application/json', name: name)]),
     );
   } else {
-    final savePath = await FilePicker.saveFile(
+    await FilePicker.saveFile(
       fileName: name,
       type: FileType.custom,
       allowedExtensions: ['json'],
       bytes: bytes,
     );
-    if (savePath != null && !kIsWeb) {
-      await File(savePath).writeAsBytes(bytes);
-    }
   }
 }

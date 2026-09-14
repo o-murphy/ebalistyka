@@ -14,7 +14,7 @@ import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/error_display.dart';
 import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebc_db/ebc_db.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 

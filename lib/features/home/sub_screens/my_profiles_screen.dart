@@ -18,7 +18,7 @@ import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
 import 'package:dart_bclibc_flutter/unit.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebc_db/ebc_db.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
