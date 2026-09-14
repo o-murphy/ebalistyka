@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:ebalistyka/core/providers/db_provider.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/confirm_dialog.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'legacy_migrator.dart';
@@ -112,7 +112,12 @@ class _MigrationGateState extends ConsumerState<MigrationGate> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       supportedLocales: AppLocalizations.supportedLocales,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      // gen-l10n's AppLocalizations.localizationsDelegates still wires the
+      // legacy flutter_localizations delegates; material_ui widgets need its own.
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
+      ],
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

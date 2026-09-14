@@ -1,5 +1,5 @@
 import 'package:ebalistyka/shared/constants/ui_dimensions.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Thin 1px divider used between list tiles.
 class TileDivider extends StatelessWidget {

@@ -14,7 +14,7 @@ import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:ebalistyka/shared/widgets/wizard_action_bar.dart';
 import 'package:ebalistyka/shared/widgets/wizard_name_field.dart';
 import 'package:ebc_db/ebc_db.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';

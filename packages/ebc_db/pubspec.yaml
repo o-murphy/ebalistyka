@@ -5,7 +5,7 @@ homepage:
 publish_to: 'none'
 
 environment:
-  sdk: ^3.11.4
+  sdk: ^3.13.3
 
 dependencies:
   protobuf: ^6.0.0
