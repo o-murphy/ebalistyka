@@ -10,7 +10,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
-  dart_bclibc_flutter
+  bclibc_flutter
   jni
   ob_dump_reader_flutter
 )
