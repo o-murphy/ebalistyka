@@ -8,14 +8,14 @@ import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart'
     show DragType, AmmoExtension;
-import 'package:dart_bclibc_flutter/bclibc.dart';
-import 'package:dart_bclibc_flutter/bclibc.dart' as bclibc;
+import 'package:bclibc_flutter/bclibc.dart';
+import 'package:bclibc_flutter/bclibc.dart' as bclibc;
 
 // Web counterpart to ballistics_service_impl.dart — conditionally exported
 // in its place (see ballistics_service_impl.dart's own header comment) since
 // the native file's `bclibc.Calculator()`/`BCLIBCFFI_TrajFlag` don't exist on
 // web at all (see docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md Phase 9 —
-// dart_bclibc's facade stubs them out there). Uses `AsyncCalculator`
+// bclibc's facade stubs them out there). Uses `AsyncCalculator`
 // instead, awaited sequentially on the calling isolate — cheap on web
 // specifically, since the web engine (a cached, already-loaded wasm module)
 // never spawns an isolate per call the way the native engine's

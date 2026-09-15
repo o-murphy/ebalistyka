@@ -36,7 +36,7 @@ A high performance cross-platform ballistic calculator
 > [!WARNING]
 > **Alpha software.** Expect breaking changes, incomplete features, and rough edges.
 
-A cross-platform ballistic trajectory calculator built with Flutter. Powered by [dart_bclibc](https://pub.dev/packages/dart_bclibc) — a high-performance (3-DOF + spin drift) C++ ballistic solver engine with RK4/Euler integration.
+A cross-platform ballistic trajectory calculator built with Flutter. Powered by [bclibc](https://pub.dev/packages/bclibc) — a high-performance (3-DOF + spin drift) C++ ballistic solver engine with RK4/Euler integration.
 
 _UI/UX inspired by the [**Strilets**](https://download.strilets.tech/) ballistic calculator app_
 
@@ -99,7 +99,7 @@ _UI/UX inspired by the [**Strilets**](https://download.strilets.tech/) ballistic
   - [File import](#file-import)
 - [Dependencies](#dependencies)
   - [App (`ebalistyka`)](#app-ebalistyka)
-  - [`dart_bclibc`](#dart_bclibc)
+  - [`bclibc`](#bclibc)
   - [`packages/ebc_db`](#packagesebc_db)
   - [`tools/reticle_gen`](#toolsreticle_gen)
 - [License](#license)
@@ -341,7 +341,7 @@ ebalistyka/
 **State management:** Riverpod  
 **Navigation:** go_router  
 **Local database:** two embedded protobuf files (`settings.ebcp`/`profiles.ebcp`), via `packages/ebc_db`  
-**Ballistic engine:** [dart_bclibc](https://pub.dev/packages/dart_bclibc) (pub.dev package, bundles bclibc C++ solver via FFI)  
+**Ballistic engine:** [bclibc](https://pub.dev/packages/bclibc) (pub.dev package, bundles bclibc C++ solver via FFI)  
 **Localisation:** Flutter ARB / `flutter_localizations` (EN + UA)
 
 ---
@@ -455,14 +455,14 @@ On Android, `file_picker` cannot filter by custom extensions (`.ebcp`, `.a7p`) b
 | [ota_update](https://pub.dev/packages/ota_update)                       | Autoupdate for Android sideload installations        |
 | [flutpak](https://pub.dev/packages/flutpak) (dev)                       | Manage flatpak/flathub manifest for sandboxed builds |
 
-### `dart_bclibc`
+### `bclibc`
 
-The app depends directly on [`dart_bclibc_flutter`](https://pub.dev/packages/dart_bclibc_flutter), the Flutter plugin wrapper; `dart_bclibc` itself is pulled in transitively.
+The app depends directly on [`bclibc_flutter`](https://pub.dev/packages/bclibc_flutter), the Flutter plugin wrapper; `bclibc` itself is pulled in transitively.
 
 | Package                                                                        | Role                                                                                                                      |
 | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| [dart_bclibc_flutter](https://pub.dev/packages/dart_bclibc_flutter)              | Flutter plugin wrapper — bundles the native bclibc solver for Android/iOS/Linux/macOS/Windows plus a wasm build for web |
-| [dart_bclibc](https://pub.dev/packages/dart_bclibc)                              | Dart FFI package — bclibc C++ solver (3-DOF, RK4) LGPL-3, bindings, unit types                                          |
+| [bclibc_flutter](https://pub.dev/packages/bclibc_flutter)              | Flutter plugin wrapper — bundles the native bclibc solver for Android/iOS/Linux/macOS/Windows plus a wasm build for web |
+| [bclibc](https://pub.dev/packages/bclibc)                              | Dart FFI package — bclibc C++ solver (3-DOF, RK4) LGPL-3, bindings, unit types                                          |
 | [ffi](https://pub.dev/packages/ffi)                                              | Dart ↔ C FFI bindings                                                                                                     |
 
 ### `packages/ebc_db`
@@ -491,7 +491,7 @@ This program is free software: you can redistribute it and/or modify it under th
 See [LICENSE](LICENSE) for the full text. See [CHANGELOG](CHANGELOG.md) for release history.
 
 > [!NOTE]
-> [`dart_bclibc`](https://pub.dev/packages/dart_bclibc) bundles `bclibc` — the ballistic solver engine — which is licensed separately under the **GNU Lesser General Public License v3.0**. See the [dart_bclibc repository](https://github.com/o-murphy/dart_bclibc) for the engine source and its license.
+> [`bclibc`](https://pub.dev/packages/bclibc) bundles `bclibc` — the ballistic solver engine — which is licensed separately under the **GNU Lesser General Public License v3.0**. See the [bclibc repository](https://github.com/o-murphy/bclibc) for the engine source and its license.
 
 > [!WARNING]
 > **Risk notice.** This application performs approximate simulations of complex physical processes. Calculation results must not be considered as completely or reliably reflecting actual projectile behaviour. Results may be used for educational purposes only and must not be relied upon in any context where an incorrect calculation could cause financial harm or put a human life at risk.

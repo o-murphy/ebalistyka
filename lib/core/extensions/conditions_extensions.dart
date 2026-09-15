@@ -1,7 +1,7 @@
 import 'dart:math' show pi;
 
-import 'package:dart_bclibc_flutter/bclibc.dart' as bclibc;
-import 'package:dart_bclibc_flutter/unit.dart';
+import 'package:bclibc_flutter/bclibc.dart' as bclibc;
+import 'package:bclibc_flutter/unit.dart';
 import 'package:ebc_db/ebc_db.dart';
 
 extension ConditionsExtension on ShootingConditions {
@@ -20,7 +20,7 @@ extension ConditionsExtension on ShootingConditions {
 
   // windDirection/azimuth are compass bearings, stored as [0,360) — but
   // Angular's own raw representation is always normalized to (-180,180]
-  // (see dart_bclibc's Angular._toRaw), so e.g. Angular.degree(240).in_
+  // (see bclibc's Angular._toRaw), so e.g. Angular.degree(240).in_
   // (Unit.degree) comes back as -120.0, not 240.0. Re-normalize into
   // [0,360) here, at the one place these fields cross from Angular into
   // storage — otherwise a bearing past 180° gets stored negative, which

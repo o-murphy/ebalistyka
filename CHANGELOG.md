@@ -30,10 +30,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **flutter sdk** - upgraded to `3.47.4`
 - **Dart SDK constraint** — `environment.sdk` raised to `^3.13.3` (bundled with Flutter 3.47.4) in the app (`^3.12.1`), `packages/ebc_db` and `tools/reticle_gen` (`^3.11.4`); README prerequisites/badge updated from `3.41.7` to `3.47.4`. `ebc_db`'s `MsgCodec`/`MsgStore` constructors now use private initializing formals (`required this._encode`), which the 3.13 language version allows — call sites keep the same public `encode:`/`toBuffer:` names.
 - **A7P format dependency** — replaced `packages/a7p` (local path package) with [`a7p ^1.2.3`](https://pub.dev/packages/a7p) from pub.dev. `A7pConverter`/`A7pRange` (the proto ↔ `ProfileExport` conversion, plus the distance-range tables — app-specific, and not part of the standalone `a7p` package) now live in `lib/core/services/a7p_converter.dart`.
-- **Ballistic engine dependency** — replaced `packages/bclibc_ffi` (local git-submodule-based FFI package) with [`dart_bclibc ^0.1.1`](https://pub.dev/packages/dart_bclibc) from pub.dev. The `external/bclibc` submodule and `packages/bclibc_ffi` local package have been removed; the native shared library is now built and bundled by `dart_bclibc`'s own CMake rules.
-- **`linux/CMakeLists.txt`**, **`windows/CMakeLists.txt`** — removed manual `install(TARGETS bclibc_ffi …)` / `add_dependencies` blocks that are now handled inside `dart_bclibc`'s platform CMakeLists.
-- **`flutpak.yaml`** — removed `modules: [flatpak/modules/bclibc.yml]` and `disable-submodules: true` (no longer needed; `dart_bclibc` bundles bclibc source via the pub.dev archive).
-- **`Makefile`** — `build-bclibc` target now runs `dart run dart_bclibc:build_native`; the `ffigen` target has been removed (bindings are generated upstream in `dart_bclibc`).
+- **Ballistic engine dependency** — replaced `packages/bclibc_ffi` (local git-submodule-based FFI package) with [`bclibc ^0.1.1`](https://pub.dev/packages/bclibc) from pub.dev. The `external/bclibc` submodule and `packages/bclibc_ffi` local package have been removed; the native shared library is now built and bundled by `bclibc`'s own CMake rules.
+- **`linux/CMakeLists.txt`**, **`windows/CMakeLists.txt`** — removed manual `install(TARGETS bclibc_ffi …)` / `add_dependencies` blocks that are now handled inside `bclibc`'s platform CMakeLists.
+- **`flutpak.yaml`** — removed `modules: [flatpak/modules/bclibc.yml]` and `disable-submodules: true` (no longer needed; `bclibc` bundles bclibc source via the pub.dev archive).
+- **`Makefile`** — `build-bclibc` target now runs `dart run bclibc:build_native`; the `ffigen` target has been removed (bindings are generated upstream in `bclibc`).
 - **`lib/main.dart`** — `BcLibC.open()` is now called before `WidgetsFlutterBinding.ensureInitialized()`. If the shared library fails to load the process exits immediately with `Fatal: native library unavailable: …` on stderr (exit code 1) instead of surfacing the error in the UI only when the first calculation runs.
 - **`scripts/verify-bundle.sh`** — enhanced native library checks:
   - Linux: broken-symlink detection + `file -L` ELF validation for `libbclibc_ffi.so`
@@ -66,7 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - `packages/ebalistyka_db/` local package (ObjectBox entities + old ZIP+JSON `.ebcp` DTOs — superseded by `packages/ebc_db`)
 - `packages/a7p/` local package (superseded by `a7p` on pub.dev)
 - `generate-a7p` Makefile target (protobuf bindings now ship inside the `a7p` package itself)
-- `packages/bclibc_ffi/` local package (superseded by `dart_bclibc` on pub.dev)
+- `packages/bclibc_ffi/` local package (superseded by `bclibc` on pub.dev)
 - `external/bclibc` git submodule and `.gitmodules`
 - `flatpak/modules/bclibc.yml` Flatpak module
 - `ffigen` Makefile target
