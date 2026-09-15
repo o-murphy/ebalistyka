@@ -1,5 +1,5 @@
 import 'package:ebc_db/ebc_db.dart';
-import 'package:dart_bclibc_flutter/bclibc.dart' as bclibc;
+import 'package:bclibc_flutter/bclibc.dart' as bclibc;
 
 class TableCalcOptions {
   final double startM;

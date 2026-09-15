@@ -85,12 +85,12 @@ generate: objectbox-generate \
 	generate-reticles generate-icons \
 	generate-collection
 
-# Build libbclibc_ffi standalone (dart_bclibc's bundled bclibc source) so
+# Build libbclibc_ffi standalone (bclibc's bundled bclibc source) so
 # `flutter test` can dlopen it via the package's `build/bclibc/` fallback path.
 # `flutter build` bundles this automatically for the app itself, but `flutter
 # test` never runs a platform build, so tests need it built explicitly.
 build-bclibc:
-	dart run dart_bclibc:build_native
+	dart run bclibc:build_native
 
 # `tools/reticle_gen` is a standalone Dart package (not a pubspec dependency
 # of the app), so `flutter analyze` can't resolve its `package:reticle_gen`

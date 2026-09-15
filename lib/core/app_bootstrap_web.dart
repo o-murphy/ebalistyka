@@ -1,5 +1,5 @@
 // Web counterpart to app_bootstrap_io.dart's conditional import in
-// main.dart. `dart_bclibc`'s FFI init (`BcLibC.open()`) has no web
+// main.dart. `bclibc`'s FFI init (`BcLibC.open()`) has no web
 // equivalent needed here — web uses the wasm engine instead, loaded lazily
 // on first `AsyncCalculator` call (`ballistics_service_impl_web.dart`).
 //
@@ -16,7 +16,7 @@
 // `IndexedDbMsgStore` isn't exported from `ebc_db.dart`'s main barrel (it
 // imports `dart:js_interop`, unavailable on the VM target `dart test`/
 // `flutter test` run on) — this deep import into `ebc_db`'s `lib/src` is
-// deliberate, same reasoning `dart_bclibc_flutter`'s `async_calculator.dart`
+// deliberate, same reasoning `bclibc_flutter`'s `async_calculator.dart`
 // already uses for its own equivalent deep import: `ebc_db` and
 // `ebalistyka` are versioned and developed together in this one repo.
 

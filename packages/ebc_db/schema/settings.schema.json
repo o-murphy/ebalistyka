@@ -207,7 +207,7 @@
         "torque",
         "target_size"
       ],
-      "description": "Each field is a dart_bclibc Unit enum name — not enumerated here (external package, out of this schema's scope).",
+      "description": "Each field is a bclibc Unit enum name — not enumerated here (external package, out of this schema's scope).",
       "properties": {
         "angular": {
           "type": "string",

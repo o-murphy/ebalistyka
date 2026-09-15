@@ -18,8 +18,8 @@ import 'package:flutter/widgets.dart' show Locale;
 import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 
-import 'package:dart_bclibc_flutter/bclibc.dart' as bclibc;
-import 'package:dart_bclibc_flutter/unit.dart';
+import 'package:bclibc_flutter/bclibc.dart' as bclibc;
+import 'package:bclibc_flutter/unit.dart';
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 

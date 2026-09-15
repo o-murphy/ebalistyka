@@ -5,7 +5,7 @@
 /// expressed in. The wire unit for each role is documented in the
 /// corresponding schema field's `description` and is the app layer's
 /// responsibility to know (see `lib/core/models/field_constraints.dart`'s
-/// `FC`, which pairs these bounds with a `dart_bclibc.Unit`).
+/// `FC`, which pairs these bounds with a `bclibc.Unit`).
 class FieldBounds {
   const FieldBounds({required this.minRaw, required this.maxRaw});
 
