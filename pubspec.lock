@@ -73,6 +73,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.13.1"
+  bclibc:
+    dependency: "direct main"
+    description:
+      name: bclibc
+      sha256: b6f5a6a0731dc458850998228aa7e206afcc146831870d9096472962cd3d14d7
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.3"
+  bclibc_flutter:
+    dependency: "direct main"
+    description:
+      name: bclibc_flutter
+      sha256: "8407e9597bc9b3a1748fc7295e4d311c44bbfa44fad3a959b973bf1c31aa0ef1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.3"
   boolean_selector:
     dependency: transitive
     description:
@@ -205,10 +221,10 @@ packages:
     dependency: "direct main"
     description:
       name: cupertino_ui
-      sha256: e9dfe7fac704028f8928cbe4028a0be5e8a709498e8daf8247de99e99a32aef3
+      sha256: c6747018d37d32feeeb858a1d7043831cb541460ebe1a890a995cdb8df8ea5a5
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.2"
+    version: "1.1.0"
   custom_lint:
     dependency: "direct dev"
     description:
@@ -233,22 +249,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0+8.4.0"
-  dart_bclibc:
-    dependency: transitive
-    description:
-      name: dart_bclibc
-      sha256: "297bcb968854b617667127764048dc7653dcd2d49a02803745d4d6d3da26796a"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.1"
-  dart_bclibc_flutter:
-    dependency: "direct main"
-    description:
-      name: dart_bclibc_flutter
-      sha256: "4831aafa36df02a69fcf0a028d1aced390bda67ee3c8b126b0a82e37137bb524"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.1"
   dart_style:
     dependency: transitive
     description:
@@ -316,18 +316,18 @@ packages:
     dependency: "direct main"
     description:
       name: file_picker
-      sha256: "1fb0cb9de6a189d76980a5a00ae3d4c9ec07e87519fd7368b75f5ebf0126977e"
+      sha256: "98c0b156b6380ba55bc767a14e2e6b3feb246e713ad40092424596fa79005bea"
       url: "https://pub.dev"
     source: hosted
-    version: "13.0.0"
+    version: "13.1.0"
   file_picker_darwin:
     dependency: transitive
     description:
       name: file_picker_darwin
-      sha256: da861ccc4cdbc8bacf1f85d53dede63d40dd7c0b5ff823cd2b564a8daa1bc058
+      sha256: deb3ff69d58656b885c85bc1627f09ecb79860f272a5e7577149582ede4dce5d
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "2.1.0"
   file_picker_linux:
     dependency: transitive
     description:
@@ -656,10 +656,10 @@ packages:
     dependency: "direct main"
     description:
       name: material_ui
-      sha256: fbfb53cab6c4629438feeade5f3d305f72944bc9d9f25786b19106d32b80ec45
+      sha256: "6d056d60ce745335fcf1c726a4fc46a481a62229f202b65dbc2db5edbbabc7e2"
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.0"
+    version: "1.3.0"
   meta:
     dependency: transitive
     description:
