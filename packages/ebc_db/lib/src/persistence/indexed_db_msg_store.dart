@@ -27,8 +27,8 @@ import 'msg_store.dart';
 /// unconditionally. Import it directly
 /// (`package:ebc_db/src/persistence/indexed_db_msg_store.dart`) from a
 /// web-only entry point instead (e.g. `app_bootstrap_web.dart`) — the same
-/// `implementation_imports` shape `dart_bclibc_flutter`'s
-/// `async_calculator.dart` already uses to reach into `dart_bclibc`'s
+/// `implementation_imports` shape `bclibc_flutter`'s
+/// `async_calculator.dart` already uses to reach into `bclibc`'s
 /// `lib/src`, for the same reason: `ebc_db` and `ebalistyka` are versioned
 /// and developed together in this one repo.
 class IndexedDbMsgStore<T> extends MsgStore<T> {

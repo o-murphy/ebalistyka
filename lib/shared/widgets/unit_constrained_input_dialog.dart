@@ -8,7 +8,7 @@ import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/unit_dialog_input_field.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:dart_bclibc_flutter/unit.dart';
+import 'package:bclibc_flutter/unit.dart';
 
 // ── Refactored dialog using UnitPickerContext ──────────────────────────────
 
