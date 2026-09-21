@@ -41,7 +41,7 @@ class BallisticsServiceImpl implements BallisticsService {
   List<double>? _lastZeroKey;
   double? _cachedZeroElevRad;
 
-  final _calc = bclibc.AsyncCalculator();
+  final _calc = bclibc.AsyncCalculator(method: kIntegrationMethod);
 
   // Serializes every call into `_calc` — the wasm engine is documented as
   // "stateless/reentrant" for sequential reuse, but that's not the same
