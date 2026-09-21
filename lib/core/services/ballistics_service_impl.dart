@@ -22,7 +22,7 @@ typedef _TableCalcResult = (bclibc.HitResult?, double?);
 _TableCalcResult _runTableCalculation(_TableCalcArgs args) {
   final (zeroShot, currentShot, zeroDistance, stepM, cachedZeroElevRad) = args;
   try {
-    final calc = bclibc.Calculator();
+    final calc = bclibc.Calculator(method: kIntegrationMethod);
     double? freshZeroElevRad;
 
     if (cachedZeroElevRad != null) {
@@ -96,7 +96,7 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
       ? stepM
       : 0.1524; // max 1/2 ft for dense interpolation
   try {
-    final calc = bclibc.Calculator();
+    final calc = bclibc.Calculator(method: kIntegrationMethod);
     double? freshZeroElevRad;
 
     if (cachedZeroElevRad != null) {
