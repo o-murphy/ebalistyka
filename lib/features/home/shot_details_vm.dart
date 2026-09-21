@@ -143,7 +143,7 @@ class ShotInfoViewModel extends AsyncNotifier<ShotInfoUiState> {
     final sight = profile.sight;
 
     final targetDistM = conditions.distanceMeter;
-    final traj = hit.trajectory;
+    final traj = hit.samples;
     final atTarget = hit.getAtDistance(Distance.meter(targetDistM));
 
     final zeroVelocity = profile.getCalculatedZeroVelocity();
