@@ -250,7 +250,11 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
 
     FormattedTableData? zeroCrossings;
     if (tablesSettings.showZeros) {
-      final zeros = hit.zeros;
+      // `hit.zeros` throws when no zero crossing exists (or ZERO wasn't in
+      // the requested flags), which would fail the whole tables screen.
+      final zeros = hit.events
+          .where((e) => (e.flag & bclibc.TrajFlag.zero.value) != 0)
+          .toList();
       if (zeros.isNotEmpty) {
         zeroCrossings = _buildTable(
           zeros,
