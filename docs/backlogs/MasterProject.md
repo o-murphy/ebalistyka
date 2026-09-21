@@ -1,7 +1,9 @@
 # eBalistyka — Master Project Document
 
 **Version:** 3.0
-**Status:** Living Document — updated 2026-04-21
+**Status:** Retired as the live index — see `docs/0000-TRACKER.md`. §7
+(Open Questions) and §9 (Implementation Phases) are superseded there;
+everything else below is kept as historical/architectural reference.
 **Stack:** Flutter · Dart · Riverpod · ObjectBox · FFI (bclibc C++)
 **Package:** `ebalistyka` · Bundle ID: `com.o.murphy.ebalistyka`
 
