@@ -1,6 +1,10 @@
 import 'package:ebc_db/ebc_db.dart';
 import 'package:bclibc_flutter/bclibc.dart' as bclibc;
 
+/// Integration method shared by the native and web ballistics backends, so
+/// both platforms produce identical results.
+const kIntegrationMethod = bclibc.BcIntegrationMethod.tsitouras;
+
 class TableCalcOptions {
   final double startM;
   final double endM;
