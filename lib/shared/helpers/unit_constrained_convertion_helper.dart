@@ -43,8 +43,14 @@ class UnitConversionHelper {
   double get displayMax => toDisplay(constraints.maxRaw);
   double get stepRaw => constraints.stepRaw;
 
-  String formatDisplayValue(double value) =>
-      (value == 0.0 ? 0.0 : value).toStringAsFixed(accuracy);
+  /// Suppresses the negative sign when [value] rounds to zero at [accuracy]
+  /// decimals (e.g. -1e-16 from unit conversion → "0.0", not "-0.0").
+  String formatDisplayValue(double value) {
+    final factor = math.pow(10, accuracy);
+    final rounded = (value * factor).roundToDouble() / factor;
+    // Adding positive zero normalizes -0.0 → 0.0 (IEEE 754).
+    return (rounded + 0.0).toStringAsFixed(accuracy);
+  }
 
   /// Validates a double value and returns raw.
   double? validateDisplayValue(double displayValue) {

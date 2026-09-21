@@ -42,11 +42,21 @@ class BallisticsResult {
   /// Empty when [TargetCalcOptions.tableStepM] is not provided.
   final List<double> tableHolds;
 
+  /// Windage correction (radians) for the target distance, from the aiming
+  /// solution. Zero for table calculations.
+  final double windageRad;
+
+  /// Windage corrections for each of the 5 home table columns, same layout
+  /// as [tableHolds].
+  final List<double> tableWindages;
+
   const BallisticsResult({
     required this.hitResult,
     required this.zeroElevationRad,
     this.holdRad = 0.0,
     this.tableHolds = const [],
+    this.windageRad = 0.0,
+    this.tableWindages = const [],
   });
 }
 

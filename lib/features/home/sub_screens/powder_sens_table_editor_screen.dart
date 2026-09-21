@@ -9,6 +9,7 @@ import 'package:ebalistyka/shared/widgets/two_column_table_editor.dart';
 import 'package:material_ui/material_ui.dart' hide Velocity;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ebalistyka/core/extensions/num_extensions.dart';
 
 const _kPowderSensRowCount = 5;
 
@@ -95,7 +96,7 @@ class _PowderSensTableEditorScreenState
     final initialRows = widget.initialTable?.map((r) {
       final tDisplay = Temperature.celsius(r.tempC).in_(tUnit);
       final vDisplay = Velocity.mps(r.vMps).in_(vUnit);
-      return (tDisplay.toStringAsFixed(tAcc), vDisplay.toStringAsFixed(vAcc));
+      return (tDisplay.toFixedSafe(tAcc), vDisplay.toFixedSafe(vAcc));
     }).toList();
 
     // Pre-fill row 0 with the reference MV / T₀ when no existing table.
@@ -107,7 +108,7 @@ class _PowderSensTableEditorScreenState
       final tDisplay = Temperature.celsius(refTempC).in_(tUnit);
       final vDisplay = Velocity.mps(mvMps).in_(vUnit);
       prefilled = [
-        (tDisplay.toStringAsFixed(tAcc), vDisplay.toStringAsFixed(vAcc)),
+        (tDisplay.toFixedSafe(tAcc), vDisplay.toFixedSafe(vAcc)),
       ];
     }
 
@@ -187,7 +188,7 @@ class _SensitivityPreview extends StatelessWidget {
     } else {
       final acc = FC.powderSensitivity.accuracyFor(Unit.percent);
       final pct = Ratio.fraction(sensitivity!).in_(Unit.percent);
-      label = '${pct.toStringAsFixed(acc)} %/15°C';
+      label = '${pct.toFixedSafe(acc)} %/15°C';
     }
 
     return Card(

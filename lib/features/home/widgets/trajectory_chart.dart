@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:ebalistyka/shared/models/chart_point.dart';
+import 'package:ebalistyka/core/extensions/num_extensions.dart';
 
 class TrajectoryChart extends StatelessWidget {
   final List<ChartPoint> points;
@@ -155,7 +156,7 @@ class _ChartPainter extends CustomPainter {
       canvas.drawLine(Offset(_ml, y), Offset(_ml + pw, y), gridP);
       _text(
         canvas,
-        h.toStringAsFixed(0),
+        h.toFixedSafe(0),
         Offset(_ml - 4, y - 5),
         ts,
         rightAlign: true,
@@ -171,7 +172,7 @@ class _ChartPainter extends CustomPainter {
     ) {
       _text(
         canvas,
-        v.toStringAsFixed(0),
+        v.toFixedSafe(0),
         Offset(_ml + pw + 3, pyV(v) - 5),
         tsR,
       );
