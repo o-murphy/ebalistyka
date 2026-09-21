@@ -33,8 +33,6 @@ linter:
     avoid_print: true
 
 analyzer:
-  plugins:
-    - custom_lint
   exclude:
     - "lib/**/*.g.dart"
     - "lib/**/*.freezed.dart"
