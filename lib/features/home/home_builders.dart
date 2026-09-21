@@ -397,7 +397,7 @@ HomeChartPointInfo buildPointInfo(ChartPoint point, UnitFormatter formatter) {
 
 String _clicksPart(double rawMil, double clickSizeMil, String dir) {
   final clicks = rawMil / clickSizeMil;
-  final v = clicks.toStringAsFixed(0);
+  final v = clicks.toFixedSafe(0);
   return '${clicks > 0 ? '+' : ''}$v click $dir';
 }
 

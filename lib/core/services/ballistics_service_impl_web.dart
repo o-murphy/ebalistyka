@@ -5,7 +5,7 @@ import 'package:ebalistyka/core/extensions/profile_extensions.dart';
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:flutter/foundation.dart' show listEquals;
+import 'package:flutter/foundation.dart' show listEquals, debugPrint;
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart'
     show DragType, AmmoExtension;
 import 'package:bclibc_flutter/bclibc.dart';
@@ -215,8 +215,6 @@ class BallisticsServiceImpl implements BallisticsService {
           currentShot.weapon.zeroElevation = zeroShot.weapon.zeroElevation;
         }
 
-        final zeroElevRad = currentShot.weapon.zeroElevation.in_(Unit.radian);
-
         final tableDists = [
           opts.targetDistM - 2 * tableStepM,
           opts.targetDistM - tableStepM,
@@ -225,23 +223,29 @@ class BallisticsServiceImpl implements BallisticsService {
           opts.targetDistM + 2 * tableStepM,
         ];
         final tableHolds = <double>[];
+        final tableWindages = <double>[];
         for (final d in tableDists) {
           if (d <= 0) {
             tableHolds.add(double.nan);
+            tableWindages.add(double.nan);
             continue;
           }
           try {
-            final elev = await _calc.barrelElevationForTarget(
+            final (hold, windage, _) = await _calc.aimingSolutionForTarget(
               currentShot,
               Distance.meter(d),
             );
-            tableHolds.add(elev.in_(Unit.radian) - zeroElevRad);
-          } catch (_) {
+            tableHolds.add(hold.in_(Unit.radian));
+            tableWindages.add(windage.in_(Unit.radian));
+          } catch (e) {
+            debugPrint('aimingSolutionForTarget($d m) failed: $e');
             tableHolds.add(double.nan);
+            tableWindages.add(double.nan);
           }
         }
 
         final holdRad = tableHolds[2].isNaN ? 0.0 : tableHolds[2];
+        final windageRad = tableWindages[2].isNaN ? 0.0 : tableWindages[2];
         currentShot.relativeAngle = Angular.radian(holdRad);
 
         final hit = await _calc.fire(
@@ -260,7 +264,9 @@ class BallisticsServiceImpl implements BallisticsService {
           hitResult: hit,
           zeroElevationRad: zeroElevRadOut,
           holdRad: holdRad,
+          windageRad: windageRad,
           tableHolds: tableHolds,
+          tableWindages: tableWindages,
         );
       } catch (e, st) {
         throw CalculationException('Home calculation failed', e, st);

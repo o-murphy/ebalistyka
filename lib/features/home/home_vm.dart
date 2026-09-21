@@ -295,11 +295,8 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
     final elevMil =
         Angular.radian(result.holdRad).in_(Unit.mil) + vAdjMil + zeroOffsetYMil;
-    final targetPoint = hit.samples.isNotEmpty
-        ? hit.getAtDistance(Distance.meter(targetM))
-        : null;
     final windMil =
-        (targetPoint?.windageAngle.in_(Unit.mil) ?? 0.0) +
+        Angular.radian(result.windageRad).in_(Unit.mil) +
         hAdjMil +
         zeroOffsetXMil;
 

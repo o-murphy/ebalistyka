@@ -11,6 +11,7 @@ import 'package:ebalistyka/shared/widgets/unit_constrained_input_with_unit_picke
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
+import 'package:ebalistyka/core/extensions/num_extensions.dart';
 
 class AnglesConvertorScreen extends ConsumerWidget {
   const AnglesConvertorScreen({super.key});
@@ -91,7 +92,7 @@ class AnglesConvertorScreen extends ConsumerWidget {
             value: state.oneMilAtDistance,
           ),
           InfoListTile(
-            label: '${state.mil.value.toStringAsFixed(1)} ${l10n.unitMil}',
+            label: '${state.mil.value.toFixedSafe(1)} ${l10n.unitMil}',
             value: state.angleInMilAtDistance,
           ),
           InfoListTile(
@@ -99,7 +100,7 @@ class AnglesConvertorScreen extends ConsumerWidget {
             value: state.oneMoaAtDistance,
           ),
           InfoListTile(
-            label: '${state.moa.value.toStringAsFixed(1)} ${l10n.unitMoa}',
+            label: '${state.moa.value.toFixedSafe(1)} ${l10n.unitMoa}',
             value: state.angleInMoaAtDistance,
           ),
 
