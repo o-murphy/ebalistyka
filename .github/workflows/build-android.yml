@@ -101,7 +101,7 @@ jobs:
           source scripts/ci-common.sh
           resolve_version "${{ github.ref_type }}" "${{ github.ref_name }}"
 
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "17"
