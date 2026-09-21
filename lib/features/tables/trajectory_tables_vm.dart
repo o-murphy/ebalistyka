@@ -220,7 +220,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
         ? tablesSettings.distanceStepMeter
         : FC.distanceStep.minRaw;
     final filtered = _filterTraj(
-      hit.trajectory,
+      hit.samples,
       tablesSettings.distanceStartMeter,
       tablesSettings.distanceEndMeter,
       tableStep,
