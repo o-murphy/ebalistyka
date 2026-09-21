@@ -98,7 +98,7 @@ void main() {
         const TableCalcOptions(stepM: 100),
       );
 
-      expect(result.hitResult.trajectory, isNotEmpty);
+      expect(result.hitResult.samples, isNotEmpty);
       expect(result.zeroElevationRad, isNot(0.0));
     });
 
@@ -109,7 +109,7 @@ void main() {
         const TableCalcOptions(stepM: 100),
       );
 
-      final firstPoint = result.hitResult.trajectory.first;
+      final firstPoint = result.hitResult.samples.first;
       expect(firstPoint.distance.in_(Unit.meter), closeTo(0.0, 1.0));
     });
 
@@ -120,7 +120,7 @@ void main() {
         const TableCalcOptions(stepM: 100),
       );
 
-      final lastPoint = result.hitResult.trajectory.last;
+      final lastPoint = result.hitResult.samples.last;
       expect(lastPoint.distance.in_(Unit.meter), greaterThan(1900));
     });
 
@@ -140,8 +140,8 @@ void main() {
       );
 
       expect(
-        fine.hitResult.trajectory.length,
-        greaterThan(coarse.hitResult.trajectory.length),
+        fine.hitResult.samples.length,
+        greaterThan(coarse.hitResult.samples.length),
       );
     });
 
@@ -161,8 +161,8 @@ void main() {
       );
 
       expect(
-        second.hitResult.trajectory.length,
-        equals(first.hitResult.trajectory.length),
+        second.hitResult.samples.length,
+        equals(first.hitResult.samples.length),
       );
       expect(second.zeroElevationRad, closeTo(first.zeroElevationRad, 1e-9));
     });
@@ -174,7 +174,7 @@ void main() {
         const TableCalcOptions(stepM: 100),
       );
 
-      final traj = result.hitResult.trajectory;
+      final traj = result.hitResult.samples;
       for (var i = 1; i < traj.length; i++) {
         expect(
           traj[i].velocity.in_(Unit.mps),
@@ -204,7 +204,7 @@ void main() {
         const TargetCalcOptions(targetDistM: 300.0, stepM: 10.0),
       );
 
-      expect(result.hitResult.trajectory, isNotEmpty);
+      expect(result.hitResult.samples, isNotEmpty);
       expect(result.zeroElevationRad, isNot(0.0));
     });
 
@@ -215,7 +215,7 @@ void main() {
         const TargetCalcOptions(targetDistM: 500.0, stepM: 10.0),
       );
 
-      final lastPoint = result.hitResult.trajectory.last;
+      final lastPoint = result.hitResult.samples.last;
       expect(lastPoint.distance.in_(Unit.meter), closeTo(500.0, 2.0));
     });
 
@@ -239,8 +239,8 @@ void main() {
       final second = await service.calculateForTarget(profile, cond, opts);
 
       expect(
-        second.hitResult.trajectory.length,
-        equals(first.hitResult.trajectory.length),
+        second.hitResult.samples.length,
+        equals(first.hitResult.samples.length),
       );
       expect(second.zeroElevationRad, closeTo(first.zeroElevationRad, 1e-9));
     });
@@ -258,8 +258,8 @@ void main() {
       );
 
       expect(
-        long.hitResult.trajectory.length,
-        greaterThan(short.hitResult.trajectory.length),
+        long.hitResult.samples.length,
+        greaterThan(short.hitResult.samples.length),
       );
     });
   });
@@ -272,7 +272,7 @@ void main() {
         const TableCalcOptions(stepM: 100),
       );
 
-      final lastPoint = result.hitResult.trajectory.last;
+      final lastPoint = result.hitResult.samples.last;
       expect(lastPoint.windage.in_(Unit.centimeter).abs(), greaterThan(0.1));
     });
 
@@ -290,8 +290,8 @@ void main() {
         const TableCalcOptions(stepM: 100),
       );
 
-      final noWindLast = noWindResult.hitResult.trajectory.last;
-      final windLast = windResult.hitResult.trajectory.last;
+      final noWindLast = noWindResult.hitResult.samples.last;
+      final windLast = windResult.hitResult.samples.last;
       expect(
         windLast.windage.in_(Unit.centimeter).abs(),
         greaterThan(noWindLast.windage.in_(Unit.centimeter).abs() * 5),
@@ -310,7 +310,7 @@ void main() {
         const TargetCalcOptions(targetDistM: 300.0, stepM: 10.0),
       );
 
-      final lastPoint = result.hitResult.trajectory.last;
+      final lastPoint = result.hitResult.samples.last;
       expect(lastPoint.windage.in_(Unit.centimeter).abs(), greaterThan(0.1));
       expect(lastPoint.windageAngle.in_(Unit.mil).abs(), greaterThan(0.01));
     });

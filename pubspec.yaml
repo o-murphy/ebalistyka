@@ -40,8 +40,8 @@ dependencies:
   a7p: ^1.2.4
   ob_dump_reader_flutter: ^0.1.0-beta.1
 
-  bclibc_flutter: ^0.2.3
-  bclibc: ^0.2.3
+  bclibc_flutter: ^1.0.0-beta.2
+  bclibc: ^1.0.0-beta.2
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
