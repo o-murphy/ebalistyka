@@ -9,6 +9,7 @@ import 'package:ebalistyka/features/convertors/generic_convertor_vm_field.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:ebalistyka/core/extensions/num_extensions.dart';
 
 class ConvertorSection {
   final String Function(AppLocalizations) titleBuilder;
@@ -88,6 +89,6 @@ abstract class SimpleConvertorVm extends Notifier<SimpleConvertorUiState> {
 
   static String _fmt(double value, int decimals, String symbol) {
     if (value.isNaN || value.isInfinite) return '— $symbol';
-    return '${value.toStringAsFixed(decimals)} $symbol';
+    return '${value.toFixedSafe(decimals)} $symbol';
   }
 }

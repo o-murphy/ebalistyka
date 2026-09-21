@@ -10,6 +10,7 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka/features/convertors/generic_convertor_vm_field.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:ebalistyka/core/extensions/num_extensions.dart';
 
 // ── Data classes ─────────────────────────────────────────────────────────────
 
@@ -149,7 +150,7 @@ class TargetAtDistanceConvertorViewModel
 
   String _fmt(double value, int decimals, String symbol) {
     if (value.isNaN || value.isInfinite || value <= 0) return '— $symbol';
-    return '${value.toStringAsFixed(decimals)} $symbol';
+    return '${value.toFixedSafe(decimals)} $symbol';
   }
 
   TargetAtDistanceConvertorUiState _buildState({

@@ -11,6 +11,7 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebc_db/ebc_db.dart';
+import 'package:ebalistyka/core/extensions/num_extensions.dart';
 
 class VelocityConvertorUiState {
   final GenericConvertorField mps;
@@ -172,7 +173,7 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
 
   String _formatValue(double value, int decimals, String symbol) {
     if (value.isNaN || value.isInfinite) return '— $symbol';
-    return '${value.toStringAsFixed(decimals)} $symbol';
+    return '${value.toFixedSafe(decimals)} $symbol';
   }
 
   VelocityConvertorUiState _buildState(

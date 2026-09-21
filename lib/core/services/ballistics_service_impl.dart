@@ -71,8 +71,15 @@ typedef _HomeCalcArgs = (
   double,
   double?,
 );
-// (hitResult, freshZeroElevationRad?, holdRad, tableHolds)
-typedef _HomeCalcResult = (bclibc.HitResult?, double?, double, List<double>);
+// (hitResult, freshZeroElevationRad?, holdRad, windageRad, tableHolds, tableWindages)
+typedef _HomeCalcResult = (
+  bclibc.HitResult?,
+  double?,
+  double,
+  double,
+  List<double>,
+  List<double>,
+);
 
 _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
   final (
@@ -113,10 +120,8 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
       currentShot.weapon.zeroElevation = zeroShot.weapon.zeroElevation;
     }
 
-    final zeroElevRad = currentShot.weapon.zeroElevation.in_(Unit.radian);
-
-    // Compute hold = barrelElevationForTarget(d) - zeroElevation for each
-    // table column. This gives exact drop corrections matching Page 1.
+    // Aiming solution (vertical hold + windage) for each table column, taken
+    // from the native zero-point solve rather than the fired trajectory.
     final tableDists = [
       targetDistM - 2 * tableStepM,
       targetDistM - tableStepM,
@@ -124,28 +129,35 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
       targetDistM + tableStepM,
       targetDistM + 2 * tableStepM,
     ];
-    final tableHolds = tableDists.map((d) {
-      if (d <= 0) return double.nan;
-      // barrelElevationForTarget is a native FFI call (findZeroAngleShot)
-      // that can fail to converge for some distances (e.g. one of the ±2
-      // step columns landing somewhere the solver rejects) without that
-      // being predictable from `d` alone — catch it per-column into NaN,
-      // same as the `d <= 0` case above, instead of letting one bad column
-      // abort the whole calculation (and, via that, the whole home screen —
-      // `HomeViewModel` falls back to `HomeUiError`, which drops fields
-      // like `windAngleDeg` back to their UI defaults).
-      try {
-        return calc
-                .barrelElevationForTarget(currentShot, Distance.meter(d))
-                .in_(Unit.radian) -
-            zeroElevRad;
-      } catch (_) {
-        return double.nan;
+    final tableHolds = <double>[];
+    final tableWindages = <double>[];
+    for (final d in tableDists) {
+      if (d <= 0) {
+        tableHolds.add(double.nan);
+        tableWindages.add(double.nan);
+        continue;
       }
-    }).toList();
+      // The native solver can fail to converge for some distances without
+      // that being predictable from `d` alone — catch it per-column into NaN
+      // instead of aborting the whole calculation (and, via that, the whole
+      // home screen).
+      try {
+        final (hold, windage, _) = calc.aimingSolutionForTarget(
+          currentShot,
+          Distance.meter(d),
+        );
+        tableHolds.add(hold.in_(Unit.radian));
+        tableWindages.add(windage.in_(Unit.radian));
+      } catch (e) {
+        debugPrint('aimingSolutionForTarget($d m) failed: $e');
+        tableHolds.add(double.nan);
+        tableWindages.add(double.nan);
+      }
+    }
 
-    // Hold for the target (center column) — same as tableHolds[2].
+    // Hold/windage for the target — same as the center column.
     final holdRad = tableHolds[2].isNaN ? 0.0 : tableHolds[2];
+    final windageRad = tableWindages[2].isNaN ? 0.0 : tableWindages[2];
     currentShot.relativeAngle = Angular.radian(holdRad);
 
     final result = calc.fire(
@@ -156,7 +168,14 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
           bclibc.BCLIBCFFI_TrajFlag.BCLIBCFFI_TRAJ_FLAG_RANGE.value |
           bclibc.BCLIBCFFI_TrajFlag.BCLIBCFFI_TRAJ_FLAG_ZERO.value,
     );
-    return (result, freshZeroElevRad, holdRad, tableHolds);
+    return (
+      result,
+      freshZeroElevRad,
+      holdRad,
+      windageRad,
+      tableHolds,
+      tableWindages,
+    );
   } catch (e, st) {
     debugPrint(e.toString());
     debugPrintStack(stackTrace: st);
@@ -287,7 +306,9 @@ class BallisticsServiceImpl implements BallisticsService {
       hit,
       freshZero,
       holdRad,
+      windageRad,
       tableHolds,
+      tableWindages,
     ) = await compute<_HomeCalcArgs, _HomeCalcResult>(_runHomeCalculation, (
       zeroShot,
       currentShot,
@@ -305,7 +326,9 @@ class BallisticsServiceImpl implements BallisticsService {
       hitResult: hit,
       zeroElevationRad: zeroElevRad,
       holdRad: holdRad,
+      windageRad: windageRad,
       tableHolds: tableHolds,
+      tableWindages: tableWindages,
     );
   }
 }
