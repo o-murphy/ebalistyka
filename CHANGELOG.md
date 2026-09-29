@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+## v0.1.20 (2026-06-30)
+
 ### Fixed
 - **Android / Google Play release versionCode** — build numbers now add the repository-managed `.build-number-offset` (`200`) to the Git first-parent commit count. This preserves monotonically increasing Android versionCodes after the v0.2 history baseline reset, allowing existing Play users to upgrade.
 
@@ -555,7 +557,8 @@ Initial alpha release — first functional build of the ballistic trajectory cal
 - `OBJECTBOX_MIGRATION.md`: migration details
 
 
-[Unreleased]: https://github.com/o-murphy/ebalistyka/compare/v0.1.19..HEAD
+[Unreleased]: https://github.com/o-murphy/ebalistyka/compare/v0.1.20..HEAD
+[v0.1.20]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.20
 [v0.1.19]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.19
 [v0.1.18]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.18
 [v0.1.17]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.17
