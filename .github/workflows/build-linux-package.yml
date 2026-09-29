@@ -77,7 +77,7 @@ jobs:
     needs: build-bundle
     if: always() && (needs.build-bundle.result == 'success' || needs.build-bundle.result == 'skipped')
     name: ${{ inputs.format }}-${{ inputs.arch || 'amd64' }}
-    runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    runs-on: ${{ inputs.format == 'appimage' && (inputs.arch == 'arm64' && 'ubuntu-22.04-arm' || 'ubuntu-22.04') || (inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest') }}
     permissions:
       pull-requests: write
       issues: write
@@ -152,6 +152,31 @@ jobs:
             "${{ steps.meta.outputs.arch_suffix }}" \
             "${{ steps.meta.outputs.build_name }}" \
             "${{ steps.meta.outputs.build_number }}"
+
+      - name: Verify AppImage glibc compatibility
+        if: inputs.format == 'appimage'
+        shell: bash
+        run: |
+          bash scripts/verify-appimage-glibc.sh \
+            "artifacts/appimage/ebalistyka-${{ steps.meta.outputs.arch_suffix }}.AppImage"
+
+      - name: Smoke test AppImage startup
+        if: inputs.format == 'appimage'
+        shell: bash
+        run: |
+          set -euo pipefail
+          APPIMAGE="artifacts/appimage/ebalistyka-${{ steps.meta.outputs.arch_suffix }}.AppImage"
+          LOG="$RUNNER_TEMP/appimage-smoke.log"
+          set +e
+          timeout 20 xvfb-run -a "$APPIMAGE" >"$LOG" 2>&1
+          status=$?
+          set -e
+          if [ "$status" -ne 124 ]; then
+            echo "AppImage exited before the 20-second smoke-test timeout (status $status)." >&2
+            cat "$LOG" >&2
+            exit 1
+          fi
+          echo "✓ AppImage stayed running for 20 seconds under Xvfb"
 
       - name: Upload artifact
         id: upload

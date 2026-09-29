@@ -70,8 +70,8 @@ jobs:
   build:
     name: ${{ inputs.platform }}-${{ inputs.arch }} (${{ inputs.build_type }})
     runs-on: ${{ (inputs.platform == 'linux' && inputs.arch == 'amd64' &&
-      'ubuntu-latest') || (inputs.platform == 'linux' && inputs.arch == 'arm64'
-      && 'ubuntu-24.04-arm') || (inputs.platform == 'windows' && inputs.arch ==
+      'ubuntu-22.04') || (inputs.platform == 'linux' && inputs.arch == 'arm64'
+      && 'ubuntu-22.04-arm') || (inputs.platform == 'windows' && inputs.arch ==
       'amd64' && 'windows-latest') || (inputs.platform == 'windows' &&
       inputs.arch == 'arm64' && 'windows-11-arm') }}
 
@@ -280,4 +280,3 @@ jobs:
           path: artifacts/
           retention-days: ${{ inputs.retention_days || 2 }}
           if-no-files-found: error
-
