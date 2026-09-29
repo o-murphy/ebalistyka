@@ -127,11 +127,11 @@ Latest release: **[GitHub Releases][GitHub Release Latest]**
 
 | Platform                | File                                                          | Notes                                                                     |
 | ----------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Linux x86_64            | [ebalistyka_linux_x86_64.AppImage][DownloadAppImageAmd64]     | requires FUSE 2                                                           |
+| Linux x86_64            | [ebalistyka-x86_64.AppImage][DownloadAppImageAmd64]     | requires FUSE 2                                                           |
 | Linux x86_64 (portable) | [ebalistyka_linux_x86_64.tar.gz][DownloadLinuxArchiveAmd64]   | no FUSE required                                                          |
 | Linux x86_64 (snap)     | [ebalistyka_linux_x86_64.snap][DownloadLinuxSnapAmd64]        | or `snap install ebalistyka`                                              |
 | Linux x86_64 (flatpak)  | [ebalistyka_linux_x86_64.flatpak][DownloadLinuxFlatpakAmd64]  | sideload — see [Linux — Flatpak](#linux--flatpak)                         |
-| Linux arm64             | [ebalistyka_linux_aarch64.AppImage][DownloadAppImageArm64]    | requires FUSE 2                                                           |
+| Linux arm64             | [ebalistyka-aarch64.AppImage][DownloadAppImageArm64]    | requires FUSE 2                                                           |
 | Linux arm64 (portable)  | [ebalistyka_linux_aarch64.tar.gz][DownloadLinuxArchiveArm64]  | no FUSE required                                                          |
 | Linux arm64 (snap)      | [ebalistyka_linux_aarch64.snap][DownloadLinuxSnapArm64]       | or `snap install ebalistyka`                                              |
 | Linux arm64 (flatpak)   | [ebalistyka_linux_aarch64.flatpak][DownloadLinuxFlatpakArm64] | sideload — see [Linux — Flatpak](#linux--flatpak)                         |
@@ -152,14 +152,14 @@ Latest release: **[GitHub Releases][GitHub Release Latest]**
 ### Linux — run
 
 ```bash
-chmod +x ebalistyka_linux_x86_64.AppImage
-./ebalistyka_linux_x86_64.AppImage
+chmod +x ebalistyka-x86_64.AppImage
+./ebalistyka-x86_64.AppImage
 ```
 
 If FUSE 2 is not available on your system:
 
 ```bash
-./ebalistyka_linux_x86_64.AppImage --appimage-extract-and-run
+./ebalistyka-x86_64.AppImage --appimage-extract-and-run
 ```
 
 ### Linux — Snap
@@ -264,7 +264,7 @@ Updates are delivered via **zsync**. Download [AppImageUpdate](https://github.co
 
 ```bash
 chmod +x AppImageUpdate-x86_64.AppImage
-./AppImageUpdate-x86_64.AppImage ebalistyka_linux_x86_64.AppImage
+./AppImageUpdate-x86_64.AppImage ebalistyka-x86_64.AppImage
 ```
 
 The tool fetches only the changed blocks from the latest GitHub Release — no need to re-download the full file.
@@ -532,10 +532,10 @@ See [LICENSE](LICENSE) for the full text. See [CHANGELOG](CHANGELOG.md) for rele
 [Google Play Internal Test]: https://docs.google.com/forms/d/e/1FAIpQLSdMKHwnBLuwSo9BkqPXRPx4eZwio6RiaNxWEyrvyEpK0dLcuA/viewform?usp=dialog
 
 <!-- DOWNLOADS -->
-[DownloadAppImageAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_x86_64.AppImage
+[DownloadAppImageAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka-x86_64.AppImage
 [DownloadLinuxArchiveAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_x86_64.tar.gz
 [DownloadLinuxSnapAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_x86_64.snap
-[DownloadAppImageArm64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_aarch64.AppImage
+[DownloadAppImageArm64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka-aarch64.AppImage
 [DownloadLinuxArchiveArm64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_aarch64.tar.gz
 [DownloadLinuxSnapArm64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_aarch64.snap
 [DownloadLinuxFlatpakAmd64]: https://github.com/o-murphy/ebalistyka/releases/latest/download/ebalistyka_linux_x86_64.flatpak

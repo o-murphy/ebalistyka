@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+## v0.1.19 (2026-06-29)
+
 ### Changed
 - **flutpak** - refs updated to v0.8.3
 - **flutter sdk** - upgraded to `3.44.8`
@@ -23,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **`scripts/verify-bundle.sh`** — enhanced native library checks:
   - Linux: broken-symlink detection + `file -L` ELF validation for `libbclibc_ffi.so`
   - Windows: MZ PE-header check via `od` for `bclibc_ffi.dll`
+
+### Fixed
+- **AppImage — not self-contained, crashes on older GTK/glib** — `scripts/package-appimage.sh` now bundles GTK3, glib, gdk-pixbuf and their dependencies into the AppDir via `linuxdeploy` + `linuxdeploy-plugin-gtk`, instead of relying on the host's GTK/glib ABI. Previously the AppImage was built against Ubuntu 24.04's glib (2.80+) but never bundled it, so it crashed with `undefined symbol: g_once_init_enter_pointer` on hosts with an older glib (e.g. AppImageHub's test runner)
+- **AppImage filename** — renamed from `ebalistyka_linux_<arch>.AppImage` to `ebalistyka-<arch>.AppImage` (AppImage naming convention discourages "Linux" in the name, since AppImages are Linux-only by definition)
 
 ### Added
 - **Native library smoke tests** in CI across all build formats — verify that the shared library is present, valid, and loads cleanly at startup:
@@ -544,7 +550,8 @@ Initial alpha release — first functional build of the ballistic trajectory cal
 - `OBJECTBOX_MIGRATION.md`: migration details
 
 
-[Unreleased]: https://github.com/o-murphy/ebalistyka/compare/v0.1.18..HEAD
+[Unreleased]: https://github.com/o-murphy/ebalistyka/compare/v0.1.19..HEAD
+[v0.1.19]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.19
 [v0.1.18]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.18
 [v0.1.17]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.17
 [v0.1.16]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.16

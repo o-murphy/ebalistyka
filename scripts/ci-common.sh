@@ -105,7 +105,8 @@ install_package_deps() {
     case "$format" in
         deb)      sudo apt-get install -y --no-install-recommends dpkg-dev ;;
         rpm)      sudo apt-get install -y --no-install-recommends rpm ;;
-        appimage) ;;
+        appimage) sudo apt-get install -y --no-install-recommends \
+                     libgtk-3-bin libgdk-pixbuf2.0-bin libglib2.0-bin desktop-file-utils ;;
         *) echo "install_package_deps: unknown format '${format}'" >&2; return 1 ;;
     esac
 }
