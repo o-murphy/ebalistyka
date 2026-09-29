@@ -25,7 +25,9 @@ jobs:
         uses: ./.github/actions/version
       - id: bn
         shell: bash
-        run: echo "build_number=$(git rev-list --count --first-parent HEAD)" >> $GITHUB_OUTPUT
+        run: |
+          source scripts/ci-common.sh
+          echo "build_number=$(get_build_number)" >> "$GITHUB_OUTPUT"
 
   build-portable-amd64:
     needs: prepare-version

@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+### Fixed
+- **Android / Google Play release versionCode** — build numbers now add the repository-managed `.build-number-offset` (`200`) to the Git first-parent commit count. This preserves monotonically increasing Android versionCodes after the v0.2 history baseline reset, allowing existing Play users to upgrade.
+
 ## v0.1.19 (2026-06-29)
 
 ### Changed

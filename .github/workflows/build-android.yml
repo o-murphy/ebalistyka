@@ -12,6 +12,7 @@ on:
       - ".flutter-version"
       - "scripts/ci-common.sh"
       - "scripts/build-android.sh"
+      - ".build-number-offset"
       - ".github/workflows/build-android.yml"
   workflow_call:
     inputs:
