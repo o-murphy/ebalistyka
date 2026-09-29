@@ -38,19 +38,23 @@ jobs:
               - "linux/**"
               - "pubspec.yaml"
               - ".flutter-version"
+              - "scripts/**"
               - ".github/workflows/build.yml"
               - ".github/workflows/build-portable.yml"
               - ".github/workflows/pr-linux.yml"
             appimage:
               - "app/**"
+              - "scripts/**"
               - ".github/workflows/build-linux-package.yml"
             deb:
               - "app/**"
               - "packaging/deb/**"
+              - "scripts/**"
               - ".github/workflows/build-linux-package.yml"
             rpm:
               - "app/**"
               - "packaging/rpm/**"
+              - "scripts/**"
               - ".github/workflows/build-linux-package.yml"
 
   build-bundle-amd64:

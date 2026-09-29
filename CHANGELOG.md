@@ -29,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Fixed
 - **AppImage — not self-contained, crashes on older GTK/glib** — `scripts/package-appimage.sh` now bundles GTK3, glib, gdk-pixbuf and their dependencies into the AppDir via `linuxdeploy` + `linuxdeploy-plugin-gtk`, instead of relying on the host's GTK/glib ABI. Previously the AppImage was built against Ubuntu 24.04's glib (2.80+) but never bundled it, so it crashed with `undefined symbol: g_once_init_enter_pointer` on hosts with an older glib (e.g. AppImageHub's test runner)
 - **AppImage filename** — renamed from `ebalistyka_linux_<arch>.AppImage` to `ebalistyka-<arch>.AppImage` (AppImage naming convention discourages "Linux" in the name, since AppImages are Linux-only by definition)
+- **CI — Flatpak manifest generation failing** — bumped `o-murphy/flutpak` action refs from `v0.8.3` to `v0.8.6` in `build-flatpak.yml`/`publish-flathub.yml`. `v0.8.3` used unpinned `dart-lang/setup-dart@v1`, which started failing on `::add-matcher::…/dart-analyzer.json` (the referenced problem-matcher file doesn't exist); `v0.8.6` pins `@v1.8.1` and disables the problem-matcher
+- **CI — `pr-linux.yml` path filter** — added `scripts/**` to the `core`/`appimage`/`deb`/`rpm` change filters. Previously a PR touching only a packaging script (e.g. `scripts/package-appimage.sh`) silently skipped that format's build/test job instead of validating the change
 
 ### Added
 - **Native library smoke tests** in CI across all build formats — verify that the shared library is present, valid, and loads cleanly at startup:
