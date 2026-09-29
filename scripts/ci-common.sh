@@ -1,5 +1,25 @@
 #!/usr/bin/env bash
 
+get_build_number() {
+  local offset_file=".build-number-offset"
+  local offset
+  local commit_count
+
+  if [ ! -f "$offset_file" ]; then
+    echo "Missing $offset_file" >&2
+    return 1
+  fi
+
+  offset=$(tr -d '[:space:]' < "$offset_file")
+  if ! [[ "$offset" =~ ^[0-9]+$ ]]; then
+    echo "$offset_file must contain one non-negative integer" >&2
+    return 1
+  fi
+
+  commit_count=$(git rev-list --count --first-parent HEAD)
+  echo $((offset + commit_count))
+}
+
 set_build_metadata() {
   local prefix="$1"
   local build_type="${2:-release}"
@@ -24,7 +44,7 @@ set_build_metadata() {
 
   # ---------- BUILD NUMBER ----------
   local build_number
-  build_number=$(git rev-list --count --first-parent HEAD)
+  build_number=$(get_build_number)
 
   # ---------- ARCH ----------
   local arch="${INPUT_ARCH:-${MATRIX_ARCH:-amd64}}"
