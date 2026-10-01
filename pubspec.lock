@@ -69,18 +69,18 @@ packages:
     dependency: "direct main"
     description:
       name: bclibc
-      sha256: ef4a135507d7977d5e8ab2fde5a524343cd66fea44fb15ba3cc28a82468e79b1
+      sha256: "366646f133c722d1fc39770bc66d0d1680dd29ed11319930db181acfd483bc8d"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0-rc.2"
+    version: "1.0.0-rc.5"
   bclibc_flutter:
     dependency: "direct main"
     description:
       name: bclibc_flutter
-      sha256: "8c2e77e7a4ad5246e8fb941d3cf6ba69a3d7a4b279e5ecb8c0a1a3ca9bdd2fab"
+      sha256: cd368e8b84d35e714ef0aac26e4484d9cf01541dba5b4ad4456ed2ee251a42f9
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0-rc.2"
+    version: "1.0.0-rc.5"
   boolean_selector:
     dependency: transitive
     description:
