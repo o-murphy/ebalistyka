@@ -33,6 +33,8 @@ glibc_versions() {
 APPDIR="$WORK_DIR/squashfs-root"
 PAYLOAD_VERSIONS="$WORK_DIR/payload-glibc-versions"
 RUNTIME_VERSIONS="$WORK_DIR/runtime-glibc-versions"
+: > "$PAYLOAD_VERSIONS"
+: > "$RUNTIME_VERSIONS"
 
 while IFS= read -r -d '' file; do
   [ "$(od -An -tx1 -N4 "$file" 2>/dev/null)" = " 7f 45 4c 46" ] || continue
