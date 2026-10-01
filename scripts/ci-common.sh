@@ -126,7 +126,8 @@ install_package_deps() {
         deb)      sudo apt-get install -y --no-install-recommends dpkg-dev ;;
         rpm)      sudo apt-get install -y --no-install-recommends rpm ;;
         appimage) sudo apt-get install -y --no-install-recommends \
-                     libgtk-3-bin libgdk-pixbuf2.0-bin libglib2.0-bin desktop-file-utils ;;
+                     libgtk-3-bin libgdk-pixbuf2.0-bin libglib2.0-bin desktop-file-utils xvfb \
+                     libegl1 libgl1-mesa-dri libgles2 ;;
         *) echo "install_package_deps: unknown format '${format}'" >&2; return 1 ;;
     esac
 }

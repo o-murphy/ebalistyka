@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+### Fixed
+- **AppImage compatibility** — Linux bundles and AppImage packaging now use Ubuntu 22.04, avoiding the `GLIBC_2.38` requirement introduced by Ubuntu 24.04. CI extracts each AppImage and verifies host-glibc requirements with the same undefined-symbol criterion as AppImageHub, failing above Ubuntu 22.04's `GLIBC_2.35`.
+
 ## v0.1.20 (2026-06-30)
 
 ### Fixed
