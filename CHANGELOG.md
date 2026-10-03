@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## v0.1.22 (2026-10-03)
 
+### Added
+- **Remove Ammo action on profile card** — the Ammo section now has a "Remove Ammo" action to unlink the ammo from the profile without deleting the ammo itself, so the Weapon caliber can then be edited directly.
+
 ### Fixed
 - **Weapon caliber not editable** — the "Weapon" screen's Caliber field is now editable when the profile has no ammo attached yet, instead of always being locked for an existing weapon. If ammo is already attached, the caliber stays locked and must be changed via the ammo caliber-mismatch prompt, to keep weapon and ammo caliber in sync. ([#117](https://github.com/o-murphy/ebalistyka/issues/117))
 

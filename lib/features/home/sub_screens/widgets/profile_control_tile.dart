@@ -18,6 +18,7 @@ class ProfileControlTile extends StatelessWidget {
     required this.onExport,
     required this.onEditWeapon,
     required this.onRemove,
+    required this.onRemoveAmmo,
     required this.onRename,
     super.key,
   });
@@ -31,6 +32,7 @@ class ProfileControlTile extends StatelessWidget {
   final VoidCallback onExport;
   final VoidCallback onEditWeapon;
   final VoidCallback onRemove;
+  final VoidCallback onRemoveAmmo;
   final ValueChanged<String> onRename;
 
   Future<void> _showEditActionsSheet(BuildContext context) {
@@ -65,6 +67,13 @@ class ProfileControlTile extends StatelessWidget {
           },
         ),
         const ActionSheetDivider(),
+        if (hasAmmo)
+          ActionSheetItem(
+            icon: IconDef.clear,
+            title: l10n.removeProfileAmmo,
+            isDestructive: true,
+            onTap: () async => onRemoveAmmo(),
+          ),
         ActionSheetItem(
           icon: IconDef.remove,
           title: l10n.removeAction,

@@ -12,6 +12,7 @@ class ProfileCard extends ConsumerStatefulWidget {
     required this.onSelect,
     required this.onEditWeapon,
     required this.onEditAmmo,
+    required this.onRemoveAmmo,
     required this.onEditSight,
     required this.onDuplicate,
     required this.onExport,
@@ -25,6 +26,7 @@ class ProfileCard extends ConsumerStatefulWidget {
   final VoidCallback onSelect;
   final VoidCallback onEditWeapon;
   final VoidCallback onEditAmmo;
+  final VoidCallback onRemoveAmmo;
   final VoidCallback onEditSight;
   final VoidCallback onDuplicate;
   final VoidCallback onExport;
@@ -97,6 +99,7 @@ class _ProfileCardState extends ConsumerState<ProfileCard> {
                               onExport: widget.onExport,
                               onEditWeapon: widget.onEditWeapon,
                               onRemove: widget.onRemove,
+                              onRemoveAmmo: widget.onRemoveAmmo,
                               onRename: widget.onRename,
                             ),
                           ),

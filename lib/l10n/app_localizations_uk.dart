@@ -1056,6 +1056,18 @@ class AppLocalizationsUk extends AppLocalizations {
   String get removeProfile => 'Видалити профіль';
 
   @override
+  String get removeProfileAmmo => 'Вилучити набій';
+
+  @override
+  String removeProfileAmmoContent(String name) {
+    return 'Вилучити \"$name\" з цього профілю? Сам набій не буде видалено.';
+  }
+
+  @override
+  String get caliberLockedByAmmoMessage =>
+      'Неможливо змінити калібр зброї, поки прив\'язаний набій. Спочатку вилучіть набій.';
+
+  @override
   String get noProfiles => 'Немає профілів. Натисніть + щоб додати.';
 
   @override

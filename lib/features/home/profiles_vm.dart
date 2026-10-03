@@ -329,6 +329,11 @@ class ProfilesActions extends Notifier<void> {
     await ref.read(appStateProvider.notifier).deleteProfile(intId);
   }
 
+  /// Unlinks the ammo from the profile without deleting the ammo itself.
+  Future<void> removeProfileAmmo(String id) async {
+    await ref.read(appStateProvider.notifier).setProfileAmmo(id, 0);
+  }
+
   Future<String> createProfile(String name, Weapon weapon) async {
     final id = await ref
         .read(appStateProvider.notifier)

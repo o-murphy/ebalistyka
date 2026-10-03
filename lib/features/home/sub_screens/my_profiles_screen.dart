@@ -402,6 +402,22 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     }
   }
 
+  Future<void> _onRemoveAmmo(String profileId) async {
+    final cartridgeName = ref.read(profileCardProvider(profileId))?.cartridgeName;
+    if (cartridgeName == null) return;
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showConfirmDialog(
+      context,
+      title: l10n.removeProfileAmmo,
+      content: l10n.removeProfileAmmoContent(cartridgeName),
+      confirmLabel: l10n.removeAction,
+      isDestructive: true,
+    );
+    if (confirmed) {
+      await ref.read(profilesActionsProvider.notifier).removeProfileAmmo(profileId);
+    }
+  }
+
   Future<void> _onEditSight(String profileId) async {
     final appState = ref.read(appStateProvider).value;
     if (appState == null) return;
@@ -510,6 +526,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
         onSelect: _onSelect,
         onEditRifle: _onEditRifle,
         onEditAmmo: _onEditAmmo,
+        onRemoveAmmo: _onRemoveAmmo,
         onEditSight: _onEditSight,
         onDuplicate: _onDuplicate,
         onExport: _onExport,
@@ -532,6 +549,7 @@ class _ProfilePageView extends StatelessWidget {
     required this.onSelect,
     required this.onEditRifle,
     required this.onEditAmmo,
+    required this.onRemoveAmmo,
     required this.onEditSight,
     required this.onDuplicate,
     required this.onExport,
@@ -547,6 +565,7 @@ class _ProfilePageView extends StatelessWidget {
   final void Function(String) onSelect;
   final void Function(String) onEditRifle;
   final void Function(String) onEditAmmo;
+  final void Function(String) onRemoveAmmo;
   final void Function(String) onEditSight;
   final void Function(String) onDuplicate;
   final void Function(String) onExport;
@@ -572,6 +591,7 @@ class _ProfilePageView extends StatelessWidget {
                       onSelect: () => onSelect(id),
                       onEditWeapon: () => onEditRifle(id),
                       onEditAmmo: () => onEditAmmo(id),
+                      onRemoveAmmo: () => onRemoveAmmo(id),
                       onEditSight: () => onEditSight(id),
                       onDuplicate: () => onDuplicate(id),
                       onExport: () => onExport(id),

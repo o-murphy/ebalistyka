@@ -365,6 +365,9 @@
     "editProfileName": "Редагувати назву профілю",
     "selectProfile": "Вибрати профіль",
     "removeProfile": "Видалити профіль",
+    "removeProfileAmmo": "Вилучити набій",
+    "removeProfileAmmoContent": "Вилучити \"{name}\" з цього профілю? Сам набій не буде видалено.",
+    "caliberLockedByAmmoMessage": "Неможливо змінити калібр зброї, поки прив'язаний набій. Спочатку вилучіть набій.",
     "noProfiles": "Немає профілів. Натисніть + щоб додати.",
     "noSightsFoundInFile": "Прицілів у файлі не знайдено",
 

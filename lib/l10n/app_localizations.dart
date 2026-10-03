@@ -2156,6 +2156,24 @@ abstract class AppLocalizations {
   /// **'Remove Profile'**
   String get removeProfile;
 
+  /// Action label to unlink ammo from a profile without deleting the ammo itself
+  ///
+  /// In en, this message translates to:
+  /// **'Eject Ammo'**
+  String get removeProfileAmmo;
+
+  /// Confirmation dialog body when unlinking ammo from a profile
+  ///
+  /// In en, this message translates to:
+  /// **'Eject \"{name}\" from this profile? The ammo itself won\'t be deleted.'**
+  String removeProfileAmmoContent(String name);
+
+  /// Feedback shown when tapping the weapon caliber field while it is locked because ammo is attached to the profile
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t change the weapon\'s caliber while ammo is attached. Eject the ammo first.'**
+  String get caliberLockedByAmmoMessage;
+
   /// Empty-state message shown when the profile list is empty
   ///
   /// In en, this message translates to:

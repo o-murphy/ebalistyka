@@ -1053,6 +1053,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get removeProfile => 'Remove Profile';
 
   @override
+  String get removeProfileAmmo => 'Eject Ammo';
+
+  @override
+  String removeProfileAmmoContent(String name) {
+    return 'Eject \"$name\" from this profile? The ammo itself won\'t be deleted.';
+  }
+
+  @override
+  String get caliberLockedByAmmoMessage =>
+      'Can\'t change the weapon\'s caliber while ammo is attached. Eject the ammo first.';
+
+  @override
   String get noProfiles => 'No profiles. Tap + to add one.';
 
   @override

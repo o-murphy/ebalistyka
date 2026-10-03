@@ -1,16 +1,15 @@
+import 'package:dart_bclibc/unit.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
-import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/features/home/sub_screens/weapon_wizard_notifier.dart';
 import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/mixins/wizard_form_mixin.dart';
+import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/weapon_svg_view.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
-import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:ebalistyka/shared/widgets/wizard_action_bar.dart';
@@ -81,7 +80,6 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
     final st = ref.watch(_provider);
     final notifier = ref.read(_provider.notifier);
     final units = ref.watch(unitSettingsProvider);
-    final formatter = ref.watch(unitFormatterProvider);
     final l10n = AppLocalizations.of(context)!;
     final caliberEditable = widget.caliberEditable ?? widget.initial == null;
     final twistDirIcon = st.rightHand ? IconDef.twistR : IconDef.twistL;
@@ -122,21 +120,15 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
           ),
           // ── Ballistics ───────────────────────────────────────────────
           ListSectionTile(l10n.sectionBallistics),
-          if (caliberEditable)
-            UnitValueFieldTile(
-              title: l10n.caliber,
-              rawValue: st.caliberRaw,
-              constraints: FC.projectileDiameter,
-              displayUnit: units.diameterUnit,
-              icon: IconDef.caliber,
-              onChanged: notifier.updateCaliberRaw,
-            )
-          else
-            InfoListTile(
-              label: l10n.caliber,
-              value: formatter.diameter(widget.initial?.caliber),
-              icon: IconDef.caliber,
-            ),
+          _CaliberFieldTile(
+            editable: caliberEditable,
+            title: l10n.caliber,
+            rawValue: st.caliberRaw,
+            displayUnit: units.diameterUnit,
+            onChanged: notifier.updateCaliberRaw,
+            onLockedTap: () =>
+                showFeedback(context, l10n.caliberLockedByAmmoMessage, isError: true),
+          ),
           // ── Hardware ─────────────────────────────────────────────────
           ListSectionTile(l10n.sectionHardware),
           UnitValueFieldTile(
@@ -184,6 +176,45 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
 }
 
 // ── Widgets ───────────────────────────────────────────────────────────────────
+
+/// Caliber field: always shown as editable, but when [editable] is false the
+/// edit dialog is swapped for [onLockedTap] (caliber is tied to the attached
+/// ammo and can only change via ejecting it).
+class _CaliberFieldTile extends StatelessWidget {
+  const _CaliberFieldTile({
+    required this.editable,
+    required this.title,
+    required this.rawValue,
+    required this.displayUnit,
+    required this.onChanged,
+    required this.onLockedTap,
+  });
+
+  final bool editable;
+  final String title;
+  final double rawValue;
+  final Unit displayUnit;
+  final ValueChanged<double> onChanged;
+  final VoidCallback onLockedTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final field = UnitValueFieldTile(
+      title: title,
+      rawValue: rawValue,
+      constraints: FC.projectileDiameter,
+      displayUnit: displayUnit,
+      icon: IconDef.caliber,
+      onChanged: onChanged,
+    );
+    if (editable) return field;
+
+    return GestureDetector(
+      onTap: onLockedTap,
+      child: AbsorbPointer(child: field),
+    );
+  }
+}
 
 class _RiflePlaceholder extends StatelessWidget {
   const _RiflePlaceholder({this.imageId});
