@@ -370,7 +370,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
 
     final result = await context.push<Weapon?>(
       Routes.profileEditWeapon,
-      extra: weapon,
+      extra: (weapon, profile.ammo.target == null),
     );
     if (result != null && mounted) {
       await ref.read(appStateProvider.notifier).saveWeapon(result);

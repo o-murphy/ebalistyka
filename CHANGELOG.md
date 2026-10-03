@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+## v0.1.22 (2026-10-03)
+
+### Fixed
+- **Weapon caliber not editable** — the "Weapon" screen's Caliber field is now editable when the profile has no ammo attached yet, instead of always being locked for an existing weapon. If ammo is already attached, the caliber stays locked and must be changed via the ammo caliber-mismatch prompt, to keep weapon and ammo caliber in sync. ([#117](https://github.com/o-murphy/ebalistyka/issues/117))
+
 ## v0.1.21 (2026-10-01)
 
 ### Fixed
@@ -562,7 +567,8 @@ Initial alpha release — first functional build of the ballistic trajectory cal
 - `OBJECTBOX_MIGRATION.md`: migration details
 
 
-[Unreleased]: https://github.com/o-murphy/ebalistyka/compare/v0.1.21..HEAD
+[Unreleased]: https://github.com/o-murphy/ebalistyka/compare/v0.1.22..HEAD
+[v0.1.22]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.22
 [v0.1.21]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.21
 [v0.1.20]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.20
 [v0.1.19]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.19
