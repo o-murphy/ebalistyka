@@ -11,10 +11,8 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
-import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/confirm_dialog.dart';
 import 'package:ebalistyka/shared/widgets/error_display.dart';
-import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
 import 'package:ebc_db/ebc_db.dart';
@@ -219,7 +217,10 @@ class ProfilesListScreen extends ConsumerWidget {
 
   Future<void> _onSelect(BuildContext context, WidgetRef ref, String uuid) async {
     await ref.read(profilesActionsProvider.notifier).selectProfile(uuid);
-    if (context.mounted) context.pop();
+    // Embedded as the "My Profiles" tab (see my_profiles_screen.dart) rather
+    // than pushed as its own route — switch back to the "My Profile" tab
+    // instead of popping.
+    if (context.mounted) DefaultTabController.of(context).animateTo(0);
   }
 
   @override
@@ -228,50 +229,60 @@ class ProfilesListScreen extends ConsumerWidget {
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    return BaseScreen(
-      title: l10n.profilesListScreenTitle,
-      isSubscreen: true,
-      actions: [HelpAction(HelpData.profilesScreen)],
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'generalFab',
-        onPressed: () => _onAddTap(context, ref),
-        backgroundColor: cs.primary,
-        foregroundColor: cs.onPrimary,
-        elevation: 6,
-        child: const Icon(IconDef.add),
-      ),
-      body: appStateAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => ErrorDisplay(error: error),
-        data: (state) {
-          final activeUuid = state.activeProfile?.uuid;
+    return Stack(
+      children: [
+        appStateAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => ErrorDisplay(error: error),
+          data: (state) {
+            final activeUuid = state.activeProfile?.uuid;
 
-          return BaseCollectionBody(
-            tiles: state.profiles
-                .map(
-                  (profile) => CollectionItemTile(
-                    key: ValueKey(profile.uuid),
-                    body: ProfileListTileBody(
-                      profile: profile,
+            return BaseCollectionBody(
+              tiles: state.profiles
+                  .map(
+                    (profile) => CollectionItemTile(
+                      key: ValueKey(profile.uuid),
+                      body: ProfileListTileBody(
+                        profile: profile,
+                      ),
+                      item: _ProfileCollectionItem(ref: profile),
+                      isSelected: profile.uuid == activeUuid,
+                      searchText: [
+                        profile.name,
+                        profile.weapon.name,
+                      ].join(' '),
+                      onSelect: () => _onSelect(context, ref, profile.uuid),
+                      onEdit: () =>
+                          _onRename(context, ref, profile.uuid, profile.name),
+                      editLabel: l10n.editProfileName,
+                      onDuplicate: () => _onDuplicate(
+                        context,
+                        ref,
+                        profile.uuid,
+                        profile.name,
+                      ),
+                      onExport: () => _onExport(context, profile),
+                      onRemove: () =>
+                          _onRemove(context, ref, profile.uuid, profile.name),
                     ),
-                    item: _ProfileCollectionItem(ref: profile),
-                    isSelected: profile.uuid == activeUuid,
-                    searchText: [profile.name, profile.weapon.name].join(' '),
-                    onSelect: () => _onSelect(context, ref, profile.uuid),
-                    onEdit: () =>
-                        _onRename(context, ref, profile.uuid, profile.name),
-                    editLabel: l10n.editProfileName,
-                    onDuplicate: () =>
-                        _onDuplicate(context, ref, profile.uuid, profile.name),
-                    onExport: () => _onExport(context, profile),
-                    onRemove: () =>
-                        _onRemove(context, ref, profile.uuid, profile.name),
-                  ),
-                )
-                .toList(),
-          );
-        },
-      ),
+                  )
+                  .toList(),
+            );
+          },
+        ),
+        Positioned(
+          bottom: 16,
+          right: 16,
+          child: FloatingActionButton(
+            heroTag: 'profilesListFab',
+            onPressed: () => _onAddTap(context, ref),
+            backgroundColor: cs.primary,
+            foregroundColor: cs.onPrimary,
+            elevation: 6,
+            child: const Icon(IconDef.add),
+          ),
+        ),
+      ],
     );
   }
 }

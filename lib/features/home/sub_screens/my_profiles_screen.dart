@@ -3,6 +3,7 @@ import 'package:ebalistyka/core/services/a7p_converter.dart';
 import 'package:ebalistyka/core/services/a7p_service.dart';
 import 'package:ebalistyka/features/home/profiles_vm.dart';
 import 'package:ebalistyka/features/home/sub_screens/profile_ebcp_actions.dart';
+import 'package:ebalistyka/features/home/sub_screens/profiles_list_screen.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/profile_control_tile.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/profile_sections.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
@@ -592,91 +593,118 @@ class ProfilesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final appStateAsync = ref.watch(appStateProvider);
-    final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    return BaseScreen(
-      title: l10n.myProfile,
-      actions: [
-        IconButton(
-          onPressed: () => context.push(Routes.profilesList),
-          icon: const Icon(IconDef.profilesList),
-        ),
-        HelpAction(HelpData.profilesScreen),
-      ],
-      floatingActionButton: appStateAsync.value?.profiles.isEmpty ?? false
-          ? FloatingActionButton(
-              heroTag: 'generalFab',
-              onPressed: () => _onAddTap(context, ref),
-              backgroundColor: cs.primary,
-              foregroundColor: cs.onPrimary,
-              elevation: 6,
-              child: const Icon(IconDef.add),
-            )
-          : null,
-      body: appStateAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => ErrorDisplay(error: error),
-        data: (state) {
-          final profile = state.activeProfile;
-          if (profile == null) {
-            return Center(child: Text(l10n.noProfiles));
-          }
-
-          final data = ref.watch(profileCardProvider(profile.uuid));
-          if (data == null) return const SizedBox.shrink();
-
-          return Column(
-            children: [
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                  children: [
-                    ProfileControlTile(
-                      profileId: profile.uuid,
-                      profileName: data.name,
-                      weaponImage: data.weaponImage,
-                      hasWeapon: profile.weapon.name.isNotEmpty,
-                      hasAmmo: profile.hasAmmo(),
-                      hasSight: profile.sight.name.isNotEmpty,
-                      onDuplicate: () => _onDuplicate(context, ref, profile),
-                      onExport: () => _onExport(context, profile),
-                      onSelectWeapon: () =>
-                          _onReplaceWeapon(context, ref, profile),
-                      onSelectAmmo: () => _onReplaceAmmo(context, ref, profile),
-                      onSelectSight: () =>
-                          _onReplaceSight(context, ref, profile),
-                      onRemove: () => _onRemove(context, ref, profile),
-                      onRemoveAmmo: () =>
-                          _onRemoveAmmo(context, ref, profile),
-                      onRename: (name) =>
-                          _onRename(context, ref, profile, name),
-                    ),
-                    if (profile.weapon.name.isNotEmpty)
-                      ProfileWeaponSection(
-                        data: data,
-                        onEdit: () => _onEditWeapon(context, ref, profile),
-                      ),
-                    if (profile.ammo.name.isNotEmpty)
-                      ProfileAmmoSection(
-                        data: data,
-                        onEdit: () => _onEditAmmo(context, ref, profile),
-                      ),
-                    if (profile.sight.name.isNotEmpty)
-                      ProfileSightSection(
-                        data: data,
-                        onEdit: () => _onEditSight(context, ref, profile),
-                      ),
-                  ],
-                ),
+    return DefaultTabController(
+      length: 2,
+      child: Builder(
+        builder: (context) {
+          final tabController = DefaultTabController.of(context);
+          return AnimatedBuilder(
+            animation: tabController,
+            builder: (context, _) => BaseScreen(
+              title: l10n.profilesScreenTitle,
+              actions: [HelpAction(HelpData.profilesScreen)],
+              withTabs: [
+                Tab(text: l10n.myProfile),
+                Tab(text: l10n.profilesListScreenTitle),
+              ],
+              floatingActionButton: tabController.index == 0
+                  ? _currentProfileFab(context, ref)
+                  : null,
+              body: TabBarView(
+                children: [
+                  _currentProfileBody(context, ref, l10n),
+                  const ProfilesListScreen(),
+                ],
               ),
-              if (!data.isReadyForCalculation)
-                _IncompleteProfileBanner(hint: l10n.selectAmmoSightHint),
-            ],
+            ),
           );
         },
       ),
+    );
+  }
+
+  Widget? _currentProfileFab(BuildContext context, WidgetRef ref) {
+    final appStateAsync = ref.watch(appStateProvider);
+    final cs = Theme.of(context).colorScheme;
+    if (!(appStateAsync.value?.profiles.isEmpty ?? false)) return null;
+    return FloatingActionButton(
+      heroTag: 'generalFab',
+      onPressed: () => _onAddTap(context, ref),
+      backgroundColor: cs.primary,
+      foregroundColor: cs.onPrimary,
+      elevation: 6,
+      child: const Icon(IconDef.add),
+    );
+  }
+
+  Widget _currentProfileBody(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+  ) {
+    final appStateAsync = ref.watch(appStateProvider);
+    return appStateAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, _) => ErrorDisplay(error: error),
+      data: (state) {
+        final profile = state.activeProfile;
+        if (profile == null) {
+          return Center(child: Text(l10n.noProfiles));
+        }
+
+        final data = ref.watch(profileCardProvider(profile.uuid));
+        if (data == null) return const SizedBox.shrink();
+
+        return Column(
+          children: [
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                children: [
+                  ProfileControlTile(
+                    profileId: profile.uuid,
+                    profileName: data.name,
+                    weaponImage: data.weaponImage,
+                    hasWeapon: profile.weapon.name.isNotEmpty,
+                    hasAmmo: profile.hasAmmo(),
+                    hasSight: profile.sight.name.isNotEmpty,
+                    onDuplicate: () => _onDuplicate(context, ref, profile),
+                    onExport: () => _onExport(context, profile),
+                    onSelectWeapon: () =>
+                        _onReplaceWeapon(context, ref, profile),
+                    onSelectAmmo: () => _onReplaceAmmo(context, ref, profile),
+                    onSelectSight: () =>
+                        _onReplaceSight(context, ref, profile),
+                    onRemove: () => _onRemove(context, ref, profile),
+                    onRemoveAmmo: () => _onRemoveAmmo(context, ref, profile),
+                    onRename: (name) =>
+                        _onRename(context, ref, profile, name),
+                  ),
+                  if (profile.weapon.name.isNotEmpty)
+                    ProfileWeaponSection(
+                      data: data,
+                      onEdit: () => _onEditWeapon(context, ref, profile),
+                    ),
+                  if (profile.ammo.name.isNotEmpty)
+                    ProfileAmmoSection(
+                      data: data,
+                      onEdit: () => _onEditAmmo(context, ref, profile),
+                    ),
+                  if (profile.sight.name.isNotEmpty)
+                    ProfileSightSection(
+                      data: data,
+                      onEdit: () => _onEditSight(context, ref, profile),
+                    ),
+                ],
+              ),
+            ),
+            if (!data.isReadyForCalculation)
+              _IncompleteProfileBanner(hint: l10n.selectAmmoSightHint),
+          ],
+        );
+      },
     );
   }
 }

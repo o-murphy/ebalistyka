@@ -46,6 +46,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profilesListScreenTitle => 'My Profiles';
 
   @override
+  String get profilesScreenTitle => 'Profiles';
+
+  @override
   String get activeProfileLabel => 'Active';
 
   @override

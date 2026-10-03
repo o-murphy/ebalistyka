@@ -83,6 +83,4 @@ class IconDef {
   static const IconData tables = Icons.table_view_outlined;
   static const IconData convertors = Icons.calculate_outlined;
   static const IconData settings = Icons.settings_outlined;
-
-  static const IconData profilesList = Icons.view_list_outlined;
 }

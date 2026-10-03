@@ -170,6 +170,12 @@ abstract class AppLocalizations {
   /// **'My Profiles'**
   String get profilesListScreenTitle;
 
+  /// App bar title for the tabbed Profile/My Profiles screen (covers both tabs, as opposed to myProfile which names only the first tab)
+  ///
+  /// In en, this message translates to:
+  /// **'Profiles'**
+  String get profilesScreenTitle;
+
   /// Badge label marking the currently active profile in the profiles list
   ///
   /// In en, this message translates to:

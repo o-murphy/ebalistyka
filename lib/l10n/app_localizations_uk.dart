@@ -46,6 +46,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get profilesListScreenTitle => 'Мої профілі';
 
   @override
+  String get profilesScreenTitle => 'Профілі';
+
+  @override
   String get activeProfileLabel => 'Активний';
 
   @override

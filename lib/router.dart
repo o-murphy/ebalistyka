@@ -38,7 +38,6 @@ abstract final class Routes {
 
   // Profile (profiles) stack
   static const profiles = '/home/profiles';
-  static const profilesList = '/home/profiles/list';
 
   // Profile add — weapon selection
   static const profileAddWeaponCreate = '/home/profiles/weapon-create';
@@ -131,11 +130,6 @@ final appRouter = GoRouter(
                   path: 'profiles',
                   builder: (_, _) => const ProfilesScreen(),
                   routes: [
-                    // ── Profiles list ────────────────────────────────────────
-                    GoRoute(
-                      path: 'list',
-                      builder: (_, _) => const ProfilesListScreen(),
-                    ),
                     // ── Profile add ─────────────────────────────────────────
                     GoRoute(
                       path: 'weapon-create',
