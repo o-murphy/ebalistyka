@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 - **Profile ammo "attached" check** — whether a profile's ammo/sight counts as attached now uses the data model's own `hasAmmo()`/`hasSight()` presence check instead of inferring it from the ammo's name being non-empty, closing an edge case (e.g. an `.a7p` import with caliber/ballistic data but no cartridge name) where the weapon's caliber could get locked with no "Eject Ammo" action visible to unlock it.
+- **Update/collection auto-check silently did nothing on web** — `getApplicationSupportDirectory()` (no filesystem in a browser) made `updateCheckerProvider`'s auto-check, the manual update check, and the collection auto-update family throw internally and no-op. The small persisted values (last update check, last collection check, last collection SHA) now go through `shared_preferences` instead, which works on web too. The `collection.json` cache itself is unchanged for now (still file-based — needs its own IndexedDB-backed cache, tracked separately).
+- **Native update sheet would have popped up on web** — once the fix above made the update auto-check actually succeed on web, `UpdateListener` would have shown the native "download APK/exe/AppImage" bottom sheet there too. It now explicitly skips that on web, keeping the "Download the app" link web already uses instead.
 
 ## v0.1.22 (2026-10-03)
 

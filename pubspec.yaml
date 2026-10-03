@@ -51,6 +51,7 @@ dependencies:
   uuid: ^4.6.0
   package_info_plus: ^10.2.1
   path_provider: ^2.1.6
+  shared_preferences: ^2.5.5
   share_plus: ^13.2.1
   url_launcher: ^6.3.0
   go_router: ^18.0.1
