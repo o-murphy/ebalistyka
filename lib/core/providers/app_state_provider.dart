@@ -66,6 +66,17 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
     );
   }
 
+  /// Unsets the profile's ammo entirely (`hasAmmo()` becomes `false`),
+  /// rather than replacing it with an empty-but-present [Ammo].
+  Future<void> clearProfileAmmo(String uuid) async {
+    _updateProfiles(
+      (profiles) => [
+        for (final p in profiles)
+          if (p.uuid == uuid) (p.deepCopy()..clearAmmo()) else p,
+      ],
+    );
+  }
+
   Future<void> setProfileSight(String uuid, Sight value) async {
     _updateProfiles(
       (profiles) => [
@@ -81,9 +92,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
     final profile = Profile()
       ..uuid = _uuid.v4()
       ..name = name
-      ..weapon = weapon
-      ..ammo = Ammo()
-      ..sight = Sight();
+      ..weapon = weapon;
     _updateProfiles((profiles) => [...profiles, profile]);
     return profile.uuid;
   }
