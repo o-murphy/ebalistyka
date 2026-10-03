@@ -144,7 +144,7 @@ class ProfilesScreen extends ConsumerWidget {
   ) async {
     final result = await context.push<Weapon?>(
       Routes.profileEditWeapon,
-      extra: profile.weapon,
+      extra: (profile.weapon, !profile.hasAmmo()),
     );
     if (result != null && context.mounted) {
       await ref
@@ -491,6 +491,26 @@ class ProfilesScreen extends ConsumerWidget {
     }
   }
 
+  Future<void> _onRemoveAmmo(
+    BuildContext context,
+    WidgetRef ref,
+    Profile profile,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showConfirmDialog(
+      context,
+      title: l10n.removeProfileAmmo,
+      content: l10n.removeProfileAmmoContent(profile.ammo.name),
+      confirmLabel: l10n.removeAction,
+      isDestructive: true,
+    );
+    if (confirmed) {
+      await ref
+          .read(profilesActionsProvider.notifier)
+          .removeProfileAmmo(profile.uuid);
+    }
+  }
+
   Future<void> _shareA7p(
     BuildContext context,
     Profile profile,
@@ -618,7 +638,7 @@ class ProfilesScreen extends ConsumerWidget {
                       profileName: data.name,
                       weaponImage: data.weaponImage,
                       hasWeapon: profile.weapon.name.isNotEmpty,
-                      hasAmmo: profile.ammo.name.isNotEmpty,
+                      hasAmmo: profile.hasAmmo(),
                       hasSight: profile.sight.name.isNotEmpty,
                       onDuplicate: () => _onDuplicate(context, ref, profile),
                       onExport: () => _onExport(context, profile),
@@ -628,6 +648,8 @@ class ProfilesScreen extends ConsumerWidget {
                       onSelectSight: () =>
                           _onReplaceSight(context, ref, profile),
                       onRemove: () => _onRemove(context, ref, profile),
+                      onRemoveAmmo: () =>
+                          _onRemoveAmmo(context, ref, profile),
                       onRename: (name) =>
                           _onRename(context, ref, profile, name),
                     ),
