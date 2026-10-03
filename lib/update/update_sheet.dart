@@ -5,6 +5,7 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/app_info.dart';
 import 'package:ebalistyka/update/update_checker.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ota_update/ota_update.dart';
@@ -63,6 +64,13 @@ class _UpdateListenerState extends ConsumerState<UpdateListener> {
   @override
   Widget build(BuildContext context) {
     ref.listen<AsyncValue<GithubRelease?>>(updateCheckerProvider, (_, next) {
+      // Web replaces the native update-checker UI with a "Download the
+      // app" link (see docs/backlogs/9.FIELD_CONSTRAINTS_UX_WEB.md Phase 9)
+      // — without this guard, now that updateCheckerProvider actually
+      // succeeds on web (shared_preferences-backed), this would start
+      // popping the native "download APK/exe/AppImage and install" sheet
+      // there too.
+      if (kIsWeb) return;
       final release = next.value;
       if (release == null) return;
       showUpdateBottomSheet(context, release);

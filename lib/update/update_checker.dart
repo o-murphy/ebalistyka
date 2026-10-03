@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'apk_abi_suffix_io.dart'
     if (dart.library.js_interop) 'apk_abi_suffix_web.dart';
@@ -230,10 +231,8 @@ Future<GithubRelease?> checkForUpdate() async {
       isPlayStore: isPlayStore,
       packageName: info.packageName,
     );
-    final appSupport = await getApplicationSupportDirectory();
-    await File(
-      '${appSupport.path}/$lastUpdateCheckFile',
-    ).writeAsString(DateTime.now().toIso8601String());
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(lastUpdateCheckFile, DateTime.now().toIso8601String());
     return result;
   } catch (e) {
     debugPrint('Manual update check failed: $e');
@@ -261,13 +260,11 @@ Future<GithubRelease?> checkForUpdateIncludingPrerelease() async {
 /// Auto-check: skips the API call if already done within [checkIntervalHours].
 final updateCheckerProvider = FutureProvider<GithubRelease?>((ref) async {
   try {
-    final appSupport = await getApplicationSupportDirectory();
-    final checkFile = File('${appSupport.path}/$lastUpdateCheckFile');
+    final prefs = await SharedPreferences.getInstance();
+    final savedCheck = prefs.getString(lastUpdateCheckFile);
 
-    if (await checkFile.exists()) {
-      final lastCheck = DateTime.tryParse(
-        (await checkFile.readAsString()).trim(),
-      );
+    if (savedCheck != null) {
+      final lastCheck = DateTime.tryParse(savedCheck.trim());
       if (lastCheck != null &&
           DateTime.now().difference(lastCheck).inHours < checkIntervalHours) {
         return null;
@@ -276,7 +273,7 @@ final updateCheckerProvider = FutureProvider<GithubRelease?>((ref) async {
 
     final info = await PackageInfo.fromPlatform();
     final isPlayStore = info.installerStore == googlePlayInstallerSource;
-    await checkFile.writeAsString(DateTime.now().toIso8601String());
+    await prefs.setString(lastUpdateCheckFile, DateTime.now().toIso8601String());
     return _fetchIfNewer(
       info.version,
       isPlayStore: isPlayStore,
@@ -368,12 +365,8 @@ Future<String> _fetchCollection(CollectionCommit commit) async {
 /// Returns true if updated, false if already up to date.
 /// Throws on network / parse errors — caller is responsible for showing UI.
 Future<bool> checkForCollectionUpdate(WidgetRef ref) async {
-  final appSupport = await getApplicationSupportDirectory();
-  final shaFile = File('${appSupport.path}/$lastCollectionSha');
-
-  final savedSha = await shaFile.exists()
-      ? (await shaFile.readAsString()).trim()
-      : null;
+  final prefs = await SharedPreferences.getInstance();
+  final savedSha = prefs.getString(lastCollectionSha);
 
   final commit = await _fetchLatestCollectionCommit();
   if (commit == null) return false;
@@ -382,8 +375,14 @@ Future<bool> checkForCollectionUpdate(WidgetRef ref) async {
   final json = await _fetchCollection(commit);
   CollectionParser.parse(json); // validate before caching; throws if invalid
 
+  // TODO(web): collection.json is a multi-MB blob — still throws on web via
+  // getApplicationSupportDirectory(). Needs its own IndexedDB-backed cache
+  // (reusing IndexedDbMsgStore), not shared_preferences. See docs/backlogs/
+  // 9.FIELD_CONSTRAINTS_UX_WEB.md Phase 9's "Collection auto-update becomes
+  // a different shape on web" item.
+  final appSupport = await getApplicationSupportDirectory();
   await File('${appSupport.path}/$collectionFile').writeAsString(json);
-  await shaFile.writeAsString(commit.sha);
+  await prefs.setString(lastCollectionSha, commit.sha);
   ref.invalidate(builtinCollectionProvider);
   return true;
 }
@@ -392,20 +391,21 @@ Future<bool> checkForCollectionUpdate(WidgetRef ref) async {
 /// Silently swallows errors — use [checkForCollectionUpdate] for manual checks.
 Future<void> checkForCollectionUpdateThrottled(WidgetRef ref) async {
   try {
-    final appSupport = await getApplicationSupportDirectory();
-    final checkFile = File('${appSupport.path}/$lastCollectionCheckFile');
+    final prefs = await SharedPreferences.getInstance();
+    final savedCheck = prefs.getString(lastCollectionCheckFile);
 
-    if (await checkFile.exists()) {
-      final lastCheck = DateTime.tryParse(
-        (await checkFile.readAsString()).trim(),
-      );
+    if (savedCheck != null) {
+      final lastCheck = DateTime.tryParse(savedCheck.trim());
       if (lastCheck != null &&
           DateTime.now().difference(lastCheck).inHours < checkIntervalHours) {
         return;
       }
     }
 
-    await checkFile.writeAsString(DateTime.now().toIso8601String());
+    await prefs.setString(
+      lastCollectionCheckFile,
+      DateTime.now().toIso8601String(),
+    );
     await checkForCollectionUpdate(ref);
   } catch (e) {
     debugPrint('Collection auto-check failed: $e');
@@ -416,8 +416,6 @@ Future<void> checkForCollectionUpdateThrottled(WidgetRef ref) async {
 /// Re-evaluates whenever the collection is reloaded.
 final collectionShaProvider = FutureProvider<String?>((ref) async {
   ref.watch(builtinCollectionProvider);
-  final appSupport = await getApplicationSupportDirectory();
-  final shaFile = File('${appSupport.path}/$lastCollectionSha');
-  if (!await shaFile.exists()) return null;
-  return (await shaFile.readAsString()).trim();
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString(lastCollectionSha);
 });
