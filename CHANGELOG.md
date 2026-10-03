@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+### Added
+- **Profiles screen: swipeable tabs** — "Profile" and "My Profiles" are now two tabs (swipe or tap) on a single screen, instead of the profiles list being hidden behind a small toolbar icon.
+
+### Changed
+- **Profiles screen title** — renamed from "Profile" to "Profiles", since it now covers both the current-profile and profiles-list tabs.
+
+### Fixed
+- **Profile ammo "attached" check** — whether a profile's ammo/sight counts as attached now uses the data model's own `hasAmmo()`/`hasSight()` presence check instead of inferring it from the ammo's name being non-empty, closing an edge case (e.g. an `.a7p` import with caliber/ballistic data but no cartridge name) where the weapon's caliber could get locked with no "Eject Ammo" action visible to unlock it.
+
 ## v0.1.22 (2026-10-03)
 
 ### Added

@@ -25,6 +25,8 @@
     "@myProfile": {"description": "App bar title for the Current Profile screen"},
     "profilesListScreenTitle": "My Profiles",
     "@profilesListScreenTitle": {"description": "App bar title for the profiles list screen"},
+    "profilesScreenTitle": "Profiles",
+    "@profilesScreenTitle": {"description": "App bar title for the tabbed Profile/My Profiles screen (covers both tabs, as opposed to myProfile which names only the first tab)"},
     "activeProfileLabel": "Active",
     "@activeProfileLabel": {"description": "Badge label marking the currently active profile in the profiles list"},
     "newWeaponScreenTitle": "New Weapon",
