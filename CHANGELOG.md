@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Profiles screen: swipeable tabs** — "Profile" and "My Profiles" are now two tabs (swipe or tap) on a single screen, instead of the profiles list being hidden behind a small toolbar icon.
 
 ### Changed
+- **flutter** updated to 3.47.7
 - **Profiles screen title** — renamed from "Profile" to "Profiles", since it now covers both the current-profile and profiles-list tabs.
 
 ### Fixed
