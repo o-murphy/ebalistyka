@@ -225,6 +225,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                             .setProfileAmmo(
                                               profile.uuid,
                                               result,
+                                              syncCaliber: true,
                                             );
                                       }
                                     },

@@ -145,12 +145,13 @@ class ProfilesScreen extends ConsumerWidget {
   ) async {
     final result = await context.push<Weapon?>(
       Routes.profileEditWeapon,
-      extra: (profile.weapon, !profile.hasAmmo()),
+      extra: profile.weapon,
     );
     if (result != null && context.mounted) {
+      // Caliber is shared with the ammo — editing it here updates both.
       await ref
           .read(appStateProvider.notifier)
-          .setProfileWeapon(profile.uuid, result);
+          .setProfileWeapon(profile.uuid, result, syncCaliber: true);
     }
   }
 
@@ -169,9 +170,10 @@ class ProfilesScreen extends ConsumerWidget {
       ),
     );
     if (result != null && context.mounted) {
+      // Caliber is shared with the weapon — editing it here updates both.
       await ref
           .read(appStateProvider.notifier)
-          .setProfileAmmo(profile.uuid, result);
+          .setProfileAmmo(profile.uuid, result, syncCaliber: true);
     }
   }
 
