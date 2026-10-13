@@ -52,7 +52,9 @@ as the minimum, not the full list.
    `homeScreen`, then the wizards, then the rest.
 5. Add a short **"Web version"** topic (or a section in `firstRun`):
    browser storage, back up via Settings → Backup, export is a download,
-   "Download the app".
+   "Download the app"; install as an app (desktop browsers offer it; on
+   iOS manually via Share → Add to Home Screen, which also protects the
+   data from WebKit's inactivity cleanup).
 
 ## Done when
 
