@@ -1,9 +1,12 @@
 import 'dart:ui';
 
 import 'package:ebalistyka/shared/constants/app_info.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:go_router/go_router.dart' show GoRouter;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/shared/helpers/is_desktop.dart';
+import 'package:ebalistyka/shared/theme/web_page_transitions.dart';
 import 'package:ebalistyka/shared/widgets/pwa_install_hint.dart';
 import 'package:ebalistyka/shared/widgets/tab_blocked_gate.dart';
 import 'package:window_manager/window_manager.dart';
@@ -58,6 +61,12 @@ void main() async {
       await windowManager.setMaximizable(false);
     });
   }
+
+  // Web: make the browser URL/history follow imperative pushes (`context.push`)
+  // too — otherwise a pushed sub-screen adds a history entry the router can't
+  // map back, and a pop adds yet another instead of walking history. Must be
+  // set before `appRouter` is first read.
+  if (kIsWeb) GoRouter.optionURLReflectsImperativeAPIs = true;
 
   final bootstrap = await bootstrapApp(
     seedSettings: seedSettings,
@@ -134,6 +143,7 @@ class MyApp extends ConsumerWidget {
       seedColor: Colors.deepPurple,
       brightness: Brightness.light,
     ),
+    pageTransitionsTheme: webPageTransitionsTheme(),
   );
 
   static final _darkTheme = ThemeData(
@@ -142,6 +152,7 @@ class MyApp extends ConsumerWidget {
       seedColor: Colors.deepPurple,
       brightness: Brightness.dark,
     ),
+    pageTransitionsTheme: webPageTransitionsTheme(),
   );
 
   @override
