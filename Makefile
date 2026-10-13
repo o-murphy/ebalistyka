@@ -9,6 +9,7 @@
 		generate-collection \
 		build-bclibc \
 		reticle-gen-setup \
+		build-web deploy-web \
 		test format clean run run-clean
 
 # Cross-platform helpers
@@ -46,6 +47,14 @@ endif
 
 generate-localization:
 	flutter gen-l10n
+
+# Release web bundle for GitHub Pages (build/web). BASE_HREF=/ for a root.
+build-web:
+	./scripts/build-web.sh
+
+# Manual publish of build/web to the gh-pages branch (asks first).
+deploy-web: build-web
+	./scripts/deploy-web.sh
 
 generate-reticles:
 	./scripts/gen_reticles.sh
