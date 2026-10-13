@@ -20,6 +20,7 @@ import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/core/providers/db_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/services/ebcp_service.dart';
+import 'package:ebalistyka/core/session/pwa_install.dart';
 import 'package:ebalistyka/features/home/profiles_vm.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
@@ -407,6 +408,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
             dense: true,
           ),
+          if (kIsWeb)
+            ValueListenableBuilder<bool>(
+              valueListenable: pwaInstallAvailable,
+              builder: (context, available, _) => available
+                  ? ListTile(
+                      leading: const Icon(Icons.install_desktop_outlined),
+                      title: Text(l10n.pwaInstallAction),
+                      dense: true,
+                      onTap: () => unawaited(promptPwaInstall()),
+                    )
+                  : const SizedBox.shrink(),
+            ),
           if (kIsWeb)
             ListTile(
               leading: const Icon(Icons.download_outlined),

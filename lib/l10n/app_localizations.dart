@@ -2867,6 +2867,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue'**
   String get legacyContinueAction;
+
+  /// No description provided for @tabBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Opened in another window'**
+  String get tabBlockedTitle;
+
+  /// No description provided for @tabBlockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'eBalistyka is open in another tab or window. Only one can be used at a time, so this one was paused.'**
+  String get tabBlockedMessage;
+
+  /// No description provided for @tabBlockedAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Use here'**
+  String get tabBlockedAction;
+
+  /// No description provided for @pwaInstallAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Install as app'**
+  String get pwaInstallAction;
+
+  /// No description provided for @pwaInstallHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Install eBalistyka as an app: it gets its own window, and the browser is much less likely to clear your data.'**
+  String get pwaInstallHint;
+
+  /// No description provided for @pwaInstallHintAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Install'**
+  String get pwaInstallHintAction;
 }
 
 class _AppLocalizationsDelegate

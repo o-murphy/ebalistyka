@@ -28,6 +28,16 @@ abstract class MsgStore<T> {
   /// against hammering the backing store if some caller doesn't.
   final Duration debounce;
 
+  /// When `true`, every write — [save], a debounced [flush], anything queued
+  /// behind it — is silently dropped, and nothing reaches [writeBytes].
+  ///
+  /// For a client that has lost the right to write (e.g. a browser tab whose
+  /// session was taken over by another tab): its in-memory state is stale,
+  /// so persisting it would clobber what the active client wrote. Reads
+  /// ([load]/[readBytes]) are unaffected. A write already inside
+  /// [writeBytes] when this is set still completes.
+  bool writesBlocked = false;
+
   final Uint8List Function(T) _encode;
   final T Function(Uint8List) _decode;
 
@@ -108,6 +118,7 @@ abstract class MsgStore<T> {
   /// prior write's failure doesn't propagate here, and this write's failure
   /// doesn't block whatever's queued after it.
   Future<void> _writeNow(T value) {
+    if (writesBlocked) return Future.value();
     final scheduled = _writeQueue.then((_) => writeBytes(_encode(value)));
     _writeQueue = scheduled.then((_) {}, onError: (_) {});
     return scheduled;

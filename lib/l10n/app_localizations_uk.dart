@@ -1455,4 +1455,24 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get legacyContinueAction => 'Продовжити';
+
+  @override
+  String get tabBlockedTitle => 'Відкрито в іншому вікні';
+
+  @override
+  String get tabBlockedMessage =>
+      'eBalistyka відкрито в іншій вкладці чи вікні. Працювати можна лише в одному, тому це вікно призупинено.';
+
+  @override
+  String get tabBlockedAction => 'Використовувати тут';
+
+  @override
+  String get pwaInstallAction => 'Встановити як застосунок';
+
+  @override
+  String get pwaInstallHint =>
+      'Встановіть eBalistyka як застосунок: він матиме окреме вікно, а браузер значно рідше очищатиме ваші дані.';
+
+  @override
+  String get pwaInstallHintAction => 'Встановити';
 }

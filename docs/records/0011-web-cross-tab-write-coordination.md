@@ -127,3 +127,55 @@ there is no cross-process or cross-tab coordination at all.
   a pane switcher).
 - Trade-off: covers "compare/work with two profiles at once" but not
   "two independent OS windows/tabs".
+
+## Implemented for web: single active session (2026-10-13)
+
+Chosen for web instead of the read-modify-write + notification design
+above: only one tab/window of a browser profile works at a time,
+WhatsApp-Web style.
+
+- `lib/core/session/tab_lock.dart` (+ `_web`/`_stub`): each page holds an
+  exclusive `navigator.locks` lock (`ebalistyka:active-session`) for its
+  lifetime and **steals** it on load, before reading the stores. The page
+  that gets robbed learns of it through its pending request rejecting
+  (`AbortError`). The browser releases the lock when the page goes away.
+- On loss, `MsgStore.writesBlocked` is set on the settings/profiles stores
+  (writes — including a pending debounced one — are dropped) and
+  `tabBlocked` flips, which makes `TabBlockedGate` (in `MaterialApp.builder`)
+  cover the app with "Opened in another window" + **Use here**.
+- **Use here** reloads the page, which re-reads the persisted data and
+  steals the session back; the other tab is then blocked in turn.
+- No-op on native (never blocked); desktop single-instance is separate and
+  still open. `navigator.locks` missing (insecure context) → no coordination.
+
+Verified in Chrome 155 with two tabs: opening B blocks A; B's persisted
+change is visible after A takes over; taps on the blocked tab's underlying
+UI are ignored and not persisted; "Use here" in A blocks B. Unit tests:
+`packages/ebc_db/test/msg_store_blocked_test.dart`,
+`test/shared/widgets/tab_blocked_gate_test.dart`.
+
+### Follow-up (2026-10-13): fencing token, persistent storage, PWA
+
+- **Fencing epoch** closes the "write already in flight at the takeover"
+  window: `IndexedDbWriteFence.claim()` bumps a monotonic `__session_epoch`
+  key at startup; every fenced write checks it and does the `put` inside
+  the same IndexedDB transaction, aborting (and calling `onStale`, which
+  blocks the UI) if it is no longer ours. Independent of `navigator.locks`.
+  Tests: `packages/ebc_db/test/indexed_db_fence_test.dart`
+  (`dart test -p chrome`).
+- **`navigator.storage.persist()`** is requested on startup
+  (`core/session/browser_storage*.dart`) so the browser doesn't evict
+  IndexedDB under storage pressure. Best-effort — Chromium decides by
+  heuristics (a fresh localhost profile gets `false`; installed PWAs and
+  engaged sites get `true`), Firefox prompts.
+- **PWA install offer**, desktop browsers only (phones excluded on
+  purpose): `beforeinstallprompt` is captured, a one-time dismissible
+  snackbar + a Settings tile offer to install. `manifest.json`/`index.html`
+  still carried `test_app`/"A new Flutter project" defaults — fixed
+  (name, description, theme colour, `orientation: any`).
+- Backup reminders were considered and rejected as too intrusive.
+
+Still not covered: two different profiles in two tabs at once (use the
+in-app split alternative above if that's wanted); Safari/Firefox not
+exercised; nothing can prevent the user from clearing site data
+themselves.

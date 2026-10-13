@@ -20,6 +20,11 @@
 // already uses for its own equivalent deep import: `ebc_db` and
 // `ebalistyka` are versioned and developed together in this one repo.
 
+import 'dart:async';
+
+import 'package:ebalistyka/core/session/browser_storage.dart';
+import 'package:ebalistyka/core/session/pwa_install.dart';
+import 'package:ebalistyka/core/session/tab_lock.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:ebc_db/src/persistence/indexed_db_msg_store.dart';
 import 'package:flutter/widgets.dart';
@@ -36,16 +41,43 @@ Future<AppBootstrapResult> bootstrapApp({
   required SettingsData Function() seedSettings,
   required List<Profile> Function() seedProfiles,
 }) async {
-  final settingsStore = IndexedDbMsgStore<SettingsData>(
+  // `beforeinstallprompt` can fire before the first frame — listen now.
+  initPwaInstall();
+
+  // Single active session — see tab_lock.dart. Two independent guards:
+  //  * navigator.locks: the page that gets robbed is told immediately;
+  //  * a fencing epoch in IndexedDB: even a write already in flight at the
+  //    moment of the takeover is rejected inside its own transaction.
+  late final IndexedDbMsgStore<SettingsData> settingsStore;
+  late final IndexedDbMsgStore<ProfilesData> profilesStore;
+  void onSessionLost() {
+    settingsStore.writesBlocked = true;
+    profilesStore.writesBlocked = true;
+    tabBlocked.value = true;
+  }
+
+  final fence = IndexedDbWriteFence(onStale: onSessionLost);
+  settingsStore = IndexedDbMsgStore<SettingsData>(
     'settings',
     encode: SettingsFile.encode,
     decode: SettingsFile.decode,
+    fence: fence,
   );
-  final profilesStore = IndexedDbMsgStore<ProfilesData>(
+  profilesStore = IndexedDbMsgStore<ProfilesData>(
     'profiles',
     encode: ProfilesFile.encode,
     decode: ProfilesFile.decode,
+    fence: fence,
   );
+
+  // Taken *before* reading, so we load whatever the tab we took over from
+  // had already written.
+  await acquireTabLock(onLost: onSessionLost);
+  await fence.claim();
+
+  // Ask for persistent storage so the browser doesn't evict IndexedDB under
+  // pressure. Fire-and-forget; the answer isn't needed to boot.
+  unawaited(requestPersistentStorage());
 
   final hadSettings = await settingsStore.readBytes() != null;
   final hadProfiles = await profilesStore.readBytes() != null;
@@ -73,8 +105,7 @@ Future<AppBootstrapResult> bootstrapApp({
   if (profilesWasSeeded) await profilesStore.save(profilesData);
 
   final dataWasReset =
-      (hadSettings && settingsWasSeeded) ||
-      (hadProfiles && profilesWasSeeded);
+      (hadSettings && settingsWasSeeded) || (hadProfiles && profilesWasSeeded);
 
   final stores = OpenedEbcStores(
     settingsStore: settingsStore,
