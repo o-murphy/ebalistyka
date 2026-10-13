@@ -375,13 +375,7 @@ Future<bool> checkForCollectionUpdate(WidgetRef ref) async {
   final json = await _fetchCollection(commit);
   CollectionParser.parse(json); // validate before caching; throws if invalid
 
-  // TODO(web): collection.json is a multi-MB blob — still throws on web via
-  // getApplicationSupportDirectory(). Needs its own IndexedDB-backed cache
-  // (reusing IndexedDbMsgStore), not shared_preferences. See docs/backlogs/
-  // 9.FIELD_CONSTRAINTS_UX_WEB.md Phase 9's "Collection auto-update becomes
-  // a different shape on web" item.
-  final appSupport = await getApplicationSupportDirectory();
-  await File('${appSupport.path}/$collectionFile').writeAsString(json);
+  await ref.read(collectionCacheProvider).write(json);
   await prefs.setString(lastCollectionSha, commit.sha);
   ref.invalidate(builtinCollectionProvider);
   return true;
