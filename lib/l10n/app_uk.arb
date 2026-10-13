@@ -495,5 +495,11 @@
     "legacyOrphanedDataTitle": "Деякі дані не імпортовано",
     "legacyOrphanedDataContent": "{weaponCount} гвинтівок, {ammoCount} патронів і {sightCount} прицілів з вашої старої бібліотеки не належали жодному профілю і не були імпортовані. Ви можете експортувати їх у файл JSON, щоб зберегти на потім.",
     "legacyExportOrphanedDataAction": "Експортувати як JSON",
-    "legacyContinueAction": "Продовжити"
+    "legacyContinueAction": "Продовжити",
+    "tabBlockedTitle": "Відкрито в іншому вікні",
+    "tabBlockedMessage": "eBalistyka відкрито в іншій вкладці чи вікні. Працювати можна лише в одному, тому це вікно призупинено.",
+    "tabBlockedAction": "Використовувати тут",
+    "pwaInstallAction": "Встановити як застосунок",
+    "pwaInstallHint": "Встановіть eBalistyka як застосунок: він матиме окреме вікно, а браузер значно рідше очищатиме ваші дані.",
+    "pwaInstallHintAction": "Встановити"
 }

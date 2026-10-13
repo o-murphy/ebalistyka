@@ -967,5 +967,11 @@
     "legacyExportOrphanedDataAction": "Export as JSON",
     "@legacyExportOrphanedDataAction": {"description": "Button to export orphaned legacy weapons/ammo/sights as a JSON file"},
     "legacyContinueAction": "Continue",
-    "@legacyContinueAction": {"description": "Button to proceed past the orphaned-legacy-data screen into the app"}
+    "@legacyContinueAction": {"description": "Button to proceed past the orphaned-legacy-data screen into the app"},
+    "tabBlockedTitle": "Opened in another window",
+    "tabBlockedMessage": "eBalistyka is open in another tab or window. Only one can be used at a time, so this one was paused.",
+    "tabBlockedAction": "Use here",
+    "pwaInstallAction": "Install as app",
+    "pwaInstallHint": "Install eBalistyka as an app: it gets its own window, and the browser is much less likely to clear your data.",
+    "pwaInstallHintAction": "Install"
 }

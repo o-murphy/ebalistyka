@@ -1447,4 +1447,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get legacyContinueAction => 'Continue';
+
+  @override
+  String get tabBlockedTitle => 'Opened in another window';
+
+  @override
+  String get tabBlockedMessage =>
+      'eBalistyka is open in another tab or window. Only one can be used at a time, so this one was paused.';
+
+  @override
+  String get tabBlockedAction => 'Use here';
+
+  @override
+  String get pwaInstallAction => 'Install as app';
+
+  @override
+  String get pwaInstallHint =>
+      'Install eBalistyka as an app: it gets its own window, and the browser is much less likely to clear your data.';
+
+  @override
+  String get pwaInstallHintAction => 'Install';
 }

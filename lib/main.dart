@@ -4,6 +4,8 @@ import 'package:ebalistyka/shared/constants/app_info.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/shared/helpers/is_desktop.dart';
+import 'package:ebalistyka/shared/widgets/pwa_install_hint.dart';
+import 'package:ebalistyka/shared/widgets/tab_blocked_gate.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'core/app_bootstrap_io.dart'
@@ -177,7 +179,9 @@ class MyApp extends ConsumerWidget {
         // sticky_headers). Drop once they migrate to material_ui.
         // ignore: deprecated_member_use
         final inner = MaterialUiCompatibilityBridge(
-          child: _DbResetBanner(child: child!),
+          child: TabBlockedGate(
+            child: PwaInstallHint(child: _DbResetBanner(child: child!)),
+          ),
         );
         if (isDesktop) {
           return Center(child: Container(child: inner));

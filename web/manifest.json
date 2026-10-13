@@ -1,12 +1,12 @@
 {
-    "name": "test_app",
-    "short_name": "test_app",
+    "name": "eBalistyka",
+    "short_name": "eBalistyka",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
-    "orientation": "portrait-primary",
+    "background_color": "#FFFBFF",
+    "theme_color": "#673AB7",
+    "description": "Ballistic calculator for precision shooting.",
+    "orientation": "any",
     "prefer_related_applications": false,
     "icons": [
         {
