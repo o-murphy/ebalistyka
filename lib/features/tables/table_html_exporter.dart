@@ -1,12 +1,16 @@
 import 'dart:io';
 
 import 'package:ebalistyka/l10n/app_localizations.dart';
+import 'package:ebalistyka/shared/helpers/is_mobile.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:ebalistyka/features/tables/details_table_mv.dart';
+import 'package:ebalistyka/features/tables/open_html_stub.dart'
+    if (dart.library.js_interop) 'package:ebalistyka/features/tables/open_html_web.dart';
 import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
 import 'package:ebalistyka/shared/models/formatted_row.dart';
 
@@ -27,11 +31,19 @@ class TableHtmlExporter {
       darkMode: darkMode,
       l10n: l10n,
     );
+
+    if (kIsWeb) {
+      // No filesystem/share sheet in a browser — open in a new tab, same as
+      // the desktop "open in default browser" path.
+      await openHtmlInBrowser(html);
+      return;
+    }
+
     final dir = await getTemporaryDirectory();
     final file = File('${dir.path}/trajectory_table.html');
     await file.writeAsString(html, flush: true);
 
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (isMobile) {
       await SharePlus.instance.share(
         ShareParams(
           files: [
@@ -68,7 +80,7 @@ class TableHtmlExporter {
         : l10n.tabTrajectory;
     final sb = StringBuffer()
       ..writeln('<!DOCTYPE html>')
-      ..writeln('<html lang="en">')
+      ..writeln('<html lang="${_esc(l10n.localeName)}">')
       ..writeln('<head>')
       ..writeln('<meta charset="utf-8">')
       ..writeln(
@@ -98,10 +110,20 @@ class TableHtmlExporter {
 
     final zeros = tables.zeroCrossings;
     if (zeros != null && zeros.distanceHeaders.isNotEmpty) {
-      sb.write(_buildTable(zeros, title: l10n.tablesSectionZeroCrossing));
+      sb.write(
+        _buildTable(
+          zeros,
+          title: l10n.tablesSectionZeroCrossing,
+          rangeLabel: l10n.columnRange,
+        ),
+      );
     }
     sb.write(
-      _buildTable(tables.mainTable, title: l10n.tablesSectionTrajectory),
+      _buildTable(
+        tables.mainTable,
+        title: l10n.tablesSectionTrajectory,
+        rangeLabel: l10n.columnRange,
+      ),
     );
 
     sb.writeln('</body>');
@@ -195,7 +217,11 @@ class TableHtmlExporter {
 
   // ── Trajectory table section ───────────────────────────────────────────────
 
-  static String _buildTable(FormattedTableData t, {required String title}) {
+  static String _buildTable(
+    FormattedTableData t, {
+    required String title,
+    required String rangeLabel,
+  }) {
     if (t.distanceHeaders.isEmpty || t.rows.isEmpty) return '';
     final sb = StringBuffer()
       ..writeln('<section class="traj">')
@@ -205,7 +231,7 @@ class TableHtmlExporter {
       ..writeln('<thead><tr>');
 
     sb.writeln(
-      '<th>Range<br><span class="unit">${_esc(t.distanceUnit)}</span></th>',
+      '<th>${_esc(rangeLabel)}<br><span class="unit">${_esc(t.distanceUnit)}</span></th>',
     );
     for (final r in t.rows) {
       final unit = r.unitSymbol.isNotEmpty
