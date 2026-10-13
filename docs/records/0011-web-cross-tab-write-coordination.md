@@ -179,3 +179,39 @@ Still not covered: two different profiles in two tabs at once (use the
 in-app split alternative above if that's wanted); Safari/Firefox not
 exercised; nothing can prevent the user from clearing site data
 themselves.
+
+## Alternative: adaptive multi-window workspace (not decided)
+
+Proposed (2026-10-13), extending the in-app split above:
+
+- **Small screens / phones:** unchanged — one profile, one window.
+- **Large desktop displays:** several windows of one process.
+- **Browsers and mobile/tablets on large screens:** the app acts as a
+  virtual window manager — several windows *inside* one window.
+
+Assessment:
+
+- Common core, three hosts: a *workspace* parameterised by `profileUuid`
+  (its own navigator stack and scoped providers) can be hosted as (a)
+  the single full-screen workspace of today, (b) in-app panes, (c) OS
+  windows on desktop. Build the core once.
+- "Separate threads" on desktop: Flutter multi-window shares a single
+  isolate by default, which is the point — one `ProviderContainer`, one
+  `MsgStore` per file, no state synchronisation. Separate isolates would
+  mean separate heaps and message passing with a single owner of the
+  storage, for little gain (ballistics already runs in `Isolate.run`).
+  Prefer one isolate, several views.
+- Free-floating windows (drag/resize/z-order/focus/touch) are costly for
+  little benefit; tiling 1–2 (max 3) panes gives the same value. Earlier
+  stated need: never more than two profiles.
+- Cost: `activeProfileProvider`/`AppState` are global and need scoping
+  per workspace; `appRouter` is a single global router; decide which
+  conditions (wind, target distance) are per-workspace vs. shared
+  (settings are shared); on web the `_serialized()` calculation queue
+  makes N panes contend for one wasm engine; dialogs/snackbars/help must
+  attach to the workspace that raised them; desktop still needs
+  single-instance enforcement.
+- Suggested order: (1) workspace core with scoped providers, (2) in-app
+  panes 1–2 (web, desktop, tablet), (3) OS windows on desktop once the
+  `enable-windowing` SDK feature is stable. None of this blocks the web
+  beta — the tab lock already protects the data.
