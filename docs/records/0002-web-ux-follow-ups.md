@@ -95,8 +95,19 @@ Deploy tooling, **manual only — no auto-deploy workflow yet**:
 
 Verified on the deployed site (Chrome, HTTPS): boots, calculations, local
 CanvasKit/bclibc wasm, `navigator.locks` present, second tab blocks the
-first. **Not verified:** real PWA install dialog, `persist()` outcome in a
-normal profile, Safari/Firefox, phones.
+first. Reported working by the owner (2026-10-13) on **iOS: Safari, Chrome
+and Firefox** — all three are WebKit under the hood on iOS, so that is one
+engine, not three. **Not verified:** real PWA install dialog, `persist()`
+outcome in a normal profile, desktop Safari, desktop Firefox (Gecko),
+Android browsers.
+
+iOS specifics worth knowing: there is no `beforeinstallprompt` there, so
+the desktop-only install offer never shows (phones are excluded on
+purpose); installing is manual via Share → Add to Home Screen. WebKit's
+storage policy (script-writable storage of a site that isn't installed
+can be cleared after ~7 days of no interaction) makes backups matter more
+for iOS users than for desktop Chromium — worth a line in the web help
+topic ([0012]).
 
 Still open on web:
 
