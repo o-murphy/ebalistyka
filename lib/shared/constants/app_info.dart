@@ -34,7 +34,12 @@ const String rawCollectionUrlPattern =
     '$remoteRawContent/$repoSlug/%s/assets/json/collection.json';
 const String apiCollectionUrlPattern =
     '$remoteApiUrl/contents/assets/json/collection.json?ref=%s';
-const lastCommitHashUrl = '$remoteApiUrl/commits?sha=$defaultBranch&per_page=1';
+// Last commit that touched collection.json itself (not the branch HEAD) — its
+// SHA is the cache key for the downloaded collection, so unrelated commits to
+// the repository don't trigger a re-download of the multi-MB file.
+const lastCommitHashUrl =
+    '$remoteApiUrl/commits?sha=$defaultBranch&per_page=1'
+    '&path=assets/json/collection.json';
 
 void debugAppInfoConstants() {
   debugPrint('=== DEBUG CONSTANTS ===');
