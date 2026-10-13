@@ -16,6 +16,9 @@ there. Checked against current code (2026-09-21).
 
 ## Open — web platform
 
+> **Status 2026-10-13: all six items below are done — see the update at the
+> bottom.** The text is kept as the original analysis.
+
 Order matters: 1 before 2, 2 before 3.
 
 1. **`UpdateListener` (`update_sheet.dart`) has no `kIsWeb` guard.**
@@ -58,37 +61,54 @@ Order matters: 1 before 2, 2 before 3.
 - In-app help docs (`assets/markdown/{en,uk}/*.md`) are stale; redo them
   after the two items above are settled.
 
-## Update (2026-10-13): web status and GitHub Pages preparation
+## Update (2026-10-13): web status, beta deployed
 
-Items 1–3 above are done (`kIsWeb` guard in `UpdateListener`,
-`shared_preferences` for the scalars, the collection cache in IndexedDB —
-`CollectionCache`, keyed by the last commit touching `collection.json`);
-item 4 is done too (import/export of `.a7p`/`.ebcp`/backup and the HTML
-table report work on web — see `is_mobile.dart`, `open_html_*.dart`).
-Still open from the list: 5 (audit of the remaining `dart:io` use, e.g.
-`update_checker.dart`) and 6 (deploy).
+Open list above, current state:
 
-Deploy preparation, **manual only — no auto-deploy workflow yet**:
+| # | Item | State |
+|---|---|---|
+| 1 | `kIsWeb` guard in `UpdateListener` | done |
+| 2 | `getApplicationSupportDirectory()` scalars | done (`shared_preferences`) |
+| 3 | collection auto-update | done — `CollectionCache` (file on native, IndexedDB on web), cache first then bundled asset, background refresh; the SHA is the last commit that touched `collection.json` (not branch HEAD), so unrelated commits don't re-download 5.9 MB |
+| 4 | `.a7p`/`.ebcp` import/export | done — `isMobile`/`isAndroid` helpers (false on web); export is a browser download, import reads picked bytes; backup and the HTML table report (opens in a new tab) too |
+| 5 | audit of `dart:io` | done for reachable paths: remaining `dart:io` imports are native-only or behind `kIsWeb` (`ob_migrate` can never run on web — there was never an ObjectBox there); exercised in Chrome: Home, Tables, Settings, Profiles flows |
+| 6 | deploy to GitHub Pages | **done manually**, https://ebalistyka.o-murphy.net/ |
 
-- `scripts/build-web.sh` (`make build-web`): release build with
-  `--base-href /ebalistyka/` (project Pages; `BASE_HREF=/` for a root),
-  adds `.nojekyll` and a `404.html` safety net, and sanity-checks the
-  bundle (local CanvasKit forced, base href, expected files).
-- `scripts/deploy-web.sh` (`make deploy-web`): publishes `build/web` as a
-  single force-pushed commit on the `gh-pages` branch of `origin` (or
-  `REMOTE=...`), after confirmation. One-time GitHub setting: Pages →
-  Deploy from branch → `gh-pages` / root.
-- Checked under a sub-path locally: boots, local CanvasKit + bclibc wasm,
-  IndexedDB, manifest/icons resolve.
+Added on the way (not on the original list):
 
-Known, not blocking a test deploy:
+- single active tab/window with a fencing epoch — [0011];
+- `navigator.storage.persist()` request and a desktop-only PWA install
+  offer (one-time snackbar + Settings tile); `manifest.json`/`index.html`
+  no longer carry `test_app` template defaults;
+- `web/CNAME` (`ebalistyka.o-murphy.net`).
 
-- Fonts: Roboto and Noto Sans Symbols are fetched from
-  `fonts.gstatic.com` at runtime (CanvasKit default). An offline/LAN-only
-  client falls back to system fonts; bundling Roboto would remove the
-  dependency.
+Deploy tooling, **manual only — no auto-deploy workflow yet**:
+
+- `scripts/build-web.sh` (`make build-web`): release build; base href
+  `/` when `web/CNAME` exists, else `/ebalistyka/` (or `BASE_HREF=`); adds
+  `.nojekyll` and a `404.html` safety net; sanity-checks the bundle.
+- `scripts/deploy-web.sh` (`make deploy-web`): force-pushes `build/web` as
+  a single commit to `gh-pages` of `origin` (or `REMOTE=`), after
+  confirmation; refuses a CNAME/base-href mismatch.
+- DNS: `CNAME ebalistyka → o-murphy.github.io` (done); Pages source
+  `gh-pages` / root; HTTPS enforced.
+
+Verified on the deployed site (Chrome, HTTPS): boots, calculations, local
+CanvasKit/bclibc wasm, `navigator.locks` present, second tab blocks the
+first. **Not verified:** real PWA install dialog, `persist()` outcome in a
+normal profile, Safari/Firefox, phones.
+
+Still open on web:
+
+- Profiles UX (deferred, see above) and the help docs — [0012].
+- An auto-deploy workflow (`gh-pages` on push/tag) when wanted.
+- Fonts: Roboto and Noto Sans Symbols are fetched from `fonts.gstatic.com`
+  at runtime (CanvasKit default); an offline/LAN-only client falls back to
+  system fonts. Bundling Roboto removes the dependency.
 - Bundle is ~59 MB on disk, mostly unused CanvasKit variants; a client
-  downloads only the variant it needs (~5 MB wasm + 4.6 MB `main.dart.js`
-  + assets). Pruning is possible but not needed for Pages.
-- `viewport` meta has `user-scalable=no`/`maximum-scale=1` (inherited
-  template default) — an accessibility trade-off worth a conscious decision.
+  downloads only what it uses (~5 MB wasm + ~4.6 MB `main.dart.js` +
+  assets). Pruning is optional for Pages.
+- `viewport` meta has `user-scalable=no`/`maximum-scale=1` (template
+  default) — an accessibility trade-off worth a conscious decision.
+- Tab-lock/PWA/persist behave differently over plain HTTP (not a secure
+  context): no `navigator.locks`, no install — fine on the HTTPS site.
