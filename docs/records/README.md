@@ -6,10 +6,12 @@ pre-existing plans in `docs/backlogs/` (those stay as they are — see
 
 - One file per record: `NNNN-slug.md`, flat numbering, no dots, no
   reuse of a retired number.
-- Immutable once written: don't edit a record to reflect new facts —
-  either its `Status:` line changes (e.g. `Proposed` → `Accepted` →
-  `Implemented`), or a later record supersedes it and says so, linking
-  back with `[NNNN]`.
+- Records may be edited for: a `Status:` change (e.g. `Proposed` →
+  `Accepted` → `Implemented`), adding new information (a new section,
+  findings, a newly considered alternative, a new implementation note),
+  or a small correction. Don't rewrite a record's decision or rationale
+  after the fact — if it no longer holds, write a later record that
+  supersedes it and says so, linking back with `[NNNN]`.
 - First line is a `# Title` — this is what gets copied verbatim into the
   tracker row. Second line is `**Status:** Proposed|Accepted|Implemented|
   Not scheduled`.
