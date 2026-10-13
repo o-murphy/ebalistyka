@@ -6,23 +6,47 @@ Carried over from `docs/backlogs/7.BETA_UX.md` (pre-existing, unchanged) —
 this record tracks only what's still open there, not the parts already
 shipped:
 
-- Display of corrections in clicks (Home AdjPanel, Tables, ReticleViewScreen)
-- `ammo.zeroOffset` (`zeroOffsetX/Y` in Ammo, UI in AmmoWizard)
-- Filter panel (Weapon/Ammo/Sight lists + collections)
-- Image picker / camera UI in wizard screens (Weapon, Sight, Ammo) — blocked
-  on [0007]'s `entity.image` format decision
+Checked against current code (2026-10-13).
+
+## Done since this record was written
+
+- Display / entry of corrections in clicks (Home AdjPanel, Tables, HTML
+  report, ReticleView, AmmoWizard) — `CHANGELOG.md`, `7.BETA_UX.md`.
+- `ammo.zeroOffset` — UI in AmmoWizard (`OffsetsEdit`, X/Y + units).
+- Filter panel — `filter_sheet.dart` for Weapon/Ammo/Sight and their
+  collections.
+- Legal links — Privacy Policy, Terms of Use and Changelog are in Settings
+  (`privacyPolicyUrl`, `tosUrl`, `changelogUrl`).
+- CI smoke test with `xvfb-run` for the Linux package
+  (`build-linux-package.yml`).
+- Help screenshots for `ammoWizard` (all 7) — the rest moved to [0012].
+- **Web beta** — see [0002]: import/export of profiles/backup/HTML report,
+  collection cache, single active tab ([0011]), persistent-storage
+  request, desktop-only PWA install offer, GitHub Pages deploy (manual,
+  `scripts/build-web.sh` + `scripts/deploy-web.sh`).
+
+## Still open
+
+- Image picker / camera UI in wizard screens (Weapon, Sight, Ammo) —
+  blocked on [0007]'s `entity.image` format decision (no `image_picker`
+  dependency yet)
 - Notepad — Note button on Home (currently `showNotAvailableSnackBar`);
   storage TBD
-- Help Overlay — coach marks; library TBD
-- Tools Screen — "More" button on Home; composition TBD
-- Legal links — Privacy Policy, Terms of Use, Changelog
-- Custom drag function editor — `CustomDragTableEditor` is read-only; full
+- Help Overlay — coach marks; library TBD (the per-screen help dialog
+  itself works)
+- Tools Screen — "More" button on Home (currently
+  `showNotAvailableSnackBar`); composition TBD
+- Custom drag function editor — `CustomDragTableEditorScreen` is still
+  opened read-only (`router.dart` doesn't pass `readOnly: false`); full
   editing/validation/saving pending (low priority, UX needs rethink first)
-- Help screenshots pending for: `ammoWizard` (7 images), `weaponWizard`,
-  `sightWizard`, `myAmmo`, `mySights`, collection screens
+- Help docs and the missing screenshots (`weaponWizard`, `sightWizard`,
+  collection screens) — tracked in [0012]
 - Platform builds & signing: Android APK, macOS, iOS, Windows
 - Auto-update: Windows msix, macOS, Android Play Store, Linux
   Flatpak/deb/rpm/Winget (see [0008] for the Windows msix blocker
-  specifically); iOS ships via App Store only, no sideload autoupdates
-- Database resilience — corruption handling
-- CI smoke test with `xvfb-run` for the Linux packaging pipeline
+  specifically); iOS ships via App Store only, no sideload autoupdates.
+  Web has no auto-update flow by design ("Download the app" instead).
+- Database resilience — partial: a "database was reset" snackbar exists
+  (`main.dart`), but its text is hard-coded English, and a database that
+  disappeared entirely (e.g. evicted by the browser) is re-seeded silently
+  without any notice

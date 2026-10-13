@@ -26,7 +26,8 @@ that's also where new decisions get logged as they're made.
 - [ ] [0008] Windows msix auto-update blocked by self-signed cert
 - [ ] [0010] Profile reordering vs. "index 0 = active" convention
 - [ ] [0011] Web IndexedDB backend — cross-tab write coordination
-      undesigned
+      web done (single active tab + fencing); desktop single-instance and
+      multi-profile workspace still open
 - [ ] [0012] In-app help docs — refresh before beta
 
 ## Implemented

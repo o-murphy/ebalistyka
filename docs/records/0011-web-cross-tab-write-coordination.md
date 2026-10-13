@@ -1,6 +1,6 @@
-# Web IndexedDB backend — cross-tab write coordination undesigned
+# Web IndexedDB backend — cross-tab write coordination
 
-**Status:** Proposed
+**Status:** Accepted — web implemented (single active tab + fencing epoch, see "Implemented for web" below); desktop single-instance and the multi-profile alternatives are still open
 
 `docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md` flagged that the desktop
 storage design assumes single-writer-per-file (`File.lock()`), and that
