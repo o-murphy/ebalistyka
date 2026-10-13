@@ -182,13 +182,8 @@ final appRouter = GoRouter(
                     // ── Profile inline edits ────────────────────────────────
                     GoRoute(
                       path: 'weapon-edit',
-                      builder: (_, state) {
-                        final extra = state.extra as (Weapon?, bool)?;
-                        return WeaponWizardScreen(
-                          initial: extra?.$1,
-                          caliberEditable: extra?.$2,
-                        );
-                      },
+                      builder: (_, state) =>
+                          WeaponWizardScreen(initial: state.extra as Weapon?),
                     ),
                     GoRoute(
                       path: 'ammo-edit',

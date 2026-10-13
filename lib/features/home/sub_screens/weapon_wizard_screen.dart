@@ -1,4 +1,3 @@
-import 'package:bclibc_flutter/unit.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
@@ -7,7 +6,6 @@ import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/mixins/wizard_form_mixin.dart';
-import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/weapon_svg_view.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
@@ -21,15 +19,12 @@ import 'package:ebalistyka/shared/widgets/dividers.dart';
 import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 
 class WeaponWizardScreen extends ConsumerStatefulWidget {
-  const WeaponWizardScreen({this.initial, this.caliberEditable, super.key});
+  const WeaponWizardScreen({this.initial, super.key});
 
   /// Pre-fill the form with an existing weapon (edit mode).
   /// null = new empty weapon.
   final Weapon? initial;
 
-  /// Whether the caliber diameter field is editable.
-  /// Defaults to true when [initial] is null (manual create), false otherwise.
-  final bool? caliberEditable;
 
   @override
   ConsumerState<WeaponWizardScreen> createState() => _WeaponWizardScreenState();
@@ -81,7 +76,6 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
     final notifier = ref.read(_provider.notifier);
     final units = ref.watch(unitSettingsProvider);
     final l10n = AppLocalizations.of(context)!;
-    final caliberEditable = widget.caliberEditable ?? widget.initial == null;
     final twistDirIcon = st.rightHand ? IconDef.twistR : IconDef.twistL;
 
     return BaseScreen(
@@ -120,14 +114,13 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
           ),
           // ── Ballistics ───────────────────────────────────────────────
           ListSectionTile(l10n.sectionBallistics),
-          _CaliberFieldTile(
-            editable: caliberEditable,
+          UnitValueFieldTile(
             title: l10n.caliber,
             rawValue: st.caliberRaw,
+            constraints: FC.projectileDiameter,
             displayUnit: units.diameterUnit,
+            icon: IconDef.caliber,
             onChanged: notifier.updateCaliberRaw,
-            onLockedTap: () =>
-                showFeedback(context, l10n.caliberLockedByAmmoMessage, isError: true),
           ),
           // ── Hardware ─────────────────────────────────────────────────
           ListSectionTile(l10n.sectionHardware),
@@ -176,45 +169,6 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
 }
 
 // ── Widgets ───────────────────────────────────────────────────────────────────
-
-/// Caliber field: always shown as editable, but when [editable] is false the
-/// edit dialog is swapped for [onLockedTap] (caliber is tied to the attached
-/// ammo and can only change via ejecting it).
-class _CaliberFieldTile extends StatelessWidget {
-  const _CaliberFieldTile({
-    required this.editable,
-    required this.title,
-    required this.rawValue,
-    required this.displayUnit,
-    required this.onChanged,
-    required this.onLockedTap,
-  });
-
-  final bool editable;
-  final String title;
-  final double rawValue;
-  final Unit displayUnit;
-  final ValueChanged<double> onChanged;
-  final VoidCallback onLockedTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final field = UnitValueFieldTile(
-      title: title,
-      rawValue: rawValue,
-      constraints: FC.projectileDiameter,
-      displayUnit: displayUnit,
-      icon: IconDef.caliber,
-      onChanged: onChanged,
-    );
-    if (editable) return field;
-
-    return GestureDetector(
-      onTap: onLockedTap,
-      child: AbsorbPointer(child: field),
-    );
-  }
-}
 
 class _RiflePlaceholder extends StatelessWidget {
   const _RiflePlaceholder({this.imageId});

@@ -18,7 +18,6 @@ import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/mixins/wizard_form_mixin.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/coriolis_section.dart';
-import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/offsets_edit.dart';
 import 'package:ebalistyka/shared/widgets/powder_sens_section.dart';
@@ -295,12 +294,13 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
               textCapitalization: TextCapitalization.words,
             ),
           ),
-          InfoListTile(
-            label: l10n.caliber,
-            value: formatter.diameter(
-              Distance(st.caliberRaw, FC.projectileDiameter.rawUnit),
-            ),
+          UnitValueFieldTile(
+            title: l10n.caliber,
+            rawValue: st.caliberRaw,
+            constraints: FC.projectileDiameter,
+            displayUnit: units.diameterUnit,
             icon: IconDef.caliber,
+            onChanged: notifier.updateCaliberRaw,
           ),
           NullableUnitValueFieldTile(
             title: l10n.weight,

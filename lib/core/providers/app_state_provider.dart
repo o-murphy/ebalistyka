@@ -1,3 +1,4 @@
+import 'package:ebalistyka/core/extensions/profile_extensions.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/core/providers/db_provider.dart';
 import 'package:flutter/foundation.dart' show debugPrint;
@@ -48,20 +49,49 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
 
   // ── Profile field replacement ────────────────────────────────────────────────
 
-  Future<void> setProfileWeapon(String uuid, Weapon value) async {
+  /// Replaces the profile's weapon.
+  ///
+  /// With [syncCaliber] the profile's ammo (if it has one) takes the new
+  /// weapon's caliber, so the two stay in step when the caliber is edited
+  /// from the weapon. Leave it off for a plain replacement (e.g. a hotswap),
+  /// where a caliber mismatch is offered to the user instead of overwritten.
+  Future<void> setProfileWeapon(
+    String uuid,
+    Weapon value, {
+    bool syncCaliber = false,
+  }) async {
     _updateProfiles(
       (profiles) => [
         for (final p in profiles)
-          if (p.uuid == uuid) (p.deepCopy()..weapon = value) else p,
+          if (p.uuid == uuid)
+            (p.deepCopy()
+              ..weapon = value
+              ..syncAmmoCaliberFromWeapon(enabled: syncCaliber))
+          else
+            p,
       ],
     );
   }
 
-  Future<void> setProfileAmmo(String uuid, Ammo value) async {
+  /// Replaces the profile's ammo.
+  ///
+  /// With [syncCaliber] the profile's weapon takes the new ammo's caliber —
+  /// the counterpart of [setProfileWeapon]'s option, for editing the caliber
+  /// from the cartridge.
+  Future<void> setProfileAmmo(
+    String uuid,
+    Ammo value, {
+    bool syncCaliber = false,
+  }) async {
     _updateProfiles(
       (profiles) => [
         for (final p in profiles)
-          if (p.uuid == uuid) (p.deepCopy()..ammo = value) else p,
+          if (p.uuid == uuid)
+            (p.deepCopy()
+              ..ammo = value
+              ..syncWeaponCaliberFromAmmo(enabled: syncCaliber))
+          else
+            p,
       ],
     );
   }

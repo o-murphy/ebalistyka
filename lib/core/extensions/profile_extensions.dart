@@ -10,6 +10,21 @@ extension ProfileExtension on Profile {
   bool get isWeaponSelected => weapon.name.isNotEmpty;
   bool get isSightSelected => sight.name.isNotEmpty;
 
+  /// Gives the ammo the weapon's caliber (no-op unless [enabled], or the
+  /// profile has no ammo / the weapon has no caliber). The ammo is copied,
+  /// not mutated in place — the instance may be owned by the caller.
+  void syncAmmoCaliberFromWeapon({bool enabled = true}) {
+    if (!enabled || !hasAmmo() || !weapon.hasCaliberInch()) return;
+    ammo = ammo.deepCopy()..caliberInch = weapon.caliberInch;
+  }
+
+  /// Gives the weapon the ammo's caliber (no-op unless [enabled], or the
+  /// ammo has no caliber). The counterpart of [syncAmmoCaliberFromWeapon].
+  void syncWeaponCaliberFromAmmo({bool enabled = true}) {
+    if (!enabled || !hasAmmo() || !ammo.hasCaliberInch()) return;
+    weapon = weapon.deepCopy()..caliberInch = ammo.caliberInch;
+  }
+
   /// `sight.sightHeightInch` feeds directly into [toZeroShot]'s
   /// `bclibc.Weapon.sightHeight` (see `ballistics_service_impl.dart`'s
   /// `weapon.toWeapon(sight.sightHeight)`) — an unset `Sight` silently
