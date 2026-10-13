@@ -60,3 +60,70 @@ shared in-memory backend.
 
 Suggested order: (1) read-modify-write + lock, (2) `externalChanges` on web,
 (3) per-instance active profile, (4) desktop watcher.
+
+## Alternative solution (not decided, not implemented)
+
+Forbid multiple *instances* of the app, but allow multiple *windows inside
+one instance*. All windows then share one isolate: one `ProviderContainer`,
+one `MsgStore` per file, so there is a single writer and no cross-process
+notification or file lock is needed — the in-process provider state is the
+broadcast. Different windows can still have different open profiles if the
+active profile is a per-window uuid held in memory (same as item 3 of the
+solution above).
+
+- **Desktop:** needs (a) single-instance enforcement (lock file / named
+  mutex / local socket) where a second launch forwards "open new window" to
+  the running instance and exits, and (b) Flutter multi-window. The SDK
+  (3.47.7) ships the windowing API (`RegularWindowController`,
+  `_window_{linux,macos,win32}.dart`) behind the `enable-windowing` feature
+  flag — still experimental; stability on all three desktop targets and its
+  interaction with the current `main.dart` bootstrap are unchecked.
+- **Web:** does not help — every tab/window is its own JS context with its
+  own memory, so this only works there as "forbid": hold a
+  `navigator.locks` lock for the tab's lifetime (or a `BroadcastChannel`
+  ping) and show "already open in another tab" in later tabs. Multiple
+  profiles in different tabs would not be possible on web with this option.
+- **Mobile:** not applicable (single instance already).
+
+Trade-off vs. the first solution: much simpler storage story on desktop (no
+read-modify-write/lock/watcher), but depends on an experimental SDK feature
+and gives up multi-tab on web.
+
+## Considered and not preferred: SharedWorker (web)
+
+A `SharedWorker` per origin could own the `IndexedDbMsgStore`, serialize
+writes and broadcast "changed" to all tab ports. Not preferred: it needs a
+separate worker entrypoint compiled and shipped beside the Flutter web
+build; tabs still hold their own in-memory copies, so ops would have to be
+serializable commands or optimistic-concurrency (`baseRev`) writes — the
+same work as the first solution; a worker-owned state would turn the
+synchronous providers into async proxies; browser support has nuances
+(Chrome Android historically lacked it — re-verify). `navigator.locks` +
+`BroadcastChannel` already give serialization + notification without any of
+that.
+
+## Alternative solution: one window, one instance, in-app split (not decided)
+
+Single window, single instance, and an in-app split of the UI into **two
+identical interface panes** — 1 or 2 profiles, never more. Everything stays
+in one isolate / one `ProviderContainer` / one `MsgStore` per file, so
+there is no cross-process or cross-tab coordination at all.
+
+- Works on every platform including web and tablets; no experimental
+  multi-window SDK feature, no worker, no file locks/watchers.
+- Active profile becomes per-pane (uuid held in memory per pane), e.g. via
+  `ProviderScope` overrides of the active-profile-derived providers (today
+  they are global singletons — `activeProfileProvider`, `AppState`), plus a
+  separate `Navigator`/route stack per pane (wizards and sub-screens are
+  pushed on the single router today).
+- Still need a cheap "forbid second instance/tab" guard so two *processes*
+  can't clobber the same files: single-instance lock on desktop,
+  `navigator.locks` held for the tab's lifetime on web ("already open in
+  another tab"). Mobile: already single instance.
+- Open design questions: which state is per-pane vs shared (settings —
+  shared; conditions/wind/target distance — per-pane or shared?); the
+  `_serialized()` calculation queue and recalc cost with two panes; layout
+  on narrow screens (split only when wide enough, otherwise single pane or
+  a pane switcher).
+- Trade-off: covers "compare/work with two profiles at once" but not
+  "two independent OS windows/tabs".
