@@ -57,3 +57,38 @@ Order matters: 1 before 2, 2 before 3.
   or something else is undecided (card visual style already shipped).
 - In-app help docs (`assets/markdown/{en,uk}/*.md`) are stale; redo them
   after the two items above are settled.
+
+## Update (2026-10-13): web status and GitHub Pages preparation
+
+Items 1–3 above are done (`kIsWeb` guard in `UpdateListener`,
+`shared_preferences` for the scalars, the collection cache in IndexedDB —
+`CollectionCache`, keyed by the last commit touching `collection.json`);
+item 4 is done too (import/export of `.a7p`/`.ebcp`/backup and the HTML
+table report work on web — see `is_mobile.dart`, `open_html_*.dart`).
+Still open from the list: 5 (audit of the remaining `dart:io` use, e.g.
+`update_checker.dart`) and 6 (deploy).
+
+Deploy preparation, **manual only — no auto-deploy workflow yet**:
+
+- `scripts/build-web.sh` (`make build-web`): release build with
+  `--base-href /ebalistyka/` (project Pages; `BASE_HREF=/` for a root),
+  adds `.nojekyll` and a `404.html` safety net, and sanity-checks the
+  bundle (local CanvasKit forced, base href, expected files).
+- `scripts/deploy-web.sh` (`make deploy-web`): publishes `build/web` as a
+  single force-pushed commit on the `gh-pages` branch of `origin` (or
+  `REMOTE=...`), after confirmation. One-time GitHub setting: Pages →
+  Deploy from branch → `gh-pages` / root.
+- Checked under a sub-path locally: boots, local CanvasKit + bclibc wasm,
+  IndexedDB, manifest/icons resolve.
+
+Known, not blocking a test deploy:
+
+- Fonts: Roboto and Noto Sans Symbols are fetched from
+  `fonts.gstatic.com` at runtime (CanvasKit default). An offline/LAN-only
+  client falls back to system fonts; bundling Roboto would remove the
+  dependency.
+- Bundle is ~59 MB on disk, mostly unused CanvasKit variants; a client
+  downloads only the variant it needs (~5 MB wasm + 4.6 MB `main.dart.js`
+  + assets). Pruning is possible but not needed for Pages.
+- `viewport` meta has `user-scalable=no`/`maximum-scale=1` (inherited
+  template default) — an accessibility trade-off worth a conscious decision.
