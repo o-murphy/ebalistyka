@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:a7p/a7p.dart' hide Profile;
 import 'package:bclibc_flutter/unit.dart';
+import 'package:ebalistyka/shared/helpers/is_mobile.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -56,7 +57,7 @@ abstract final class A7pService {
     final name =
         '${EbcpService.sanitizeName(profile.name).replaceFirst(RegExp(r'^\.'), '')}.a7p';
 
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (isMobile) {
       final tmp = await getTemporaryDirectory();
       final path = '${tmp.path}/$name';
       await File(path).writeAsBytes(bytes);
@@ -81,8 +82,8 @@ abstract final class A7pService {
   /// Throws [A7pParseException] if the file is invalid.
   static Future<Profile?> pickAndParse() async {
     final file = await FilePicker.pickFile(
-      type: Platform.isAndroid ? FileType.any : FileType.custom,
-      allowedExtensions: Platform.isAndroid ? null : ['a7p'],
+      type: isAndroid ? FileType.any : FileType.custom,
+      allowedExtensions: isAndroid ? null : ['a7p'],
     );
     if (file == null) return null;
     if (!file.name.toLowerCase().endsWith('.a7p')) {

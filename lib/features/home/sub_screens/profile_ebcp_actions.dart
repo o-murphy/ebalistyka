@@ -1,10 +1,9 @@
-import 'dart:io';
-
 import 'package:a7p/a7p.dart' hide Profile;
 import 'package:ebalistyka/core/services/a7p_converter.dart';
 import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/features/home/profiles_vm.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
+import 'package:ebalistyka/shared/helpers/is_mobile.dart';
 import 'package:ebalistyka/shared/widgets/profile_selection_sheet.dart';
 import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebc_db/ebc_db.dart';
@@ -38,8 +37,8 @@ Future<void> importProfileFromFile(BuildContext context, WidgetRef ref) async {
   final l10n = AppLocalizations.of(context)!;
   try {
     final file = await FilePicker.pickFile(
-      type: Platform.isAndroid ? FileType.any : FileType.custom,
-      allowedExtensions: Platform.isAndroid ? null : ['ebcp', 'a7p'],
+      type: isAndroid ? FileType.any : FileType.custom,
+      allowedExtensions: isAndroid ? null : ['ebcp', 'a7p'],
     );
     if (file == null) return;
     final lowerName = file.name.toLowerCase();

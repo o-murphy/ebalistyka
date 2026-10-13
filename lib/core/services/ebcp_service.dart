@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:ebalistyka/shared/helpers/is_mobile.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -39,7 +40,7 @@ abstract final class EbcpService {
     final name =
         '${sanitizeName(fileName).replaceFirst(RegExp(r'^\.'), '')}.ebcp';
 
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (isMobile) {
       final tmp = await getTemporaryDirectory();
       final path = '${tmp.path}/$name';
       await File(path).writeAsBytes(bytes);
@@ -78,8 +79,8 @@ abstract final class EbcpService {
   /// see docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md Phase 7.
   static Future<EbcpData?> pickAndParse() async {
     final file = await FilePicker.pickFile(
-      type: Platform.isAndroid ? FileType.any : FileType.custom,
-      allowedExtensions: Platform.isAndroid ? null : ['ebcp'],
+      type: isAndroid ? FileType.any : FileType.custom,
+      allowedExtensions: isAndroid ? null : ['ebcp'],
     );
     if (file == null) return null;
     if (!file.name.toLowerCase().endsWith('.ebcp')) {
