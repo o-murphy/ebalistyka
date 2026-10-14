@@ -25,7 +25,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get settingsScreenTitle => 'Налаштування';
 
   @override
-  String get convertorsScreenTitle => 'Конвертори';
+  String get convertorsScreenTitle => 'Конвертери';
 
   @override
   String get notesScreenTitle => 'Нотатки';
