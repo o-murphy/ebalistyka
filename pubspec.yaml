@@ -37,7 +37,7 @@ dependencies:
   ebc_db:
     path: ./packages/ebc_db
 
-  a7p: ^1.2.4
+  a7p: ^1.2.5
   ob_dump_reader_flutter: ^0.1.0-beta.1
 
   bclibc_flutter: ^1.0.0-rc.5
