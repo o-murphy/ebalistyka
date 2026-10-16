@@ -126,8 +126,14 @@ class _DbResetBannerState extends ConsumerState<_DbResetBanner> {
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
+  // Bundled in assets/fonts (see pubspec.yaml).
+  static const _fontFamily = 'Roboto';
+  static const _fontFamilyFallback = ['NotoSansSymbols'];
+
   static final _lightTheme = ThemeData(
     useMaterial3: true,
+    fontFamily: _fontFamily,
+    fontFamilyFallback: _fontFamilyFallback,
     colorScheme: ColorScheme.fromSeed(
       seedColor: Colors.deepPurple,
       brightness: Brightness.light,
@@ -136,6 +142,8 @@ class MyApp extends ConsumerWidget {
 
   static final _darkTheme = ThemeData(
     useMaterial3: true,
+    fontFamily: _fontFamily,
+    fontFamilyFallback: _fontFamilyFallback,
     colorScheme: ColorScheme.fromSeed(
       seedColor: Colors.deepPurple,
       brightness: Brightness.dark,
