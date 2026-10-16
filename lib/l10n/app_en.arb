@@ -654,6 +654,8 @@
     "@lookAngle": {"description": "Field label for the target look angle (inclination / slope)"},
     "lookAngleWasReset": "Look angle was reset to 0°",
     "@lookAngleWasReset": {"description": "Feedback message on quick action 'Look Angle' long press"},
+    "databaseResetNotice": "Database was corrupted and has been reset. All data has been cleared.",
+    "@databaseResetNotice": {"description": "Snackbar shown at startup when the stored data could not be read and was replaced with defaults"},
     "targetRange": "Target range",
     "@targetRange": {"description": "Field label for the distance to the target"},
     "speedOfSound": "Speed of sound",

@@ -2006,6 +2006,12 @@ abstract class AppLocalizations {
   /// **'Look angle was reset to 0°'**
   String get lookAngleWasReset;
 
+  /// Snackbar shown at startup when the stored data could not be read and was replaced with defaults
+  ///
+  /// In en, this message translates to:
+  /// **'Database was corrupted and has been reset. All data has been cleared.'**
+  String get databaseResetNotice;
+
   /// Field label for the distance to the target
   ///
   /// In en, this message translates to:

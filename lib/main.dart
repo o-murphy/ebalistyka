@@ -110,11 +110,9 @@ class _DbResetBannerState extends ConsumerState<_DbResetBanner> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Database was corrupted and has been reset. All data has been cleared.',
-            ),
-            duration: Duration(seconds: 6),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.databaseResetNotice),
+            duration: const Duration(seconds: 6),
           ),
         );
       });

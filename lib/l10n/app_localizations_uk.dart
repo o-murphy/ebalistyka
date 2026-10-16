@@ -982,6 +982,10 @@ class AppLocalizationsUk extends AppLocalizations {
   String get lookAngleWasReset => 'Кут цілі було скинуто до 0°';
 
   @override
+  String get databaseResetNotice =>
+      'Базу даних було пошкоджено, її скинуто. Усі дані видалено.';
+
+  @override
   String get targetRange => 'Відстань до цілі';
 
   @override

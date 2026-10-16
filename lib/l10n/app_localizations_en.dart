@@ -979,6 +979,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lookAngleWasReset => 'Look angle was reset to 0°';
 
   @override
+  String get databaseResetNotice =>
+      'Database was corrupted and has been reset. All data has been cleared.';
+
+  @override
   String get targetRange => 'Target range';
 
   @override
