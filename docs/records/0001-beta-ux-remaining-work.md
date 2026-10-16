@@ -25,6 +25,15 @@ Checked against current code (2026-10-13).
   request, desktop-only PWA install offer, GitHub Pages deploy (manual,
   `scripts/build-web.sh` + `scripts/deploy-web.sh`).
 
+## Dropped
+
+- Help Overlay (coach marks) — dropped 2026-10-16. `MasterProject.md` §5.4
+  planned an all-in-one overlay highlighting every key UI element, but
+  `7.BETA_UX.md` already marks "Help Overlay" done as the per-screen help
+  dialogs (? button in the AppBar), and the owner confirmed that is the help
+  feature. No library was ever chosen and none is needed; what remains is
+  refreshing the help content — see [0012].
+
 ## Still open
 
 - Image picker / camera UI in wizard screens (Weapon, Sight, Ammo) —
@@ -32,8 +41,6 @@ Checked against current code (2026-10-13).
   dependency yet)
 - Notepad — Note button on Home (currently `showNotAvailableSnackBar`);
   storage TBD
-- Help Overlay — coach marks; library TBD (the per-screen help dialog
-  itself works)
 - Tools Screen — "More" button on Home (currently
   `showNotAvailableSnackBar`); composition TBD
 - Custom drag function editor — `CustomDragTableEditorScreen` is still
