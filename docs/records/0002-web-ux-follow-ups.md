@@ -149,3 +149,9 @@ emoji in favour of words. Any new UI text must stay within Roboto's glyphs
 (or go through `ArrowText`); the FSF license list is the place to re-check
 the OFL entry — gnu.org was unreachable from the sandbox, so that rests on
 secondary sources.
+
+## Update (2026-10-16): PWA install confirmed
+
+The owner confirmed that PWA installation works. Still not verified:
+`persist()` outcome in a normal profile, desktop Safari, desktop Firefox,
+Android browsers. Bundle size is left alone for now (owner's call).
