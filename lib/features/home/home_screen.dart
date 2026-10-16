@@ -268,7 +268,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                         ],
                                         onTopPressed: () {
                                           if (vmState is HomeUiReady) {
-                                            context.push(Routes.shotInfo);
+                                            unawaited(context.push(Routes.shotInfo));
                                           } else {
                                             final type = vmState is HomeUiNoData
                                                 ? vmState.type
