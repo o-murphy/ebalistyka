@@ -4,6 +4,7 @@ import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/features/home/sub_screens/sight_wizard_notifier.dart';
+import 'package:ebalistyka/core/providers/reticle_provider.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/mixins/wizard_form_mixin.dart';
@@ -113,7 +114,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
           ListTile(
             leading: const Icon(IconDef.sight),
             title: Text(l10n.reticlePattern),
-            subtitle: Text(st.reticleImage ?? l10n.defaultLabel),
+            subtitle: Text(assetIdLabel(st.reticleImage, l10n.defaultLabel)),
             trailing: const Icon(Icons.chevron_right),
             onTap: () async {
               final route = widget.initial != null
