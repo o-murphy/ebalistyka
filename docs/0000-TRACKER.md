@@ -18,7 +18,7 @@ that's also where new decisions get logged as they're made.
 
 - [ ] [0001] Beta UX — remaining work
 - [ ] [0002] Field constraints / web UX follow-ups
-      Profiles UX resolved; open: auto-deploy, fonts, viewport, untested browsers
+      Profiles UX and fonts done; open: auto-deploy, bundle size, untested browsers
 - [ ] [0004] Reticles — wizard placeholders & remaining SVG generation
 - [ ] [0005] Home Note / Help / More buttons
       deferred — not scheduled
