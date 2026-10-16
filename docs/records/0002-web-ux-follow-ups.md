@@ -155,3 +155,8 @@ secondary sources.
 The owner confirmed that PWA installation works. Still not verified:
 `persist()` outcome in a normal profile, desktop Safari, desktop Firefox,
 Android browsers. Bundle size is left alone for now (owner's call).
+
+## Update (2026-10-16, later): desktop Firefox and Chrome checked
+
+The owner checked desktop Firefox and Chrome — fine. Still not verified:
+`persist()` outcome in a normal profile, desktop Safari, Android browsers.
