@@ -422,8 +422,8 @@ void main() {
       await tester.pumpWidget(_scoped(state, const HomeReticlePage()));
       await tester.pump();
 
-      expect(find.text('↑'), findsOneWidget);
-      expect(find.text('→'), findsOneWidget);
+      expect(find.byIcon(Icons.arrow_upward), findsOneWidget);
+      expect(find.byIcon(Icons.arrow_forward), findsOneWidget);
     });
 
     testWidgets('arrows format: negative elevation shows ↓', (tester) async {
@@ -451,8 +451,8 @@ void main() {
       await tester.pumpWidget(_scoped(state, const HomeReticlePage()));
       await tester.pump();
 
-      expect(find.text('↓'), findsOneWidget);
-      expect(find.text('←'), findsOneWidget);
+      expect(find.byIcon(Icons.arrow_downward), findsOneWidget);
+      expect(find.byIcon(Icons.arrow_back), findsOneWidget);
     });
 
     testWidgets('signs format: positive shows +', (tester) async {

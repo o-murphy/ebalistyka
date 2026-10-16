@@ -1,6 +1,7 @@
 import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
+import 'package:ebalistyka/shared/widgets/arrow_text.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka/shared/widgets/error_display.dart';
 import 'package:material_ui/material_ui.dart';
@@ -240,7 +241,7 @@ class _TrajectoryTableContentState extends State<TrajectoryTableContent> {
                   onTap: () => showDetail(t, pi),
                   cells: [
                     DataCell(
-                      Center(child: Text(t.distanceHeaders[pi], style: style)),
+                      Center(child: ArrowText(t.distanceHeaders[pi], style: style)),
                     ),
                     ...List.generate(
                       nMetrics,
@@ -332,7 +333,7 @@ class _TrajectoryTableContentState extends State<TrajectoryTableContent> {
                   cells: [
                     DataCell(
                       Center(
-                        child: Text(
+                        child: ArrowText(
                           t.distanceHeaders[pi],
                           style: cellStyle?.copyWith(color: cs.primary),
                         ),

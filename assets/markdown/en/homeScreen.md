@@ -24,7 +24,7 @@ Current atmospheric conditions are displayed on both sides of the wind indicator
 - **Temperature** and **altitude** — left column
 - **Humidity** and **atmospheric pressure** — right column
 
-These values are edited on the **Conditions** screen. The ℹ️ button (left) opens shot details, the ❓ button (right) opens this guide.
+These values are edited on the **Conditions** screen. The **i** button (left) opens shot details, the **?** button (right) opens this guide.
 
 ---
 
@@ -88,7 +88,7 @@ A visual chart of the bullet's trajectory. Lets you quickly assess the cartridge
 
 ![Shot details](resource:assets/markdown/en/homeScreen_shotInfo.png)
 
-Opened via the ℹ️ button on the left side of the home screen. Shows computed ballistic values for the current conditions and target range.
+Opened via the **i** button on the left side of the home screen. Shows computed ballistic values for the current conditions and target range.
 
 **Velocity**
 - **Current MV** — muzzle velocity at the current powder temperature

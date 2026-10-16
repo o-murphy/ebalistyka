@@ -1,4 +1,5 @@
 import 'package:ebalistyka/l10n/app_localizations.dart';
+import 'package:ebalistyka/shared/widgets/arrow_text.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:material_ui/material_ui.dart';
@@ -32,7 +33,7 @@ class AdjustmentDisplayScreen extends ConsumerWidget {
               segments: const [
                 ButtonSegment(
                   value: AdjustmentDisplayFormat.arrows,
-                  label: Text('↑/↓'),
+                  label: ArrowText('↑/↓'),
                 ),
                 ButtonSegment(
                   value: AdjustmentDisplayFormat.signs,

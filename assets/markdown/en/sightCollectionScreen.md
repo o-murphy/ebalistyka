@@ -1,6 +1,6 @@
 ## Scope Collection
 
-A built-in database of preset scopes. Tap the **✓ button** (bottom-right of a card) to select it for the current profile.
+A built-in database of preset scopes. Tap the **check-mark button** (bottom-right of a card) to select it for the current profile.
 
 Each tile shows:
 - **Manufacturer** and **model name**

@@ -1,6 +1,6 @@
 ## Cartridge / Bullet Collection
 
-A built-in database of preset cartridges and projectiles. Tap the **✓ button** (bottom-right of a card) to select it for the current profile.
+A built-in database of preset cartridges and projectiles. Tap the **check-mark button** (bottom-right of a card) to select it for the current profile.
 
 Each tile shows:
 - **Manufacturer** and **cartridge name**
