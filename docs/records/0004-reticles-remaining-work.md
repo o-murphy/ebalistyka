@@ -5,8 +5,6 @@
 Carried over from `docs/backlogs/5.RETICLES_AND_IMAGES.md` (pre-existing,
 unchanged) — everything else in that doc shipped:
 
-- `SightWizardScreen._SightPlaceholder` still shows `Icon(IconDef.sight)`
-  instead of the SVG reticle from `reticleSvgProvider`
 - `reticle_gen` CLI has only default + MIL-XT done; remaining reticle IDs
   not yet generated
 
@@ -18,5 +16,11 @@ unchanged) — everything else in that doc shipped:
 - The collection still references reticle ids with no SVG: `IHR`,
   `EPR MOA`, `FC-MIL`, `FC-MOA`, `MIL-C`, `MIL-CF2`, `Mil-Dot`, `MIL-R`,
   `NP-R2`, `NP-RF1`, `Reticle 4` — those sights fall back to `default.svg`.
-- `SightWizardScreen._SightPlaceholder` still shows an icon, not the
-  reticle.
+
+## Update (2026-10-16): placeholder is not a reticle
+
+`SightWizardScreen._SightPlaceholder` ("Sight image") is the slot for a photo
+of the sight, **not** the reticle pattern — the reticle is chosen in the
+"Reticle pattern" tile below it. So the "show the SVG reticle there" item is
+dropped; the placeholder waits for the image picker, which is deferred with
+[0007]. What remains in this record is the missing reticle SVGs above.
