@@ -19,7 +19,7 @@ class IconDef {
   static const IconData humidity = Icons.water_drop_outlined;
   static const IconData energy = Icons.bolt_outlined;
   static const IconData dropWindageAngle = Icons.rotate_90_degrees_cw_outlined;
-  static const IconData windage = Icons.arrow_right_alt_outlined;
+  static const IconData windage = Icons.arrow_forward_outlined;
   static const IconData twistR = Icons.rotate_right_outlined;
   static const IconData twistL = Icons.rotate_left_outlined;
   static const IconData coriolis = Icons.rotate_right_outlined;
