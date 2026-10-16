@@ -233,7 +233,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                       ListTile(
                         leading: const Icon(IconDef.sight),
                         title: Text(l10n.targetPattern),
-                        subtitle: Text(_targetImage ?? l10n.defaultLabel),
+                        subtitle: Text(assetIdLabel(_targetImage, l10n.defaultLabel)),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () async {
                           final result = await context.push<String?>(
@@ -259,7 +259,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                       ListTile(
                         leading: const Icon(IconDef.sight),
                         title: Text(l10n.reticlePattern),
-                        subtitle: Text(_reticleImage ?? l10n.defaultLabel),
+                        subtitle: Text(assetIdLabel(_reticleImage, l10n.defaultLabel)),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () async {
                           final result = await context.push<String?>(
