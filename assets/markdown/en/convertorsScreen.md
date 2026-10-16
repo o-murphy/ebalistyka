@@ -22,7 +22,7 @@ Enter a value in the top field and select units — all other fields update inst
 
 ### Advanced Converters
 
-Three converters have extra fields and their own guide (❓ button):
+Three converters have extra fields and their own guide (**?** button):
 
 - **Velocity** — convert between m/s, fps, mph, km/h and Mach number with atmosphere support
 - **Target Distance** — calculate distance from a target's angular and physical size

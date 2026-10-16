@@ -1,6 +1,6 @@
 ## Powder Sensitivity Measurements
 
-A table of **temperature → muzzle velocity** pairs measured at the range. The app calculates the powder sensitivity coefficient automatically from these measurements and uses it to correct the muzzle velocity at any given temperature.
+A table of **temperature › muzzle velocity** pairs measured at the range. The app calculates the powder sensitivity coefficient automatically from these measurements and uses it to correct the muzzle velocity at any given temperature.
 
 The calculated sensitivity is shown live above the table in **%/15°C**.
 

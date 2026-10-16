@@ -36,7 +36,7 @@ Select the ballistic model that describes how this bullet decelerates through ai
 |-------|----------|
 | **G1** | Flat-base, round-nose, or older sporting bullets |
 | **G7** | Boat-tail long-range bullets — generally more accurate for modern rifle projectiles |
-| **CUSTOM** | Any bullet with a known Mach → Cd drag table (e.g. from Doppler radar or manufacturer data) |
+| **CUSTOM** | Any bullet with a known Mach › Cd drag table (e.g. from Doppler radar or manufacturer data) |
 
 **G1 / G7 — Single BC**
 
@@ -44,11 +44,11 @@ Enter one ballistic coefficient that applies at all velocities. Quick to set up;
 
 **G1 / G7 — Multi-BC table**
 
-Enable the **Multi-BC** toggle to enter a velocity-banded table of BC values. The app interpolates between breakpoints, improving accuracy across the full velocity envelope (supersonic → transonic → subsonic). Tap **Edit table** to open the breakpoint editor.
+Enable the **Multi-BC** toggle to enter a velocity-banded table of BC values. The app interpolates between breakpoints, improving accuracy across the full velocity envelope (supersonic › transonic › subsonic). Tap **Edit table** to open the breakpoint editor.
 
 **CUSTOM drag table**
 
-Tap **Edit custom drag table** to enter Mach → Cd pairs. The table must cover the bullet's full expected velocity range. Rows are sorted by Mach ascending on save.
+Tap **Edit custom drag table** to enter Mach › Cd pairs. The table must cover the bullet's full expected velocity range. Rows are sorted by Mach ascending on save.
 
 ---
 
@@ -70,7 +70,7 @@ When the **Powder Sensitivity** toggle is on, an additional section appears:
 
 - The current corrected MV at the given powder temperature is shown live
 - **Different powder temperature** — toggle on to set a separate powder temperature (e.g. ammo stored warm but fired cold); when off, the air temperature from Conditions screen is used
-- **Calculate from measurements** — tap to open the T → V measurement table; enter at least two temperature/velocity pairs measured at the range; the app calculates the sensitivity coefficient (%/15°C) automatically
+- **Calculate from measurements** — tap to open the T › V measurement table; enter at least two temperature/velocity pairs measured at the range; the app calculates the sensitivity coefficient (%/15°C) automatically
 
 ---
 

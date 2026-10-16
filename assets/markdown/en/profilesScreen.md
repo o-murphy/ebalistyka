@@ -19,7 +19,7 @@ The card contains three quick-action buttons:
 
 | Button | Location | Action |
 |---|---|---|
-| **⋯** (more) | Top-right | Opens the edit menu (rename, duplicate, export, delete) |
+| **…** (more) | Top-right | Opens the edit menu (rename, duplicate, export, delete) |
 | **Scope icon** | Top-left | Assign or change the scope for this profile |
 | **Cartridge icon** | Bottom-right | Assign or change the cartridge for this profile |
 
@@ -31,7 +31,7 @@ If the profile has no cartridge or scope assigned, the bottom bar shows a warnin
 
 ---
 
-### Profile menu (⋯)
+### Profile menu (…)
 
 | Action | Description |
 |---|---|

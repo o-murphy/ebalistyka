@@ -17,8 +17,8 @@ The table displays ballistic data for the current profile and shooting condition
 ![Row details](resource:assets/markdown/en/tablesScreen_rowDetail.png)
 
 **Top-right buttons:**
-- ⚙️ — opens table settings (Trajectory tab only)
-- ↗️ — exports the table as an HTML file
+- **Gear** — opens table settings (Trajectory tab only)
+- **Export** — exports the table as an HTML file
 
 ---
 
@@ -39,7 +39,7 @@ Displays the parameters of the current profile used for the calculation:
 
 ![Table settings](resource:assets/markdown/en/tablesScreen_config.png)
 
-Opened via the ⚙️ button. Lets you customise the table layout and distance range.
+Opened via the **gear** button. Lets you customise the table layout and distance range.
 
 **Distance:**
 - Start, end, and step — define the table rows

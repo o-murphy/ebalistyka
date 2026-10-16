@@ -2,7 +2,7 @@
 
 Defines how the ballistic coefficient (BC) changes with bullet velocity. More breakpoints give a more accurate drag model across the full velocity range.
 
-Each row is a **velocity → BC** pair. The table is sorted by velocity descending on save.
+Each row is a **velocity › BC** pair. The table is sorted by velocity descending on save.
 
 ---
 

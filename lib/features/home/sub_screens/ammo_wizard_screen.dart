@@ -125,7 +125,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
           ActionSheetItem(
             icon: IconDef.ammo,
             title: l10n.updateAmmoCaliberAction,
-            subtitle: '$ammoStr → $weaponStr',
+            subtitle: '$ammoStr › $weaponStr',
             onTap: () async => ref
                 .read(_provider.notifier)
                 .updateCaliberRaw(
@@ -138,7 +138,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
             ActionSheetItem(
               icon: IconDef.weapon,
               title: l10n.updateWeaponCaliberAction,
-              subtitle: '$weaponStr → $ammoStr',
+              subtitle: '$weaponStr › $ammoStr',
               onTap: () async {
                 final profileUuid = widget.profileUuid!;
                 final weapon = ref
@@ -458,7 +458,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
               subtitle: Text(
                 st.powderSensTable != null
                     ? '${st.powderSensTable!.length} measurement${st.powderSensTable!.length == 1 ? '' : 's'}'
-                    : 'Tap to add T→V measurements',
+                    : 'Tap to add T-V measurements',
               ),
               trailing: const Icon(IconDef.chevronRight),
               dense: true,

@@ -1,6 +1,6 @@
 ## Weapon Collection
 
-A built-in database of preset rifles and pistols. Tap the **✓ button** (bottom-right of a card) to select it for the current profile.
+A built-in database of preset rifles and pistols. Tap the **check-mark button** (bottom-right of a card) to select it for the current profile.
 
 Each tile shows:
 - **Manufacturer** and **model name**

@@ -37,14 +37,11 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Licenses of the bundled fonts (assets/fonts), for showLicensePage.
+  // License of the bundled font (assets/fonts), for showLicensePage.
   LicenseRegistry.addLicense(() async* {
     yield LicenseEntryWithLineBreaks([
       'Roboto',
     ], await rootBundle.loadString('assets/fonts/Roboto_LICENSE.txt'));
-    yield LicenseEntryWithLineBreaks([
-      'Noto Sans Symbols',
-    ], await rootBundle.loadString('assets/fonts/NotoSansSymbols_OFL.txt'));
   });
 
   if (isDesktop) {
@@ -142,12 +139,10 @@ class MyApp extends ConsumerWidget {
 
   // Bundled in assets/fonts (see pubspec.yaml).
   static const _fontFamily = 'Roboto';
-  static const _fontFamilyFallback = ['NotoSansSymbols'];
 
   static final _lightTheme = ThemeData(
     useMaterial3: true,
     fontFamily: _fontFamily,
-    fontFamilyFallback: _fontFamilyFallback,
     colorScheme: ColorScheme.fromSeed(
       seedColor: Colors.deepPurple,
       brightness: Brightness.light,
@@ -157,7 +152,6 @@ class MyApp extends ConsumerWidget {
   static final _darkTheme = ThemeData(
     useMaterial3: true,
     fontFamily: _fontFamily,
-    fontFamilyFallback: _fontFamilyFallback,
     colorScheme: ColorScheme.fromSeed(
       seedColor: Colors.deepPurple,
       brightness: Brightness.dark,

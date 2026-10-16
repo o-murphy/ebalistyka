@@ -106,7 +106,6 @@ flutter:
     - assets/svg/weapon/
     - assets/svg/ammo/
     - assets/fonts/Roboto_LICENSE.txt
-    - assets/fonts/NotoSansSymbols_OFL.txt
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
@@ -115,8 +114,9 @@ flutter:
 
   # Fonts are bundled so web/offline clients don't fetch them from
   # fonts.gstatic.com at runtime. Roboto (Apache-2.0) comes from the Flutter
-  # SDK's material_fonts; Noto Sans Symbols (OFL-1.1, notofonts/symbols) is
-  # the fallback for glyphs Roboto lacks (arrows, diameter sign).
+  # SDK's material_fonts. No OFL fonts on purpose (the FSF lists the OFL as
+  # GPL-incompatible and the app is GPLv3); arrows are drawn as Material
+  # icons, see lib/shared/widgets/arrow_text.dart.
   fonts:
     - family: Roboto
       fonts:
@@ -127,9 +127,6 @@ flutter:
           weight: 500
         - asset: assets/fonts/Roboto-Bold.ttf
           weight: 700
-    - family: NotoSansSymbols
-      fonts:
-        - asset: assets/fonts/NotoSansSymbols-Regular.ttf
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a

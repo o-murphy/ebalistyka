@@ -130,12 +130,22 @@ Still open on web:
 ## Update (2026-10-16): fonts bundled
 
 Roboto (Regular/Italic/Medium/Bold, from the Flutter SDK's `material_fonts`,
-Apache-2.0) and Noto Sans Symbols (arrows, diameter sign; OFL-1.1) now live
-in `assets/fonts/` and are declared in `pubspec.yaml`; both themes in
-`main.dart` set `fontFamily: 'Roboto'` with `NotoSansSymbols` as fallback.
-Checked on a release web build in headless Chromium: all fonts load from the
+Apache-2.0) lives in `assets/fonts/` with its license text and is declared in
+`pubspec.yaml`; both themes in `main.dart` set `fontFamily: 'Roboto'`.
+Checked on a release web build in headless Chromium: the fonts load from the
 app's own `assets/`, no request to `fonts.gstatic.com` (the only external
 requests left are the GitHub API/raw calls of the collection and release
-checks). Cost: ~0.9 MB of assets. Fixed fonts replace the per-platform
-default, so text metrics on Android/desktop also change slightly to match
-Roboto.
+checks). Cost: ~0.7 MB of assets. A fixed font replaces the per-platform
+default, so text metrics on Android/desktop change slightly to match Roboto.
+
+**No OFL fonts, on purpose.** Roboto has no arrow glyphs; Noto Sans Symbols
+was tried as a fallback and removed: it is OFL-1.1, which the FSF treats as
+free but GPL-incompatible, and the app is GPLv3 (shipped via Flatpak, Play,
+Winget, Snap). Instead `lib/shared/widgets/arrow_text.dart` draws ↑ ↓ → ← as
+Material icons (the icon font is Apache-2.0) in the Home adjustment panel,
+the zero-crossing table headers and the adjustment-format picker; `→` in a
+few plain strings became `›`; the help markdown dropped ⚙ ↗ ❓ ℹ ✓ ⋯ and
+emoji in favour of words. Any new UI text must stay within Roboto's glyphs
+(or go through `ArrowText`); the FSF license list is the place to re-check
+the OFL entry — gnu.org was unreachable from the sandbox, so that rests on
+secondary sources.

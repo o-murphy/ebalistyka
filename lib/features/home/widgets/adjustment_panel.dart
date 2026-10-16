@@ -3,6 +3,7 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/models/adjustment_data.dart';
+import 'package:ebalistyka/shared/widgets/arrow_text.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 
@@ -182,7 +183,7 @@ class _AdjustmentDisplayData extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               if (dir.isNotEmpty) ...[
-                Text(dir, style: dirStyle),
+                ArrowText(dir, style: dirStyle),
                 SizedBox(width: 4 * spacing),
               ],
               Text(label, style: headerStyle),

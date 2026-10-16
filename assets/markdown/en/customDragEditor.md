@@ -1,6 +1,6 @@
 ## Custom Drag Table
 
-Defines the drag function as a series of **Mach number → drag coefficient (Cd)** pairs. This model replaces the standard G1/G7 drag functions entirely and allows for a bullet-specific drag curve.
+Defines the drag function as a series of **Mach number › drag coefficient (Cd)** pairs. This model replaces the standard G1/G7 drag functions entirely and allows for a bullet-specific drag curve.
 
 The table is sorted by Mach ascending on save.
 

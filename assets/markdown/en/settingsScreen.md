@@ -45,7 +45,7 @@ Opens a separate screen for choosing units for each type of quantity:
 
 **Adjustment Display** — opens a screen with adjustment appearance settings:
 
-- **Format** — how direction is indicated: ↑/↓ (arrows), +/− (signs), U/D (letters)
+- **Format** — how direction is indicated: arrows (up/down), +/− (signs), U/D (letters)
 - **Adjustment units** — which units to display: mrad · MOA · mil · cm/100m · in/100yd · click
 
 **Show subsonic transition** — highlights the row in the table and chart where the bullet goes subsonic.
