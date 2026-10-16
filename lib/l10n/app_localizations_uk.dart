@@ -689,6 +689,12 @@ class AppLocalizationsUk extends AppLocalizations {
   String get labelPrivacyPolicy => 'Політика конфіденційності';
 
   @override
+  String get labelLicenseGpl => 'Ліцензія (GPLv3)';
+
+  @override
+  String get labelOpenSourceLicenses => 'Ліцензії з відкритим кодом';
+
+  @override
   String get labelVersion => 'Версія';
 
   @override

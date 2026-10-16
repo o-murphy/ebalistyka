@@ -236,6 +236,8 @@
     "labelTermsOfUse": "Умови використання",
     "labelPrivacyPolicy": "Політика конфіденційності",
     "labelVersion": "Версія",
+    "labelLicenseGpl": "Ліцензія (GPLv3)",
+    "labelOpenSourceLicenses": "Ліцензії з відкритим кодом",
     "labelChangelog": "Журнал змін",
     "labelVelocity": "Швидкість",
     "labelDistance": "Дистанція",
