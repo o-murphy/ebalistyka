@@ -274,7 +274,7 @@ final updateCheckerProvider = FutureProvider<GithubRelease?>((ref) async {
     final info = await PackageInfo.fromPlatform();
     final isPlayStore = info.installerStore == googlePlayInstallerSource;
     await prefs.setString(lastUpdateCheckFile, DateTime.now().toIso8601String());
-    return _fetchIfNewer(
+    return await _fetchIfNewer(
       info.version,
       isPlayStore: isPlayStore,
       packageName: info.packageName,
