@@ -80,7 +80,7 @@ class _ChartInfoGrid extends StatelessWidget {
     final rightItems = [
       (IconDef.height, info!.height),
       (Icons.arrow_downward_outlined, info!.drop),
-      (Icons.arrow_forward_outlined, info!.windage),
+      (IconDef.windage, info!.windage),
       (Icons.air_outlined, info!.mach),
     ];
 
