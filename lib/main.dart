@@ -1,5 +1,9 @@
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart'
+    show LicenseEntryWithLineBreaks, LicenseRegistry;
+import 'package:flutter/services.dart' show rootBundle;
+
 import 'package:ebalistyka/shared/constants/app_info.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,6 +36,16 @@ void main() async {
   await initNativeLibrary();
 
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Licenses of the bundled fonts (assets/fonts), for showLicensePage.
+  LicenseRegistry.addLicense(() async* {
+    yield LicenseEntryWithLineBreaks([
+      'Roboto',
+    ], await rootBundle.loadString('assets/fonts/Roboto_LICENSE.txt'));
+    yield LicenseEntryWithLineBreaks([
+      'Noto Sans Symbols',
+    ], await rootBundle.loadString('assets/fonts/NotoSansSymbols_OFL.txt'));
+  });
 
   if (isDesktop) {
     await windowManager.ensureInitialized();
