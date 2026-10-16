@@ -1,6 +1,6 @@
 # Web IndexedDB backend — cross-tab write coordination
 
-**Status:** Accepted — web implemented (single active tab + fencing epoch, see "Implemented for web" below); desktop single-instance and the multi-profile alternatives are still open
+**Status:** Implemented — web (single active tab + fencing epoch) and desktop (single app instance); the multi-window/multi-profile alternatives are deferred until users ask
 
 `docs/backlogs/8.PROTOBUF_STORAGE_MIGRATION.md` flagged that the desktop
 storage design assumes single-writer-per-file (`File.lock()`), and that
@@ -215,3 +215,31 @@ Assessment:
   panes 1–2 (web, desktop, tablet), (3) OS windows on desktop once the
   `enable-windowing` SDK feature is stable. None of this blocks the web
   beta — the tab lock already protects the data.
+
+## Update (2026-10-16): desktop — single instance; multi-window deferred
+
+Decision (owner): on desktop, forbid a second app process rather than build
+cross-process change notification. A second launch no longer opens a window:
+it asks the running instance to come to the front and exits. The multi-window
+mode ("Potential solution" above and the in-process "Alternative solution")
+is deferred until users ask for it.
+
+Implemented in `lib/core/session/single_instance*.dart`, called from `main()`:
+- the first instance takes an exclusive `File.lock` on `instance.lock` in the
+  app-support directory (the OS drops it when the process ends, however it
+  ends, so a crash leaves nothing stale) and listens on a loopback socket
+  (port written to `instance.port`);
+- a later launch fails to get the lock, connects to that port, sends an
+  activation message and exits; the first instance restores/shows/focuses its
+  window (`window_manager`);
+- if the lock can't be used at all (no data dir, file system without locking)
+  the app runs unguarded, as before; if the lock is held but the running
+  instance doesn't answer within ~2 s the new process exits anyway, because
+  two writers is the thing being prevented.
+
+Checked with two real `dart` processes on Linux: second one sees the lock,
+the first receives the activation, and after the first exits a new launch
+becomes the primary. The window raising itself (`window_manager` on Linux,
+Windows, macOS) and Flatpak/Snap sandboxes were **not** exercised here.
+`flutter test` covers only the activation channel; lock exclusivity is
+per-process (fcntl) so it can't be tested in-process.
