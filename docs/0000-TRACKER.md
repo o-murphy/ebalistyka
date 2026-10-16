@@ -26,7 +26,6 @@ that's also where new decisions get logged as they're made.
       deferred — not scheduled
 - [ ] [0008] Windows msix auto-update blocked by self-signed cert
       deferred — not scheduled
-- [ ] [0010] Profile reordering vs. "index 0 = active" convention
 - [ ] [0011] Web IndexedDB backend — cross-tab write coordination
       web done (single active tab + fencing); desktop single-instance and
       multi-profile workspace still open
@@ -65,7 +64,8 @@ that's also where new decisions get logged as they're made.
 
 ## Rejected
 
-(none yet)
+- [-] [0010] Profile reordering vs. "index 0 = active" convention
+      manual reordering no longer needed
 
 ## Reference (not records)
 
