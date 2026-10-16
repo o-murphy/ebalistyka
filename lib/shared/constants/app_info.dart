@@ -23,6 +23,9 @@ const String repoBlobUrl = '$repoUrl/blob/$defaultBranch';
 const String privacyPolicyUrl = '$repoBlobUrl/PRIVACY_POLICY.md';
 const String tosUrl = '$repoBlobUrl/TERMS.md';
 const String changelogUrl = '$repoBlobUrl/CHANGELOG.md';
+const String gplUrl = 'https://www.gnu.org/licenses/gpl-3.0.html';
+// Unofficial translation — only the English text is legally binding.
+const String gplUkUrl = 'https://www.gnu.org/licenses/gpl-3.0.uk.html';
 const String allReleasesUrl = '$remoteApiUrl/releases';
 const String googlePlayInstallerSource = 'com.android.vending';
 const String snapStoreUrl = 'https://snapcraft.io/ebalistyka';
@@ -54,6 +57,8 @@ void debugAppInfoConstants() {
   debugPrint('privacyPolicyUrl: $privacyPolicyUrl');
   debugPrint('tosUrl: $tosUrl');
   debugPrint('changelogUrl: $changelogUrl');
+  debugPrint('gplUrl: $gplUrl');
+  debugPrint('gplUkUrl: $gplUkUrl');
   debugPrint('googlePlayinstallerSource: $googlePlayInstallerSource');
   debugPrint('rawCollectionUrlPattern: $rawCollectionUrlPattern');
   debugPrint('apiCollectionUrlPattern: $apiCollectionUrlPattern');

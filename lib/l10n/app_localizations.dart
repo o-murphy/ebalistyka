@@ -1430,6 +1430,18 @@ abstract class AppLocalizations {
   /// **'Privacy Policy'**
   String get labelPrivacyPolicy;
 
+  /// Settings link label for the app's own license, GNU GPL v3
+  ///
+  /// In en, this message translates to:
+  /// **'License (GPLv3)'**
+  String get labelLicenseGpl;
+
+  /// Settings entry that opens the licenses of bundled fonts and packages
+  ///
+  /// In en, this message translates to:
+  /// **'Open source licenses'**
+  String get labelOpenSourceLicenses;
+
   /// Settings label showing the current app version
   ///
   /// In en, this message translates to:

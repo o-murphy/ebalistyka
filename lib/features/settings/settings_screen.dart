@@ -386,6 +386,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             dense: true,
             onTap: () => _launchUrl(tosUrl),
           ),
+          ListTile(
+            leading: const Icon(Icons.balance_outlined),
+            title: Text(l10n.labelLicenseGpl),
+            trailing: const Icon(IconDef.link, size: 16),
+            dense: true,
+            onTap: () => _launchUrl(
+              Localizations.localeOf(context).languageCode == 'uk'
+                  ? gplUkUrl
+                  : gplUrl,
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.description_outlined),
+            title: Text(l10n.labelOpenSourceLicenses),
+            trailing: const Icon(IconDef.chevronRight, size: 16),
+            dense: true,
+            onTap: () => showLicensePage(
+              context: context,
+              applicationName: 'eBalistyka',
+            ),
+          ),
 
           const TileDivider(),
 
