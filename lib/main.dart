@@ -12,6 +12,7 @@ import 'package:ebalistyka/shared/widgets/pwa_install_hint.dart';
 import 'package:ebalistyka/shared/widgets/tab_blocked_gate.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'package:ebalistyka/core/session/single_instance.dart';
 import 'core/app_bootstrap_io.dart'
     if (dart.library.js_interop) 'core/app_bootstrap_web.dart';
 import 'core/providers/db_provider.dart';
@@ -32,6 +33,12 @@ const _windowInitialHeight = 812.0;
 // const _contentMaxWidth = _windowMaxWidth;
 // const _contentMaxHeight = _windowMaxHeight;
 
+Future<void> _raiseWindow() async {
+  if (await windowManager.isMinimized()) await windowManager.restore();
+  await windowManager.show();
+  await windowManager.focus();
+}
+
 void main() async {
   await initNativeLibrary();
 
@@ -45,6 +52,9 @@ void main() async {
   });
 
   if (isDesktop) {
+    // A second launch raises the running window and exits right here.
+    await ensureSingleInstance(onActivate: _raiseWindow);
+
     await windowManager.ensureInitialized();
 
     const size = Size(_windowInitialWidth, _windowInitialHeight);
