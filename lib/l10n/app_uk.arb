@@ -337,6 +337,7 @@
 
     "lookAngle": "Кут цілі",
     "lookAngleWasReset": "Кут цілі було скинуто до 0°",
+    "databaseResetNotice": "Базу даних було пошкоджено, її скинуто. Усі дані видалено.",
     "targetRange": "Відстань до цілі",
     "speedOfSound": "Швидкість звуку",
     "velocityAtTarget": "Швидкість біля цілі",

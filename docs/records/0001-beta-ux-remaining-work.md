@@ -46,7 +46,9 @@ Checked against current code (2026-10-13).
   Flatpak/deb/rpm/Winget (see [0008] for the Windows msix blocker
   specifically); iOS ships via App Store only, no sideload autoupdates.
   Web has no auto-update flow by design ("Download the app" instead).
-- Database resilience — partial: a "database was reset" snackbar exists
-  (`main.dart`), but its text is hard-coded English, and a database that
-  disappeared entirely (e.g. evicted by the browser) is re-seeded silently
-  without any notice
+- Database resilience — the "database was reset" snackbar is now localized
+  (`databaseResetNotice`, 2026-10-16). Still open: a database that
+  disappeared entirely (e.g. evicted by the browser) is re-seeded silently —
+  not detectable reliably, since the browser clears all of the origin's
+  storage (IndexedDB and `localStorage`) together, so a "was initialized"
+  marker would be wiped as well
