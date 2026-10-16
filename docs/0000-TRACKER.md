@@ -18,12 +18,14 @@ that's also where new decisions get logged as they're made.
 
 - [ ] [0001] Beta UX — remaining work
 - [ ] [0002] Field constraints / web UX follow-ups
-- [ ] [0003] ObjectBox → protobuf storage cutover — finish line
+      Profiles UX resolved; open: auto-deploy, fonts, viewport, untested browsers
 - [ ] [0004] Reticles — wizard placeholders & remaining SVG generation
 - [ ] [0005] Home Note / Help / More buttons
-- [ ] [0006] Open question — localization scope beyond UK+EN
+      deferred — not scheduled
 - [ ] [0007] Open question — Weapon/Sight/Ammo `image` field format
+      deferred — not scheduled
 - [ ] [0008] Windows msix auto-update blocked by self-signed cert
+      deferred — not scheduled
 - [ ] [0010] Profile reordering vs. "index 0 = active" convention
 - [ ] [0011] Web IndexedDB backend — cross-tab write coordination
       web done (single active tab + fencing); desktop single-instance and
@@ -56,6 +58,8 @@ that's also where new decisions get logged as they're made.
 - [x] [8.3impl] Phase 3 — Riverpod integration + Profiles screen split
 - [x] [8.5impl] Phase 5: Legacy ObjectBox → `profiles.ebcp`/`settings.ebcp`
       migration (see the open finding tracked in [0003])
+- [x] [0003] ObjectBox → protobuf storage cutover — finish line
+- [x] [0006] Open question — localization scope beyond UK+EN
 - [x] [0009] ebc_db migration residue — app-close hang & Tables spinner
       root cause
 

@@ -32,7 +32,7 @@ SettingsData seedSettings() {
       ..showCmPer100m = true
       ..showInClicks = true)
     ..reticleSettings = ReticleSettings()
-    ..convertorsState = ConvertorsState()
+    ..convertorsState = defaultConvertorsState()
     ..shootingConditions = (ShootingConditions()
       ..temperatureC = 15.0
       ..pressureHPa = 1013.25

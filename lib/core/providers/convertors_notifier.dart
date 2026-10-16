@@ -163,5 +163,5 @@ final convertorsProvider =
 
 /// Synchronous access — returns defaults while loading.
 final convertorStateProvider = Provider<ConvertorsState>((ref) {
-  return ref.watch(convertorsProvider).value ?? ConvertorsState();
+  return ref.watch(convertorsProvider).value ?? defaultConvertorsState();
 });

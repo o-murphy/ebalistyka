@@ -66,3 +66,40 @@ void _sanitizeConvertorsState(ConvertorsState c) {
   // length/weight/pressure/temperature/torque: intentionally not clamped,
   // see the doc comment above.
 }
+
+/// Non-zero starting values for the unit converters — the defaults the old
+/// ObjectBox entity had and `settings.schema.json` documents. A bare
+/// `ConvertorsState()` decodes as all-zero/empty, so seeding, the legacy
+/// migration (no `ConvertorsState` record in `data.mdb`) and the provider
+/// fallback all go through here instead.
+ConvertorsState defaultConvertorsState() => ConvertorsState(
+  length: UnitValue(value: 100.0, lastUnit: 'inch'),
+  weight: UnitValue(value: 100.0, lastUnit: 'grain'),
+  // Stored in mmHg, shown in hPa — ported app behaviour, see the schema.
+  pressure: UnitValue(value: 1013.0, lastUnit: 'hPa'),
+  temperature: UnitValue(value: 68.0, lastUnit: 'celsius'),
+  torque: UnitValue(value: 100.0, lastUnit: 'newtonMeter'),
+  angles: AnglesConv(
+    distanceValueMeter: 100.0,
+    distanceLastUnit: 'meter',
+    angularValueMil: 1.0,
+    angularLastUnit: 'mil',
+    outputLastUnit: 'centimeter',
+  ),
+  velocity: VelocityConv(
+    valueMps: 300.0,
+    lastUnit: 'mps',
+    machInputValue: 0.881,
+    machUseCustomAtmo: false,
+    atmoTemperatureC: 15.0,
+    atmoPressureHPa: 1013.25,
+    atmoHumidityFrac: 0.0,
+    atmoAltitudeMeter: 0.0,
+  ),
+  distanceConvTargetSize: DistanceConvTargetSize(
+    sizeInch: 8.0,
+    sizeUnit: 'inch',
+    sizeAngularMil: 1.0,
+    sizeAngularUnit: 'mil',
+  ),
+);

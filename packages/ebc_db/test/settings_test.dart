@@ -64,6 +64,15 @@ void main() {
       expect(decoded.writeToBuffer(), data.writeToBuffer());
     });
 
+    test('defaultConvertorsState is non-zero, matching the old defaults', () {
+      final c = defaultConvertorsState();
+      expect(c.length.value, 100.0);
+      expect(c.length.lastUnit, 'inch');
+      expect(c.velocity.valueMps, 300.0);
+      expect(c.angles.angularValueMil, 1.0);
+      expect(c.distanceConvTargetSize.sizeInch, 8.0);
+    });
+
     test('decode rejects a corrupted buffer', () {
       final data = _sampleSettingsData();
       final bytes = SettingsFile.encode(data);
