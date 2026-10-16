@@ -113,9 +113,6 @@ Still open on web:
 
 - Profiles UX (deferred, see above) and the help docs — [0012].
 - An auto-deploy workflow (`gh-pages` on push/tag) when wanted.
-- Fonts: Roboto and Noto Sans Symbols are fetched from `fonts.gstatic.com`
-  at runtime (CanvasKit default); an offline/LAN-only client falls back to
-  system fonts. Bundling Roboto removes the dependency.
 - Bundle is ~59 MB on disk, mostly unused CanvasKit variants; a client
   downloads only what it uses (~5 MB wasm + ~4.6 MB `main.dart.js` +
   assets). Pruning is optional for Pages.
@@ -129,3 +126,16 @@ Still open on web:
 - Profiles UX (discoverability, two screens) — **resolved** by the owner:
   already done through the tabs on the Profiles screen. This unblocks
   [0012]'s `profilesScreen` rewrite.
+
+## Update (2026-10-16): fonts bundled
+
+Roboto (Regular/Italic/Medium/Bold, from the Flutter SDK's `material_fonts`,
+Apache-2.0) and Noto Sans Symbols (arrows, diameter sign; OFL-1.1) now live
+in `assets/fonts/` and are declared in `pubspec.yaml`; both themes in
+`main.dart` set `fontFamily: 'Roboto'` with `NotoSansSymbols` as fallback.
+Checked on a release web build in headless Chromium: all fonts load from the
+app's own `assets/`, no request to `fonts.gstatic.com` (the only external
+requests left are the GitHub API/raw calls of the collection and release
+checks). Cost: ~0.9 MB of assets. Fixed fonts replace the per-platform
+default, so text metrics on Android/desktop also change slightly to match
+Roboto.
