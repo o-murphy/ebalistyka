@@ -123,3 +123,9 @@ Still open on web:
   default) — an accessibility trade-off worth a conscious decision.
 - Tab-lock/PWA/persist behave differently over plain HTTP (not a secure
   context): no `navigator.locks`, no install — fine on the HTTPS site.
+
+## Update (2026-10-16)
+
+- Profiles UX (discoverability, two screens) — **resolved** by the owner:
+  already done through the tabs on the Profiles screen. This unblocks
+  [0012]'s `profilesScreen` rewrite.

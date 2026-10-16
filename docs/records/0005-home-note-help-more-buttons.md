@@ -1,6 +1,6 @@
 # Home Note / Help / More buttons
 
-**Status:** Proposed
+**Status:** Not scheduled
 
 All three Home-screen buttons (Note, Help, More) are still stubs
 (`showNotAvailableSnackBar` or equivalent). Note → Notepad, Help → Help
@@ -14,3 +14,5 @@ help dialog (`showHelpDialog(helpId: HelpData.homeScreen)`) — done. **Note**
 and **More** are still `showNotAvailableSnackBar` stubs
 (`home_screen.dart`); a Help *overlay* (coach marks) is still open under
 [0001].
+
+**Update (2026-10-16):** deferred by the owner; not scheduled.

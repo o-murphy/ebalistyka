@@ -365,7 +365,7 @@ ReticleSettings _mapReticleSettings(legacy.ReticleSettings? r) {
 }
 
 ConvertorsState _mapConvertorsState(legacy.ConvertorsState? c) {
-  if (c == null) return ConvertorsState();
+  if (c == null) return defaultConvertorsState();
   return ConvertorsState(
     length: UnitValue(
       value: c.lengthValueInch,
