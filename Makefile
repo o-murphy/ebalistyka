@@ -7,7 +7,7 @@
 		objectbox-get-sha \
 		generate-localization \
 		generate-collection \
-		build-bclibc \
+		build-bclibc build-lmdb \
 		reticle-gen-setup \
 		build-web deploy-web \
 		test format clean run run-clean
@@ -101,13 +101,17 @@ generate: objectbox-generate \
 build-bclibc:
 	dart run bclibc:build_native
 
+# Same for liblmdb (ob_dump_reader), used by the legacy-migration test.
+build-lmdb:
+	dart run ob_dump_reader:build
+
 # `tools/reticle_gen` is a standalone Dart package (not a pubspec dependency
 # of the app), so `flutter analyze` can't resolve its `package:reticle_gen`
 # self-import unless its own deps are fetched separately.
 reticle-gen-setup:
 	cd tools/reticle_gen && dart pub get
 
-test: build-bclibc reticle-gen-setup
+test: build-bclibc build-lmdb reticle-gen-setup
 	flutter analyze && flutter test 2>&1
 
 format:

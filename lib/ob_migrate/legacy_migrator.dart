@@ -1,3 +1,4 @@
+import 'package:ebalistyka/core/providers/db_seed.dart' show seedSettings;
 import 'package:ebc_db/ebc_db.dart';
 import 'package:ob_dump_reader_flutter/ob_dump_reader_flutter.dart';
 import 'package:uuid/uuid.dart';
@@ -275,7 +276,9 @@ Ammo _mapAmmo(legacy.Ammo a) => Ammo(
 );
 
 GeneralSettings _mapGeneralSettings(legacy.GeneralSettings? g) {
-  if (g == null) return GeneralSettings();
+  // A missing row means the old app never created it — start from the same
+  // values a fresh install gets, not from all-zero/false proto defaults.
+  if (g == null) return seedSettings().generalSettings;
   return GeneralSettings(
     languageCode: g.languageCode ?? 'en',
     themeMode: g.themeMode ?? 'system',
@@ -293,7 +296,7 @@ GeneralSettings _mapGeneralSettings(legacy.GeneralSettings? g) {
 }
 
 TablesSettings _mapTablesSettings(legacy.TablesSettings? t) {
-  if (t == null) return TablesSettings();
+  if (t == null) return seedSettings().tablesSettings;
   return TablesSettings(
     distanceStartMeter: t.distanceStartMeter,
     distanceEndMeter: t.distanceEndMeter,
@@ -334,7 +337,7 @@ UnitSettings _mapUnitSettings(legacy.UnitSettings? u) {
 }
 
 ShootingConditions _mapShootingConditions(legacy.ShootingConditions? s) {
-  if (s == null) return ShootingConditions();
+  if (s == null) return seedSettings().shootingConditions;
   return ShootingConditions(
     distanceMeter: s.distanceMeter,
     lookAngleRad: s.lookAngleRad,
