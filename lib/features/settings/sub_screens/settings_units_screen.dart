@@ -23,7 +23,7 @@ class UnitsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return BaseScreen(
-      title: 'Units of Measurement',
+      title: l10n.unitsSettingsLabel,
       isSubscreen: true,
       body: ListView(
         children: [
