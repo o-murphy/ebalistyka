@@ -10,7 +10,7 @@ The Conditions screen lets you set atmospheric parameters, powder temperature se
 
 ![Temperature](resource:assets/markdown/en/conditionsScreen_temperature.png)
 
-A large central control for air temperature. Swipe up or down to change the value, or tap to enter an exact number.
+Air temperature at the top. Use the **−** and **+** buttons to change it step by step, or **tap the value** to enter an exact number (type it or scroll the wheel, then **Confirm**).
 
 ---
 
@@ -24,7 +24,7 @@ Three buttons for entering atmospheric conditions:
 - **Humidity** — relative air humidity (%)
 - **Pressure** — atmospheric pressure
 
-Tap any button to open the value input with unit selection.
+Tap any button to open the value input.
 
 ---
 
@@ -34,13 +34,13 @@ Tap any button to open the value input with unit selection.
 
 This section accounts for the change in muzzle velocity depending on powder temperature.
 
-**"Powder Sensitivity" toggle** — enables/disables the correction. The sensitivity value is set in the cartridge properties.
+**"Enable powder temperature sensitivity" toggle** — switches the correction on or off. When it is on, the screen shows the **Powder temperature sensitivity** of the current cartridge (read-only — it is set in the cartridge properties) and the **Muzzle velocity** that results.
 
-**"Different Powder Temperature" toggle:**
-- **Off** — the air temperature entered above is used for the calculation
-- **On** — allows setting a separate powder temperature (e.g. when ammunition is stored in a warm place but fired in the cold)
+**"Use different powder temperature" toggle:**
+- **Off** — the air temperature entered above is used (the line below says "Uses atmospheric temperature")
+- **On** — a separate **Powder temperature** field appears (e.g. when ammunition is kept somewhere warm but fired in the cold)
 
-An info row below shows the current muzzle velocity (MV) at the given powder temperature.
+The last line shows the muzzle velocity for the chosen temperature.
 
 ---
 
@@ -50,7 +50,7 @@ An info row below shows the current muzzle velocity (MV) at the given powder tem
 
 Accounts for bullet deflection due to Earth's rotation. Relevant at distances beyond 800–1000 m.
 
-**"Coriolis Effect" toggle** — enables/disables the correction. Once enabled, two fields appear:
+**"Coriolis effect" toggle** — switches the correction on or off. When it is on, two fields appear (tap the pencil to edit):
 
 - **Latitude** — geographic latitude of the firing position (−90° to +90°)
 - **Azimuth** — firing direction relative to north (0–360°)
