@@ -90,14 +90,14 @@ class AmmoWizardFormState {
       zeroAzimuthRaw: a?.zero.azimuthDeg ?? 0.0,
       offsetYUnit: a?.zeroOffsetYUnitValue ?? Unit.mil,
       offsetYRaw: a == null
-          ? Angular.mil(0.1).in_(FC.adjustment.rawUnit)
+          ? 0.0
           : Angular(
               a.zero.offsetY,
               a.zeroOffsetYUnitValue,
             ).in_(FC.adjustment.rawUnit),
       offsetXUnit: a?.zeroOffsetXUnitValue ?? Unit.mil,
       offsetXRaw: a == null
-          ? Angular.mil(0.1).in_(FC.adjustment.rawUnit)
+          ? 0.0
           : Angular(
               a.zero.offsetX,
               a.zeroOffsetXUnitValue,

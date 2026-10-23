@@ -39,9 +39,9 @@ class AmmoWizardState {
     this.zeroUseCoriolis = false,
     this.zeroLatitudeRaw = 0.0,
     this.zeroAzimuthRaw = 0.0,
-    this.offsetXRaw = 0.1,
+    this.offsetXRaw = 0.0,
     this.offsetXUnit = Unit.mil,
-    this.offsetYRaw = 0.1,
+    this.offsetYRaw = 0.0,
     this.offsetYUnit = Unit.mil,
     this.initial,
   });
