@@ -26,7 +26,6 @@ that's also where new decisions get logged as they're made.
       deferred — not scheduled
 - [ ] [0008] Windows msix auto-update blocked by self-signed cert
       deferred — not scheduled
-- [ ] [0012] In-app help docs — refresh before beta
 
 ## Implemented
 
@@ -59,6 +58,7 @@ that's also where new decisions get logged as they're made.
 - [x] [0011] Web IndexedDB backend — cross-tab write coordination
       web: single active tab + fencing; desktop: single app instance;
       multi-window mode deferred until users ask
+- [x] [0012] In-app help docs — refresh before beta
 - [x] [0009] ebc_db migration residue — app-close hang & Tables spinner
       root cause
 
