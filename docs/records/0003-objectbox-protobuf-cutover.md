@@ -47,3 +47,7 @@ and every column flag off, i.e. an empty Tables screen. Missing
 back to `seedSettings()` (what a fresh install gets), like `ConvertorsState`
 does via `defaultConvertorsState()`. The new tests fail on the old code
 (`distanceEndMeter` 0.0 instead of 1000.0).
+
+**Update (2026-10-23):** per the owner, the migration was already checked on
+Windows with real data and the multi-profile / orphaned-items cases were
+already covered — the gaps listed for them in the pre-1.0 review don't apply.
