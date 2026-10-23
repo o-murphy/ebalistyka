@@ -13,7 +13,7 @@ A high performance cross-platform ballistic calculator
 [![Flutter Shield]][Flutter]
 [![powered by bclibc]][bclibc repo]
 
-![Linux] ![Windows] ![Android]
+![Linux] ![Windows] ![Android] [![Web]][Web App]
 
 [![AUR Version]][AUR Package]
 [![Snapcraft Version]][Snapcraft Package]
@@ -86,6 +86,7 @@ _UI/UX inspired by the [**Strilets**](https://download.strilets.tech/) ballistic
   - [Windows — install MSIX](#windows--install-msix)
   - [Android — Google Play](#android--google-play)
   - [Android — install APK](#android--install-apk)
+  - [Web](#web)
 - [Architecture](#architecture)
 - [Building](#building)
   - [Prerequisites](#prerequisites)
@@ -113,11 +114,14 @@ _UI/UX inspired by the [**Strilets**](https://download.strilets.tech/) ballistic
 - **Trajectory tables** — compute and display ballistic tables with HTML export
 - **Environmental conditions** — atmosphere, wind, Coriolis, target parameters
 - **Reticle view** — SVG mil-reticle with live drop/windage adjustment indicator, theme-aware colours
-- **Multi-BC & custom drag** — G1/G7 multi-BC tables and full custom drag curve support
+- **Multi-BC & custom drag** — G1/G7 multi-BC tables and custom drag curves (the custom drag table editor is view-only for now)
 - **Powder sensitivity** — temperature-based MV correction tables
 - **Configurable units** — choose your preferred measurement system per quantity in settings
 - **Adjustment display** — arrows / signs / letters format, configurable in settings
-- **Import / Export** — profiles in `.ebcp` (native) and `.a7p` (Archer Ballistic Profile) formats; full backup via Settings
+- **Import / Export** — profiles in `.ebcp` (native) and `.a7p` (Archer Ballistic Profile) formats; full backup via Settings, with a choice of what to import (profiles, settings or everything)
+- **Web version** — runs in the browser at [ebalistyka.o-murphy.net](https://ebalistyka.o-murphy.net/), installable as a PWA; the data stays in the browser (use Settings → Backup to export it)
+- **In-app help** — a guide for every screen, in English and Ukrainian
+- **Migration** — data from the old ObjectBox storage is converted to the new protobuf files on first start after the update (desktop and Android)
 
 ---
 
@@ -148,6 +152,7 @@ Latest release: **[GitHub Releases][GitHub Release Latest]**
 | Android arm64           | [ebalistyka_android_arm64.apk][DownloadAndroidApkArm64]       | enable "Install from unknown sources"                                     |
 | Android armv7           | [ebalistyka_android_armeabi_v7a.apk][DownloadAndroidApkARMv7] | enable "Install from unknown sources"                                     |
 | Android x86_64          | [ebalistyka_android_x86_64.apk][DownloadAndroidApkAmd64]      | enable "Install from unknown sources"                                     |
+| Web                     | [ebalistyka.o-murphy.net][Web App]                            | any modern browser; installable as a PWA — see [Web](#web)                |
 
 ### Linux — run
 
@@ -304,6 +309,14 @@ Currently available as an **internal test** — registration is required:
 
 Download the APK for your device ABI from the release and open it to install — if unsure, pick the `universal` APK. Android will verify the app via Google Play before installing.
 
+### Web
+
+Open **[ebalistyka.o-murphy.net](https://ebalistyka.o-murphy.net/)** in a modern desktop or mobile browser (tried in Chrome and Firefox on desktop and in Safari/Chrome/Firefox on iPhone). Desktop browsers offer to install it as an app (Settings → About → *Install as app*); on iPhone/iPad use Share → *Add to Home Screen*, which also helps keep the browser from clearing your data after a few idle days.
+
+- Everything is calculated in the browser (the solver runs as WebAssembly)
+- Your profiles and settings live in the browser's storage and are not synced anywhere — make a backup from time to time (Settings → Backup → Export) and keep only one tab open at a time
+- Exporting a profile, a backup or the HTML table downloads a file / opens a new tab instead of sharing it
+
 ---
 
 ## Architecture
@@ -323,6 +336,7 @@ ebalistyka/
 │   │   ├── formatting/        # UnitFormatterImpl — localized value formatting
 │   │   ├── models/            # FieldConstraints and other shared models
 │   │   ├── services/          # A7pService/A7pConverter, import/export orchestration
+│   │   ├── session/           # Single-instance guard (desktop), single-tab guard + PWA helpers (web)
 │   │   └── collection/        # Built-in weapon/ammo/sight collection assets
 │   ├── shared/
 │   │   ├── widgets/           # Reusable widgets (pickers, inputs, dialogs, wizards)
@@ -330,6 +344,7 @@ ebalistyka/
 │   │   ├── helpers/           # Formatting helpers, drag model info
 │   │   ├── mixins/            # WizardFormMixin
 │   │   └── constants/         # UI dimensions, null string sentinel
+│   ├── ob_migrate/            # One-time migration of the old ObjectBox data to protobuf
 │   ├── update/                # Update checker and utilities
 │   └── l10n/                  # Generated AppLocalizations (EN + UA)
 ├── packages/
@@ -342,7 +357,9 @@ ebalistyka/
 **Navigation:** go_router  
 **Local database:** two embedded protobuf files (`settings.ebcp`/`profiles.ebcp`), via `packages/ebc_db`  
 **Ballistic engine:** [bclibc](https://pub.dev/packages/bclibc) (pub.dev package, bundles bclibc C++ solver via FFI)  
-**Localisation:** Flutter ARB / `flutter_localizations` (EN + UA)
+**Localisation:** Flutter ARB / `flutter_localizations` (EN + UA)  
+**Help:** per-screen Markdown topics in `assets/markdown/{en,uk}` with screenshots — keep them in sync with the screens  
+**Fonts:** Roboto, bundled in `assets/fonts` (Apache-2.0)
 
 ---
 
@@ -350,7 +367,7 @@ ebalistyka/
 
 ### Prerequisites
 
-- [Flutter](https://docs.flutter.dev/get-started/install) ≥ 3.47.4 (stable channel)
+- [Flutter](https://docs.flutter.dev/get-started/install) ≥ 3.47.7 (stable channel; see `.flutter-version`)
 - CMake ≥ 3.13
 - C++17 compiler (GCC / Clang on Linux, MSVC 2022 on Windows)
 
@@ -395,23 +412,32 @@ flutter build apk --release --target-platform android-arm64
 
 Output: `build/app/outputs/flutter-apk/app-release.apk`
 
+### Web
+
+```bash
+make build-web      # release build into build/web (scripts/build-web.sh)
+make deploy-web     # force-pushes build/web to the gh-pages branch, after confirmation
+```
+
+The bundle uses the local CanvasKit (no CDN) and `web/CNAME` for the custom domain; deploys are manual — there is no workflow for them yet.
+
 ### CI
 
-GitHub Actions workflows publish a GitHub Release on every push to `main`:
+GitHub Actions workflows (`.github/workflows`):
 
-| Workflow                | Artifact                                                      |
-| ----------------------- | ------------------------------------------------------------- |
-| `build-portable.yml`    | Linux portable tar.gz (x86_64 + aarch64)                      |
-| `build-appimage.yml`    | Linux AppImage (x86_64 + aarch64)                             |
-| `build-snap.yml`        | Linux Snap (x86_64 + aarch64)                                 |
-| `build-flatpak.yml`     | Linux Flatpak (x86_64 + aarch64)                              |
-| `build-deb.yml`         | Linux deb (x86_64 + aarch64)                                  |
-| `build-rpm.yml`         | Linux rpm (x86_64 + aarch64)                                  |
-| `build-exe.yml`         | Windows MSIX installer                                        |
-| `build-apk.yml`         | Android APK (arm64 + armv7 + x86_64)                          |
-| `build.yml`             | Reusable build workflow called by the above                   |
-| `publish.yml`           | Publishes to Snap Store on GitHub Release                     |
-| `scripts/update-aur.sh` | Updates `aur/PKGBUILD` checksums (run manually after release) |
+| Workflow                                   | What it does                                                         |
+| ------------------------------------------ | -------------------------------------------------------------------- |
+| `test.yml`                                 | `flutter analyze` + `flutter test` on pull requests touching code    |
+| `release.yml`                              | On a `vX.Y.Z` tag: builds every platform and publishes a GitHub Release |
+| `build.yml`                                | Reusable build workflow used by `release.yml` and the PR checks      |
+| `build-android.yml`                        | Android APK / bundle                                                 |
+| `build-exe.yml`                            | Windows MSIX + portable zip                                          |
+| `build-linux-package.yml`                  | Linux AppImage / deb / rpm (reusable)                                |
+| `build-portable.yml`                       | Linux portable tar.gz                                                |
+| `build-snap.yml`, `build-flatpak.yml`      | Snap and Flatpak builds                                              |
+| `pr-linux.yml`                             | Linux build checks on pull requests                                  |
+| `publish-*.yml`                            | Publishing to AUR, Flathub, the Flatpak repo, Google Play, the Snap Store and winget (called from `release.yml` or run manually) |
+| `verify-winget-path.yml`                   | Checks the winget install path the update notification relies on     |
 
 ---
 
@@ -453,6 +479,14 @@ On Android, `file_picker` cannot filter by custom extensions (`.ebcp`, `.a7p`) b
 | [package_info_plus](https://pub.dev/packages/package_info_plus)         | App version info                                     |
 | [flutter_markdown_plus](https://pub.dev/packages/flutter_markdown_plus) | App help widgets                                     |
 | [ota_update](https://pub.dev/packages/ota_update)                       | Autoupdate for Android sideload installations        |
+| [material_ui](https://pub.dev/packages/material_ui) / [cupertino_ui](https://pub.dev/packages/cupertino_ui) | Material / Cupertino widgets (standalone packages)  |
+| [data_table_2](https://pub.dev/packages/data_table_2)                   | Trajectory table with a fixed range column           |
+| [sticky_headers](https://pub.dev/packages/sticky_headers)               | Sticky section headers                               |
+| [shared_preferences](https://pub.dev/packages/shared_preferences)       | Small persisted values (update checks), also on web  |
+| [path_provider](https://pub.dev/packages/path_provider)                 | App data directory (native)                          |
+| [http](https://pub.dev/packages/http)                                   | Update and collection checks                         |
+| [intl](https://pub.dev/packages/intl)                                   | Number / date formatting                             |
+| [ob_dump_reader_flutter](https://pub.dev/packages/ob_dump_reader_flutter) | Reads the old ObjectBox `data.mdb` for the one-time migration |
 | [flutpak](https://pub.dev/packages/flutpak) (dev)                       | Manage flatpak/flathub manifest for sandboxed builds |
 
 ### `bclibc`
@@ -491,6 +525,9 @@ This program is free software: you can redistribute it and/or modify it under th
 See [LICENSE](LICENSE) for the full text. See [CHANGELOG](CHANGELOG.md) for release history.
 
 > [!NOTE]
+> The bundled **Roboto** font (`assets/fonts`) is licensed under the Apache License 2.0; its license text ships with the app and is listed under Settings → Open source licenses.
+
+> [!NOTE]
 > [`bclibc`](https://pub.dev/packages/bclibc) bundles `bclibc` — the ballistic solver engine — which is licensed separately under the **GNU Lesser General Public License v3.0**. See the [bclibc repository](https://github.com/o-murphy/bclibc) for the engine source and its license.
 
 > [!WARNING]
@@ -505,7 +542,7 @@ See [LICENSE](LICENSE) for the full text. See [CHANGELOG](CHANGELOG.md) for rele
 [Made in Ukraine]:https://img.shields.io/badge/made_in-Ukraine-ffd700.svg?labelColor=0057b7&style=flat-square
 [SWUBadge]: https://stand-with-ukraine.pp.ua
 
-[Flutter Shield]: https://img.shields.io/badge/Flutter-3.47.4-02569B?logo=flutter
+[Flutter Shield]: https://img.shields.io/badge/Flutter-3.47.7-02569B?logo=flutter
 [Flutter]: https://flutter.dev
 
 [Release]: https://img.shields.io/github/v/release/o-murphy/ebalistyka?logo=github&cacheSeconds=0
@@ -522,6 +559,10 @@ See [LICENSE](LICENSE) for the full text. See [CHANGELOG](CHANGELOG.md) for rele
 [Windows]: https://img.shields.io/badge/x86__64-grey?logo=windows&logoColor=black&label=Windows&labelColor=0078D4
 
 [Android]: https://img.shields.io/badge/Android-arm64%20%7C%20armv7%20%7C%20x86__64-grey?logo=android&logoColor=white&labelColor=3DDC84
+
+[Web]: https://img.shields.io/badge/Web-installable%20PWA-grey?logo=googlechrome&logoColor=white&labelColor=5A0FC8
+
+[Web App]: https://ebalistyka.o-murphy.net/
 
 [AUR Version]: https://img.shields.io/badge/AUR-1793D1?style=for-the-badge&logo=arch-linux&logoColor=white
 [AUR Package]: https://aur.archlinux.org/packages/ebalistyka-bin
