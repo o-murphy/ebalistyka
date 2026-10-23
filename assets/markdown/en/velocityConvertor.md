@@ -10,9 +10,9 @@ Enter a value in the top field and select units — all other fields update inst
 
 Mach number depends on the speed of sound, which varies with atmospheric conditions.
 
-By default, the ICAO standard atmosphere is used (15 °C, 1013.25 hPa, altitude 0 m).
+By default, the ICAO standard atmosphere is used (15 °C, 1013.25 hPa, altitude 0 m, dry air); the line under the toggle says which one is in use.
 
-**"Custom Atmosphere" toggle** — lets you enter real conditions:
+**"Custom atmosphere" toggle** — lets you enter real conditions:
 
 - **Temperature** — air temperature
 - **Pressure** — atmospheric pressure

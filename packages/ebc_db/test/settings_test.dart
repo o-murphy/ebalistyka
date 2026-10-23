@@ -66,6 +66,7 @@ void main() {
 
     test('defaultConvertorsState is non-zero, matching the old defaults', () {
       final c = defaultConvertorsState();
+      expect(c.pressure.value, 760.0); // mmHg = 1013 hPa
       expect(c.length.value, 100.0);
       expect(c.length.lastUnit, 'inch');
       expect(c.velocity.valueMps, 300.0);
