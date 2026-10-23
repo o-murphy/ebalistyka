@@ -13,13 +13,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 - **Profiles screen: swipeable tabs** — "Profile" and "My Profiles" are now two tabs (swipe or tap) on a single screen, instead of the profiles list being hidden behind a small toolbar icon.
+- **In-app help refreshed** — every help topic was rewritten against the current screens, in English and Ukrainian, with new screenshots (Profiles tabs, Settings, Tables, Home, Conditions, Reticle, the weapon/ammo/sight editors, the collections and the table editors); the first-run topic now covers the web version.
+- **Single app instance on desktop** — launching the app a second time raises the running window and exits instead of opening another one (two processes would overwrite each other's data).
+- **Settings → Links** — *License (GPLv3)* (opens the Ukrainian text in the Ukrainian UI) and *Open source licenses*.
+- **Bundled fonts** — Roboto is shipped with the app instead of being downloaded at runtime on the web.
 
 ### Changed
 - **flutter** updated to 3.47.7
+- **Arrows are drawn as Material icons** (Home holdovers, zero-crossing table headers, the adjustment-format picker) — the bundled Roboto has no arrow glyphs; the drop and windage icons in the Home chart now match.
+- **Legacy migration** — a missing `TablesSettings`/`GeneralSettings`/`ShootingConditions`/`ConvertorsState` row in the old database now migrates to the fresh-install defaults instead of all-zero values (an empty Tables screen); covered by a test with a real `data.mdb`.
+- **README** — web version, current CI workflows and dependencies.
 - **Profiles screen title** — renamed from "Profile" to "Profiles", since it now covers both the current-profile and profiles-list tabs.
 
 ### Fixed
 - **Caliber could not be edited for a profile that has ammo** — with ammo attached the weapon's Caliber field was locked, and the cartridge screen showed it read-only, so the only way to change it was to replace the cartridge. The caliber is now editable from both the weapon and the cartridge screen, and editing it on either side updates the other, keeping weapon and ammo in sync. Swapping in a different weapon/ammo from the collection still offers the caliber-mismatch prompt instead of overwriting silently.
+- **New cartridge started with a 0.10 MIL zero offset** on both axes; it now starts at 0.
+- **Pressure convertor default** showed 1351 hPa (1013 was stored as mmHg); it now starts at 760 mmHg = 1013 hPa.
+- **Untranslated strings in the Ukrainian UI** — the units screen title, the wizards' "Name is required" and "Required", "Single/Multi-BC mode", and the "N measurements/breakpoints" subtitles.
+- **Database-reset snackbar** is localized.
+- **Profile pickers** showed an empty reticle/target name for the default instead of "default".
 - **Profile ammo "attached" check** — whether a profile's ammo/sight counts as attached now uses the data model's own `hasAmmo()`/`hasSight()` presence check instead of inferring it from the ammo's name being non-empty, closing an edge case (e.g. an `.a7p` import with caliber/ballistic data but no cartridge name) where the weapon's caliber could get locked with no "Eject Ammo" action visible to unlock it.
 - **Update/collection auto-check silently did nothing on web** — `getApplicationSupportDirectory()` (no filesystem in a browser) made `updateCheckerProvider`'s auto-check, the manual update check, and the collection auto-update family throw internally and no-op. The small persisted values (last update check, last collection check, last collection SHA) now go through `shared_preferences` instead, which works on web too. The `collection.json` cache itself is unchanged for now (still file-based — needs its own IndexedDB-backed cache, tracked separately).
 - **Native update sheet would have popped up on web** — once the fix above made the update auto-check actually succeed on web, `UpdateListener` would have shown the native "download APK/exe/AppImage" bottom sheet there too. It now explicitly skips that on web, keeping the "Download the app" link web already uses instead.
