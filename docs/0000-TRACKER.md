@@ -20,6 +20,8 @@ that's also where new decisions get logged as they're made.
 - [ ] [0002] Field constraints / web UX follow-ups
       Profiles UX and fonts done; open: auto-deploy, bundle size, untested browsers
 - [ ] [0004] Reticles — wizard placeholders & remaining SVG generation
+- [ ] [0013] AppStream metainfo screenshots point at the v0.1.16 tag
+      waits for the next release tag; `tables_details.png` still to retake
 - [ ] [0005] Home Note / Help / More buttons
       deferred — not scheduled
 - [ ] [0007] Open question — Weapon/Sight/Ammo `image` field format
