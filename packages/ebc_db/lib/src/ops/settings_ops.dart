@@ -75,8 +75,10 @@ void _sanitizeConvertorsState(ConvertorsState c) {
 ConvertorsState defaultConvertorsState() => ConvertorsState(
   length: UnitValue(value: 100.0, lastUnit: 'inch'),
   weight: UnitValue(value: 100.0, lastUnit: 'grain'),
-  // Stored in mmHg, shown in hPa — ported app behaviour, see the schema.
-  pressure: UnitValue(value: 1013.0, lastUnit: 'hPa'),
+  // Stored in mmHg: 760 mmHg is the standard atmosphere, i.e. 1013 hPa. (The
+  // old entity default was 1013 here, which the converter showed as
+  // 1351 hPa — a unit mix-up, not worth porting.)
+  pressure: UnitValue(value: 760.0, lastUnit: 'hPa'),
   temperature: UnitValue(value: 68.0, lastUnit: 'celsius'),
   torque: UnitValue(value: 100.0, lastUnit: 'newtonMeter'),
   angles: AnglesConv(
