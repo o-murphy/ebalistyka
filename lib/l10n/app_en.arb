@@ -765,6 +765,8 @@
     "@placeholderSearch": {"description": "Placeholder text for search input fields"},
     "notYetAvaliable": "not yet available",
     "@notYetAvaliable": {"description": "Placeholder text for features not yet implemented"},
+    "nameRequiredError": "Name is required",
+    "@nameRequiredError": {"description": "Validation error under the empty name field of the weapon/ammo/sight wizards"},
     "requiredFieldError": "Required",
     "@requiredFieldError": {"description": "Validation error message for required input fields"},
 
@@ -781,6 +783,12 @@
 
     "sectionZeroing": "Zeroing",
     "@sectionZeroing": {"description": "Section header for zeroing parameters in ammo wizard"},
+    "nMeasurements": "{count, plural, =1{1 measurement} other{{count} measurements}}",
+    "@nMeasurements": {"description": "Subtitle of the powder-sensitivity table tile: how many temperature/velocity measurements it holds", "placeholders": {"count": {"type": "int"}}},
+    "tapToAddMeasurements": "Tap to add T-V measurements",
+    "@tapToAddMeasurements": {"description": "Subtitle of the empty powder-sensitivity table tile (T = temperature, V = velocity)"},
+    "nBreakpoints": "{count, plural, =1{1 breakpoint} other{{count} breakpoints}}",
+    "@nBreakpoints": {"description": "Subtitle of the multi-BC table tile: how many velocity/BC breakpoints it holds", "placeholders": {"count": {"type": "int"}}},
     "calculateFromMeasurementsAction": "Calculate from measurements",
     "@calculateFromMeasurementsAction": {"description": "Action label to calculate powder sensitivity from the measurement table"},
     "updateAction": "Update",

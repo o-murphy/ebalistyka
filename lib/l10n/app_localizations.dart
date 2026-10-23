@@ -2318,6 +2318,12 @@ abstract class AppLocalizations {
   /// **'not yet available'**
   String get notYetAvaliable;
 
+  /// Validation error under the empty name field of the weapon/ammo/sight wizards
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required'**
+  String get nameRequiredError;
+
   /// Validation error message for required input fields
   ///
   /// In en, this message translates to:
@@ -2359,6 +2365,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Zeroing'**
   String get sectionZeroing;
+
+  /// Subtitle of the powder-sensitivity table tile: how many temperature/velocity measurements it holds
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 measurement} other{{count} measurements}}'**
+  String nMeasurements(int count);
+
+  /// Subtitle of the empty powder-sensitivity table tile (T = temperature, V = velocity)
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to add T-V measurements'**
+  String get tapToAddMeasurements;
+
+  /// Subtitle of the multi-BC table tile: how many velocity/BC breakpoints it holds
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 breakpoint} other{{count} breakpoints}}'**
+  String nBreakpoints(int count);
 
   /// Action label to calculate powder sensitivity from the measurement table
   ///

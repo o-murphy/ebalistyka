@@ -457,8 +457,8 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
               title: Text(l10n.calculateFromMeasurementsAction),
               subtitle: Text(
                 st.powderSensTable != null
-                    ? '${st.powderSensTable!.length} measurement${st.powderSensTable!.length == 1 ? '' : 's'}'
-                    : 'Tap to add T-V measurements',
+                    ? l10n.nMeasurements(st.powderSensTable!.length)
+                    : l10n.tapToAddMeasurements,
               ),
               trailing: const Icon(IconDef.chevronRight),
               dense: true,
@@ -593,7 +593,7 @@ class _BcSection extends StatelessWidget {
                 subtitle: Text(
                   isEmpty
                       ? l10n.requiredFieldError
-                      : '$count breakpoint${count == 1 ? '' : 's'}',
+                      : l10n.nBreakpoints(count),
                   style: isEmpty ? TextStyle(color: cs.error) : null,
                 ),
                 trailing: const Icon(IconDef.chevronRight),
