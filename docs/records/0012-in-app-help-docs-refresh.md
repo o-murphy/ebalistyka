@@ -97,8 +97,9 @@ data shown. Details:
   "Single/Multi-BC mode", "N measurements/breakpoints"; the pressure
   convertor default (1013 was stored as mmHg and showed 1351 hPa); the
   ultra-long A7P range is 100–2185 m, not 2000.
-- Not fixed, needs a decision: a **new** cartridge starts with a vertical and
-  horizontal zero offset of **0.10 MIL** (`AmmoWizardState` defaults) rather
-  than 0; the custom drag table screen is still view-only (see [0001]).
+- Fixed on the owner's call (2026-10-23): a **new** cartridge started with a
+  vertical and horizontal zero offset of **0.10 MIL** instead of 0
+  (`AmmoWizardState` / `AmmoWizardFormState` defaults); it now starts at 0.
+- Still open: the custom drag table screen is view-only (see [0001]).
 - Keep it in sync: when a screen's controls change, update its topic in the
   same change.

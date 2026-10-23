@@ -56,6 +56,11 @@ void main() {
     test('vendor is empty', () => expect(s.vendor, ''));
     test('projectileName is empty', () => expect(s.projectileName, ''));
 
+    test('zero offsets start at 0, not at a click', () {
+      expect(s.offsetXRaw, 0.0);
+      expect(s.offsetYRaw, 0.0);
+    });
+
     test('caliberRaw reflects caliberInch parameter (mm)', () {
       // 0.308 inch → 7.8232 mm
       expect(s.caliberRaw, closeTo(0.308 * 25.4, 0.001));
