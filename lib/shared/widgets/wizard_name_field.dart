@@ -1,3 +1,4 @@
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:material_ui/material_ui.dart';
 
 class WizardNameField extends StatelessWidget {
@@ -21,7 +22,9 @@ class WizardNameField extends StatelessWidget {
         controller: controller,
         decoration: InputDecoration(
           labelText: label,
-          errorText: controller.text.trim().isEmpty ? 'Name is required' : null,
+          errorText: controller.text.trim().isEmpty
+              ? AppLocalizations.of(context)!.nameRequiredError
+              : null,
           labelStyle: controller.text.trim().isEmpty
               ? TextStyle(color: cs.error)
               : null,

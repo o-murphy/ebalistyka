@@ -1139,6 +1139,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notYetAvaliable => 'not yet available';
 
   @override
+  String get nameRequiredError => 'Name is required';
+
+  @override
   String get requiredFieldError => 'Required';
 
   @override
@@ -1159,6 +1162,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sectionZeroing => 'Zeroing';
+
+  @override
+  String nMeasurements(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count measurements',
+      one: '1 measurement',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get tapToAddMeasurements => 'Tap to add T-V measurements';
+
+  @override
+  String nBreakpoints(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count breakpoints',
+      one: '1 breakpoint',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get calculateFromMeasurementsAction => 'Calculate from measurements';

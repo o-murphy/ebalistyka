@@ -1142,6 +1142,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get notYetAvaliable => 'поки що не доступно';
 
   @override
+  String get nameRequiredError => 'Вкажіть назву';
+
+  @override
   String get requiredFieldError => 'Обов\'язкове';
 
   @override
@@ -1162,6 +1165,35 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get sectionZeroing => 'Пристрілка';
+
+  @override
+  String nMeasurements(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count вимірювання',
+      many: '$count вимірювань',
+      few: '$count вимірювання',
+      one: '$count вимірювання',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get tapToAddMeasurements => 'Торкніться, щоб додати вимірювання T-V';
+
+  @override
+  String nBreakpoints(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count точки',
+      many: '$count точок',
+      few: '$count точки',
+      one: '$count точка',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get calculateFromMeasurementsAction => 'Розрахувати з вимірювань';

@@ -396,6 +396,7 @@
 
     "placeholderSearch": "Пошук",
     "notYetAvaliable": "поки що не доступно",
+    "nameRequiredError": "Вкажіть назву",
     "requiredFieldError": "Обов'язкове",
 
     "errorZeroCrossingNotFound": "Перетини нуля в межах траєкторії не виявлені!",
@@ -405,6 +406,9 @@
     "error": "Помилка",
 
     "sectionZeroing": "Пристрілка",
+    "nMeasurements": "{count, plural, one{{count} вимірювання} few{{count} вимірювання} many{{count} вимірювань} other{{count} вимірювання}}",
+    "tapToAddMeasurements": "Торкніться, щоб додати вимірювання T-V",
+    "nBreakpoints": "{count, plural, one{{count} точка} few{{count} точки} many{{count} точок} other{{count} точки}}",
     "calculateFromMeasurementsAction": "Розрахувати з вимірювань",
     "updateAction": "Оновити",
     "editCustomDragTableTitle": "Редагувати таблицю опору",
