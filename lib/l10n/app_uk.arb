@@ -413,6 +413,8 @@
     "updateAction": "Оновити",
     "editCustomDragTableTitle": "Редагувати таблицю опору",
     "enableMultiBcTitle": "Увімкнути мульти-БК {model}",
+    "multiBcMode": "Режим мульти-БК {model}",
+    "singleBcMode": "Режим одного БК {model}",
     "editMultiBcTableTitle": "Редагувати таблицю мульти-БК {model}",
     "ballisticCoefficientLabel": "Балістичний коефіцієнт {model}",
     "mvTemperatureLabel": "Температура пороху при вимірюванні",

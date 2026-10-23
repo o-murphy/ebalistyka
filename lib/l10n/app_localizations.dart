@@ -2408,6 +2408,18 @@ abstract class AppLocalizations {
   /// **'Enable {model} Multi-BC'**
   String enableMultiBcTitle(String model);
 
+  /// Subtitle of the Multi-BC toggle in the ammo wizard when it is on
+  ///
+  /// In en, this message translates to:
+  /// **'{model} Multi-BC mode'**
+  String multiBcMode(String model);
+
+  /// Subtitle of the Multi-BC toggle in the ammo wizard when it is off
+  ///
+  /// In en, this message translates to:
+  /// **'{model} Single BC mode'**
+  String singleBcMode(String model);
+
   /// List tile title to open the multi-BC table editor for a given drag model
   ///
   /// In en, this message translates to:

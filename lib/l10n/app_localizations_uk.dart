@@ -1210,6 +1210,16 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
+  String multiBcMode(String model) {
+    return 'Режим мульти-БК $model';
+  }
+
+  @override
+  String singleBcMode(String model) {
+    return 'Режим одного БК $model';
+  }
+
+  @override
   String editMultiBcTableTitle(String model) {
     return 'Редагувати таблицю мульти-БК $model';
   }

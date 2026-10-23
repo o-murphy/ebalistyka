@@ -134,7 +134,11 @@ class NullableUnitValueFieldTile extends UnitValueFieldTileBase<double?> {
 
   @override
   String _getDisplayText(BuildContext context) {
-    if (_isEmpty) return isRequired ? 'Required' : nullStr;
+    if (_isEmpty) {
+      return isRequired
+          ? AppLocalizations.of(context)!.requiredFieldError
+          : nullStr;
+    }
 
     final helper = UnitConversionHelper(
       constraints: constraints,

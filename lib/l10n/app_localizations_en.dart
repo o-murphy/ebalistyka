@@ -1203,6 +1203,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String multiBcMode(String model) {
+    return '$model Multi-BC mode';
+  }
+
+  @override
+  String singleBcMode(String model) {
+    return '$model Single BC mode';
+  }
+
+  @override
   String editMultiBcTableTitle(String model) {
     return 'Edit $model Multi-BC table';
   }

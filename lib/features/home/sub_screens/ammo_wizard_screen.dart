@@ -561,7 +561,7 @@ class _BcSection extends StatelessWidget {
         SwitchListTile(
           title: Text(l10n.enableMultiBcTitle(dtName)),
           subtitle: Text(
-            useMulti ? '$dtName Multi-BC mode' : '$dtName Single BC mode',
+            useMulti ? l10n.multiBcMode(dtName) : l10n.singleBcMode(dtName),
           ),
           value: useMulti,
           onChanged: onMultiChanged,
