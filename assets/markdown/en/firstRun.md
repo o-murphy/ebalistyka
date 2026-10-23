@@ -16,6 +16,6 @@ Whenever you have a question about a screen, look for this button **?**:
 
 ![helpButton](resource:assets/markdown/helpButton.png)
 
-> **Using the web version?** Your profiles and settings are stored in this browser only. Make a backup from time to time in **Settings → Backup → Export**.
+> **Using the web version?** Your profiles and settings are stored in this browser only — make a backup from time to time in **Settings → Backup → Export**. You can install it as an app: desktop browsers offer **Install as app** (in Settings → About), on iPhone/iPad use Share → Add to Home Screen.
 
 Good luck on the range!

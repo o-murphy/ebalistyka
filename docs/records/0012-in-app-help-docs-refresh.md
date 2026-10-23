@@ -1,6 +1,6 @@
 # In-app help docs — refresh before beta
 
-**Status:** Proposed
+**Status:** Implemented
 
 Audit date: 2026-10-13. Supersedes the single bullet about stale help docs
 in [0002] ("Open — Profiles UX (deferred)") — that item is now tracked here,
@@ -72,3 +72,33 @@ as the minimum, not the full list.
 - Keep the help in sync going forward: when a screen's controls change,
   update its topic in the same change (suggest adding it to the PR
   checklist rather than another audit later).
+
+## Update (2026-10-23): done
+
+All 20 `HelpData` topics were re-read against the screens they document, in
+both locales, and rewritten with the real control labels (`en` and `uk`
+together). Screenshots were retaken from a release web build of this branch
+in headless Chromium (377×848, dark theme, locale `en-US` / `uk-UA`, driven by
+direct hash routes plus semantics clicks), so every image exists in both
+languages and matches the current UI; the default seed profile is the only
+data shown. Details:
+
+- Rewritten: `profilesScreen`, `settingsScreen`, `tablesScreen`, `homeScreen`,
+  `firstRun` (with the web note), `conditionsScreen`, `reticleScreen`, the
+  three wizards, the three collections and the three table editors.
+  `convertorsScreen` and the velocity convertor were updated; the angle and
+  target-distance topics were checked against the screens and kept.
+- New images: weapon/sight editor, profile list, collections, editors; the
+  stale ammo-wizard crops were replaced by four full-screen shots.
+- The web version is covered in `firstRun` and `settingsScreen` (data lives in
+  the browser, back up via Export, install as an app, "Download the app").
+- Found while comparing, fixed in code: hard-coded English in the Units
+  screen title, the wizards' "Name is required", the ammo wizard's "Required",
+  "Single/Multi-BC mode", "N measurements/breakpoints"; the pressure
+  convertor default (1013 was stored as mmHg and showed 1351 hPa); the
+  ultra-long A7P range is 100–2185 m, not 2000.
+- Not fixed, needs a decision: a **new** cartridge starts with a vertical and
+  horizontal zero offset of **0.10 MIL** (`AmmoWizardState` defaults) rather
+  than 0; the custom drag table screen is still view-only (see [0001]).
+- Keep it in sync: when a screen's controls change, update its topic in the
+  same change.
