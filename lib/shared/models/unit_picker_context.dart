@@ -1,4 +1,4 @@
-import 'package:bclibc_flutter/unit.dart';
+import 'package:bclibc/unit.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:material_ui/material_ui.dart';
 

@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:bclibc_flutter/unit.dart';
+import 'package:bclibc/unit.dart';
 import 'package:ebc_db/ebc_db.dart' show FieldLimits;
 
 abstract interface class Constraints {

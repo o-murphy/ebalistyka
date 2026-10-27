@@ -1,5 +1,5 @@
-import 'package:bclibc_flutter/bclibc.dart' as bclibc;
-import 'package:bclibc_flutter/unit.dart';
+import 'package:bclibc/bclibc.dart' as bclibc;
+import 'package:bclibc/unit.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/core/extensions/profile_extensions.dart';

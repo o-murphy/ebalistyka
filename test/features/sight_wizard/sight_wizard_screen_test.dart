@@ -2,7 +2,7 @@
 // for an empty/absent one.
 //   flutter test test/features/sight_wizard/sight_wizard_screen_test.dart
 
-import 'package:bclibc_flutter/unit.dart';
+import 'package:bclibc/unit.dart';
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/features/home/sub_screens/sight_wizard_screen.dart';

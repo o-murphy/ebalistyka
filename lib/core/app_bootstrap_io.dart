@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:bclibc_flutter/bclibc.dart';
+import 'package:bclibc/bclibc.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
