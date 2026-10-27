@@ -54,8 +54,6 @@ abstract final class EbcpService {
     } else {
       await FilePicker.saveFile(
         fileName: name,
-        type: FileType.custom,
-        allowedExtensions: ['ebcp'],
         bytes: bytes,
       );
     }

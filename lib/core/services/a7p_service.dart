@@ -71,8 +71,6 @@ abstract final class A7pService {
     } else {
       await FilePicker.saveFile(
         fileName: name,
-        type: FileType.custom,
-        allowedExtensions: ['a7p'],
         bytes: bytes,
       );
     }

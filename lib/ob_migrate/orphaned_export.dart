@@ -43,8 +43,6 @@ Future<void> shareOrphanedDataJson({
   } else {
     await FilePicker.saveFile(
       fileName: name,
-      type: FileType.custom,
-      allowedExtensions: ['json'],
       bytes: bytes,
     );
   }
