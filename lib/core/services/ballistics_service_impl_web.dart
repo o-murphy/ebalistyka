@@ -8,8 +8,8 @@ import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:flutter/foundation.dart' show listEquals, debugPrint;
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart'
     show DragType, AmmoExtension;
-import 'package:bclibc_flutter/bclibc.dart';
-import 'package:bclibc_flutter/bclibc.dart' as bclibc;
+import 'package:bclibc/bclibc.dart';
+import 'package:bclibc/bclibc.dart' as bclibc;
 
 // Web counterpart to ballistics_service_impl.dart — conditionally exported
 // in its place (see ballistics_service_impl.dart's own header comment) since

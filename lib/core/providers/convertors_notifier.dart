@@ -1,4 +1,4 @@
-import 'package:bclibc_flutter/bclibc.dart';
+import 'package:bclibc/bclibc.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/providers/db_provider.dart';

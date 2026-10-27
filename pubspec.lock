@@ -69,18 +69,10 @@ packages:
     dependency: "direct main"
     description:
       name: bclibc
-      sha256: "82b4cadc63ac6fb567a02afeab3eaa99a560a2acf38db5dd49318b1c81066374"
+      sha256: "7bebfc676e1bab1ae5a6261afd17ac892cdb84393d0f4b781ea3c43e85dfe2fb"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.1"
-  bclibc_flutter:
-    dependency: "direct main"
-    description:
-      name: bclibc_flutter
-      sha256: c8baa53551f5525f087083ce164d2392a6625c6b6d6418546e79f791e39ff34a
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.1"
+    version: "2.0.0-beta.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -628,6 +620,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.18.0"
+  native_toolchain_c:
+    dependency: transitive
+    description:
+      name: native_toolchain_c
+      sha256: "90eaad8059ebc2004a63810a4696ea9acdb02473e47ed3b6b3bafb100ac77e31"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.19.5"
   node_preamble:
     dependency: transitive
     description:
@@ -796,6 +796,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.5.3"
+  process:
+    dependency: transitive
+    description:
+      name: process
+      sha256: "4242ba3508d37e01808bdf71ad1d5bb93a8d671bf2e7450e6b1b353fb0808891"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.6"
   protobuf:
     dependency: transitive
     description:

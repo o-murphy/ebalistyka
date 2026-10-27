@@ -30,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Legacy migration** — a missing `TablesSettings`/`GeneralSettings`/`ShootingConditions`/`ConvertorsState` row in the old database now migrates to the fresh-install defaults instead of all-zero values (an empty Tables screen); covered by a test with a real `data.mdb`.
 - **README** — web version, current CI workflows and dependencies.
 - **Profiles screen title** — renamed from "Profile" to "Profiles", since it now covers both the current-profile and profiles-list tabs.
-- **`bclibc`/`bclibc_flutter` bumped to `^1.0.0-rc.5`**, tracking bclibc core `v2.0.0-rc.1`+ (the embedded RK45 methods' thread-local
+- **`bclibc` bumped to `^2.0.0-beta.1`**, tracking bclibc core `v2.0.0`+ (the embedded RK45 methods' thread-local
   tolerance/stats API is replaced by stateful integrator classes — see
   bclibc's CHANGELOG). No functional change here: the app only ever selects
   `BcIntegrationMethod.tsitouras` at its default tolerances

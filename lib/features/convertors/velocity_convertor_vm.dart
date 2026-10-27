@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bclibc_flutter/bclibc.dart';
+import 'package:bclibc/bclibc.dart';
 import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';

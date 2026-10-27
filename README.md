@@ -491,12 +491,11 @@ On Android, `file_picker` cannot filter by custom extensions (`.ebcp`, `.a7p`) b
 
 ### `bclibc`
 
-The app depends directly on [`bclibc_flutter`](https://pub.dev/packages/bclibc_flutter), the Flutter plugin wrapper; `bclibc` itself is pulled in transitively.
+The app depends directly on [`bclibc`](https://pub.dev/packages/bclibc): one package for the native engine (built by its own build hook), the wasm build for web and the unit types.
 
 | Package                                                                        | Role                                                                                                                      |
 | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| [bclibc_flutter](https://pub.dev/packages/bclibc_flutter)              | Flutter plugin wrapper — bundles the native bclibc solver for Android/iOS/Linux/macOS/Windows plus a wasm build for web |
-| [bclibc](https://pub.dev/packages/bclibc)                              | Dart FFI package — bclibc C++ solver (3-DOF, RK4) LGPL-3, bindings, unit types                                          |
+| [bclibc](https://pub.dev/packages/bclibc) | Ballistic solver — bclibc C++ engine (3-DOF, RK4) LGPL-3, compiled by a build hook; wasm build for web; bindings and unit types |
 | [ffi](https://pub.dev/packages/ffi)                                              | Dart ↔ C FFI bindings                                                                                                     |
 
 ### `packages/ebc_db`

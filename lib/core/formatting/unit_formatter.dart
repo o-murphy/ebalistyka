@@ -1,4 +1,4 @@
-import 'package:bclibc_flutter/unit.dart';
+import 'package:bclibc/unit.dart';
 
 /// A single contract for formatting physical quantities into strings for UI.
 /// ViewModel і Widget never call .in_() directly.

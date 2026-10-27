@@ -16,8 +16,8 @@
 // `IndexedDbMsgStore` isn't exported from `ebc_db.dart`'s main barrel (it
 // imports `dart:js_interop`, unavailable on the VM target `dart test`/
 // `flutter test` run on) — this deep import into `ebc_db`'s `lib/src` is
-// deliberate, same reasoning `bclibc_flutter`'s `async_calculator.dart`
-// already uses for its own equivalent deep import: `ebc_db` and
+// deliberate, same reasoning `bclibc`'s `async_calculator.dart`
+// uses for its own equivalent deep import: `ebc_db` and
 // `ebalistyka` are versioned and developed together in this one repo.
 
 import 'dart:async';
