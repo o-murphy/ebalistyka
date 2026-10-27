@@ -1,6 +1,6 @@
-## Reticle View
+## Reticle
 
-Visualises your scope reticle with the calculated holdover applied, and lets you configure the scope and target settings.
+Shows your scope reticle with the calculated holdover applied, and lets you configure manual adjustments, the target and the clicks. Open it by tapping the reticle on the Home screen.
 
 ![overview](resource:assets/markdown/en/reticleScreen_overview.png)
 
@@ -8,45 +8,45 @@ Visualises your scope reticle with the calculated holdover applied, and lets you
 
 ### Reticle view
 
-The top panel shows your reticle with the target overlaid at the correct angular size. The dot or crosshair is shifted by the calculated elevation and wind holdover.
+The top panel stays on screen while you scroll the settings below it. It shows the reticle with the target at its correct angular size; the dashed crosshair marks the point shifted by the calculated elevation and wind holdover.
 
-- **Pinch / scroll** — zoom in for a closer look
+- **Pinch / scroll** — zoom in (up to 10×) for a closer look
 - **Double-tap** — zoom to 3×, double-tap again to reset
-- **Reset button** (bottom-right) — returns to 1× zoom
+- **Magnifier button** (bottom-right) — returns to 1× zoom
 
 ---
 
 ### Holdovers
 
-Shows the elevation and windage adjustments calculated for the current conditions and distance.
+The **Hold** (vertical) and **Windage** (horizontal) adjustments calculated for the current conditions and distance, in every unit you have enabled in **Settings → Adjustment Display**.
 
 ---
 
-### Manual adjustments
+### Manual Adjustments
 
-Additional offset you apply on top of the calculated holdover — for example, to account for a zeroing shift or point-of-impact correction.
+An additional offset applied on top of the calculated holdover — for example, to account for a zeroing shift or point-of-impact correction.
 
-- **Vertical / Horizontal** — enter a value in the chosen unit (mil, MOA, clicks, etc.)
-- Switching to **clicks** mode divides the value by the click size of the active scope
+- **Vertical Adjustment / Horizontal Adjustment** — enter a value in the chosen unit (MIL, MOA, clicks, …)
+- Switching to **clicks** divides the value by the click size of the active scope
 
 ---
 
 ### Target
 
-- **Target pattern** — the silhouette displayed inside the reticle view
-- **Target size** — the angular size of the target at the set distance (read-only, computed from the profile)
+- **Target pattern** — the target image drawn inside the reticle view (tap to choose)
+- **Target size** — the angular size of the target (read-only)
 
 ---
 
 ### Reticle
 
-- **Reticle pattern** — the SVG reticle overlay drawn over the target; matches the reticle saved in the active profile
+- **Reticle pattern** — the reticle image shown in the view (tap to choose). It is stored in the scope of the active profile, so choosing it here changes that profile's scope. "default" is used when none is chosen.
 
 ---
 
 ### Clicks
 
-The click values used when **clicks** mode is selected for adjustments. They come from the active scope profile and can be edited here.
+The click values used when **clicks** are selected for the adjustments. They come from the scope of the active profile and can be edited here.
 
 - **Vertical click** — angular value of one turret click on the elevation axis
 - **Horizontal click** — angular value of one turret click on the windage axis

@@ -1,9 +1,10 @@
 import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
+import 'package:ebalistyka/shared/widgets/arrow_text.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka/shared/widgets/error_display.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:data_table_2/data_table_2.dart';
 
 import 'package:ebalistyka/shared/models/formatted_row.dart';
@@ -17,31 +18,30 @@ class TrajectoryTable extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final vmAsync = ref.watch(trajectoryTablesVmProvider);
-    final vmState = vmAsync.value;
 
-    if (vmState is TrajectoryTablesUiLoading || vmState == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (vmState is TrajectoryTablesUiEmpty) {
-      return EmptyStatePlaceholder(
-        type: vmState.type,
-        message: vmState.message,
-      );
-    }
-
-    if (vmState is TrajectoryTablesUiError) {
-      return ErrorDisplay(error: vmState.message);
-    }
-
-    if (vmState is TrajectoryTablesUiReady) {
-      return TrajectoryTableContent(
-        mainTable: vmState.mainTable,
-        zeroCrossings: vmState.zeroCrossings,
-      );
-    }
-
-    return const EmptyStatePlaceholder();
+    // Exhaustive on both axes: the outer AsyncValue (loading/error/data —
+    // `.value == null` used to be treated as "still loading", which also
+    // silently swallowed a real AsyncError with no cached data) and the
+    // inner sealed TrajectoryTablesUiState (data case).
+    return switch (vmAsync) {
+      AsyncData(:final value) => switch (value) {
+        TrajectoryTablesUiLoading() => const Center(
+          child: CircularProgressIndicator(),
+        ),
+        TrajectoryTablesUiEmpty(:final type, :final message) =>
+          EmptyStatePlaceholder(type: type, message: message),
+        TrajectoryTablesUiError(:final message) => ErrorDisplay(
+          error: message,
+        ),
+        TrajectoryTablesUiReady(:final mainTable, :final zeroCrossings) =>
+          TrajectoryTableContent(
+            mainTable: mainTable,
+            zeroCrossings: zeroCrossings,
+          ),
+      },
+      AsyncError(:final error) => ErrorDisplay(error: error.toString()),
+      _ => const Center(child: CircularProgressIndicator()),
+    };
   }
 }
 
@@ -241,7 +241,7 @@ class _TrajectoryTableContentState extends State<TrajectoryTableContent> {
                   onTap: () => showDetail(t, pi),
                   cells: [
                     DataCell(
-                      Center(child: Text(t.distanceHeaders[pi], style: style)),
+                      Center(child: ArrowText(t.distanceHeaders[pi], style: style)),
                     ),
                     ...List.generate(
                       nMetrics,
@@ -333,7 +333,7 @@ class _TrajectoryTableContentState extends State<TrajectoryTableContent> {
                   cells: [
                     DataCell(
                       Center(
-                        child: Text(
+                        child: ArrowText(
                           t.distanceHeaders[pi],
                           style: cellStyle?.copyWith(color: cs.primary),
                         ),

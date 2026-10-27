@@ -1,6 +1,6 @@
 import 'package:ebalistyka/features/home/sub_screens/widgets/collection_item_tile.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class BaseCollectionBody extends StatefulWidget {
   const BaseCollectionBody({super.key, this.tiles = const []});

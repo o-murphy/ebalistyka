@@ -9,7 +9,7 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 
 import 'package:ebalistyka/core/services/ballistics_service.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
@@ -20,8 +20,8 @@ import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/shared/models/formatted_row.dart';
 
-import 'package:dart_bclibc/unit.dart';
-import 'package:dart_bclibc/bclibc.dart' as bclibc;
+import 'package:bclibc_flutter/unit.dart';
+import 'package:bclibc_flutter/bclibc.dart' as bclibc;
 
 // ── State ────────────────────────────────────────────────────────────────────
 
@@ -64,17 +64,33 @@ class TrajectoryTablesUiError extends TrajectoryTablesUiState {
 class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
   BallisticsResult? _lastResult;
   Profile? _lastProfile;
+  int _generation = 0;
 
   @override
   Future<TrajectoryTablesUiState> build() async {
     ref.listen<AsyncValue<ShotContext?>>(shotContextProvider, (_, next) {
       if (!next.hasValue) return;
       if (next.value == null) {
-        state = const AsyncData(
-          TrajectoryTablesUiEmpty(type: EmptyStateType.noProfile),
+        // Deferred (`Future(...)`, not a direct assignment) for the same
+        // reason the recalculate branch below is deferred: with
+        // `fireImmediately: true`, this callback can run synchronously
+        // *during* this same `build()` call (if shotContextProvider
+        // already has a value by the time this listener is registered) —
+        // a `state =` write made before `build()`'s own Future resolves
+        // gets silently clobbered the moment it does resolve, since the
+        // framework then applies `build()`'s return value
+        // (`TrajectoryTablesUiLoading()`) as the "official" state. Scheduling
+        // via `Future(...)` pushes the write to a later microtask, safely
+        // after `build()` has already settled.
+        unawaited(
+          Future(() {
+            state = const AsyncData(
+              TrajectoryTablesUiEmpty(type: EmptyStateType.noProfile),
+            );
+          }),
         );
       } else {
-        unawaited(_recalculate());
+        unawaited(Future(_recalculate));
       }
     }, fireImmediately: true);
     ref.listen<TablesSettings>(tablesSettingsProvider, (prev, next) {
@@ -90,53 +106,54 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
   }
 
   Future<void> _recalculate() async {
-    final ctx = ref.read(shotContextProvider).value;
-    final tablesSettings = ref.read(tablesSettingsProvider);
-    final units = ref.read(unitSettingsProvider);
-    final formatter = ref.read(unitFormatterProvider);
-    final l10n = ref.read(appLocalizationsProvider);
-
-    if (ctx == null) {
-      state = const AsyncData(
-        TrajectoryTablesUiEmpty(type: EmptyStateType.noProfile),
-      );
-      return;
-    }
-
-    final profile = ctx.profile;
-    final conditions = ctx.conditions;
-
-    if (profile.ammo.target == null) {
-      state = const AsyncData(
-        TrajectoryTablesUiEmpty(type: EmptyStateType.noAmmo),
-      );
-      return;
-    }
-
-    if (!profile.isReadyForCalculation) {
-      state = const AsyncData(
-        TrajectoryTablesUiEmpty(type: EmptyStateType.incompleteAmmo),
-      );
-      return;
-    }
-
-    if (state.value is! TrajectoryTablesUiReady) {
-      state = const AsyncData(TrajectoryTablesUiLoading());
-    }
+    final generation = ++_generation;
 
     try {
+      final ctx = ref.read(shotContextProvider).value;
+      final tablesSettings = ref.read(tablesSettingsProvider);
+      final units = ref.read(unitSettingsProvider);
+      final formatter = ref.read(unitFormatterProvider);
+      final l10n = ref.read(appLocalizationsProvider);
+
+      if (ctx == null) {
+        if (generation != _generation) return;
+        state = const AsyncData(
+          TrajectoryTablesUiEmpty(type: EmptyStateType.noProfile),
+        );
+        return;
+      }
+
+      final profile = ctx.profile;
+      final conditions = ctx.conditions;
+
+      if (!profile.isReadyForCalculation) {
+        if (generation != _generation) return;
+        _lastResult = null;
+        _lastProfile = null;
+        state = AsyncData(
+          TrajectoryTablesUiEmpty(type: missingProfileDataType(profile)),
+        );
+        return;
+      }
+
+      if (state.value is! TrajectoryTablesUiReady) {
+        state = const AsyncData(TrajectoryTablesUiLoading());
+      }
+
+      final tableStep = tablesSettings.distanceStepMeter > 0
+          ? tablesSettings.distanceStepMeter
+          : FC.distanceStep.minRaw;
       final opts = TableCalcOptions(
         startM: tablesSettings.distanceStartMeter,
         endM: tablesSettings.distanceEndMeter,
-        stepM: tablesSettings.distanceStepMeter < 1.0
-            ? tablesSettings.distanceStepMeter
-            : 1.0,
+        stepM: tableStep < 1.0 ? tableStep : 1.0,
       );
 
       final result = await ref
           .read(ballisticsServiceProvider)
           .calculateTable(profile, conditions, opts);
       if (!ref.mounted) return;
+      if (generation != _generation) return;
       _lastResult = result;
       _lastProfile = profile;
 
@@ -152,6 +169,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
 
       state = AsyncData(uiState);
     } catch (e) {
+      if (generation != _generation) return;
       state = AsyncData(TrajectoryTablesUiError(e.toString()));
     }
   }
@@ -198,28 +216,27 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
   }) {
     final hit = result.hitResult;
 
+    final tableStep = tablesSettings.distanceStepMeter > 0
+        ? tablesSettings.distanceStepMeter
+        : FC.distanceStep.minRaw;
     final filtered = _filterTraj(
-      hit.trajectory,
+      hit.samples,
       tablesSettings.distanceStartMeter,
       tablesSettings.distanceEndMeter,
-      tablesSettings.distanceStepMeter,
+      tableStep,
     );
 
-    final zeroDistM = profile.ammo.target!.zeroDistanceMeter;
+    final zeroDistM = profile.ammo.zero.distanceMeter;
 
-    double horizontalClickSizeMil = 0.0;
-    double verticalClickSizeMil = 0.0;
-    final sight = profile.sight.target;
-    if (sight != null) {
-      horizontalClickSizeMil = Angular(
-        sight.horizontalClick,
-        sight.horizontalClickUnitValue,
-      ).in_(Unit.mil);
-      verticalClickSizeMil = Angular(
-        sight.verticalClick,
-        sight.verticalClickUnitValue,
-      ).in_(Unit.mil);
-    }
+    final sight = profile.sight;
+    final horizontalClickSizeMil = Angular(
+      sight.horizontalClick,
+      sight.horizontalClickUnitValue,
+    ).in_(Unit.mil);
+    final verticalClickSizeMil = Angular(
+      sight.verticalClick,
+      sight.verticalClickUnitValue,
+    ).in_(Unit.mil);
 
     final mainTable = _buildTable(
       filtered,
@@ -233,7 +250,11 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
 
     FormattedTableData? zeroCrossings;
     if (tablesSettings.showZeros) {
-      final zeros = hit.zeros;
+      // `hit.zeros` throws when no zero crossing exists (or ZERO wasn't in
+      // the requested flags), which would fail the whole tables screen.
+      final zeros = hit.events
+          .where((e) => (e.flag & bclibc.TrajFlag.zero.value) != 0)
+          .toList();
       if (zeros.isNotEmpty) {
         zeroCrossings = _buildTable(
           zeros,

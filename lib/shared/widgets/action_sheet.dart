@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 // ── Entries ───────────────────────────────────────────────────────────────────
@@ -65,7 +65,7 @@ Future<void> showActionSheet(
               child: Text(
                 subtitle,
                 style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                  color: Theme.of(ctx).colorScheme.tertiary,
                 ),
               ),
             ),

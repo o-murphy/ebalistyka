@@ -4,21 +4,25 @@
 
 ![Trajectory table](resource:assets/markdown/en/tablesScreen_trajectory.png)
 
-The table displays ballistic data for the current profile and shooting conditions across distances. The left column (range) is fixed — the remaining columns scroll horizontally.
+The tab shows ballistic data for the current profile and shooting conditions across distances. The left column (range) is fixed — the remaining columns scroll horizontally.
 
-**Row colour coding:**
-- Normal row — flight data
-- Highlighted (blue) — target distance (zero point)
-- Red — trajectory zero crossing
-- Yellow — subsonic transition
+It has up to two sections:
 
-**Tap a row** to open a detail dialog with all values for that distance.
+- **Zero crossings** — the distances where the trajectory crosses the line of sight: an up arrow marks the first crossing (the bullet rising through the line of sight), a down arrow the second (coming down). Can be turned off in the table settings
+- **Trajectory** — one row per distance, from the start to the end distance with the chosen step
+
+**Row highlighting:**
+- Accent colour, bold — the zero distance (the distance the weapon is zeroed for)
+- Red — a zero crossing
+- Subdued accent colour — the subsonic transition
+
+**Tap a row** to open a dialog with all values for that distance, including the corrections in every unit you have enabled.
 
 ![Row details](resource:assets/markdown/en/tablesScreen_rowDetail.png)
 
 **Top-right buttons:**
-- ⚙️ — opens table settings (Trajectory tab only)
-- ↗️ — exports the table as an HTML file
+- **Table settings** (sliders icon, Trajectory tab only) — opens the table configuration
+- **Share** — exports the table as an HTML page; it opens in your browser (in a new tab on the web version), where you can print or save it
 
 ---
 
@@ -26,12 +30,12 @@ The table displays ballistic data for the current profile and shooting condition
 
 ![Profile details](resource:assets/markdown/en/tablesScreen_details.png)
 
-Displays the parameters of the current profile used for the calculation:
+The parameters used for the calculation:
 
-- **Weapon** — name, calibre, twist rate, zero distance
-- **Cartridge** — muzzle velocity (at zero and current)
-- **Projectile** — drag model, ballistic coefficient, form factor, weight, length, gyroscopic stability
-- **Conditions** — temperature, humidity, pressure, wind
+- **Weapon** — name, caliber, twist rate, zero distance
+- **Cartridge** — zero muzzle velocity and current muzzle velocity (it differs when powder temperature changes the velocity)
+- **Projectile** — drag model, ballistic coefficient, length, caliber, weight, form factor, sectional density, gyroscopic stability factor (Sg)
+- **Conditions** — temperature, humidity, pressure, wind speed and direction
 
 ---
 
@@ -39,17 +43,18 @@ Displays the parameters of the current profile used for the calculation:
 
 ![Table settings](resource:assets/markdown/en/tablesScreen_config.png)
 
-Opened via the ⚙️ button. Lets you customise the table layout and distance range.
+Opened with the **sliders** button on the Trajectory tab. Lets you customise the distance range and the columns.
 
-**Distance:**
-- Start, end, and step — define the table rows
+**Range** — Start distance, End distance and Distance step define the rows of the table.
 
-**Extra tables:**
-- **Zero crossing table** — shows a separate section with distances where the trajectory crosses zero
-- **Subsonic transition** — highlights the row where the bullet goes subsonic
+**Extra:**
+- **Show zero crossings table** — adds the separate Zero crossings section
+- **Show subsonic transition** — highlights the row where the bullet goes subsonic
 
-**Visible columns** — enable/disable individual metrics:
-Time · Velocity · Height · Drop · Drop (Adjusted) · Wind · Wind (Adjusted) · Mach · Drag · Energy
+**Visible columns** — switch individual metrics on or off:
+Time · Velocity · Height · Drop · Drop° · Wind · Wind° · Mach · Drag · Energy
 
-**Adjustments** — units for adjustment columns:
-mrad · MOA · mil · cm/100m · in/100yd · click
+(Drop and Wind are the linear values; the columns marked ° are the same corrections as angles, in the units chosen below.)
+
+**Adjustment columns** — which angular units to show for the Drop° and Wind° columns:
+MRAD · MOA · MIL · cm/100m · in/100yd · Clicks

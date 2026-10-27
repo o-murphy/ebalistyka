@@ -1,4 +1,4 @@
-import 'package:dart_bclibc/bclibc.dart';
+import 'package:bclibc_flutter/bclibc.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
@@ -6,9 +6,10 @@ import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebalistyka/shared/widgets/two_column_table_editor.dart';
-import 'package:flutter/material.dart' hide Velocity;
+import 'package:material_ui/material_ui.dart' hide Velocity;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ebalistyka/core/extensions/num_extensions.dart';
 
 const _kPowderSensRowCount = 5;
 
@@ -95,7 +96,7 @@ class _PowderSensTableEditorScreenState
     final initialRows = widget.initialTable?.map((r) {
       final tDisplay = Temperature.celsius(r.tempC).in_(tUnit);
       final vDisplay = Velocity.mps(r.vMps).in_(vUnit);
-      return (tDisplay.toStringAsFixed(tAcc), vDisplay.toStringAsFixed(vAcc));
+      return (tDisplay.toFixedSafe(tAcc), vDisplay.toFixedSafe(vAcc));
     }).toList();
 
     // Pre-fill row 0 with the reference MV / T₀ when no existing table.
@@ -107,7 +108,7 @@ class _PowderSensTableEditorScreenState
       final tDisplay = Temperature.celsius(refTempC).in_(tUnit);
       final vDisplay = Velocity.mps(mvMps).in_(vUnit);
       prefilled = [
-        (tDisplay.toStringAsFixed(tAcc), vDisplay.toStringAsFixed(vAcc)),
+        (tDisplay.toFixedSafe(tAcc), vDisplay.toFixedSafe(vAcc)),
       ];
     }
 
@@ -187,7 +188,7 @@ class _SensitivityPreview extends StatelessWidget {
     } else {
       final acc = FC.powderSensitivity.accuracyFor(Unit.percent);
       final pct = Ratio.fraction(sensitivity!).in_(Unit.percent);
-      label = '${pct.toStringAsFixed(acc)} %/15°C';
+      label = '${pct.toFixedSafe(acc)} %/15°C';
     }
 
     return Card(

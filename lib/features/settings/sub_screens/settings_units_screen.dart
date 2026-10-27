@@ -2,12 +2,12 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/unit_picker_tile.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
-import 'package:dart_bclibc/unit.dart';
+import 'package:bclibc_flutter/unit.dart';
 
 // ─── Units Screen ─────────────────────────────────────────────────────────────
 
@@ -23,7 +23,7 @@ class UnitsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return BaseScreen(
-      title: 'Units of Measurement',
+      title: l10n.unitsSettingsLabel,
       isSubscreen: true,
       body: ListView(
         children: [

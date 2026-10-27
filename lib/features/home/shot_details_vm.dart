@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'package:dart_bclibc/unit.dart';
+import 'package:bclibc_flutter/unit.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
-import 'package:dart_bclibc/bclibc.dart' as bclibc;
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:bclibc_flutter/bclibc.dart' as bclibc;
+import 'package:ebc_db/ebc_db.dart';
 import 'package:riverpod/riverpod.dart';
 
 import 'package:ebalistyka/core/services/ballistics_service.dart';
@@ -11,6 +11,7 @@ import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
 import 'package:ebalistyka/core/extensions/profile_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/service_providers.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
@@ -70,8 +71,13 @@ class ShotInfoReady extends ShotInfoUiState {
 class ShotInfoViewModel extends AsyncNotifier<ShotInfoUiState> {
   @override
   Future<ShotInfoUiState> build() async {
-    ref.listen<AsyncValue<ShotContext?>>(shotContextProvider, (_, next) {
-      if (next.hasValue) unawaited(_recalculate());
+    ref.listen<AsyncValue<ShotContext?>>(shotContextProvider, (prev, next) {
+      // `prev != null` guard matches the `unitSettingsProvider` listener
+      // below — without it, this fires for shotContextProvider's *very
+      // first* resolution too, which `build()`'s own `_calculate()` below
+      // already handles by awaiting it directly. Skipping that redundant
+      // fire avoids running the (expensive) calculation twice on startup.
+      if (next.hasValue && prev != null) unawaited(_recalculate());
     }, fireImmediately: true);
     ref.listen<AsyncValue<GeneralSettings>>(settingsProvider, (prev, next) {
       if (!next.hasValue) return;
@@ -103,12 +109,8 @@ class ShotInfoViewModel extends AsyncNotifier<ShotInfoUiState> {
       if (ctx == null) {
         return const ShotInfoError(type: EmptyStateType.noProfile);
       }
-      if (ctx.profile.ammo.target == null) {
-        return const ShotInfoError(type: EmptyStateType.noAmmo);
-      }
-
       if (!ctx.profile.isReadyForCalculation) {
-        return const ShotInfoError(type: EmptyStateType.incompleteAmmo);
+        return ShotInfoError(type: missingProfileDataType(ctx.profile));
       }
 
       final profile = ctx.profile;
@@ -116,7 +118,9 @@ class ShotInfoViewModel extends AsyncNotifier<ShotInfoUiState> {
 
       final opts = TargetCalcOptions(
         targetDistM: conditions.distanceMeter,
-        stepM: settings.homeChartDistanceStep,
+        stepM: settings.homeChartDistanceStep > 0
+            ? settings.homeChartDistanceStep
+            : FC.distanceStep.minRaw,
       );
 
       final result = await ref
@@ -135,11 +139,11 @@ class ShotInfoViewModel extends AsyncNotifier<ShotInfoUiState> {
     UnitFormatter formatter,
     bclibc.HitResult hit,
   ) {
-    final weapon = profile.weapon.target;
-    final sight = profile.sight.target;
+    final weapon = profile.weapon;
+    final sight = profile.sight;
 
     final targetDistM = conditions.distanceMeter;
-    final traj = hit.trajectory;
+    final traj = hit.samples;
     final atTarget = hit.getAtDistance(Distance.meter(targetDistM));
 
     final zeroVelocity = profile.getCalculatedZeroVelocity();
@@ -151,14 +155,11 @@ class ShotInfoViewModel extends AsyncNotifier<ShotInfoUiState> {
         : null;
 
     // Gyroscopic stability
-    final sightHeight = Distance.inch(sight?.sightHeightInch ?? 0.0);
-    final bcWeapon = weapon?.toWeapon(sightHeight);
-    String sgStr = nullStr;
-    if (bcWeapon != null) {
-      final currentShot = profile.toCurrentShot(conditions, bcWeapon);
-      final sg = currentShot.calculateStabilityCoefficient();
-      sgStr = sg.toStringAsFixed(2);
-    }
+    final sightHeight = Distance.inch(sight.sightHeightInch);
+    final bcWeapon = weapon.toWeapon(sightHeight);
+    final currentShot = profile.toCurrentShot(conditions, bcWeapon);
+    final sg = currentShot.calculateStabilityCoefficient();
+    final sgStr = sg.toStringAsFixed(2);
 
     // Trajectory markers
     final firstPoint = traj.isNotEmpty ? traj[0] : null;

@@ -4,6 +4,12 @@ import 'package:riverpod/riverpod.dart';
 const reticleAssetPrefix = 'assets/svg/reticles/';
 const defaultReticleId = 'default';
 
+/// Text to show for a stored reticle/target id: `null` and `''` (the proto
+/// default, used for "no explicit choice") both mean the default asset, so
+/// `id ?? defaultLabel` alone would render an empty line for `''`.
+String assetIdLabel(String? id, String defaultLabel) =>
+    (id == null || id.isEmpty) ? defaultLabel : id;
+
 const targetAssetPrefix = 'assets/svg/targets/';
 const defaultTargetId = 'default';
 

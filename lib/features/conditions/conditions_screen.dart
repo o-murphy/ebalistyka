@@ -8,7 +8,7 @@ import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebalistyka/shared/widgets/icon_value_button.dart';
 import 'package:ebalistyka/shared/widgets/powder_sens_section.dart';
 import 'package:ebalistyka/shared/widgets/unit_hybrid_picker_dialog.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/features/conditions/conditions_vm.dart';

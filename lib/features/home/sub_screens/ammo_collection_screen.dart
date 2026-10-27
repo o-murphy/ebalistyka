@@ -12,8 +12,8 @@ import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/error_display.dart';
 import 'package:ebalistyka/shared/widgets/help_dialog.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
-import 'package:flutter/material.dart';
+import 'package:ebc_db/ebc_db.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -83,7 +83,7 @@ class AmmoCollectionScreen extends ConsumerWidget {
               return false;
             }
             if (filter.vendors.isNotEmpty &&
-                !filter.vendors.contains(a.vendor ?? '')) {
+                !filter.vendors.contains(a.vendor)) {
               return false;
             }
             if (filter.minWeightGrain != null &&
@@ -106,10 +106,10 @@ class AmmoCollectionScreen extends ConsumerWidget {
                     item: CartridgeCollectionItem(ref: ammo),
                     searchText: [
                       ammo.name,
-                      ammo.vendor ?? '',
-                      ammo.projectileName ?? '',
+                      ammo.vendor,
+                      ammo.projectileName,
                     ].join(' '),
-                    onSelect: () => context.pop<Ammo>(ammo.clone()),
+                    onSelect: () => context.pop<Ammo>(ammo.deepCopy()),
                   ),
                 )
                 .toList(),

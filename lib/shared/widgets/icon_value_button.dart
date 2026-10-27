@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// FAB-style button with icon + value on the button and a label below.
 /// Must be used inside a bounded-height parent (e.g. [IconValueButtonRow]).

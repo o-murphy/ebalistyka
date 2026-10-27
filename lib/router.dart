@@ -2,13 +2,16 @@ import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/features/convertors/sub_screens/convertors_sub_screens.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebalistyka/shared/widgets/empty_state.dart';
+import 'package:ebalistyka/shared/widgets/snackbars.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/features/home/sub_screens/weapon_wizard_screen.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'features/home/home_screen.dart';
+import 'features/home/home_vm.dart';
 import 'features/home/sub_screens/home_sub_screens.dart';
 import 'update/update_sheet.dart';
 import 'features/conditions/conditions_screen.dart';
@@ -40,23 +43,21 @@ abstract final class Routes {
   static const profileAddWeaponCreate = '/home/profiles/weapon-create';
   static const profileAddWeaponCollection = '/home/profiles/weapon-collection';
 
-  // Ammo select (from profile card)
-  static const ammoSelect = '/home/profiles/ammo-select';
-  static const ammoCreate = '/home/profiles/ammo-select/create';
+  // Ammo replace (from Current Profile screen)
+  static const ammoCreate = '/home/profiles/ammo-create';
   static const cartridgeCollection =
-      '/home/profiles/ammo-select/cartridge-collection';
+      '/home/profiles/ammo-create/cartridge-collection';
   static const bulletCollection =
-      '/home/profiles/ammo-select/bullet-collection';
+      '/home/profiles/ammo-create/bullet-collection';
 
-  // Sight select (from profile card)
-  static const sightSelect = '/home/profiles/sight-select';
-  static const sightCreate = '/home/profiles/sight-select/create';
-  static const sightCollection = '/home/profiles/sight-select/collection';
+  // Sight replace (from Current Profile screen)
+  static const sightCreate = '/home/profiles/sight-create';
+  static const sightCollection = '/home/profiles/sight-create/collection';
   static const reticleViewReticlePicker = '/home/reticle-view/reticle-picker';
   static const reticleViewTargetPicker = '/home/reticle-view/target-picker';
 
   static const sightReticlePicker =
-      '/home/profiles/sight-select/create/reticle-picker';
+      '/home/profiles/sight-create/reticle-picker';
 
   // Profile inline edits (from profile card)
   static const profileEditWeapon = '/home/profiles/weapon-edit';
@@ -92,6 +93,7 @@ final appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: Routes.home,
   routes: [
+    GoRoute(path: '/', redirect: (_, _) => Routes.home),
     StatefulShellRoute.indexedStack(
       builder: (context, state, shell) => _ScaffoldWithNav(shell: shell),
       branches: [
@@ -137,18 +139,13 @@ final appRouter = GoRouter(
                       path: 'weapon-collection',
                       builder: (_, _) => const WeaponCollectionScreen(),
                     ),
-                    // ── Ammo select ─────────────────────────────────────────
+                    // ── Ammo replace ─────────────────────────────────────────
                     GoRoute(
-                      path: 'ammo-select',
-                      builder: (_, state) =>
-                          MyAmmoScreen(profileId: state.extra as String?),
+                      path: 'ammo-create',
+                      builder: (_, state) => AmmoWizardScreen(
+                        caliberInch: state.extra as double?,
+                      ),
                       routes: [
-                        GoRoute(
-                          path: 'create',
-                          builder: (_, state) => AmmoWizardScreen(
-                            caliberInch: state.extra as double?,
-                          ),
-                        ),
                         GoRoute(
                           path: 'cartridge-collection',
                           builder: (_, state) => AmmoCollectionScreen(
@@ -165,24 +162,16 @@ final appRouter = GoRouter(
                         ),
                       ],
                     ),
-                    // ── Sight select ────────────────────────────────────────
+                    // ── Sight replace ────────────────────────────────────────
                     GoRoute(
-                      path: 'sight-select',
-                      builder: (_, state) => MySightsCollectionScreen(
-                        profileId: state.extra as String?,
-                      ),
+                      path: 'sight-create',
+                      builder: (_, _) => const SightWizardScreen(),
                       routes: [
                         GoRoute(
-                          path: 'create',
-                          builder: (_, _) => const SightWizardScreen(),
-                          routes: [
-                            GoRoute(
-                              path: 'reticle-picker',
-                              builder: (_, state) => ReticlePickerScreen(
-                                currentReticleId: state.extra as String?,
-                              ),
-                            ),
-                          ],
+                          path: 'reticle-picker',
+                          builder: (_, state) => ReticlePickerScreen(
+                            currentReticleId: state.extra as String?,
+                          ),
                         ),
                         GoRoute(
                           path: 'collection',
@@ -193,22 +182,17 @@ final appRouter = GoRouter(
                     // ── Profile inline edits ────────────────────────────────
                     GoRoute(
                       path: 'weapon-edit',
-                      builder: (_, state) {
-                        final extra = state.extra as (Weapon?, bool)?;
-                        return WeaponWizardScreen(
-                          initial: extra?.$1,
-                          caliberEditable: extra?.$2,
-                        );
-                      },
+                      builder: (_, state) =>
+                          WeaponWizardScreen(initial: state.extra as Weapon?),
                     ),
                     GoRoute(
                       path: 'ammo-edit',
                       builder: (_, state) {
-                        final extra = state.extra as (Ammo?, double?, int?)?;
+                        final extra = state.extra as (Ammo?, double?, String?)?;
                         return AmmoWizardScreen(
                           initial: extra?.$1,
                           caliberInch: extra?.$2,
-                          weaponId: extra?.$3,
+                          profileUuid: extra?.$3,
                         );
                       },
                       routes: [
@@ -398,18 +382,37 @@ class _ScaffoldWithNav extends ConsumerStatefulWidget {
 }
 
 class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
+  static const _tablesTabIndex = 2;
+
   @override
   void initState() {
     super.initState();
   }
 
-  void _onTabSelected(int i) {
+  void _onTabSelected(int i, bool tablesReady, EmptyStateType tablesEmptyType) {
+    if (i == _tablesTabIndex && !tablesReady) {
+      final l10n = AppLocalizations.of(context)!;
+      showFeedback(context, tablesEmptyType.defaultMessage(l10n), isError: true);
+      return;
+    }
     widget.shell.goBranch(i, initialLocation: true);
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
+    // Tables (both its Trajectory and Details tabs) has nothing meaningful
+    // to show without a profile that's actually ready for calculation —
+    // gating the tab itself, same as the Home screen's "info" button,
+    // avoids ever landing on an empty/loading Tables screen in the first
+    // place instead of having every consumer of the profile handle that
+    // case on its own.
+    final homeVmState = ref.watch(homeVmProvider).value;
+    final tablesReady = homeVmState is HomeUiReady;
+    final tablesEmptyType = homeVmState is HomeUiNoData
+        ? homeVmState.type
+        : EmptyStateType.noProfile;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -422,7 +425,8 @@ class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
         ),
         child: NavigationBar(
           selectedIndex: widget.shell.currentIndex,
-          onDestinationSelected: _onTabSelected,
+          onDestinationSelected: (i) =>
+              _onTabSelected(i, tablesReady, tablesEmptyType),
           destinations: [
             NavigationDestination(
               icon: Icon(IconDef.home),
@@ -433,7 +437,10 @@ class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
               label: l10n.conditionsScreenTitle,
             ),
             NavigationDestination(
-              icon: Icon(IconDef.tables),
+              icon: Icon(
+                IconDef.tables,
+                color: tablesReady ? null : cs.onSurface.withAlpha(97),
+              ),
               label: l10n.tablesScreenTitle,
             ),
             NavigationDestination(

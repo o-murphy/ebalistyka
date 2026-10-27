@@ -51,7 +51,7 @@
    <screenshot>
      <image>https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.16/docs/screenshots/convertors.png</image>
      <caption>Unit converters</caption>
-     <caption xml:lang="uk">Конвертори одиниць</caption>
+     <caption xml:lang="uk">Конвертери одиниць</caption>
    </screenshot>
  </screenshots>
  <supports>
@@ -63,6 +63,21 @@
    <display_length compare="ge">360</display_length>
  </requires>
  <releases>
+   <release version="0.1.22" date="2026-10-03">
+     <url type="details">https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.22</url>
+   </release>
+   <release version="0.1.21" date="2026-10-01">
+     <url type="details">https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.21</url>
+   </release>
+   <release version="0.1.20" date="2026-09-30">
+     <url type="details">https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.20</url>
+   </release>
+   <release version="0.1.19" date="2026-09-30">
+     <url type="details">https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.19</url>
+   </release>
+   <release version="0.1.18" date="2026-06-26">
+     <url type="details">https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.18</url>
+   </release>
    <release version="0.1.17" date="2026-06-05">
      <url type="details">https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.17</url>
    </release>

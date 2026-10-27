@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:dart_bclibc/unit.dart';
+import 'package:bclibc_flutter/unit.dart';
 import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart' as fc;
 import 'package:ebalistyka/l10n/app_localizations.dart';
@@ -8,7 +8,7 @@ import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dar
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/unit_value_header.dart';
 import 'package:ebalistyka/shared/widgets/unit_wheel_picker_widget.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class UnitWheelPicker extends StatefulWidget {
   const UnitWheelPicker({

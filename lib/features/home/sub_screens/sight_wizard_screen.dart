@@ -1,9 +1,10 @@
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
-import 'package:dart_bclibc/unit.dart' show Unit;
+import 'package:bclibc_flutter/unit.dart' show Unit;
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/features/home/sub_screens/sight_wizard_notifier.dart';
+import 'package:ebalistyka/core/providers/reticle_provider.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/mixins/wizard_form_mixin.dart';
@@ -13,8 +14,8 @@ import 'package:ebalistyka/shared/widgets/offsets_edit.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:ebalistyka/shared/widgets/wizard_action_bar.dart';
 import 'package:ebalistyka/shared/widgets/wizard_name_field.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
-import 'package:flutter/material.dart';
+import 'package:ebc_db/ebc_db.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
@@ -113,7 +114,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
           ListTile(
             leading: const Icon(IconDef.sight),
             title: Text(l10n.reticlePattern),
-            subtitle: Text(st.reticleImage ?? l10n.defaultLabel),
+            subtitle: Text(assetIdLabel(st.reticleImage, l10n.defaultLabel)),
             trailing: const Icon(Icons.chevron_right),
             onTap: () async {
               final route = widget.initial != null

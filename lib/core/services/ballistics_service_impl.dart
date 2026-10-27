@@ -1,15 +1,16 @@
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/core/services/ballistics_service.dart';
 import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
 import 'package:ebalistyka/core/extensions/profile_extensions.dart';
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/foundation.dart' show compute, listEquals;
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart'
     show DragType, AmmoExtension;
-import 'package:dart_bclibc/unit.dart';
-import 'package:dart_bclibc/bclibc.dart' as bclibc;
+import 'package:bclibc_flutter/unit.dart';
+import 'package:bclibc_flutter/bclibc.dart' as bclibc;
 
 // ── Isolate top-level functions ──────────────────────────────────────────────
 
@@ -21,7 +22,7 @@ typedef _TableCalcResult = (bclibc.HitResult?, double?);
 _TableCalcResult _runTableCalculation(_TableCalcArgs args) {
   final (zeroShot, currentShot, zeroDistance, stepM, cachedZeroElevRad) = args;
   try {
-    final calc = bclibc.Calculator();
+    final calc = bclibc.Calculator(method: kIntegrationMethod);
     double? freshZeroElevRad;
 
     if (cachedZeroElevRad != null) {
@@ -70,8 +71,15 @@ typedef _HomeCalcArgs = (
   double,
   double?,
 );
-// (hitResult, freshZeroElevationRad?, holdRad, tableHolds)
-typedef _HomeCalcResult = (bclibc.HitResult?, double?, double, List<double>);
+// (hitResult, freshZeroElevationRad?, holdRad, windageRad, tableHolds, tableWindages)
+typedef _HomeCalcResult = (
+  bclibc.HitResult?,
+  double?,
+  double,
+  double,
+  List<double>,
+  List<double>,
+);
 
 _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
   final (
@@ -88,7 +96,7 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
       ? stepM
       : 0.1524; // max 1/2 ft for dense interpolation
   try {
-    final calc = bclibc.Calculator();
+    final calc = bclibc.Calculator(method: kIntegrationMethod);
     double? freshZeroElevRad;
 
     if (cachedZeroElevRad != null) {
@@ -112,10 +120,8 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
       currentShot.weapon.zeroElevation = zeroShot.weapon.zeroElevation;
     }
 
-    final zeroElevRad = currentShot.weapon.zeroElevation.in_(Unit.radian);
-
-    // Compute hold = barrelElevationForTarget(d) - zeroElevation for each
-    // table column. This gives exact drop corrections matching Page 1.
+    // Aiming solution (vertical hold + windage) for each table column, taken
+    // from the native zero-point solve rather than the fired trajectory.
     final tableDists = [
       targetDistM - 2 * tableStepM,
       targetDistM - tableStepM,
@@ -123,16 +129,35 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
       targetDistM + tableStepM,
       targetDistM + 2 * tableStepM,
     ];
-    final tableHolds = tableDists.map((d) {
-      if (d <= 0) return double.nan;
-      return calc
-              .barrelElevationForTarget(currentShot, Distance.meter(d))
-              .in_(Unit.radian) -
-          zeroElevRad;
-    }).toList();
+    final tableHolds = <double>[];
+    final tableWindages = <double>[];
+    for (final d in tableDists) {
+      if (d <= 0) {
+        tableHolds.add(double.nan);
+        tableWindages.add(double.nan);
+        continue;
+      }
+      // The native solver can fail to converge for some distances without
+      // that being predictable from `d` alone — catch it per-column into NaN
+      // instead of aborting the whole calculation (and, via that, the whole
+      // home screen).
+      try {
+        final (hold, windage, _) = calc.aimingSolutionForTarget(
+          currentShot,
+          Distance.meter(d),
+        );
+        tableHolds.add(hold.in_(Unit.radian));
+        tableWindages.add(windage.in_(Unit.radian));
+      } catch (e) {
+        debugPrint('aimingSolutionForTarget($d m) failed: $e');
+        tableHolds.add(double.nan);
+        tableWindages.add(double.nan);
+      }
+    }
 
-    // Hold for the target (center column) — same as tableHolds[2].
+    // Hold/windage for the target — same as the center column.
     final holdRad = tableHolds[2].isNaN ? 0.0 : tableHolds[2];
+    final windageRad = tableWindages[2].isNaN ? 0.0 : tableWindages[2];
     currentShot.relativeAngle = Angular.radian(holdRad);
 
     final result = calc.fire(
@@ -143,8 +168,17 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
           bclibc.BCLIBCFFI_TrajFlag.BCLIBCFFI_TRAJ_FLAG_RANGE.value |
           bclibc.BCLIBCFFI_TrajFlag.BCLIBCFFI_TRAJ_FLAG_ZERO.value,
     );
-    return (result, freshZeroElevRad, holdRad, tableHolds);
+    return (
+      result,
+      freshZeroElevRad,
+      holdRad,
+      windageRad,
+      tableHolds,
+      tableWindages,
+    );
   } catch (e, st) {
+    debugPrint(e.toString());
+    debugPrintStack(stackTrace: st);
     throw CalculationException('Home calculation failed', e, st);
   }
 }
@@ -170,16 +204,14 @@ class BallisticsServiceImpl implements BallisticsService {
   double? _cachedZeroElevRad;
 
   List<double> _buildZeroKey(Profile profile, ShootingConditions conditions) {
-    final ammo = profile.ammo.target!;
-    final weapon = profile.weapon.target;
-    final sight = profile.sight.target;
+    final ammo = profile.ammo;
+    final weapon = profile.weapon;
+    final sight = profile.sight;
 
     final bcCount = switch (ammo.dragType) {
-      DragType.g7 =>
-        ammo.isMultiBC ? (ammo.multiBcTableG7VMps?.length ?? 1) : 1,
-      DragType.g1 =>
-        ammo.isMultiBC ? (ammo.multiBcTableG1VMps?.length ?? 1) : 1,
-      DragType.custom => ammo.customDragTableMach?.length ?? 0,
+      DragType.g7 => ammo.isMultiBC ? ammo.multiBcTableG7.length : 1,
+      DragType.g1 => ammo.isMultiBC ? ammo.multiBcTableG1.length : 1,
+      DragType.custom => ammo.customDragTable.length,
     };
     final firstBc = switch (ammo.dragType) {
       DragType.g7 => ammo.bcG7,
@@ -188,8 +220,8 @@ class BallisticsServiceImpl implements BallisticsService {
     };
 
     return [
-      sight?.sightHeightInch ?? 0.0,
-      weapon?.twistInch ?? 0.0,
+      sight.sightHeightInch,
+      weapon.twistInch,
       ammo.muzzleVelocityMps,
       ammo.powderSensitivityFrac,
       firstBc,
@@ -197,12 +229,12 @@ class BallisticsServiceImpl implements BallisticsService {
       ammo.caliberInch,
       ammo.lengthInch,
       bcCount.toDouble(),
-      ammo.zeroAltitudeMeter,
-      ammo.zeroPressurehPa,
-      ammo.zeroTemperatureC,
-      ammo.zeroHumidityFrac,
-      ammo.zeroPowderTemperatureC,
-      ammo.zeroDistanceMeter,
+      ammo.zero.altitudeMeter,
+      ammo.zero.pressureHPa,
+      ammo.zero.temperatureC,
+      ammo.zero.humidityFrac,
+      ammo.zero.powderTemperatureC,
+      ammo.zero.distanceMeter,
       conditions.lookAngleRad,
       ammo.usePowderSensitivity ? 1.0 : 0.0,
       ammo.zeroUseDiffPowderTemperature ? 1.0 : 0.0,
@@ -226,12 +258,11 @@ class BallisticsServiceImpl implements BallisticsService {
     _cachedZeroElevRad = zeroElevRad;
   }
 
-  /// Builds bclibc.Weapon from OB entities.
+  /// Builds bclibc.Weapon from the profile's embedded weapon/sight.
   bclibc.Weapon _buildWeapon(Profile profile) {
-    final weapon = profile.weapon.target!;
-    final sight = profile.sight.target;
-    final sightHeight = sight?.sightHeight ?? Distance.inch(0);
-    return weapon.toWeapon(sightHeight);
+    final weapon = profile.weapon;
+    final sight = profile.sight;
+    return weapon.toWeapon(sight.sightHeight);
   }
 
   @override
@@ -244,7 +275,7 @@ class BallisticsServiceImpl implements BallisticsService {
     final bcWeapon = _buildWeapon(profile);
     final zeroShot = profile.toZeroShot(bcWeapon, conditions.lookAngle);
     final currentShot = profile.toCurrentShot(conditions, bcWeapon);
-    final zeroDistance = Distance.meter(profile.ammo.target!.zeroDistanceMeter);
+    final zeroDistance = Distance.meter(profile.ammo.zero.distanceMeter);
 
     final (hit, freshZero) = await compute(_runTableCalculation, (
       zeroShot,
@@ -269,13 +300,15 @@ class BallisticsServiceImpl implements BallisticsService {
     final bcWeapon = _buildWeapon(profile);
     final zeroShot = profile.toZeroShot(bcWeapon, conditions.lookAngle);
     final currentShot = profile.toCurrentShot(conditions, bcWeapon);
-    final zeroDistance = Distance.meter(profile.ammo.target!.zeroDistanceMeter);
+    final zeroDistance = Distance.meter(profile.ammo.zero.distanceMeter);
 
     final (
       hit,
       freshZero,
       holdRad,
+      windageRad,
       tableHolds,
+      tableWindages,
     ) = await compute<_HomeCalcArgs, _HomeCalcResult>(_runHomeCalculation, (
       zeroShot,
       currentShot,
@@ -293,7 +326,9 @@ class BallisticsServiceImpl implements BallisticsService {
       hitResult: hit,
       zeroElevationRad: zeroElevRad,
       holdRad: holdRad,
+      windageRad: windageRad,
       tableHolds: tableHolds,
+      tableWindages: tableWindages,
     );
   }
 }

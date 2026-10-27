@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:dart_bclibc/unit.dart';
+import 'package:bclibc_flutter/unit.dart';
 import 'package:ebalistyka/shared/helpers/is_desktop.dart';
 import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
@@ -9,7 +9,7 @@ import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dar
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/unit_dialog_input_field.dart';
 import 'package:ebalistyka/shared/widgets/unit_wheel_picker_widget.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Hybrid widget combining Wheel Picker and text input at the same time
 class UnitHybridPicker extends StatefulWidget {
@@ -36,6 +36,15 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
 
   bool _isUpdatingFromWheel = false;
   bool _isUpdatingFromText = false;
+
+  // While the user is actively typing, the wheel is hidden and doesn't sync
+  // to every keystroke — only once typing pauses for _debounceDuration. The
+  // wheel's own didUpdateWidget jumps to whatever raw value it's given, so
+  // syncing it on every keystroke was fighting the text field (visible
+  // jumps mid-typing).
+  static const _debounceDuration = Duration(milliseconds: 500);
+  Timer? _debounceTimer;
+  bool _isTyping = false;
 
   @override
   void initState() {
@@ -70,6 +79,15 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
       _errorText = error;
       needsUpdate = true;
     }
+
+    if (!_isTyping) {
+      _isTyping = true;
+      needsUpdate = true;
+    }
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(_debounceDuration, () {
+      if (mounted) setState(() => _isTyping = false);
+    });
 
     if (error == null) {
       final newIsNullValue = raw == null;
@@ -142,6 +160,7 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _textController.dispose();
     super.dispose();
   }
@@ -196,12 +215,19 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
 
           const SizedBox(height: 4),
 
-          // WHEEL (Visual selection)
-          UnitWheelPickerWidget(
-            constraints: ctx.constraints,
-            initialRawValue: _currentRawValue,
-            displayUnit: ctx.displayUnit,
-            onChanged: _onWheelChanged,
+          // WHEEL (Visual selection) — hidden while actively typing so it
+          // doesn't jump/rebuild on every keystroke (see _isTyping above).
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 150),
+            child: _isTyping
+                ? const SizedBox(key: ValueKey('wheel-hidden'), height: 240)
+                : UnitWheelPickerWidget(
+                    key: const ValueKey('wheel-visible'),
+                    constraints: ctx.constraints,
+                    initialRawValue: _currentRawValue,
+                    displayUnit: ctx.displayUnit,
+                    onChanged: _onWheelChanged,
+                  ),
           ),
 
           const SizedBox(height: 12),

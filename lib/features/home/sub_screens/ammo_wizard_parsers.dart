@@ -1,25 +1,20 @@
-import 'dart:typed_data';
+import 'package:ebc_db/ebc_db.dart';
 
-List<({double vMps, double bc})>? decodeBcTable(
-  Float64List? vMps,
-  Float64List? bcs,
-) {
-  if (vMps == null || bcs == null || vMps.isEmpty) return null;
-  return List.generate(vMps.length, (i) => (vMps: vMps[i], bc: bcs[i]));
+List<({double vMps, double bc})>? decodeBcTable(List<MultiBcPoint>? points) {
+  if (points == null || points.isEmpty) return null;
+  return points.map((p) => (vMps: p.vMps, bc: p.bc)).toList();
 }
 
 List<({double mach, double cd})>? decodeCustomDragTable(
-  Float64List? mach,
-  Float64List? cd,
+  List<CustomDragPoint>? points,
 ) {
-  if (mach == null || cd == null || mach.isEmpty) return null;
-  return List.generate(mach.length, (i) => (mach: mach[i], cd: cd[i]));
+  if (points == null || points.isEmpty) return null;
+  return points.map((p) => (mach: p.mach, cd: p.cd)).toList();
 }
 
 List<({double tempC, double vMps})>? decodePowderSensTable(
-  Float64List? tempC,
-  Float64List? vMps,
+  List<PowderSensitivityPoint>? points,
 ) {
-  if (tempC == null || vMps == null || tempC.isEmpty) return null;
-  return List.generate(tempC.length, (i) => (tempC: tempC[i], vMps: vMps[i]));
+  if (points == null || points.isEmpty) return null;
+  return points.map((p) => (tempC: p.tc, vMps: p.vMps)).toList();
 }

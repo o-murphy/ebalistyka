@@ -1,7 +1,9 @@
 # eBalistyka — Master Project Document
 
 **Version:** 3.0
-**Status:** Living Document — updated 2026-04-21
+**Status:** Retired as the live index — see `docs/0000-TRACKER.md`. §7
+(Open Questions) and §9 (Implementation Phases) are superseded there;
+everything else below is kept as historical/architectural reference.
 **Stack:** Flutter · Dart · Riverpod · ObjectBox · FFI (bclibc C++)
 **Package:** `ebalistyka` · Bundle ID: `com.o.murphy.ebalistyka`
 
@@ -454,9 +456,14 @@ GSF shown in Shot Details screen and as info row on Home Page 1.
 
 `Unit` enum (in `unit.dart`) maps all units with conversion factors; `Unit.mach` included (ICAO constant). Atmosphere-aware mach conversions via `VelocityMachExtension` in `conditions.dart`.
 
-### 6.3 ObjectBox Entities
+### 6.3 Persisted Entities
 
-All persisted data lives in `packages/ebalistyka_db`. Entities:
+> **Superseded — this section describes the old ObjectBox shape.** All
+> persisted data now lives in two independent protobuf messages
+> (`ProfilesData`/`SettingsData`) in `packages/ebc_db`, not ObjectBox
+> entities under an `Owner` — see `8.PROTOBUF_STORAGE_MIGRATION.md` (Doc #8)
+> for the current schema (`Message Schema` section) and architecture. The
+> sketch below is kept only as a reference for the pre-migration shape.
 
 ```
 Owner (singleton, token="local")
@@ -542,7 +549,12 @@ Owner (singleton, token="local")
 
 ### 6.5 Storage
 
-ObjectBox database at `~/.eBalistyka/objectbox/`. Single transaction for all CRUD. No JsonFileStorage.
+> **Superseded — see Doc #8.** Storage is no longer ObjectBox; it's two
+> independent embedded protobuf files, `settings.ebcp`/`profiles.ebcp`,
+> written by `packages/ebc_db` (`MsgStore<T>`, atomic tmp+flush+rename+
+> `.bak`) to `<applicationSupportDirectory>`. See
+> `8.PROTOBUF_STORAGE_MIGRATION.md`'s `On-Disk Layout`/`Core Design`
+> sections for the current shape.
 
 **Export formats:**
 - `.ebcp` — JSON + CBOR archive (native). `EbcpService` in `lib/core/services/ebcp_service.dart`.

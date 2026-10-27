@@ -1,22 +1,23 @@
 import 'package:ebalistyka/l10n/app_localizations.dart';
-import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
 import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
 import 'package:ebalistyka/shared/widgets/weapon_svg_view.dart';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
 
 class ProfileControlTile extends StatelessWidget {
   const ProfileControlTile({
     required this.profileId,
     required this.profileName,
     this.weaponImage,
+    required this.hasWeapon,
     required this.hasAmmo,
     required this.hasSight,
     required this.onDuplicate,
     required this.onExport,
-    required this.onEditWeapon,
+    required this.onSelectWeapon,
+    required this.onSelectAmmo,
+    required this.onSelectSight,
     required this.onRemove,
     required this.onRemoveAmmo,
     required this.onRename,
@@ -26,11 +27,14 @@ class ProfileControlTile extends StatelessWidget {
   final String profileId;
   final String profileName;
   final String? weaponImage;
+  final bool hasWeapon;
   final bool hasAmmo;
   final bool hasSight;
   final VoidCallback onDuplicate;
   final VoidCallback onExport;
-  final VoidCallback onEditWeapon;
+  final VoidCallback onSelectWeapon;
+  final VoidCallback onSelectAmmo;
+  final VoidCallback onSelectSight;
   final VoidCallback onRemove;
   final VoidCallback onRemoveAmmo;
   final ValueChanged<String> onRename;
@@ -89,72 +93,108 @@ class ProfileControlTile extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    return SizedBox(
-      height: 160,
-      child: Card(
-        child: Stack(
-          children: [
-            Positioned.fill(child: WeaponSvgView(imageId: weaponImage)),
-
-            Positioned(
-              top: 8,
-              right: 8,
-              child: FloatingActionButton(
-                mini: true,
-                heroTag: 'edit_btn_$profileId',
-                onPressed: () async => _showEditActionsSheet(context),
-                backgroundColor: cs.secondaryContainer,
-                foregroundColor: cs.onSecondaryContainer,
-                child: const Icon(IconDef.more, size: 20),
-              ),
-            ),
-
-            Positioned(
-              top: 8,
-              left: 8,
-              child: _ButtonWithHint(
-                heroTag: 'sight_btn_$profileId',
-                hasValue: hasSight,
-                onPressed: () =>
-                    context.push(Routes.sightSelect, extra: profileId),
-                buttonIcon: IconDef.sight,
-                buttonColor: hasSight
-                    ? cs.secondaryContainer
-                    : cs.tertiaryContainer,
-                buttonForegroundColor: hasSight
-                    ? cs.onSecondaryContainer
-                    : cs.onTertiaryContainer,
-                hintText: l10n.selectSightHint,
-                hintIcon: Icons.arrow_back,
-                hintColor: cs.tertiary,
-                hintPosition: _HintPosition.right,
-              ),
-            ),
-
-            Positioned(
-              bottom: 8,
-              right: 8,
-              child: _ButtonWithHint(
-                heroTag: 'ammo_btn_$profileId',
-                hasValue: hasAmmo,
-                onPressed: () =>
-                    context.push(Routes.ammoSelect, extra: profileId),
-                buttonIcon: IconDef.ammo,
-                buttonColor: hasAmmo
-                    ? cs.primaryContainer
-                    : cs.tertiaryContainer,
-                buttonForegroundColor: hasAmmo
-                    ? cs.onPrimaryContainer
-                    : cs.onTertiaryContainer,
-                hintText: l10n.selectAmmoHint,
-                hintIcon: Icons.arrow_forward,
-                hintColor: cs.tertiary,
-                hintPosition: _HintPosition.left,
-              ),
-            ),
-          ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
+          child: Text(
+            profileName,
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            textAlign: TextAlign.center,
+          ),
         ),
-      ),
+        SizedBox(
+          height: 160,
+          child: Card(
+            child: Stack(
+              children: [
+                Positioned.fill(child: WeaponSvgView(imageId: weaponImage)),
+
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: FloatingActionButton(
+                    mini: true,
+                    heroTag: 'edit_btn_$profileId',
+                    onPressed: () async => _showEditActionsSheet(context),
+                    backgroundColor: cs.secondaryContainer,
+                    foregroundColor: cs.onSecondaryContainer,
+                    child: const Icon(IconDef.more, size: 20),
+                  ),
+                ),
+
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: _ButtonWithHint(
+                    heroTag: 'sight_btn_$profileId',
+                    hasValue: hasSight,
+                    onPressed: onSelectSight,
+                    buttonIcon: IconDef.sight,
+                    buttonColor: hasSight
+                        ? cs.secondaryContainer
+                        : cs.tertiaryContainer,
+                    buttonForegroundColor: hasSight
+                        ? cs.onSecondaryContainer
+                        : cs.onTertiaryContainer,
+                    hintText: l10n.selectSightHint,
+                    hintIcon: Icons.arrow_back,
+                    hintColor: cs.tertiary,
+                    hintPosition: _HintPosition.right,
+                  ),
+                ),
+
+                Positioned(
+                  bottom: 8,
+                  left: 8,
+                  child: _ButtonWithHint(
+                    heroTag: 'weapon_btn_$profileId',
+                    hasValue: hasWeapon,
+                    onPressed: onSelectWeapon,
+                    buttonIcon: IconDef.weapon,
+                    buttonColor: hasWeapon
+                        ? cs.secondaryContainer
+                        : cs.tertiaryContainer,
+                    buttonForegroundColor: hasWeapon
+                        ? cs.onSecondaryContainer
+                        : cs.onTertiaryContainer,
+                    hintText: l10n.selectWeaponHint,
+                    hintIcon: Icons.arrow_back,
+                    hintColor: cs.tertiary,
+                    hintPosition: _HintPosition.right,
+                  ),
+                ),
+
+                Positioned(
+                  bottom: 8,
+                  right: 8,
+                  child: _ButtonWithHint(
+                    heroTag: 'ammo_btn_$profileId',
+                    hasValue: hasAmmo,
+                    onPressed: onSelectAmmo,
+                    buttonIcon: IconDef.ammo,
+                    buttonColor: hasAmmo
+                        ? cs.primaryContainer
+                        : cs.tertiaryContainer,
+                    buttonForegroundColor: hasAmmo
+                        ? cs.onPrimaryContainer
+                        : cs.onTertiaryContainer,
+                    hintText: l10n.selectAmmoHint,
+                    hintIcon: Icons.arrow_forward,
+                    hintColor: cs.tertiary,
+                    hintPosition: _HintPosition.left,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

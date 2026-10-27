@@ -1,4 +1,4 @@
-import 'package:dart_bclibc/unit.dart';
+import 'package:bclibc_flutter/unit.dart';
 import 'package:ebalistyka/features/convertors/target_distance_convertor_vm.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
@@ -8,7 +8,7 @@ import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/reticle_view.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_with_unit_picker.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 

@@ -1,9 +1,10 @@
+import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka/features/tables/details_table_mv.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 
@@ -15,7 +16,12 @@ class DetailsTable extends ConsumerWidget {
     final details = ref.watch(detailsTableMvProvider);
 
     if (details == null) {
-      return const EmptyStatePlaceholder();
+      final profile = ref.watch(shotContextProvider).value?.profile;
+      return EmptyStatePlaceholder(
+        type: profile == null
+            ? EmptyStateType.noProfile
+            : missingProfileDataType(profile),
+      );
     }
 
     return DetailsTableContent(details: details);

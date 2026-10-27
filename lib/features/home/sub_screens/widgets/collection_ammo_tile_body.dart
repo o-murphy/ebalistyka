@@ -13,8 +13,8 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/ammo_svg_view.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
-import 'package:flutter/material.dart';
+import 'package:ebc_db/ebc_db.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CollectionAmmoTileBody extends ConsumerWidget {
@@ -41,60 +41,50 @@ class CollectionAmmoTileBody extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Vendor + Name - top
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (ammo.vendor != null && ammo.vendor!.isNotEmpty)
-                        Text(
-                          ammo.vendor!,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey,
-                          ),
-                          overflow: TextOverflow.visible,
-                          softWrap: true,
-                        ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (ammo.vendor.isNotEmpty)
                       Text(
-                        ammo.name,
+                        ammo.vendor,
                         style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          fontSize: 11,
+                          color: Colors.grey,
                         ),
-                        overflow: TextOverflow.visible,
-                        softWrap: true,
                       ),
-                      if (ammo.projectileName != null &&
-                          ammo.projectileName!.isNotEmpty)
-                        Text(
-                          ammo.projectileName!,
-                          style: const TextStyle(fontSize: 13),
-                          overflow: TextOverflow.visible,
-                          softWrap: true,
-                        ),
-                    ],
-                  ),
+                    Text(
+                      ammo.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    if (ammo.projectileName.isNotEmpty)
+                      Text(
+                        ammo.projectileName,
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                  ],
                 ),
-                const SizedBox(height: 8),
                 // Bottom information
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // First row - BC values and velocity
-                    Wrap(
-                      spacing: 12,
-                      runSpacing: 4,
+                    Row(
                       children: [
                         _BcText(
                           'G1 ${l10n.bcShort}',
                           ammo.bcG1,
                           ammo.dragType == DragType.g1,
                         ),
+                        const SizedBox(width: 12),
                         _BcText(
                           'G7 ${l10n.bcShort}',
                           ammo.bcG7,
                           ammo.dragType == DragType.g7,
                         ),
+                        const SizedBox(width: 12),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -103,8 +93,6 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                             Text(
                               formatter.velocity(ammo.mv),
                               style: const TextStyle(fontSize: 12),
-                              overflow: TextOverflow.visible,
-                              softWrap: true,
                             ),
                           ],
                         ),
@@ -112,9 +100,7 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                     ),
                     const SizedBox(height: 4),
                     // Second row - Caliber, weight, length
-                    Wrap(
-                      spacing: 12,
-                      runSpacing: 4,
+                    Row(
                       children: [
                         Row(
                           mainAxisSize: MainAxisSize.min,
@@ -124,11 +110,10 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                             Text(
                               formatter.diameter(ammo.caliber),
                               style: const TextStyle(fontSize: 12),
-                              overflow: TextOverflow.visible,
-                              softWrap: true,
                             ),
                           ],
                         ),
+                        const SizedBox(width: 12),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -137,11 +122,10 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                             Text(
                               formatter.weight(ammo.weight),
                               style: const TextStyle(fontSize: 12),
-                              overflow: TextOverflow.visible,
-                              softWrap: true,
                             ),
                           ],
                         ),
+                        const SizedBox(width: 12),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -150,8 +134,6 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                             Text(
                               formatter.length(ammo.length),
                               style: const TextStyle(fontSize: 12),
-                              overflow: TextOverflow.visible,
-                              softWrap: true,
                             ),
                           ],
                         ),
@@ -188,8 +170,6 @@ class _BcText extends StatelessWidget {
         color: isPrimary ? cs.primary : null,
         fontWeight: isPrimary ? FontWeight.bold : FontWeight.normal,
       ),
-      overflow: TextOverflow.visible,
-      softWrap: true,
     );
   }
 

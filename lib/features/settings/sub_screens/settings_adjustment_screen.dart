@@ -1,13 +1,14 @@
 import 'package:ebalistyka/l10n/app_localizations.dart';
+import 'package:ebalistyka/shared/widgets/arrow_text.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 
 // ─── Adjustment Display Screen ────────────────────────────────────────────────
 
@@ -32,7 +33,7 @@ class AdjustmentDisplayScreen extends ConsumerWidget {
               segments: const [
                 ButtonSegment(
                   value: AdjustmentDisplayFormat.arrows,
-                  label: Text('↑/↓'),
+                  label: ArrowText('↑/↓'),
                 ),
                 ButtonSegment(
                   value: AdjustmentDisplayFormat.signs,

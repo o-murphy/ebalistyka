@@ -1,16 +1,22 @@
-import 'dart:io';
 import 'dart:ui';
 
-import 'package:dart_bclibc/ffi/bclibc_ffi.dart';
+import 'package:flutter/foundation.dart'
+    show LicenseEntryWithLineBreaks, LicenseRegistry;
+import 'package:flutter/services.dart' show rootBundle;
+
 import 'package:ebalistyka/shared/constants/app_info.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/shared/helpers/is_desktop.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:ebalistyka/shared/widgets/pwa_install_hint.dart';
+import 'package:ebalistyka/shared/widgets/tab_blocked_gate.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'package:ebalistyka/core/session/single_instance.dart';
+import 'core/app_bootstrap_io.dart'
+    if (dart.library.js_interop) 'core/app_bootstrap_web.dart';
 import 'core/providers/db_provider.dart';
+import 'core/providers/db_seed.dart';
 import 'core/providers/settings_provider.dart';
 import 'l10n/app_localizations.dart';
 import 'router.dart';
@@ -27,31 +33,28 @@ const _windowInitialHeight = 812.0;
 // const _contentMaxWidth = _windowMaxWidth;
 // const _contentMaxHeight = _windowMaxHeight;
 
-Future<(Store, bool)> _openStore(String directory) async {
-  final hadData = await File('$directory/data.mdb').exists();
-  try {
-    return (await initObjectBox(directory: directory), false);
-  } catch (e) {
-    debugPrint('ObjectBox open failed — resetting DB: $e');
-    for (final name in const ['data.mdb', 'lock.mdb']) {
-      final f = File('$directory/$name');
-      if (await f.exists()) await f.delete();
-    }
-    return (await initObjectBox(directory: directory), hadData);
-  }
+Future<void> _raiseWindow() async {
+  if (await windowManager.isMinimized()) await windowManager.restore();
+  await windowManager.show();
+  await windowManager.focus();
 }
 
 void main() async {
-  try {
-    BcLibC.open();
-  } catch (e) {
-    stderr.writeln('Fatal: native library unavailable: $e');
-    exit(1);
-  }
+  await initNativeLibrary();
 
   WidgetsFlutterBinding.ensureInitialized();
 
+  // License of the bundled font (assets/fonts), for showLicensePage.
+  LicenseRegistry.addLicense(() async* {
+    yield LicenseEntryWithLineBreaks([
+      'Roboto',
+    ], await rootBundle.loadString('assets/fonts/Roboto_LICENSE.txt'));
+  });
+
   if (isDesktop) {
+    // A second launch raises the running window and exits right here.
+    await ensureSingleInstance(onActivate: _raiseWindow);
+
     await windowManager.ensureInitialized();
 
     const size = Size(_windowInitialWidth, _windowInitialHeight);
@@ -77,19 +80,27 @@ void main() async {
     });
   }
 
-  final appSupport = await getApplicationSupportDirectory();
-  final (store, dbWasReset) = await _openStore(appSupport.path);
-  debugPrint('DB path: ${appSupport.path}');
+  final bootstrap = await bootstrapApp(
+    seedSettings: seedSettings,
+    seedProfiles: seedProfiles,
+  );
 
   debugAppInfoConstants();
 
   runApp(
     ProviderScope(
       overrides: [
-        dbProvider.overrideWithValue(store),
-        dbWasResetProvider.overrideWithValue(dbWasReset),
+        settingsStoreProvider.overrideWithValue(bootstrap.stores.settingsStore),
+        profilesStoreProvider.overrideWithValue(bootstrap.stores.profilesStore),
+        settingsDataProvider.overrideWith(
+          () => SettingsDataNotifier(bootstrap.stores.settings),
+        ),
+        profilesProvider.overrideWith(
+          () => ProfilesNotifier(bootstrap.stores.profiles),
+        ),
+        dataWasResetProvider.overrideWithValue(bootstrap.stores.dataWasReset),
       ],
-      child: const MyApp(),
+      child: bootstrap.wrapRoot(const MyApp()),
     ),
   );
 }
@@ -116,15 +127,13 @@ class _DbResetBannerState extends ConsumerState<_DbResetBanner> {
   @override
   void initState() {
     super.initState();
-    if (ref.read(dbWasResetProvider)) {
+    if (ref.read(dataWasResetProvider)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Database was corrupted and has been reset. All data has been cleared.',
-            ),
-            duration: Duration(seconds: 6),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.databaseResetNotice),
+            duration: const Duration(seconds: 6),
           ),
         );
       });
@@ -138,8 +147,12 @@ class _DbResetBannerState extends ConsumerState<_DbResetBanner> {
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
+  // Bundled in assets/fonts (see pubspec.yaml).
+  static const _fontFamily = 'Roboto';
+
   static final _lightTheme = ThemeData(
     useMaterial3: true,
+    fontFamily: _fontFamily,
     colorScheme: ColorScheme.fromSeed(
       seedColor: Colors.deepPurple,
       brightness: Brightness.light,
@@ -148,6 +161,7 @@ class MyApp extends ConsumerWidget {
 
   static final _darkTheme = ThemeData(
     useMaterial3: true,
+    fontFamily: _fontFamily,
     colorScheme: ColorScheme.fromSeed(
       seedColor: Colors.deepPurple,
       brightness: Brightness.dark,
@@ -162,33 +176,37 @@ class MyApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'eBalistyka',
       debugShowCheckedModeBanner: false,
+      // locale: null (no explicit user choice yet) lets Flutter's own
+      // live, device-locale-list-aware resolver (basicLocaleListResolution
+      // + didChangeLocales) handle it — a hand-rolled
+      // localeResolutionCallback here would short-circuit that: whenever
+      // MaterialApp.locale is non-null, Flutter substitutes it for the
+      // real device locale list before invoking the callback, so any
+      // "fall back to device locale" branch becomes dead code and the UI
+      // stops reacting to OS locale changes after the first pin.
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      localeResolutionCallback: (deviceLocale, supportedLocales) {
-        if (locale != null) {
-          for (final supported in supportedLocales) {
-            if (supported.languageCode == locale.languageCode) {
-              return supported;
-            }
-          }
-        }
-        if (deviceLocale != null) {
-          for (final supported in supportedLocales) {
-            if (supported.languageCode == deviceLocale.languageCode) {
-              return supported;
-            }
-          }
-        }
-        return const Locale('en');
-      },
+      // gen-l10n's AppLocalizations.localizationsDelegates still wires the
+      // legacy flutter_localizations delegates; material_ui widgets need its own.
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
+      ],
       routerConfig: appRouter,
       theme: _lightTheme,
       darkTheme: _darkTheme,
       themeMode: themeMode,
       scrollBehavior: _AppScrollBehavior(),
       builder: (context, child) {
-        final inner = _DbResetBanner(child: child!);
+        // Bridges ThemeData/MaterialLocalizations for dependencies still on
+        // package:flutter/material.dart (flutter_markdown_plus, window_manager,
+        // sticky_headers). Drop once they migrate to material_ui.
+        // ignore: deprecated_member_use
+        final inner = MaterialUiCompatibilityBridge(
+          child: TabBlockedGate(
+            child: PwaInstallHint(child: _DbResetBanner(child: child!)),
+          ),
+        );
         if (isDesktop) {
           return Center(child: Container(child: inner));
         }

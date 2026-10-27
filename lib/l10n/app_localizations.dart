@@ -158,23 +158,29 @@ abstract class AppLocalizations {
   /// **'Adjustment Display'**
   String get adjustmentDisplayScreenTitle;
 
-  /// App bar title for the user's saved ammo list screen
+  /// App bar title for the Current Profile screen
   ///
   /// In en, this message translates to:
-  /// **'My Ammo'**
-  String get myAmmoScreenTitle;
+  /// **'Profile'**
+  String get myProfile;
 
-  /// App bar title for the user's saved sights list screen
-  ///
-  /// In en, this message translates to:
-  /// **'My Sights'**
-  String get mySights;
-
-  /// App bar title for the user's saved profiles list screen
+  /// App bar title for the profiles list screen
   ///
   /// In en, this message translates to:
   /// **'My Profiles'**
-  String get myProfiles;
+  String get profilesListScreenTitle;
+
+  /// App bar title for the tabbed Profile/My Profiles screen (covers both tabs, as opposed to myProfile which names only the first tab)
+  ///
+  /// In en, this message translates to:
+  /// **'Profiles'**
+  String get profilesScreenTitle;
+
+  /// Badge label marking the currently active profile in the profiles list
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeProfileLabel;
 
   /// App bar title when creating a new weapon
   ///
@@ -1244,6 +1250,12 @@ abstract class AppLocalizations {
   /// **'Duplicate'**
   String get duplicateAction;
 
+  /// Context action label to replace an item, discarding what's currently there
+  ///
+  /// In en, this message translates to:
+  /// **'Replace'**
+  String get replaceAction;
+
   /// Context action label to export an item
   ///
   /// In en, this message translates to:
@@ -1297,6 +1309,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add Sight'**
   String get actionAddSight;
+
+  /// Action to add / import a weapon into the current profile
+  ///
+  /// In en, this message translates to:
+  /// **'Add Weapon'**
+  String get actionAddWeapon;
 
   /// Settings action to export a full backup of all data
   ///
@@ -1411,6 +1429,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Privacy Policy'**
   String get labelPrivacyPolicy;
+
+  /// Settings link label for the app's own license, GNU GPL v3
+  ///
+  /// In en, this message translates to:
+  /// **'License (GPLv3)'**
+  String get labelLicenseGpl;
+
+  /// Settings entry that opens the licenses of bundled fonts and packages
+  ///
+  /// In en, this message translates to:
+  /// **'Open source licenses'**
+  String get labelOpenSourceLicenses;
 
   /// Settings label showing the current app version
   ///
@@ -1988,6 +2018,12 @@ abstract class AppLocalizations {
   /// **'Look angle was reset to 0°'**
   String get lookAngleWasReset;
 
+  /// Snackbar shown at startup when the stored data could not be read and was replaced with defaults
+  ///
+  /// In en, this message translates to:
+  /// **'Database was corrupted and has been reset. All data has been cleared.'**
+  String get databaseResetNotice;
+
   /// Field label for the distance to the target
   ///
   /// In en, this message translates to:
@@ -2120,12 +2156,6 @@ abstract class AppLocalizations {
   /// **'New Bullet'**
   String get newBullet;
 
-  /// Prefix prepended to the name when duplicating an entity (e.g. 'Copy of My Ammo')
-  ///
-  /// In en, this message translates to:
-  /// **'Copy of'**
-  String get copyOf;
-
   /// Screen title / action label when editing an existing profile
   ///
   /// In en, this message translates to:
@@ -2186,6 +2216,48 @@ abstract class AppLocalizations {
   /// **'No sights found in file'**
   String get noSightsFoundInFile;
 
+  /// Empty-state placeholder message when no profile is active
+  ///
+  /// In en, this message translates to:
+  /// **'No profile selected'**
+  String get emptyStateNoProfile;
+
+  /// Empty-state placeholder message when the active profile has no ammo
+  ///
+  /// In en, this message translates to:
+  /// **'No ammo selected'**
+  String get emptyStateNoAmmo;
+
+  /// Empty-state placeholder message when the active profile has no sight
+  ///
+  /// In en, this message translates to:
+  /// **'No sight selected'**
+  String get emptyStateNoSight;
+
+  /// Empty-state placeholder message when the active profile's ammo isn't ready for calculation
+  ///
+  /// In en, this message translates to:
+  /// **'Ammo data is incomplete'**
+  String get emptyStateIncompleteAmmo;
+
+  /// Empty-state placeholder message when the active profile's weapon isn't ready for calculation
+  ///
+  /// In en, this message translates to:
+  /// **'Weapon data is incomplete'**
+  String get emptyStateIncompleteWeapon;
+
+  /// Generic empty-state placeholder message for an error condition
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong'**
+  String get emptyStateError;
+
+  /// Generic empty-state placeholder message when there's nothing to show
+  ///
+  /// In en, this message translates to:
+  /// **'No data'**
+  String get emptyStateNoData;
+
   /// Dialog title for confirming ammo duplication
   ///
   /// In en, this message translates to:
@@ -2228,6 +2300,12 @@ abstract class AppLocalizations {
   /// **'Select ammo'**
   String get selectAmmoHint;
 
+  /// Hint shown on the profile card when no weapon is selected
+  ///
+  /// In en, this message translates to:
+  /// **'Select weapon'**
+  String get selectWeaponHint;
+
   /// Placeholder text for search input fields
   ///
   /// In en, this message translates to:
@@ -2239,6 +2317,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'not yet available'**
   String get notYetAvaliable;
+
+  /// Validation error under the empty name field of the weapon/ammo/sight wizards
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required'**
+  String get nameRequiredError;
 
   /// Validation error message for required input fields
   ///
@@ -2282,6 +2366,24 @@ abstract class AppLocalizations {
   /// **'Zeroing'**
   String get sectionZeroing;
 
+  /// Subtitle of the powder-sensitivity table tile: how many temperature/velocity measurements it holds
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 measurement} other{{count} measurements}}'**
+  String nMeasurements(int count);
+
+  /// Subtitle of the empty powder-sensitivity table tile (T = temperature, V = velocity)
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to add T-V measurements'**
+  String get tapToAddMeasurements;
+
+  /// Subtitle of the multi-BC table tile: how many velocity/BC breakpoints it holds
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 breakpoint} other{{count} breakpoints}}'**
+  String nBreakpoints(int count);
+
   /// Action label to calculate powder sensitivity from the measurement table
   ///
   /// In en, this message translates to:
@@ -2305,6 +2407,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enable {model} Multi-BC'**
   String enableMultiBcTitle(String model);
+
+  /// Subtitle of the Multi-BC toggle in the ammo wizard when it is on
+  ///
+  /// In en, this message translates to:
+  /// **'{model} Multi-BC mode'**
+  String multiBcMode(String model);
+
+  /// Subtitle of the Multi-BC toggle in the ammo wizard when it is off
+  ///
+  /// In en, this message translates to:
+  /// **'{model} Single BC mode'**
+  String singleBcMode(String model);
 
   /// List tile title to open the multi-BC table editor for a given drag model
   ///
@@ -2390,10 +2504,10 @@ abstract class AppLocalizations {
   /// **'From collection'**
   String get fromCollectionAction;
 
-  /// Confirmation dialog body when removing a profile and its associated weapon
+  /// Confirmation dialog body when removing a profile together with its embedded weapon, ammo, and sight
   ///
   /// In en, this message translates to:
-  /// **'Remove \"{name}\" and its weapon?'**
+  /// **'Remove \"{name}\" and its weapon, ammo, and sight?'**
   String removeProfileContent(String name);
 
   /// Action sheet title for choosing the export file format
@@ -2401,6 +2515,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Export format'**
   String get exportFormatDialogTitle;
+
+  /// Error shown when importing an .ebcp file that has no profiles, from a screen that can only import a profile
+  ///
+  /// In en, this message translates to:
+  /// **'This file has no profiles to import.'**
+  String get ebcpFileHasNoProfiles;
+
+  /// Error shown when importing an .ebcp file that has neither profiles nor settings
+  ///
+  /// In en, this message translates to:
+  /// **'This file has nothing to import.'**
+  String get ebcpFileIsEmpty;
+
+  /// Action sheet title for choosing what to bring in from a full-backup .ebcp file
+  ///
+  /// In en, this message translates to:
+  /// **'Import scope'**
+  String get importScopeDialogTitle;
+
+  /// Bottom sheet title for the checkbox list letting the user pick which profiles to import from a full-backup .ebcp file
+  ///
+  /// In en, this message translates to:
+  /// **'Select profiles to import'**
+  String get selectProfilesToImportTitle;
+
+  /// Checkbox label that toggles every item in a list selected/deselected at once
+  ///
+  /// In en, this message translates to:
+  /// **'Select all'**
+  String get selectAllAction;
+
+  /// Action sheet item to import every profile from a full-backup .ebcp file
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Import 1 profile} other{Import {count} profiles}}'**
+  String importAllProfilesAction(int count);
+
+  /// Action sheet item to import only the settings from a full-backup .ebcp file
+  ///
+  /// In en, this message translates to:
+  /// **'Settings only'**
+  String get importSettingsOnlyAction;
+
+  /// Action sheet item to import both profiles and settings from a full-backup .ebcp file
+  ///
+  /// In en, this message translates to:
+  /// **'Everything'**
+  String get importEverythingAction;
+
+  /// Confirm button label on the profile-selection sheet when no profile is checked — proceeds without importing any profile
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skipAction;
+
+  /// Confirmation dialog title before replacing local settings with an imported backup's settings
+  ///
+  /// In en, this message translates to:
+  /// **'Overwrite settings?'**
+  String get overwriteSettingsConfirmTitle;
+
+  /// Confirmation dialog body before replacing local settings with an imported backup's settings
+  ///
+  /// In en, this message translates to:
+  /// **'This replaces your current settings with the ones from the imported file. This can\'t be undone.'**
+  String get overwriteSettingsConfirmContent;
+
+  /// Confirm button label for the settings-overwrite confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Overwrite'**
+  String get overwriteAction;
 
   /// Action sheet title for choosing the trajectory range when exporting to .a7p
   ///
@@ -2510,6 +2696,12 @@ abstract class AppLocalizations {
   /// **'Check for updates'**
   String get checkForUpdatesLabel;
 
+  /// Settings list tile label shown on web instead of the update checker — opens the downloads page listing native installers
+  ///
+  /// In en, this message translates to:
+  /// **'Download the app'**
+  String get downloadAppAction;
+
   /// SnackBar message shown when no newer version is available
   ///
   /// In en, this message translates to:
@@ -2617,6 +2809,154 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Update weapon caliber'**
   String get updateWeaponCaliberAction;
+
+  /// Confirm dialog title before the weapon hotswap action discards the current weapon
+  ///
+  /// In en, this message translates to:
+  /// **'Replace weapon?'**
+  String get replaceWeaponWarningTitle;
+
+  /// Confirm dialog body before the weapon hotswap action discards the current weapon
+  ///
+  /// In en, this message translates to:
+  /// **'This will discard the current weapon\'s data. Duplicate the profile first if you want to keep it.'**
+  String get replaceWeaponWarningContent;
+
+  /// Confirm dialog title before the ammo hotswap action discards the current ammo
+  ///
+  /// In en, this message translates to:
+  /// **'Replace ammo?'**
+  String get replaceAmmoWarningTitle;
+
+  /// Confirm dialog body before the ammo hotswap action discards the current ammo
+  ///
+  /// In en, this message translates to:
+  /// **'This will discard the current ammo\'s data (BC tables, zero data, powder sensitivity, etc.). Duplicate the profile first if you want to keep it.'**
+  String get replaceAmmoWarningContent;
+
+  /// Confirm dialog title before the sight hotswap action discards the current sight
+  ///
+  /// In en, this message translates to:
+  /// **'Replace sight?'**
+  String get replaceSightWarningTitle;
+
+  /// Confirm dialog body before the sight hotswap action discards the current sight
+  ///
+  /// In en, this message translates to:
+  /// **'This will discard the current sight\'s data (click values, zero, etc.). Duplicate the profile first if you want to keep it.'**
+  String get replaceSightWarningContent;
+
+  /// Confirm dialog body shown after a weapon hotswap when the new weapon's caliber differs from the profile's current ammo
+  ///
+  /// In en, this message translates to:
+  /// **'The new weapon\'s caliber ({weapon}) doesn\'t match the current ammo\'s caliber ({ammo}). Update the ammo\'s caliber to match?'**
+  String weaponAmmoCaliberMismatchContent(String weapon, String ammo);
+
+  /// Title of the dialog offering to import data from the app's old (pre-protobuf) database
+  ///
+  /// In en, this message translates to:
+  /// **'Old data found'**
+  String get legacyMigrationConfirmTitle;
+
+  /// Body of the legacy-data-import confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'We found data from an older version of this app. Would you like to import it?'**
+  String get legacyMigrationConfirmContent;
+
+  /// Confirm button on the legacy-data-import dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get legacyMigrationConfirmAction;
+
+  /// Decline button on the legacy-data-import dialog, and the give-up button after a failed migration
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get legacyMigrationDeclineAction;
+
+  /// Label shown under the spinner while legacy data is being migrated
+  ///
+  /// In en, this message translates to:
+  /// **'Importing your old data…'**
+  String get legacyMigrationInProgress;
+
+  /// Title shown when legacy data migration fails
+  ///
+  /// In en, this message translates to:
+  /// **'Import failed'**
+  String get legacyMigrationFailedTitle;
+
+  /// Button to retry a failed legacy data migration
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get legacyMigrationRetryAction;
+
+  /// Title of the screen listing old weapons/ammo/sights that weren't part of any profile and so weren't imported
+  ///
+  /// In en, this message translates to:
+  /// **'Some items weren\'t imported'**
+  String get legacyOrphanedDataTitle;
+
+  /// Body of the orphaned-legacy-data screen
+  ///
+  /// In en, this message translates to:
+  /// **'{weaponCount} weapons, {ammoCount} ammo, and {sightCount} sights from your old library weren\'t part of any profile and weren\'t imported. You can export them as a JSON file to keep for later.'**
+  String legacyOrphanedDataContent(
+    int weaponCount,
+    int ammoCount,
+    int sightCount,
+  );
+
+  /// Button to export orphaned legacy weapons/ammo/sights as a JSON file
+  ///
+  /// In en, this message translates to:
+  /// **'Export as JSON'**
+  String get legacyExportOrphanedDataAction;
+
+  /// Button to proceed past the orphaned-legacy-data screen into the app
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get legacyContinueAction;
+
+  /// No description provided for @tabBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Opened in another window'**
+  String get tabBlockedTitle;
+
+  /// No description provided for @tabBlockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'eBalistyka is open in another tab or window. Only one can be used at a time, so this one was paused.'**
+  String get tabBlockedMessage;
+
+  /// No description provided for @tabBlockedAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Use here'**
+  String get tabBlockedAction;
+
+  /// No description provided for @pwaInstallAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Install as app'**
+  String get pwaInstallAction;
+
+  /// No description provided for @pwaInstallHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Install eBalistyka as an app: it gets its own window, and the browser is much less likely to clear your data.'**
+  String get pwaInstallHint;
+
+  /// No description provided for @pwaInstallHintAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Install'**
+  String get pwaInstallHintAction;
 }
 
 class _AppLocalizationsDelegate

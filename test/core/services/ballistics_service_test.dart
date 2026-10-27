@@ -7,12 +7,12 @@
 import 'package:test/test.dart';
 import 'package:ebalistyka/core/services/ballistics_service.dart';
 import 'package:ebalistyka/core/services/ballistics_service_impl.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
-import 'package:dart_bclibc/unit.dart';
+import 'package:ebc_db/ebc_db.dart';
+import 'package:bclibc_flutter/unit.dart';
 
 // ── Test fixtures ────────────────────────────────────────────────────────────
 
-/// Builds an in-memory Ammo entity — no OB store required.
+/// Builds an in-memory Ammo entity — no store required.
 Ammo _makeAmmo({
   double muzzleVelocityMps = 800.0,
   double zeroDistanceMeter = 100.0,
@@ -31,13 +31,13 @@ Ammo _makeAmmo({
   ..muzzleVelocityTemperatureC = 15.0
   ..powderSensitivityFrac = powderSensitivityFrac
   ..usePowderSensitivity = usePowderSensitivity
-  ..zeroDistanceMeter = zeroDistanceMeter
-  ..zeroTemperatureC = 15.0
-  ..zeroPressurehPa = 1013.25
-  ..zeroAltitudeMeter = 0.0
-  ..zeroHumidityFrac = 0.0
-  ..zeroPowderTemperatureC = zeroPowderTemperatureC
-  ..zeroUseDiffPowderTemperature = zeroUseDiffPowderTemperature;
+  ..ensureZero().distanceMeter = zeroDistanceMeter
+  ..ensureZero().temperatureC = 15.0
+  ..ensureZero().pressureHPa = 1013.25
+  ..ensureZero().altitudeMeter = 0.0
+  ..ensureZero().humidityFrac = 0.0
+  ..ensureZero().powderTemperatureC = zeroPowderTemperatureC
+  ..ensureZero().useDiffPowderTemperature = zeroUseDiffPowderTemperature;
 
 /// Builds an in-memory Weapon entity.
 Weapon _makeWeapon() => Weapon()
@@ -50,14 +50,12 @@ Sight _makeSight() => Sight()
   ..name = 'Test Scope'
   ..sightHeightInch = 1.496; // 38 mm ≈ 1.496 in
 
-/// Assembles a Profile with in-memory ToOne relations.
-Profile _makeProfile({Ammo? ammo, Weapon? weapon, Sight? sight}) {
-  final p = Profile()..name = 'Test Profile';
-  p.ammo.target = ammo ?? _makeAmmo();
-  p.weapon.target = weapon ?? _makeWeapon();
-  p.sight.target = sight ?? _makeSight();
-  return p;
-}
+/// Assembles a Profile with embedded weapon/ammo/sight.
+Profile _makeProfile({Ammo? ammo, Weapon? weapon, Sight? sight}) => Profile()
+  ..name = 'Test Profile'
+  ..ammo = ammo ?? _makeAmmo()
+  ..weapon = weapon ?? _makeWeapon()
+  ..sight = sight ?? _makeSight();
 
 /// Builds a ShootingConditions entity with sensible defaults.
 ShootingConditions _makeConditions({
@@ -73,7 +71,7 @@ ShootingConditions _makeConditions({
   ..distanceMeter = targetM
   ..temperatureC = tempC
   ..altitudeMeter = altM
-  ..pressurehPa = pressHPa
+  ..pressureHPa = pressHPa
   ..humidityFrac = humidity
   ..powderTemperatureC = powderTempC
   ..windSpeedMps = windSpeedMps
@@ -100,7 +98,7 @@ void main() {
         const TableCalcOptions(stepM: 100),
       );
 
-      expect(result.hitResult.trajectory, isNotEmpty);
+      expect(result.hitResult.samples, isNotEmpty);
       expect(result.zeroElevationRad, isNot(0.0));
     });
 
@@ -111,7 +109,7 @@ void main() {
         const TableCalcOptions(stepM: 100),
       );
 
-      final firstPoint = result.hitResult.trajectory.first;
+      final firstPoint = result.hitResult.samples.first;
       expect(firstPoint.distance.in_(Unit.meter), closeTo(0.0, 1.0));
     });
 
@@ -122,7 +120,7 @@ void main() {
         const TableCalcOptions(stepM: 100),
       );
 
-      final lastPoint = result.hitResult.trajectory.last;
+      final lastPoint = result.hitResult.samples.last;
       expect(lastPoint.distance.in_(Unit.meter), greaterThan(1900));
     });
 
@@ -142,8 +140,8 @@ void main() {
       );
 
       expect(
-        fine.hitResult.trajectory.length,
-        greaterThan(coarse.hitResult.trajectory.length),
+        fine.hitResult.samples.length,
+        greaterThan(coarse.hitResult.samples.length),
       );
     });
 
@@ -163,8 +161,8 @@ void main() {
       );
 
       expect(
-        second.hitResult.trajectory.length,
-        equals(first.hitResult.trajectory.length),
+        second.hitResult.samples.length,
+        equals(first.hitResult.samples.length),
       );
       expect(second.zeroElevationRad, closeTo(first.zeroElevationRad, 1e-9));
     });
@@ -176,7 +174,7 @@ void main() {
         const TableCalcOptions(stepM: 100),
       );
 
-      final traj = result.hitResult.trajectory;
+      final traj = result.hitResult.samples;
       for (var i = 1; i < traj.length; i++) {
         expect(
           traj[i].velocity.in_(Unit.mps),
@@ -206,7 +204,7 @@ void main() {
         const TargetCalcOptions(targetDistM: 300.0, stepM: 10.0),
       );
 
-      expect(result.hitResult.trajectory, isNotEmpty);
+      expect(result.hitResult.samples, isNotEmpty);
       expect(result.zeroElevationRad, isNot(0.0));
     });
 
@@ -217,7 +215,7 @@ void main() {
         const TargetCalcOptions(targetDistM: 500.0, stepM: 10.0),
       );
 
-      final lastPoint = result.hitResult.trajectory.last;
+      final lastPoint = result.hitResult.samples.last;
       expect(lastPoint.distance.in_(Unit.meter), closeTo(500.0, 2.0));
     });
 
@@ -241,8 +239,8 @@ void main() {
       final second = await service.calculateForTarget(profile, cond, opts);
 
       expect(
-        second.hitResult.trajectory.length,
-        equals(first.hitResult.trajectory.length),
+        second.hitResult.samples.length,
+        equals(first.hitResult.samples.length),
       );
       expect(second.zeroElevationRad, closeTo(first.zeroElevationRad, 1e-9));
     });
@@ -260,8 +258,8 @@ void main() {
       );
 
       expect(
-        long.hitResult.trajectory.length,
-        greaterThan(short.hitResult.trajectory.length),
+        long.hitResult.samples.length,
+        greaterThan(short.hitResult.samples.length),
       );
     });
   });
@@ -274,7 +272,7 @@ void main() {
         const TableCalcOptions(stepM: 100),
       );
 
-      final lastPoint = result.hitResult.trajectory.last;
+      final lastPoint = result.hitResult.samples.last;
       expect(lastPoint.windage.in_(Unit.centimeter).abs(), greaterThan(0.1));
     });
 
@@ -292,13 +290,29 @@ void main() {
         const TableCalcOptions(stepM: 100),
       );
 
-      final noWindLast = noWindResult.hitResult.trajectory.last;
-      final windLast = windResult.hitResult.trajectory.last;
+      final noWindLast = noWindResult.hitResult.samples.last;
+      final windLast = windResult.hitResult.samples.last;
       expect(
         windLast.windage.in_(Unit.centimeter).abs(),
         greaterThan(noWindLast.windage.in_(Unit.centimeter).abs() * 5),
         reason: 'Wind should cause much more windage than spin drift alone',
       );
+    });
+
+    test('calculateForTarget (Home-screen path) also applies wind', () async {
+      final result = await service.calculateForTarget(
+        _makeProfile(),
+        _makeConditions(
+          targetM: 300.0,
+          windSpeedMps: 5.0,
+          windDirectionDeg: 90.0,
+        ),
+        const TargetCalcOptions(targetDistM: 300.0, stepM: 10.0),
+      );
+
+      final lastPoint = result.hitResult.samples.last;
+      expect(lastPoint.windage.in_(Unit.centimeter).abs(), greaterThan(0.1));
+      expect(lastPoint.windageAngle.in_(Unit.mil).abs(), greaterThan(0.01));
     });
   });
 

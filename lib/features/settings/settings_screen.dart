@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:ebalistyka/shared/constants/app_info.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 
-import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
@@ -10,17 +9,26 @@ import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:ebalistyka/update/update_checker.dart';
 import 'package:ebalistyka/update/update_sheet.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
+import 'package:ebalistyka/core/providers/app_state_provider.dart';
+import 'package:ebalistyka/core/providers/db_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/core/services/ebcp_service.dart';
+import 'package:ebalistyka/core/session/pwa_install.dart';
+import 'package:ebalistyka/features/home/profiles_vm.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/shared/widgets/action_sheet.dart';
+import 'package:ebalistyka/shared/widgets/confirm_dialog.dart';
+import 'package:ebalistyka/shared/widgets/profile_selection_sheet.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -97,6 +105,112 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
+  Future<void> _onExportBackup() async {
+    final profiles = ref.read(appStateProvider).value?.profiles ?? [];
+    final settings = ref.read(settingsDataProvider);
+    try {
+      final now = DateTime.now();
+      final name =
+          'ebalistyka-backup-${now.year}${now.month.toString().padLeft(2, '0')}'
+          '${now.day.toString().padLeft(2, '0')}-${now.hour.toString().padLeft(2, '0')}'
+          '${now.minute.toString().padLeft(2, '0')}';
+      await EbcpService.shareFile(
+        EbcpService.buildFullBackup(profiles, settings),
+        name,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      showFeedback(context, e.toString(), isError: true);
+    }
+  }
+
+  Future<void> _onImportBackup() async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final data = await EbcpService.pickAndParse();
+      if (data == null || !mounted) return;
+
+      final profiles = EbcpService.profilesOf(data);
+      final hasProfiles = profiles.isNotEmpty;
+      final hasSettings = data.hasSettingsData();
+      if (!hasProfiles && !hasSettings) {
+        showFeedback(context, l10n.ebcpFileIsEmpty, isError: true);
+        return;
+      }
+
+      await showActionSheet(
+        context,
+        title: l10n.importScopeDialogTitle,
+        entries: [
+          ActionSheetItem(
+            title: l10n.importAllProfilesAction(profiles.length),
+            isDisabled: !hasProfiles,
+            onTap: () => _importSelectedProfiles(profiles),
+          ),
+          ActionSheetItem(
+            title: l10n.importSettingsOnlyAction,
+            isDisabled: !hasSettings,
+            onTap: () => _importSettings(data.settingsData),
+          ),
+          ActionSheetItem(
+            title: l10n.importEverythingAction,
+            isDisabled: !hasProfiles || !hasSettings,
+            onTap: () async {
+              debugPrint('Import everything: starting profile selection');
+              final proceeded = await _importSelectedProfiles(profiles);
+              debugPrint(
+                'Import everything: proceeded=$proceeded mounted=$mounted',
+              );
+              if (!proceeded || !mounted) return;
+              debugPrint('Import everything: importing settings');
+              await _importSettings(data.settingsData);
+            },
+          ),
+        ],
+      );
+    } catch (e) {
+      debugPrint('Backup import failed: $e');
+      if (!mounted) return;
+      showFeedback(context, '${l10n.actionImportBackup}: $e', isError: true);
+    }
+  }
+
+  /// Shows a checkbox picker over [profiles] and imports whatever the user
+  /// leaves checked (in one batched write — see `AppStateNotifier
+  /// .importProfiles`). Returns whether the user actually confirmed a
+  /// (possibly partial) selection, so "everything" only proceeds to
+  /// settings import if the profile step wasn't cancelled.
+  Future<bool> _importSelectedProfiles(List<Profile> profiles) async {
+    final selected = await showProfileSelectionSheet(context, profiles);
+    debugPrint(
+      '_importSelectedProfiles: selected=${selected?.length} (null means dismissed) mounted=$mounted',
+    );
+    // null = dismissed (back/tap-outside) — abort. Empty (user chose
+    // "Skip") is a deliberate no-profiles proceed, distinct from that —
+    // "everything" still continues on to import settings.
+    if (selected == null || !mounted) return false;
+    if (selected.isNotEmpty) {
+      await ref.read(profilesActionsProvider.notifier).importProfiles(selected);
+    }
+    return true;
+  }
+
+  Future<void> _importSettings(SettingsData settings) async {
+    debugPrint('_importSettings: showing overwrite-confirm dialog');
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showConfirmDialog(
+      context,
+      title: l10n.overwriteSettingsConfirmTitle,
+      content: l10n.overwriteSettingsConfirmContent,
+      confirmLabel: l10n.overwriteAction,
+      isDestructive: true,
+    );
+    debugPrint('_importSettings: confirmed=$confirmed mounted=$mounted');
+    if (!confirmed || !mounted) return;
+    ref.read(settingsDataProvider.notifier).update((_) => settings);
+    debugPrint('_importSettings: settings replaced');
+  }
+
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsProvider).value ?? GeneralSettings();
@@ -116,13 +230,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ListSectionTile(l10n.sectionLanguage),
           ListTile(
             leading: const Icon(Icons.language_outlined),
-            title: Text(_languageName(settings.languageCode)),
+            title: Text(_languageName(_effectiveLanguageCode(context, settings))),
             trailing: const Icon(IconDef.chevronRight),
             dense: true,
             onTap: () => _showLanguageDialog(
               context,
               l10n.sectionLanguage,
-              settings.languageCode,
+              _effectiveLanguageCode(context, settings),
               notifier.setLanguage,
             ),
           ),
@@ -199,22 +313,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   child: FilledButton.tonalIcon(
                     icon: const Icon(IconDef.export),
                     label: Text(l10n.actionExportBackup),
-                    onPressed: () async {
-                      final file = EbcpService.buildFullExport(ref);
-                      final messenger = ScaffoldMessenger.of(context);
-                      final errorColor = Theme.of(context).colorScheme.error;
-                      try {
-                        await EbcpService.shareFile(file, 'ebalistyka_backup');
-                      } catch (e) {
-                        messenger.showSnackBar(
-                          SnackBar(
-                            content: Text(e.toString()),
-                            backgroundColor: errorColor,
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
-                      }
-                    },
+                    onPressed: _onExportBackup,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -222,20 +321,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   child: FilledButton.tonalIcon(
                     icon: const Icon(IconDef.import),
                     label: Text(l10n.actionImportBackup),
-                    onPressed: () async {
-                      try {
-                        final file = await EbcpService.pickAndParse();
-                        if (file == null || !context.mounted) return;
-                        await EbcpService.restoreFromExport(file, ref);
-                      } catch (e) {
-                        if (!context.mounted) return;
-                        showFeedback(
-                          context,
-                          '${l10n.errorImportBackupFailed}: $e',
-                          isError: true,
-                        );
-                      }
-                    },
+                    onPressed: _onImportBackup,
                   ),
                 ),
               ],
@@ -300,6 +386,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             dense: true,
             onTap: () => _launchUrl(tosUrl),
           ),
+          ListTile(
+            leading: const Icon(Icons.balance_outlined),
+            title: Text(l10n.labelLicenseGpl),
+            trailing: const Icon(IconDef.link, size: 16),
+            dense: true,
+            onTap: () => _launchUrl(
+              Localizations.localeOf(context).languageCode == 'uk'
+                  ? gplUkUrl
+                  : gplUrl,
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.description_outlined),
+            title: Text(l10n.labelOpenSourceLicenses),
+            trailing: const Icon(IconDef.chevronRight, size: 16),
+            dense: true,
+            onTap: () => showLicensePage(
+              context: context,
+              applicationName: 'eBalistyka',
+            ),
+          ),
 
           const TileDivider(),
 
@@ -322,19 +429,44 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
             dense: true,
           ),
-          ListTile(
-            leading: _checkingUpdate
-                ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.system_update_outlined),
-            title: Text(l10n.checkForUpdatesLabel),
-            dense: true,
-            onTap: _checkingUpdate ? null : _checkForUpdates,
-            onLongPress: _checkingUpdate ? null : _onCheckForUpdatesLongPress,
-          ),
+          if (kIsWeb)
+            ValueListenableBuilder<bool>(
+              valueListenable: pwaInstallAvailable,
+              builder: (context, available, _) => available
+                  ? ListTile(
+                      leading: const Icon(Icons.install_desktop_outlined),
+                      title: Text(l10n.pwaInstallAction),
+                      dense: true,
+                      onTap: () => unawaited(promptPwaInstall()),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          if (kIsWeb)
+            ListTile(
+              leading: const Icon(Icons.download_outlined),
+              title: Text(l10n.downloadAppAction),
+              dense: true,
+              onTap: () =>
+                  _launchUrl(
+                    Uri.base.resolve('download/index.html').toString(),
+                  ),
+            )
+          else
+            ListTile(
+              leading: _checkingUpdate
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.system_update_outlined),
+              title: Text(l10n.checkForUpdatesLabel),
+              dense: true,
+              onTap: _checkingUpdate ? null : _checkForUpdates,
+              onLongPress: _checkingUpdate
+                  ? null
+                  : _onCheckForUpdatesLongPress,
+            ),
           ListTile(
             leading: const Icon(Icons.history_outlined),
             title: Text(l10n.labelChangelog),
@@ -351,6 +483,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 }
 
 // ─── Language helpers ─────────────────────────────────────────────────────────
+
+/// [settings.languageCode] empty means "no explicit user choice" — show
+/// (and pre-select in the picker) the locale that's actually active right
+/// now, resolved by `MaterialApp`'s own device-locale-aware machinery, not
+/// a hardcoded default.
+String _effectiveLanguageCode(BuildContext context, GeneralSettings settings) =>
+    settings.languageCode.isNotEmpty
+        ? settings.languageCode
+        : Localizations.localeOf(context).languageCode;
 
 String _languageName(String code) => switch (code) {
   'uk' => 'Українська',

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:dart_bclibc/bclibc.dart';
+import 'package:bclibc_flutter/bclibc.dart';
 import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
@@ -10,7 +10,8 @@ import 'package:ebalistyka/features/convertors/generic_convertor_vm_field.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
+import 'package:ebalistyka/core/extensions/num_extensions.dart';
 
 class VelocityConvertorUiState {
   final GenericConvertorField mps;
@@ -92,7 +93,7 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
       );
     } else if (newUnit != Unit.mach && s.velocityUnit == Unit.mach) {
       // Switching FROM mach: sync mps from stored mach + current atmo.
-      final mpsValue = s.velocityMachInputValue
+      final mpsValue = s.velocity.machInputValue
           .toVelocityFromMach(atmo)
           .in_(Unit.mps);
       unawaited(
@@ -151,11 +152,11 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
     );
   }
 
-  Atmo _buildAtmo(ConvertorsState s) => s.velocityMachUseCustomAtmo
+  Atmo _buildAtmo(ConvertorsState s) => s.velocity.machUseCustomAtmo
       ? Atmo(
           temperature: s.velocityAtmoTemperature,
           pressure: s.velocityAtmoPressure,
-          humidity: s.velocityAtmoHumidityFrac,
+          humidity: s.velocity.atmoHumidityFrac,
           altitude: s.velocityAtmoAltitude,
         )
       : Atmo.icao();
@@ -172,7 +173,7 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
 
   String _formatValue(double value, int decimals, String symbol) {
     if (value.isNaN || value.isInfinite) return '— $symbol';
-    return '${value.toStringAsFixed(decimals)} $symbol';
+    return '${value.toFixedSafe(decimals)} $symbol';
   }
 
   VelocityConvertorUiState _buildState(
@@ -180,7 +181,7 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
     AppLocalizations l10n,
   ) {
     final inputUnit = s.velocityUnit;
-    final useCustom = s.velocityMachUseCustomAtmo;
+    final useCustom = s.velocity.machUseCustomAtmo;
     final atmo = _buildAtmo(s);
     final speedOfSoundMps = atmo.mach.in_(Unit.mps);
 
@@ -189,7 +190,7 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
     final double rawMps;
     final double machRaw;
     if (inputUnit == Unit.mach) {
-      machRaw = s.velocityMachInputValue;
+      machRaw = s.velocity.machInputValue;
       rawMps = machRaw * speedOfSoundMps;
     } else {
       rawMps = s.velocityValue.in_(Unit.mps);
@@ -215,7 +216,7 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
       useCustomAtmo: useCustom,
       atmoTemperatureC: s.velocityAtmoTemperature.in_(Unit.celsius),
       atmoPressureHPa: s.velocityAtmoPressure.in_(Unit.hPa),
-      atmoHumidityFrac: s.velocityAtmoHumidityFrac,
+      atmoHumidityFrac: s.velocity.atmoHumidityFrac,
       atmoAltitudeMeter: s.velocityAtmoAltitude.in_(Unit.meter),
       mps: GenericConvertorField(
         labelBuilder: (l10n) => l10n.unitMps,

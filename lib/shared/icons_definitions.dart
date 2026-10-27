@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class IconDef {
   static const IconData help = Icons.help_outline_outlined;
@@ -19,7 +19,7 @@ class IconDef {
   static const IconData humidity = Icons.water_drop_outlined;
   static const IconData energy = Icons.bolt_outlined;
   static const IconData dropWindageAngle = Icons.rotate_90_degrees_cw_outlined;
-  static const IconData windage = Icons.arrow_right_alt_outlined;
+  static const IconData windage = Icons.arrow_forward_outlined;
   static const IconData twistR = Icons.rotate_right_outlined;
   static const IconData twistL = Icons.rotate_left_outlined;
   static const IconData coriolis = Icons.rotate_right_outlined;
@@ -64,6 +64,7 @@ class IconDef {
   static const IconData edit = Icons.edit_outlined;
   static const IconData copy = Icons.copy_outlined;
   static const IconData remove = Icons.delete_forever_outlined;
+  static const IconData replace = Icons.find_replace_outlined;
   static const IconData clear = Icons.clear_outlined;
   static const IconData dropDown = Icons.arrow_drop_down_outlined;
   static const IconData openCollection = Icons.folder_open_outlined;

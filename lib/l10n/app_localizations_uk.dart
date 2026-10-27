@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -24,7 +25,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get settingsScreenTitle => 'Налаштування';
 
   @override
-  String get convertorsScreenTitle => 'Конвертори';
+  String get convertorsScreenTitle => 'Конвертери';
 
   @override
   String get notesScreenTitle => 'Нотатки';
@@ -39,13 +40,16 @@ class AppLocalizationsUk extends AppLocalizations {
   String get adjustmentDisplayScreenTitle => 'Відображення поправок';
 
   @override
-  String get myAmmoScreenTitle => 'Мої набої';
+  String get myProfile => 'Профіль';
 
   @override
-  String get mySights => 'Мої приціли';
+  String get profilesListScreenTitle => 'Мої профілі';
 
   @override
-  String get myProfiles => 'Мої профілі';
+  String get profilesScreenTitle => 'Профілі';
+
+  @override
+  String get activeProfileLabel => 'Активний';
 
   @override
   String get newWeaponScreenTitle => 'Нова зброя';
@@ -595,6 +599,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get duplicateAction => 'Створити копію';
 
   @override
+  String get replaceAction => 'Замінити';
+
+  @override
   String get exportAction => 'Експортувати';
 
   @override
@@ -620,6 +627,9 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get actionAddSight => 'Додати приціл';
+
+  @override
+  String get actionAddWeapon => 'Додати зброю';
 
   @override
   String get actionExportBackup => 'Експортувати';
@@ -677,6 +687,12 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get labelPrivacyPolicy => 'Політика конфіденційності';
+
+  @override
+  String get labelLicenseGpl => 'Ліцензія (GPLv3)';
+
+  @override
+  String get labelOpenSourceLicenses => 'Ліцензії з відкритим кодом';
 
   @override
   String get labelVersion => 'Версія';
@@ -972,6 +988,10 @@ class AppLocalizationsUk extends AppLocalizations {
   String get lookAngleWasReset => 'Кут цілі було скинуто до 0°';
 
   @override
+  String get databaseResetNotice =>
+      'Базу даних було пошкоджено, її скинуто. Усі дані видалено.';
+
+  @override
   String get targetRange => 'Відстань до цілі';
 
   @override
@@ -1038,9 +1058,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get newBullet => 'Нова куля';
 
   @override
-  String get copyOf => 'Копія';
-
-  @override
   String get editProfile => 'Редагувати профіль';
 
   @override
@@ -1074,6 +1091,27 @@ class AppLocalizationsUk extends AppLocalizations {
   String get noSightsFoundInFile => 'Прицілів у файлі не знайдено';
 
   @override
+  String get emptyStateNoProfile => 'Профіль не обрано';
+
+  @override
+  String get emptyStateNoAmmo => 'Набій не обрано';
+
+  @override
+  String get emptyStateNoSight => 'Приціл не обрано';
+
+  @override
+  String get emptyStateIncompleteAmmo => 'Дані набою неповні';
+
+  @override
+  String get emptyStateIncompleteWeapon => 'Дані зброї неповні';
+
+  @override
+  String get emptyStateError => 'Щось пішло не так';
+
+  @override
+  String get emptyStateNoData => 'Немає даних';
+
+  @override
   String get ammoDuplicateDialogTitle => 'Копіювати набій';
 
   @override
@@ -1095,10 +1133,16 @@ class AppLocalizationsUk extends AppLocalizations {
   String get selectAmmoHint => 'Оберіть набій';
 
   @override
+  String get selectWeaponHint => 'Оберіть зброю';
+
+  @override
   String get placeholderSearch => 'Пошук';
 
   @override
   String get notYetAvaliable => 'поки що не доступно';
+
+  @override
+  String get nameRequiredError => 'Вкажіть назву';
 
   @override
   String get requiredFieldError => 'Обов\'язкове';
@@ -1123,6 +1167,35 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sectionZeroing => 'Пристрілка';
 
   @override
+  String nMeasurements(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count вимірювання',
+      many: '$count вимірювань',
+      few: '$count вимірювання',
+      one: '$count вимірювання',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get tapToAddMeasurements => 'Торкніться, щоб додати вимірювання T-V';
+
+  @override
+  String nBreakpoints(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count точки',
+      many: '$count точок',
+      few: '$count точки',
+      one: '$count точка',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get calculateFromMeasurementsAction => 'Розрахувати з вимірювань';
 
   @override
@@ -1134,6 +1207,16 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String enableMultiBcTitle(String model) {
     return 'Увімкнути мульти-БК $model';
+  }
+
+  @override
+  String multiBcMode(String model) {
+    return 'Режим мульти-БК $model';
+  }
+
+  @override
+  String singleBcMode(String model) {
+    return 'Режим одного БК $model';
   }
 
   @override
@@ -1186,11 +1269,59 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String removeProfileContent(String name) {
-    return 'Видалити \"$name\" та відповідну зброю?';
+    return 'Видалити \"$name\" разом із зброєю, набоєм і прицілом?';
   }
 
   @override
   String get exportFormatDialogTitle => 'Формат експорту';
+
+  @override
+  String get ebcpFileHasNoProfiles =>
+      'У цьому файлі немає профілів для імпорту.';
+
+  @override
+  String get ebcpFileIsEmpty => 'У цьому файлі немає нічого для імпорту.';
+
+  @override
+  String get importScopeDialogTitle => 'Обсяг імпорту';
+
+  @override
+  String get selectProfilesToImportTitle => 'Виберіть профілі для імпорту';
+
+  @override
+  String get selectAllAction => 'Вибрати всі';
+
+  @override
+  String importAllProfilesAction(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Імпортувати $count профілів',
+      many: 'Імпортувати $count профілів',
+      few: 'Імпортувати $count профілі',
+      one: 'Імпортувати $count профіль',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get importSettingsOnlyAction => 'Тільки налаштування';
+
+  @override
+  String get importEverythingAction => 'Усе';
+
+  @override
+  String get skipAction => 'Пропустити';
+
+  @override
+  String get overwriteSettingsConfirmTitle => 'Перезаписати налаштування?';
+
+  @override
+  String get overwriteSettingsConfirmContent =>
+      'Це замінить ваші поточні налаштування налаштуваннями з імпортованого файлу. Цю дію не можна скасувати.';
+
+  @override
+  String get overwriteAction => 'Перезаписати';
 
   @override
   String get selectRangeDialogTitle => 'Вибрати дистанцію';
@@ -1252,6 +1383,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get checkForUpdatesLabel => 'Перевірити оновлення';
 
   @override
+  String get downloadAppAction => 'Завантажити застосунок';
+
+  @override
   String get upToDateMessage => 'У вас остання версія';
 
   @override
@@ -1307,4 +1441,90 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get updateWeaponCaliberAction => 'Оновити калібр зброї';
+
+  @override
+  String get replaceWeaponWarningTitle => 'Замінити зброю?';
+
+  @override
+  String get replaceWeaponWarningContent =>
+      'Це видалить поточні дані зброї. Спершу створіть копію профілю, якщо хочете їх зберегти.';
+
+  @override
+  String get replaceAmmoWarningTitle => 'Замінити набій?';
+
+  @override
+  String get replaceAmmoWarningContent =>
+      'Це видалить поточні дані набою (таблиці БК, дані пристрілки, чутливість пороху тощо). Спершу створіть копію профілю, якщо хочете їх зберегти.';
+
+  @override
+  String get replaceSightWarningTitle => 'Замінити приціл?';
+
+  @override
+  String get replaceSightWarningContent =>
+      'Це видалить поточні дані прицілу (значення кліків, пристрілку тощо). Спершу створіть копію профілю, якщо хочете їх зберегти.';
+
+  @override
+  String weaponAmmoCaliberMismatchContent(String weapon, String ammo) {
+    return 'Калібр нової зброї ($weapon) не відповідає калібру поточного набою ($ammo). Оновити калібр набою відповідно?';
+  }
+
+  @override
+  String get legacyMigrationConfirmTitle => 'Знайдено старі дані';
+
+  @override
+  String get legacyMigrationConfirmContent =>
+      'Ми знайшли дані з попередньої версії цього додатку. Імпортувати їх?';
+
+  @override
+  String get legacyMigrationConfirmAction => 'Імпортувати';
+
+  @override
+  String get legacyMigrationDeclineAction => 'Не зараз';
+
+  @override
+  String get legacyMigrationInProgress => 'Імпортуємо ваші старі дані…';
+
+  @override
+  String get legacyMigrationFailedTitle => 'Не вдалося імпортувати';
+
+  @override
+  String get legacyMigrationRetryAction => 'Повторити';
+
+  @override
+  String get legacyOrphanedDataTitle => 'Деякі дані не імпортовано';
+
+  @override
+  String legacyOrphanedDataContent(
+    int weaponCount,
+    int ammoCount,
+    int sightCount,
+  ) {
+    return '$weaponCount гвинтівок, $ammoCount патронів і $sightCount прицілів з вашої старої бібліотеки не належали жодному профілю і не були імпортовані. Ви можете експортувати їх у файл JSON, щоб зберегти на потім.';
+  }
+
+  @override
+  String get legacyExportOrphanedDataAction => 'Експортувати як JSON';
+
+  @override
+  String get legacyContinueAction => 'Продовжити';
+
+  @override
+  String get tabBlockedTitle => 'Відкрито в іншому вікні';
+
+  @override
+  String get tabBlockedMessage =>
+      'eBalistyka відкрито в іншій вкладці чи вікні. Працювати можна лише в одному, тому це вікно призупинено.';
+
+  @override
+  String get tabBlockedAction => 'Використовувати тут';
+
+  @override
+  String get pwaInstallAction => 'Встановити як застосунок';
+
+  @override
+  String get pwaInstallHint =>
+      'Встановіть eBalistyka як застосунок: він матиме окреме вікно, а браузер значно рідше очищатиме ваші дані.';
+
+  @override
+  String get pwaInstallHintAction => 'Встановити';
 }

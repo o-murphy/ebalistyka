@@ -2,7 +2,7 @@ import 'package:ebalistyka/core/models/collection_item.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class CollectionItemTile extends StatelessWidget {
   const CollectionItemTile({
@@ -10,6 +10,7 @@ class CollectionItemTile extends StatelessWidget {
     this.body,
     required this.onSelect,
     this.onEdit,
+    this.editLabel,
     this.onRemove,
     this.onDuplicate,
     this.onExport,
@@ -22,6 +23,7 @@ class CollectionItemTile extends StatelessWidget {
   final Widget? body;
   final VoidCallback onSelect;
   final VoidCallback? onEdit;
+  final String? editLabel;
   final VoidCallback? onRemove;
   final VoidCallback? onDuplicate;
   final VoidCallback? onExport;
@@ -44,7 +46,7 @@ class CollectionItemTile extends StatelessWidget {
         if (onEdit != null)
           ActionSheetItem(
             icon: IconDef.edit,
-            title: l10n.editAction,
+            title: editLabel ?? l10n.editAction,
             onTap: () async => onEdit!(),
           ),
         if (onDuplicate != null)
@@ -77,7 +79,7 @@ class CollectionItemTile extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
 
     return SizedBox(
-      height: 200,
+      height: 170,
       child: Card(
         shape: isSelected
             ? RoundedRectangleBorder(
@@ -116,19 +118,20 @@ class CollectionItemTile extends StatelessWidget {
               ),
 
             // Bottom right — select button
-            Positioned(
-              bottom: 8,
-              right: 8,
-              child: FloatingActionButton(
-                elevation: 0,
-                mini: true,
-                heroTag: 'select_btn_${item.id}',
-                onPressed: onSelect,
-                backgroundColor: cs.primaryContainer,
-                foregroundColor: cs.onPrimaryContainer,
-                child: const Icon(IconDef.apply, size: 20),
+            if (!isSelected)
+              Positioned(
+                bottom: 8,
+                right: 8,
+                child: FloatingActionButton(
+                  elevation: 0,
+                  mini: true,
+                  heroTag: 'select_btn_${item.id}',
+                  onPressed: onSelect,
+                  backgroundColor: cs.primaryContainer,
+                  foregroundColor: cs.onPrimaryContainer,
+                  child: const Icon(IconDef.apply, size: 20),
+                ),
               ),
-            ),
           ],
         ),
       ),

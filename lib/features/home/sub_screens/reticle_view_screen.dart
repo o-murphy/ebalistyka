@@ -4,7 +4,7 @@ import 'package:ebalistyka/features/home/widgets/offsets_message.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 
-import 'package:dart_bclibc/unit.dart' show Angular, Unit;
+import 'package:bclibc_flutter/unit.dart' show Angular, Unit;
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
@@ -27,7 +27,7 @@ import 'package:ebalistyka/shared/widgets/offsets_edit.dart';
 import 'package:ebalistyka/shared/widgets/reticle_view.dart';
 import 'package:ebalistyka/shared/widgets/adjustment_input_with_clicks.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_with_unit_picker_tile.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -78,7 +78,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
     _targetImage = reticle.targetImage;
 
     final ctx = ref.read(shotContextProvider).value;
-    final s = ctx?.profile.sight.target;
+    final s = ctx?.profile.sight;
     _reticleImage = s?.reticleImage;
     _vClickUnit = s?.verticalClickUnitValue ?? Unit.mil;
     _vClickRaw = s != null
@@ -233,7 +233,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                       ListTile(
                         leading: const Icon(IconDef.sight),
                         title: Text(l10n.targetPattern),
-                        subtitle: Text(_targetImage ?? l10n.defaultLabel),
+                        subtitle: Text(assetIdLabel(_targetImage, l10n.defaultLabel)),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () async {
                           final result = await context.push<String?>(
@@ -259,7 +259,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                       ListTile(
                         leading: const Icon(IconDef.sight),
                         title: Text(l10n.reticlePattern),
-                        subtitle: Text(_reticleImage ?? l10n.defaultLabel),
+                        subtitle: Text(assetIdLabel(_reticleImage, l10n.defaultLabel)),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () async {
                           final result = await context.push<String?>(

@@ -1,7 +1,7 @@
 // ─── Page dots indicator with navigation arrows ──────────────────────────────
 
 import 'package:ebalistyka/shared/icons_definitions.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class PageDotsIndicator extends StatelessWidget {
   const PageDotsIndicator({

@@ -1,5 +1,5 @@
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Reusable stub for screens that are not yet implemented.
 /// All screens except Home have a back button + centered title header.

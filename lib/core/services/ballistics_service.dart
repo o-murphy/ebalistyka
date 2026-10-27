@@ -1,5 +1,9 @@
-import 'package:ebalistyka_db/ebalistyka_db.dart';
-import 'package:dart_bclibc/bclibc.dart' as bclibc;
+import 'package:ebc_db/ebc_db.dart';
+import 'package:bclibc_flutter/bclibc.dart' as bclibc;
+
+/// Integration method shared by the native and web ballistics backends, so
+/// both platforms produce identical results.
+const kIntegrationMethod = bclibc.BcIntegrationMethod.tsitouras;
 
 class TableCalcOptions {
   final double startM;
@@ -42,11 +46,21 @@ class BallisticsResult {
   /// Empty when [TargetCalcOptions.tableStepM] is not provided.
   final List<double> tableHolds;
 
+  /// Windage correction (radians) for the target distance, from the aiming
+  /// solution. Zero for table calculations.
+  final double windageRad;
+
+  /// Windage corrections for each of the 5 home table columns, same layout
+  /// as [tableHolds].
+  final List<double> tableWindages;
+
   const BallisticsResult({
     required this.hitResult,
     required this.zeroElevationRad,
     this.holdRad = 0.0,
     this.tableHolds = const [],
+    this.windageRad = 0.0,
+    this.tableWindages = const [],
   });
 }
 

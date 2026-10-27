@@ -7,7 +7,7 @@ import 'package:ebalistyka/shared/widgets/action_sheet.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 
-import 'package:dart_bclibc/unit.dart';
+import 'package:bclibc_flutter/unit.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
@@ -18,7 +18,6 @@ import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/mixins/wizard_form_mixin.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/coriolis_section.dart';
-import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/offsets_edit.dart';
 import 'package:ebalistyka/shared/widgets/powder_sens_section.dart';
@@ -26,8 +25,8 @@ import 'package:ebalistyka/features/home/sub_screens/powder_sens_table_editor_sc
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:ebalistyka/shared/widgets/wizard_action_bar.dart';
 import 'package:ebalistyka/shared/widgets/wizard_name_field.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
-import 'package:flutter/material.dart' hide Velocity;
+import 'package:ebc_db/ebc_db.dart';
+import 'package:material_ui/material_ui.dart' hide Velocity;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -37,7 +36,7 @@ class AmmoWizardScreen extends ConsumerStatefulWidget {
   const AmmoWizardScreen({
     this.initial,
     this.caliberInch,
-    this.weaponId,
+    this.profileUuid,
     super.key,
   });
 
@@ -50,10 +49,10 @@ class AmmoWizardScreen extends ConsumerStatefulWidget {
   /// Displayed readonly — never entered manually.
   final double? caliberInch;
 
-  /// ID of the weapon associated with this ammo session.
+  /// uuid of the profile associated with this ammo session.
   /// When set and a caliber mismatch exists, the action sheet offers an
   /// option to update the weapon caliber instead of the ammo.
-  final int? weaponId;
+  final String? profileUuid;
 
   @override
   ConsumerState<AmmoWizardScreen> createState() => _AmmoWizardScreenState();
@@ -108,7 +107,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
 
   void _scheduleCaliberMismatchSheet({required AppLocalizations l10n}) {
     final weaponCaliber = widget.caliberInch;
-    final ammoCaliber = widget.initial?.caliber.in_(Unit.inch);
+    final ammoCaliber = widget.initial?.caliber?.in_(Unit.inch);
     if (weaponCaliber == null || ammoCaliber == null) return;
     if ((weaponCaliber - ammoCaliber).abs() < 0.0001) return;
 
@@ -126,7 +125,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
           ActionSheetItem(
             icon: IconDef.ammo,
             title: l10n.updateAmmoCaliberAction,
-            subtitle: '$ammoStr → $weaponStr',
+            subtitle: '$ammoStr › $weaponStr',
             onTap: () async => ref
                 .read(_provider.notifier)
                 .updateCaliberRaw(
@@ -135,21 +134,25 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
                   ).in_(FC.projectileDiameter.rawUnit),
                 ),
           ),
-          if (widget.weaponId != null)
+          if (widget.profileUuid != null)
             ActionSheetItem(
               icon: IconDef.weapon,
               title: l10n.updateWeaponCaliberAction,
-              subtitle: '$weaponStr → $ammoStr',
+              subtitle: '$weaponStr › $ammoStr',
               onTap: () async {
+                final profileUuid = widget.profileUuid!;
                 final weapon = ref
                     .read(appStateProvider)
                     .value
-                    ?.weapons
-                    .where((w) => w.id == widget.weaponId)
-                    .firstOrNull;
+                    ?.profiles
+                    .where((p) => p.uuid == profileUuid)
+                    .firstOrNull
+                    ?.weapon;
                 if (weapon == null) return;
                 weapon.caliber = Distance.inch(ammoCaliber);
-                await ref.read(appStateProvider.notifier).saveWeapon(weapon);
+                await ref
+                    .read(appStateProvider.notifier)
+                    .setProfileWeapon(profileUuid, weapon);
               },
             ),
         ],
@@ -291,12 +294,13 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
               textCapitalization: TextCapitalization.words,
             ),
           ),
-          InfoListTile(
-            label: l10n.caliber,
-            value: formatter.diameter(
-              Distance(st.caliberRaw, FC.projectileDiameter.rawUnit),
-            ),
+          UnitValueFieldTile(
+            title: l10n.caliber,
+            rawValue: st.caliberRaw,
+            constraints: FC.projectileDiameter,
+            displayUnit: units.diameterUnit,
             icon: IconDef.caliber,
+            onChanged: notifier.updateCaliberRaw,
           ),
           NullableUnitValueFieldTile(
             title: l10n.weight,
@@ -453,8 +457,8 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
               title: Text(l10n.calculateFromMeasurementsAction),
               subtitle: Text(
                 st.powderSensTable != null
-                    ? '${st.powderSensTable!.length} measurement${st.powderSensTable!.length == 1 ? '' : 's'}'
-                    : 'Tap to add T→V measurements',
+                    ? l10n.nMeasurements(st.powderSensTable!.length)
+                    : l10n.tapToAddMeasurements,
               ),
               trailing: const Icon(IconDef.chevronRight),
               dense: true,
@@ -557,7 +561,7 @@ class _BcSection extends StatelessWidget {
         SwitchListTile(
           title: Text(l10n.enableMultiBcTitle(dtName)),
           subtitle: Text(
-            useMulti ? '$dtName Multi-BC mode' : '$dtName Single BC mode',
+            useMulti ? l10n.multiBcMode(dtName) : l10n.singleBcMode(dtName),
           ),
           value: useMulti,
           onChanged: onMultiChanged,
@@ -589,7 +593,7 @@ class _BcSection extends StatelessWidget {
                 subtitle: Text(
                   isEmpty
                       ? l10n.requiredFieldError
-                      : '$count breakpoint${count == 1 ? '' : 's'}',
+                      : l10n.nBreakpoints(count),
                   style: isEmpty ? TextStyle(color: cs.error) : null,
                 ),
                 trailing: const Icon(IconDef.chevronRight),

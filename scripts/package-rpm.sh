@@ -22,6 +22,8 @@ if [ "$ARCH_SUFFIX" = "x86_64" ]; then RPM_ARCH="x86_64"; else RPM_ARCH="aarch64
 RPM_VERSION="${BUILD_NAME%%-*}"
 RPM_RELEASE="${BUILD_NAME#"$RPM_VERSION"}"
 RPM_RELEASE="${RPM_RELEASE#-}"
+# RPM forbids "-" in Release ("alpha.1-pr.121" is rejected by rpmbuild)
+RPM_RELEASE="${RPM_RELEASE//-/.}"
 if [ -z "$RPM_RELEASE" ]; then RPM_RELEASE="1"; fi
 
 BUILD_ROOT="$(pwd)/.rpm-build"

@@ -1,10 +1,8 @@
-import 'dart:typed_data';
-
-import 'package:dart_bclibc/unit.dart';
+import 'package:bclibc_flutter/unit.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/features/home/sub_screens/ammo_wizard_parsers.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 
 class AmmoWizardFormState {
   const AmmoWizardFormState({
@@ -49,8 +47,8 @@ class AmmoWizardFormState {
     required double? caliberInch,
   }) {
     final a = initial;
-    final caliberRaw = (a != null && a.caliberInch > 0)
-        ? a.caliber.in_(FC.projectileDiameter.rawUnit)
+    final caliberRaw = (a != null && a.hasCaliberInch() && a.caliberInch > 0)
+        ? a.caliber!.in_(FC.projectileDiameter.rawUnit)
         : Distance.inch(
             caliberInch ?? FC.projectileDiameter.minRaw,
           ).in_(FC.projectileDiameter.rawUnit);
@@ -60,27 +58,21 @@ class AmmoWizardFormState {
       vendor: a?.vendor ?? '',
       projectileName: a?.projectileName ?? '',
       caliberRaw: caliberRaw,
-      weightRaw: (a != null && a.weightGrain > 0)
-          ? a.weight.in_(FC.projectileWeight.rawUnit)
+      weightRaw: (a != null && a.hasWeightGrain() && a.weightGrain > 0)
+          ? a.weight!.in_(FC.projectileWeight.rawUnit)
           : null,
-      lengthRaw: (a != null && a.lengthInch > 0)
-          ? a.length.in_(FC.projectileLength.rawUnit)
+      lengthRaw: (a != null && a.hasLengthInch() && a.lengthInch > 0)
+          ? a.length!.in_(FC.projectileLength.rawUnit)
           : null,
       dragType: a?.dragType ?? DragType.g1,
       useMultiBcG1: a?.useMultiBcG1 ?? false,
       useMultiBcG7: a?.useMultiBcG7 ?? false,
       bcG1: (a != null && a.bcG1 > 0) ? a.bcG1 : null,
       bcG7: (a != null && a.bcG7 > 0) ? a.bcG7 : null,
-      multiBcG1Table: decodeBcTable(a?.multiBcTableG1VMps, a?.multiBcTableG1Bc),
-      multiBcG7Table: decodeBcTable(a?.multiBcTableG7VMps, a?.multiBcTableG7Bc),
-      customDragTable: decodeCustomDragTable(
-        a?.customDragTableMach,
-        a?.customDragTableCd,
-      ),
-      powderSensTable: decodePowderSensTable(
-        a?.powderSensitivityTC,
-        a?.powderSensitivityVMps,
-      ),
+      multiBcG1Table: decodeBcTable(a?.multiBcTableG1),
+      multiBcG7Table: decodeBcTable(a?.multiBcTableG7),
+      customDragTable: decodeCustomDragTable(a?.customDragTable),
+      powderSensTable: decodePowderSensTable(a?.powderSensitivityTable),
       mvRaw: a?.mv?.in_(FC.muzzleVelocity.rawUnit),
       mvTempRaw: a?.mvTemperature.in_(FC.temperature.rawUnit) ?? 15.0,
       zeroDistRaw: a?.zeroDistance.in_(FC.zeroDistance.rawUnit) ?? 100.0,
@@ -88,26 +80,26 @@ class AmmoWizardFormState {
       zeroTempRaw: a?.zeroTemperature.in_(FC.temperature.rawUnit) ?? 15.0,
       zeroAltRaw: a?.zeroAltitude.in_(FC.altitude.rawUnit) ?? 0.0,
       zeroPressureRaw: a?.zeroPressure.in_(FC.pressure.rawUnit) ?? 1013.0,
-      zeroHumidityRaw: a?.zeroHumidityFrac ?? 0.0,
+      zeroHumidityRaw: a?.zero.humidityFrac ?? 0.0,
       usePowderSensitivity: a?.usePowderSensitivity ?? false,
       powderSensRaw: a?.powderSensitivityFrac ?? 0.0,
       zeroUseDiffPowderTemp: a?.zeroUseDiffPowderTemperature ?? false,
       zeroPowderTempRaw: a?.zeroPowderTemp.in_(FC.temperature.rawUnit) ?? 15.0,
       zeroUseCoriolis: a?.zeroUseCoriolis ?? false,
-      zeroLatitudeRaw: a?.zeroLatitudeDeg ?? 0.0,
-      zeroAzimuthRaw: a?.zeroAzimuthDeg ?? 0.0,
+      zeroLatitudeRaw: a?.zero.latitudeDeg ?? 0.0,
+      zeroAzimuthRaw: a?.zero.azimuthDeg ?? 0.0,
       offsetYUnit: a?.zeroOffsetYUnitValue ?? Unit.mil,
       offsetYRaw: a == null
-          ? Angular.mil(0.1).in_(FC.adjustment.rawUnit)
+          ? 0.0
           : Angular(
-              a.zeroOffsetY,
+              a.zero.offsetY,
               a.zeroOffsetYUnitValue,
             ).in_(FC.adjustment.rawUnit),
       offsetXUnit: a?.zeroOffsetXUnitValue ?? Unit.mil,
       offsetXRaw: a == null
-          ? Angular.mil(0.1).in_(FC.adjustment.rawUnit)
+          ? 0.0
           : Angular(
-              a.zeroOffsetX,
+              a.zero.offsetX,
               a.zeroOffsetXUnitValue,
             ).in_(FC.adjustment.rawUnit),
     );
@@ -183,90 +175,68 @@ class AmmoWizardFormState {
   Ammo buildAmmo(Ammo? initial) {
     final ammo = initial ?? Ammo();
     ammo.name = name.trim();
-    ammo.vendor = vendor.trim().isEmpty ? null : vendor.trim();
-    ammo.projectileName = projectileName.trim().isEmpty
-        ? null
-        : projectileName.trim();
+    ammo.vendor = vendor.trim();
+    ammo.projectileName = projectileName.trim();
 
     ammo.caliber = Distance(caliberRaw, FC.projectileDiameter.rawUnit);
-    ammo.weightGrain = weightRaw != null
-        ? Weight(weightRaw!, FC.projectileWeight.rawUnit).in_(Unit.grain)
-        : -1.0;
-    ammo.lengthInch = lengthRaw != null
-        ? Distance(lengthRaw!, FC.projectileLength.rawUnit).in_(Unit.inch)
-        : -1.0;
+    ammo.weight = weightRaw != null
+        ? Weight(weightRaw!, FC.projectileWeight.rawUnit)
+        : null;
+    ammo.length = lengthRaw != null
+        ? Distance(lengthRaw!, FC.projectileLength.rawUnit)
+        : null;
 
     ammo.dragType = dragType;
     ammo.useMultiBcG1 = useMultiBcG1;
     ammo.useMultiBcG7 = useMultiBcG7;
-    ammo.bcG1 = bcG1 ?? -1.0;
-    ammo.bcG7 = bcG7 ?? -1.0;
+    ammo.bcG1 = bcG1 ?? 0.0;
+    ammo.bcG7 = bcG7 ?? 0.0;
 
     final g1 = multiBcG1Table;
+    ammo.multiBcTableG1.clear();
     if (g1 != null && g1.isNotEmpty) {
-      ammo.multiBcTableG1VMps = Float64List.fromList(
-        g1.map((r) => r.vMps).toList(),
+      ammo.multiBcTableG1.addAll(
+        g1.map((r) => MultiBcPoint(vMps: r.vMps, bc: r.bc)),
       );
-      ammo.multiBcTableG1Bc = Float64List.fromList(
-        g1.map((r) => r.bc).toList(),
-      );
-    } else {
-      ammo.multiBcTableG1VMps = null;
-      ammo.multiBcTableG1Bc = null;
     }
 
     final g7 = multiBcG7Table;
+    ammo.multiBcTableG7.clear();
     if (g7 != null && g7.isNotEmpty) {
-      ammo.multiBcTableG7VMps = Float64List.fromList(
-        g7.map((r) => r.vMps).toList(),
+      ammo.multiBcTableG7.addAll(
+        g7.map((r) => MultiBcPoint(vMps: r.vMps, bc: r.bc)),
       );
-      ammo.multiBcTableG7Bc = Float64List.fromList(
-        g7.map((r) => r.bc).toList(),
-      );
-    } else {
-      ammo.multiBcTableG7VMps = null;
-      ammo.multiBcTableG7Bc = null;
     }
 
     final custom = customDragTable;
+    ammo.customDragTable.clear();
     if (custom != null && custom.isNotEmpty) {
-      ammo.customDragTableMach = Float64List.fromList(
-        custom.map((r) => r.mach).toList(),
+      ammo.customDragTable.addAll(
+        custom.map((r) => CustomDragPoint(mach: r.mach, cd: r.cd)),
       );
-      ammo.customDragTableCd = Float64List.fromList(
-        custom.map((r) => r.cd).toList(),
-      );
-    } else {
-      ammo.customDragTableMach = null;
-      ammo.customDragTableCd = null;
     }
 
-    ammo.muzzleVelocityMps = mvRaw != null
-        ? Velocity(mvRaw!, FC.muzzleVelocity.rawUnit).in_(Unit.mps)
-        : -1.0;
+    ammo.mv = mvRaw != null
+        ? Velocity(mvRaw!, FC.muzzleVelocity.rawUnit)
+        : null;
     ammo.mvTemperature = Temperature(mvTempRaw, FC.temperature.rawUnit);
 
     ammo.zeroDistance = Distance(zeroDistRaw, FC.zeroDistance.rawUnit);
     ammo.zeroLookAngle = Angular(zeroLookAngleRaw, FC.lookAngle.rawUnit);
     ammo.zeroTemperature = Temperature(zeroTempRaw, FC.temperature.rawUnit);
     ammo.zeroPressure = Pressure(zeroPressureRaw, FC.pressure.rawUnit);
-    ammo.zeroHumidityFrac = zeroHumidityRaw;
+    ammo.zeroHumidity = Ratio.fraction(zeroHumidityRaw);
     ammo.zeroAltitude = Distance(zeroAltRaw, FC.altitude.rawUnit);
 
     ammo.usePowderSensitivity = usePowderSensitivity;
     ammo.powderSensitivity = Ratio.fraction(powderSensRaw);
 
     final psTable = powderSensTable;
+    ammo.powderSensitivityTable.clear();
     if (psTable != null && psTable.isNotEmpty) {
-      ammo.powderSensitivityTC = Float64List.fromList(
-        psTable.map((r) => r.tempC).toList(),
+      ammo.powderSensitivityTable.addAll(
+        psTable.map((r) => PowderSensitivityPoint(tc: r.tempC, vMps: r.vMps)),
       );
-      ammo.powderSensitivityVMps = Float64List.fromList(
-        psTable.map((r) => r.vMps).toList(),
-      );
-    } else {
-      ammo.powderSensitivityTC = null;
-      ammo.powderSensitivityVMps = null;
     }
 
     ammo.zeroUseDiffPowderTemperature = zeroUseDiffPowderTemp;
@@ -276,16 +246,16 @@ class AmmoWizardFormState {
     );
 
     ammo.zeroUseCoriolis = zeroUseCoriolis;
-    ammo.zeroLatitudeDeg = zeroLatitudeRaw;
-    ammo.zeroAzimuthDeg = zeroAzimuthRaw;
+    ammo.zeroLatitude = Angular.degree(zeroLatitudeRaw);
+    ammo.zeroAzimuth = Angular.degree(zeroAzimuthRaw);
 
     ammo.zeroOffsetYUnitValue = offsetYUnit;
-    ammo.zeroOffsetY = Angular(
+    ammo.ensureZero().offsetY = Angular(
       offsetYRaw,
       FC.adjustment.rawUnit,
     ).in_(offsetYUnit);
     ammo.zeroOffsetXUnitValue = offsetXUnit;
-    ammo.zeroOffsetX = Angular(
+    ammo.ensureZero().offsetX = Angular(
       offsetXRaw,
       FC.adjustment.rawUnit,
     ).in_(offsetXUnit);

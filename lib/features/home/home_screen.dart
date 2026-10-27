@@ -9,15 +9,15 @@ import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/pages_dots_indicator.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:ebalistyka/router.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
-import 'package:dart_bclibc/unit.dart';
+import 'package:bclibc_flutter/unit.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/features/home/widgets/home_chart_page.dart';
 import 'package:ebalistyka/features/home/widgets/home_reticle_page.dart';
@@ -87,7 +87,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final vmAsync = ref.watch(homeVmProvider);
     final vmState = vmAsync.value;
 
-    final profileName = vmState is HomeUiReady ? vmState.profileName : nullStr;
+    final profileName = switch (vmState) {
+      HomeUiReady() => vmState.profileName,
+      HomeUiNoData(:final profileName?) => profileName,
+      _ => nullStr,
+    };
     final cs = vmState is HomeUiReady ? vmState.conditionsState : null;
     final tempStr = cs?.tempDisplay ?? nullStr;
     final altStr = cs?.altDisplay ?? nullStr;
@@ -199,36 +203,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                 if (vmState is HomeUiReady)
                                   IconButton.filledTonal(
                                     onPressed: () async {
-                                      final appState = ref
+                                      final profile = ref
                                           .read(appStateProvider)
-                                          .value;
-                                      final profile = appState?.activeProfile;
-                                      final ammo = appState?.ammo
-                                          .where(
-                                            (a) =>
-                                                a.id == profile?.ammo.targetId,
-                                          )
-                                          .firstOrNull;
-                                      final weapon = appState?.weapons
-                                          .where(
-                                            (w) =>
-                                                w.id ==
-                                                profile?.weapon.targetId,
-                                          )
-                                          .firstOrNull;
-                                      if (ammo == null) return;
+                                          .value
+                                          ?.activeProfile;
+                                      if (profile == null) return;
+                                      final weapon = profile.weapon;
                                       final result = await context.push<Ammo?>(
                                         Routes.profileEditAmmo,
                                         extra: (
-                                          ammo,
-                                          weapon?.caliberInch,
-                                          weapon?.id,
+                                          profile.ammo,
+                                          weapon.hasCaliberInch()
+                                              ? weapon.caliberInch
+                                              : null,
+                                          profile.uuid,
                                         ),
                                       );
                                       if (result != null && context.mounted) {
                                         await ref
                                             .read(appStateProvider.notifier)
-                                            .saveAmmo(result);
+                                            .setProfileAmmo(
+                                              profile.uuid,
+                                              result,
+                                              syncCaliber: true,
+                                            );
                                       }
                                     },
                                     icon: const Icon(IconDef.ammo),
@@ -268,8 +266,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                             altStr,
                                           ),
                                         ],
-                                        onTopPressed: () =>
-                                            context.push(Routes.shotInfo),
+                                        onTopPressed: () {
+                                          if (vmState is HomeUiReady) {
+                                            unawaited(context.push(Routes.shotInfo));
+                                          } else {
+                                            final type = vmState is HomeUiNoData
+                                                ? vmState.type
+                                                : EmptyStateType.noProfile;
+                                            showFeedback(
+                                              context,
+                                              type.defaultMessage(l10n),
+                                              isError: true
+                                            );
+                                          }
+                                        },
                                         onBottomPressed: () =>
                                             showNotAvailableSnackBar(
                                               context,

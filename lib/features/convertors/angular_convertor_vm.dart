@@ -7,7 +7,8 @@ import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:dart_bclibc/unit.dart';
+import 'package:bclibc_flutter/unit.dart';
+import 'package:ebalistyka/core/extensions/num_extensions.dart';
 
 class AnglesConvertorField {
   final String label;
@@ -77,9 +78,9 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
     final convertorsState = ref.watch(convertorStateProvider);
     final l10n = ref.watch(appLocalizationsProvider);
     return _buildState(
-      convertorsState.anglesConvDistanceValueMeter,
+      convertorsState.angles.distanceValueMeter,
       convertorsState.anglesConvDistanceUnit,
-      convertorsState.anglesConvAngularValueMil,
+      convertorsState.angles.angularValueMil,
       convertorsState.anglesConvAngularUnit,
       convertorsState.anglesConvOutputUnit,
       l10n,
@@ -204,7 +205,7 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
 
   String _formatValue(double value, int decimals, String symbol) {
     if (value.isNaN || value.isInfinite) return '— $symbol';
-    return '${value.toStringAsFixed(decimals)} $symbol';
+    return '${value.toFixedSafe(decimals)} $symbol';
   }
 
   AnglesConvertorUiState _buildState(

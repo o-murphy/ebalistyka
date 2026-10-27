@@ -15,11 +15,11 @@ import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:flutter/widgets.dart' show Locale;
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 
-import 'package:dart_bclibc/bclibc.dart' as bclibc;
-import 'package:dart_bclibc/unit.dart';
+import 'package:bclibc_flutter/bclibc.dart' as bclibc;
+import 'package:bclibc_flutter/unit.dart';
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 
@@ -44,10 +44,11 @@ Profile _makeProfile() {
     ..muzzleVelocityMps = 800.0
     ..muzzleVelocityTemperatureC = 15.0;
 
-  final profile = Profile()..name = 'Test Shot';
-  profile.weapon.target = weapon;
-  profile.sight.target = sight;
-  profile.ammo.target = ammo;
+  final profile = Profile()
+    ..name = 'Test Shot'
+    ..weapon = weapon
+    ..sight = sight
+    ..ammo = ammo;
   return profile;
 }
 
@@ -66,7 +67,7 @@ ShootingConditions _makeConditions({
     ..windDirectionDeg = windDeg
     ..temperatureC = tempC
     ..altitudeMeter = altM
-    ..pressurehPa = pressHPa
+    ..pressureHPa = pressHPa
     ..humidityFrac = humidity;
 }
 
@@ -181,7 +182,7 @@ class _FakeSettingsNotifier extends SettingsNotifier {
   final GeneralSettings _settings;
   _FakeSettingsNotifier(this._settings);
   @override
-  Future<GeneralSettings> build() async => _settings;
+  GeneralSettings build() => _settings;
 }
 
 ProviderContainer _createContainer({
@@ -436,19 +437,55 @@ void main() {
   });
 
   group('HomeViewModel — initial state', () {
-    test('starts with no-data before shot context resolves', () async {
-      final service = _FakeBallisticsService(_makeResult());
-      final container = _createContainer(
-        profile: _makeProfile(),
-        conditions: _makeConditions(),
-        service: service,
-      );
-      addTearDown(container.dispose);
+    test(
+      'resolves straight to HomeUiReady when shot context already has a '
+      'ready profile — no intermediate placeholder step',
+      () async {
+        final service = _FakeBallisticsService(_makeResult());
+        final container = _createContainer(
+          profile: _makeProfile(),
+          conditions: _makeConditions(),
+          service: service,
+        );
+        addTearDown(container.dispose);
 
-      final state = await container.read(homeVmProvider.future);
-      expect(state, isA<HomeUiNoData>());
-    });
+        final state = await container.read(homeVmProvider.future);
+        expect(state, isA<HomeUiReady>());
+      },
+    );
+
+    test(
+      'stays in AsyncLoading (not a premature empty state) while shot '
+      'context genuinely hasn\'t resolved yet',
+      () async {
+        final service = _FakeBallisticsService(_makeResult());
+        final container = ProviderContainer(
+          overrides: [
+            shotContextProvider.overrideWith(
+              () => _PendingShotContextNotifier(),
+            ),
+            settingsProvider.overrideWith(
+              () => _FakeSettingsNotifier(_defaultSettings()),
+            ),
+            unitSettingsProvider.overrideWith((ref) => UnitSettings()),
+            ballisticsServiceProvider.overrideWithValue(service),
+            appLocalizationsProvider.overrideWithValue(
+              lookupAppLocalizations(const Locale('en')),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        expect(container.read(homeVmProvider).isLoading, isTrue);
+        expect(service.callCount, 0);
+      },
+    );
   });
+}
+
+class _PendingShotContextNotifier extends ShotContextNotifier {
+  @override
+  Future<ShotContext?> build() => Completer<ShotContext?>().future;
 }
 
 class _ThrowingBallisticsService implements BallisticsService {
@@ -456,9 +493,8 @@ class _ThrowingBallisticsService implements BallisticsService {
   Future<BallisticsResult> calculateForTarget(
     Profile profile,
     ShootingConditions conditions,
-    TargetCalcOptions opts, {
-    double? cachedZeroElevRad,
-  }) async {
+    TargetCalcOptions opts,
+  ) async {
     throw Exception('Boom');
   }
 
@@ -466,9 +502,8 @@ class _ThrowingBallisticsService implements BallisticsService {
   Future<BallisticsResult> calculateTable(
     Profile profile,
     ShootingConditions conditions,
-    TableCalcOptions opts, {
-    double? cachedZeroElevRad,
-  }) async {
+    TableCalcOptions opts,
+  ) async {
     throw Exception('Boom');
   }
 }

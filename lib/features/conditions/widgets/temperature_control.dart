@@ -3,10 +3,11 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/unit_hybrid_picker_dialog.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:dart_bclibc/unit.dart';
+import 'package:bclibc_flutter/unit.dart';
+import 'package:ebalistyka/core/extensions/num_extensions.dart';
 
 // ─── Large temperature control (big ± buttons + tap-to-edit dialog) ───────────
 
@@ -62,7 +63,7 @@ class TempControl extends StatelessWidget {
               Icon(IconDef.temperature, color: cs.primary),
               const SizedBox(height: 4),
               Text(
-                '${_display.toStringAsFixed(inputAcc)} $sym',
+                '${_display.toFixedSafe(inputAcc)} $sym',
                 style: tt.headlineSmall,
                 textAlign: TextAlign.center,
               ),

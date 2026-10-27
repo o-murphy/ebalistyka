@@ -3,7 +3,6 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  objectbox_flutter_libs
   screen_retriever_windows
   share_plus
   url_launcher_windows
@@ -11,8 +10,9 @@ list(APPEND FLUTTER_PLUGIN_LIST
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
-  dart_bclibc
+  bclibc_flutter
   jni
+  ob_dump_reader_flutter
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

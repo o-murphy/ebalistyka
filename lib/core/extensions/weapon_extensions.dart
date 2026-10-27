@@ -1,6 +1,6 @@
-import 'package:dart_bclibc/unit.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
-import 'package:dart_bclibc/bclibc.dart' as bclibc;
+import 'package:bclibc_flutter/unit.dart';
+import 'package:ebc_db/ebc_db.dart';
+import 'package:bclibc_flutter/bclibc.dart' as bclibc;
 
 extension WeaponExtension on Weapon {
   Distance get twist => Distance.inch(twistInch);
@@ -8,17 +8,28 @@ extension WeaponExtension on Weapon {
 
   bool get isRightHandTwist => twistInch >= 0.0;
 
-  Distance get caliber => Distance.inch(caliberInch);
-  set caliber(Distance value) => caliberInch = value.in_(Unit.inch);
+  Distance? get caliber => hasCaliberInch() ? Distance.inch(caliberInch) : null;
+  set caliber(Distance? value) {
+    if (value == null) {
+      clearCaliberInch();
+    } else {
+      caliberInch = value.in_(Unit.inch);
+    }
+  }
 
   Angular get zeroElevation => Angular.radian(zeroElevationRad);
   set zeroElevation(Angular value) => zeroElevationRad = value.in_(Unit.radian);
 
   Distance? get barrelLength =>
-      barrelLengthInch >= 0 ? Distance.inch(barrelLengthInch) : null;
+      hasBarrelLengthInch() ? Distance.inch(barrelLengthInch) : null;
 
-  set barrelLength(Distance? value) =>
-      barrelLengthInch = value?.in_(Unit.inch) ?? -1.0;
+  set barrelLength(Distance? value) {
+    if (value == null) {
+      clearBarrelLengthInch();
+    } else {
+      barrelLengthInch = value.in_(Unit.inch);
+    }
+  }
 
   bclibc.Weapon toWeapon(Distance sightHeight) => bclibc.Weapon(
     sightHeight: sightHeight,

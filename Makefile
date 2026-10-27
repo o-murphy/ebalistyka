@@ -7,8 +7,9 @@
 		objectbox-get-sha \
 		generate-localization \
 		generate-collection \
-		build-bclibc \
+		build-bclibc build-lmdb \
 		reticle-gen-setup \
+		build-web deploy-web \
 		test format clean run run-clean
 
 # Cross-platform helpers
@@ -46,6 +47,14 @@ endif
 
 generate-localization:
 	flutter gen-l10n
+
+# Release web bundle for GitHub Pages (build/web). BASE_HREF=/ for a root.
+build-web:
+	./scripts/build-web.sh
+
+# Manual publish of build/web to the gh-pages branch (asks first).
+deploy-web: build-web
+	./scripts/deploy-web.sh
 
 generate-reticles:
 	./scripts/gen_reticles.sh
@@ -85,12 +94,16 @@ generate: objectbox-generate \
 	generate-reticles generate-icons \
 	generate-collection
 
-# Build libbclibc_ffi standalone (dart_bclibc's bundled bclibc source) so
+# Build libbclibc_ffi standalone (bclibc's bundled bclibc source) so
 # `flutter test` can dlopen it via the package's `build/bclibc/` fallback path.
 # `flutter build` bundles this automatically for the app itself, but `flutter
 # test` never runs a platform build, so tests need it built explicitly.
 build-bclibc:
-	dart run dart_bclibc:build_native
+	dart run bclibc:build_native
+
+# Same for liblmdb (ob_dump_reader), used by the legacy-migration test.
+build-lmdb:
+	dart run ob_dump_reader:build
 
 # `tools/reticle_gen` is a standalone Dart package (not a pubspec dependency
 # of the app), so `flutter analyze` can't resolve its `package:reticle_gen`
@@ -98,7 +111,7 @@ build-bclibc:
 reticle-gen-setup:
 	cd tools/reticle_gen && dart pub get
 
-test: build-bclibc reticle-gen-setup
+test: build-bclibc build-lmdb reticle-gen-setup
 	flutter analyze && flutter test 2>&1
 
 format:

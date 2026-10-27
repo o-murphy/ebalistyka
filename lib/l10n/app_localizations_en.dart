@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -39,13 +40,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adjustmentDisplayScreenTitle => 'Adjustment Display';
 
   @override
-  String get myAmmoScreenTitle => 'My Ammo';
+  String get myProfile => 'Profile';
 
   @override
-  String get mySights => 'My Sights';
+  String get profilesListScreenTitle => 'My Profiles';
 
   @override
-  String get myProfiles => 'My Profiles';
+  String get profilesScreenTitle => 'Profiles';
+
+  @override
+  String get activeProfileLabel => 'Active';
 
   @override
   String get newWeaponScreenTitle => 'New Weapon';
@@ -591,6 +595,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get duplicateAction => 'Duplicate';
 
   @override
+  String get replaceAction => 'Replace';
+
+  @override
   String get exportAction => 'Export';
 
   @override
@@ -616,6 +623,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get actionAddSight => 'Add Sight';
+
+  @override
+  String get actionAddWeapon => 'Add Weapon';
 
   @override
   String get actionExportBackup => 'Export';
@@ -675,6 +685,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get labelPrivacyPolicy => 'Privacy Policy';
+
+  @override
+  String get labelLicenseGpl => 'License (GPLv3)';
+
+  @override
+  String get labelOpenSourceLicenses => 'Open source licenses';
 
   @override
   String get labelVersion => 'Version';
@@ -969,6 +985,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lookAngleWasReset => 'Look angle was reset to 0°';
 
   @override
+  String get databaseResetNotice =>
+      'Database was corrupted and has been reset. All data has been cleared.';
+
+  @override
   String get targetRange => 'Target range';
 
   @override
@@ -1035,9 +1055,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newBullet => 'New Bullet';
 
   @override
-  String get copyOf => 'Copy of';
-
-  @override
   String get editProfile => 'Edit Profile';
 
   @override
@@ -1071,6 +1088,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noSightsFoundInFile => 'No sights found in file';
 
   @override
+  String get emptyStateNoProfile => 'No profile selected';
+
+  @override
+  String get emptyStateNoAmmo => 'No ammo selected';
+
+  @override
+  String get emptyStateNoSight => 'No sight selected';
+
+  @override
+  String get emptyStateIncompleteAmmo => 'Ammo data is incomplete';
+
+  @override
+  String get emptyStateIncompleteWeapon => 'Weapon data is incomplete';
+
+  @override
+  String get emptyStateError => 'Something went wrong';
+
+  @override
+  String get emptyStateNoData => 'No data';
+
+  @override
   String get ammoDuplicateDialogTitle => 'Duplicate Ammo';
 
   @override
@@ -1092,10 +1130,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectAmmoHint => 'Select ammo';
 
   @override
+  String get selectWeaponHint => 'Select weapon';
+
+  @override
   String get placeholderSearch => 'Search';
 
   @override
   String get notYetAvaliable => 'not yet available';
+
+  @override
+  String get nameRequiredError => 'Name is required';
 
   @override
   String get requiredFieldError => 'Required';
@@ -1120,6 +1164,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sectionZeroing => 'Zeroing';
 
   @override
+  String nMeasurements(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count measurements',
+      one: '1 measurement',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get tapToAddMeasurements => 'Tap to add T-V measurements';
+
+  @override
+  String nBreakpoints(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count breakpoints',
+      one: '1 breakpoint',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get calculateFromMeasurementsAction => 'Calculate from measurements';
 
   @override
@@ -1131,6 +1200,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String enableMultiBcTitle(String model) {
     return 'Enable $model Multi-BC';
+  }
+
+  @override
+  String multiBcMode(String model) {
+    return '$model Multi-BC mode';
+  }
+
+  @override
+  String singleBcMode(String model) {
+    return '$model Single BC mode';
   }
 
   @override
@@ -1182,11 +1261,56 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String removeProfileContent(String name) {
-    return 'Remove \"$name\" and its weapon?';
+    return 'Remove \"$name\" and its weapon, ammo, and sight?';
   }
 
   @override
   String get exportFormatDialogTitle => 'Export format';
+
+  @override
+  String get ebcpFileHasNoProfiles => 'This file has no profiles to import.';
+
+  @override
+  String get ebcpFileIsEmpty => 'This file has nothing to import.';
+
+  @override
+  String get importScopeDialogTitle => 'Import scope';
+
+  @override
+  String get selectProfilesToImportTitle => 'Select profiles to import';
+
+  @override
+  String get selectAllAction => 'Select all';
+
+  @override
+  String importAllProfilesAction(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Import $count profiles',
+      one: 'Import 1 profile',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get importSettingsOnlyAction => 'Settings only';
+
+  @override
+  String get importEverythingAction => 'Everything';
+
+  @override
+  String get skipAction => 'Skip';
+
+  @override
+  String get overwriteSettingsConfirmTitle => 'Overwrite settings?';
+
+  @override
+  String get overwriteSettingsConfirmContent =>
+      'This replaces your current settings with the ones from the imported file. This can\'t be undone.';
+
+  @override
+  String get overwriteAction => 'Overwrite';
 
   @override
   String get selectRangeDialogTitle => 'Select range';
@@ -1247,6 +1371,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get checkForUpdatesLabel => 'Check for updates';
 
   @override
+  String get downloadAppAction => 'Download the app';
+
+  @override
   String get upToDateMessage => 'You\'re up to date';
 
   @override
@@ -1302,4 +1429,90 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get updateWeaponCaliberAction => 'Update weapon caliber';
+
+  @override
+  String get replaceWeaponWarningTitle => 'Replace weapon?';
+
+  @override
+  String get replaceWeaponWarningContent =>
+      'This will discard the current weapon\'s data. Duplicate the profile first if you want to keep it.';
+
+  @override
+  String get replaceAmmoWarningTitle => 'Replace ammo?';
+
+  @override
+  String get replaceAmmoWarningContent =>
+      'This will discard the current ammo\'s data (BC tables, zero data, powder sensitivity, etc.). Duplicate the profile first if you want to keep it.';
+
+  @override
+  String get replaceSightWarningTitle => 'Replace sight?';
+
+  @override
+  String get replaceSightWarningContent =>
+      'This will discard the current sight\'s data (click values, zero, etc.). Duplicate the profile first if you want to keep it.';
+
+  @override
+  String weaponAmmoCaliberMismatchContent(String weapon, String ammo) {
+    return 'The new weapon\'s caliber ($weapon) doesn\'t match the current ammo\'s caliber ($ammo). Update the ammo\'s caliber to match?';
+  }
+
+  @override
+  String get legacyMigrationConfirmTitle => 'Old data found';
+
+  @override
+  String get legacyMigrationConfirmContent =>
+      'We found data from an older version of this app. Would you like to import it?';
+
+  @override
+  String get legacyMigrationConfirmAction => 'Import';
+
+  @override
+  String get legacyMigrationDeclineAction => 'Not now';
+
+  @override
+  String get legacyMigrationInProgress => 'Importing your old data…';
+
+  @override
+  String get legacyMigrationFailedTitle => 'Import failed';
+
+  @override
+  String get legacyMigrationRetryAction => 'Retry';
+
+  @override
+  String get legacyOrphanedDataTitle => 'Some items weren\'t imported';
+
+  @override
+  String legacyOrphanedDataContent(
+    int weaponCount,
+    int ammoCount,
+    int sightCount,
+  ) {
+    return '$weaponCount weapons, $ammoCount ammo, and $sightCount sights from your old library weren\'t part of any profile and weren\'t imported. You can export them as a JSON file to keep for later.';
+  }
+
+  @override
+  String get legacyExportOrphanedDataAction => 'Export as JSON';
+
+  @override
+  String get legacyContinueAction => 'Continue';
+
+  @override
+  String get tabBlockedTitle => 'Opened in another window';
+
+  @override
+  String get tabBlockedMessage =>
+      'eBalistyka is open in another tab or window. Only one can be used at a time, so this one was paused.';
+
+  @override
+  String get tabBlockedAction => 'Use here';
+
+  @override
+  String get pwaInstallAction => 'Install as app';
+
+  @override
+  String get pwaInstallHint =>
+      'Install eBalistyka as an app: it gets its own window, and the browser is much less likely to clear your data.';
+
+  @override
+  String get pwaInstallHintAction => 'Install';
 }

@@ -13,12 +13,13 @@ import 'package:ebalistyka/core/services/ballistics_service.dart';
 import 'package:ebalistyka/core/providers/service_providers.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_context_provider.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebc_db/ebc_db.dart';
 import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
 import 'package:ebalistyka/features/tables/details_table_mv.dart';
+import 'package:ebalistyka/shared/widgets/empty_state.dart';
 
-import 'package:dart_bclibc/bclibc.dart' as bclibc;
-import 'package:dart_bclibc/unit.dart';
+import 'package:bclibc_flutter/bclibc.dart' as bclibc;
+import 'package:bclibc_flutter/unit.dart';
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 
@@ -41,13 +42,14 @@ Profile _makeProfile() {
     ..caliberInch = 0.308
     ..lengthInch = 1.22
     ..muzzleVelocityMps = 800.0
-    ..muzzleVelocityTemperatureC = 15.0
-    ..zeroDistanceMeter = 100.0;
+    ..muzzleVelocityTemperatureC = 15.0;
+  ammo.ensureZero().distanceMeter = 100.0;
 
-  final profile = Profile()..name = 'Test Shot';
-  profile.weapon.target = weapon;
-  profile.sight.target = sight;
-  profile.ammo.target = ammo;
+  final profile = Profile()
+    ..name = 'Test Shot'
+    ..weapon = weapon
+    ..sight = sight
+    ..ammo = ammo;
   return profile;
 }
 
@@ -65,7 +67,7 @@ ShootingConditions _makeConditions({
   return ShootingConditions()
     ..temperatureC = tempC
     ..altitudeMeter = altM
-    ..pressurehPa = pressHPa
+    ..pressureHPa = pressHPa
     ..humidityFrac = humidity
     ..powderTemperatureC = powderTempC
     ..windSpeedMps = windMps
@@ -188,7 +190,7 @@ class _FakeSettingsNotifier extends SettingsNotifier {
   final GeneralSettings _settings;
   _FakeSettingsNotifier(this._settings);
   @override
-  Future<GeneralSettings> build() async => _settings;
+  GeneralSettings build() => _settings;
 }
 
 ProviderContainer _createContainer({
@@ -388,7 +390,7 @@ void main() {
         conditions: _makeConditions(),
         service: service2,
         tablesSettings: TablesSettings()
-          ..hiddenCols = ['time', 'velocity', 'mach', 'energy'],
+          ..hiddenCols.addAll(['time', 'velocity', 'mach', 'energy']),
       );
       addTearDown(containerHidden.dispose);
       final stateHidden = await _waitFor<TrajectoryTablesUiReady>(
@@ -442,6 +444,63 @@ void main() {
     test('main table distance unit is yd', () {
       expect(state.mainTable.distanceUnit, contains('yd'));
     });
+  });
+
+  group('TablesViewModel — incomplete profile at first build', () {
+    test(
+      'settles on Empty(incompleteAmmo), not stuck on Loading, when '
+      'shotContextProvider is already resolved by the time the VM first '
+      'builds (reproduces the build()-vs-fireImmediately-listener race: '
+      'a `state =` write made synchronously during `build()` — because '
+      '`ref.listen(..., fireImmediately: true)` fires before `build()` '
+      'returns — used to be silently clobbered back to `Loading` the '
+      'moment `build()`\'s own Future resolved)',
+      () async {
+        final weapon = Weapon()
+          ..name = '1'
+          ..caliberInch = 0.308;
+        final profile = Profile()
+          ..name = '1'
+          ..weapon = weapon
+          ..ammo = Ammo()
+          ..sight = Sight();
+
+        final container = ProviderContainer(
+          overrides: [
+            shotContextProvider.overrideWith(
+              () => _FakeShotContextNotifier(profile, _makeConditions()),
+            ),
+            settingsProvider.overrideWith(
+              () => _FakeSettingsNotifier(GeneralSettings()),
+            ),
+            unitSettingsProvider.overrideWith((ref) => UnitSettings()),
+            tablesSettingsProvider.overrideWith((ref) => TablesSettings()),
+            ballisticsServiceProvider.overrideWithValue(
+              _FakeBallisticsService(_makeResult()),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        // Pre-warm shotContextProvider so it's already resolved *before*
+        // trajectoryTablesVmProvider is first read — this is what makes
+        // `ref.listen(..., fireImmediately: true)` see `next.hasValue ==
+        // true` synchronously inside the VM's own `build()` call.
+        await container.read(shotContextProvider.future);
+
+        final state = await _waitFor<TrajectoryTablesUiEmpty>(container);
+        expect(state.type, EmptyStateType.incompleteAmmo);
+
+        // The real bug: the correct Empty state got clobbered back to
+        // Loading right after build() settled. Flush several microtask/
+        // event-loop turns and confirm it's still Empty, not reverted.
+        for (var i = 0; i < 5; i++) {
+          await Future<void>.delayed(Duration.zero);
+        }
+        final settled = container.read(trajectoryTablesVmProvider).value;
+        expect(settled, isA<TrajectoryTablesUiEmpty>());
+      },
+    );
   });
 
   group('TablesViewModel — loading when context pending', () {
@@ -501,9 +560,8 @@ class _ThrowingBallisticsService implements BallisticsService {
   Future<BallisticsResult> calculateForTarget(
     Profile profile,
     ShootingConditions conditions,
-    TargetCalcOptions opts, {
-    double? cachedZeroElevRad,
-  }) async {
+    TargetCalcOptions opts,
+  ) async {
     throw Exception('Boom');
   }
 
@@ -511,9 +569,8 @@ class _ThrowingBallisticsService implements BallisticsService {
   Future<BallisticsResult> calculateTable(
     Profile profile,
     ShootingConditions conditions,
-    TableCalcOptions opts, {
-    double? cachedZeroElevRad,
-  }) async {
+    TableCalcOptions opts,
+  ) async {
     throw Exception('Boom');
   }
 }
