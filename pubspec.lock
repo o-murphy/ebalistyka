@@ -637,21 +637,21 @@ packages:
     source: hosted
     version: "2.0.2"
   ob_dump_reader:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: ob_dump_reader
-      sha256: d8dc34e6485e9b7bb1df98f88809331ad69b9d5c9b11f6936d81eba060d21a26
+      sha256: a66b10cf2d993e939d7d9326b30afaa5dc4590d894d50c811be577aa5b604257
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.0-beta.1"
+    version: "0.1.0-beta.2"
   ob_dump_reader_flutter:
     dependency: "direct main"
     description:
       name: ob_dump_reader_flutter
-      sha256: "56a4d45df4837d29a00be022fcde4104c5518558a686103ea7d24784657aa3d5"
+      sha256: b5d3501c4738ddcce2f9bb99b5c8836bd29a1a4d52a84274347e12a96d03c859
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.0-beta.1"
+    version: "0.1.0-beta.2"
   objective_c:
     dependency: transitive
     description:
