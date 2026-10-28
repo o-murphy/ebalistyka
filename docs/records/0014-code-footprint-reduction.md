@@ -103,9 +103,16 @@ beyond the first check). Not read in depth: `router.dart`, `home_vm.dart`,
   100-120 — the predicates stayed in the screens, not moved onto the filter
   states). Covered by new characterization tests
   (`test/features/collections/`, written and passing *before* the change).
-- Data-driven simple convertors: one `SimpleConvertorSpec` + generic VM and
-  screen instead of 5 VMs + 5 screens (~250-300). Existing tests reference the
-  per-unit providers.
+- **Done** — the five simple convertors (length, weight, pressure,
+  temperature, torque) are now one `SimpleConvertorSpec` each in
+  `simple_convertor_specs.dart`, with one `SimpleConvertorVm` and one
+  `SimpleConvertorScreen` instead of 5 VMs + 5 screens. Provider names are
+  unchanged. A golden characterization test (`test/features/convertors/`,
+  generated from the old code before the change) covers every section, value,
+  constraint, saved value and screen text, and is identical after.
+  Velocity, angular and target-distance convertors are bespoke and untouched.
+  *Noticed, not changed:* `FC.torque` / `convertorTorque` is 300–1500 N·m with
+  the same step as pressure — it looks copied from pressure.
 - Wizard states: a generic `update((s) => s.copyWith(..))` on the notifier
   drops ~55 `updateX` one-liners (~60); `freezed`/`dart_mappable` would save
   ~120-150 but is a codegen decision.

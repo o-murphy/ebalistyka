@@ -1,4 +1,5 @@
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
+import 'package:ebalistyka/features/convertors/simple_convertor_specs.dart';
 import 'package:ebalistyka/features/convertors/sub_screens/convertors_sub_screens.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
@@ -328,19 +329,27 @@ final appRouter = GoRouter(
                 ),
                 GoRoute(
                   path: 'length',
-                  builder: (_, _) => const LengthConvertorScreen(),
+                  builder: (_, _) => SimpleConvertorScreen(
+                    provider: lengthConvertorVmProvider,
+                  ),
                 ),
                 GoRoute(
                   path: 'weight',
-                  builder: (_, _) => const WeightConvertorScreen(),
+                  builder: (_, _) => SimpleConvertorScreen(
+                    provider: weightConvertorVmProvider,
+                  ),
                 ),
                 GoRoute(
                   path: 'pressure',
-                  builder: (_, _) => const PressureConvertorScreen(),
+                  builder: (_, _) => SimpleConvertorScreen(
+                    provider: pressureConvertorVmProvider,
+                  ),
                 ),
                 GoRoute(
                   path: 'temperature',
-                  builder: (_, _) => const TemperatureConvertorScreen(),
+                  builder: (_, _) => SimpleConvertorScreen(
+                    provider: temperatureConvertorVmProvider,
+                  ),
                 ),
                 GoRoute(
                   path: 'angular',
@@ -348,7 +357,9 @@ final appRouter = GoRouter(
                 ),
                 GoRoute(
                   path: 'torque',
-                  builder: (_, _) => const TorqueConvertorScreen(),
+                  builder: (_, _) => SimpleConvertorScreen(
+                    provider: torqueConvertorVmProvider,
+                  ),
                 ),
               ],
             ),

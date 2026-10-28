@@ -1,0 +1,283 @@
+##### length
+--- base=1.0 input=centimeter
+rawValue=2.54 inputUnit=centimeter
+[Metric]
+  Centimeters | 2.5 cm | 2.54 | cm | 1
+  Meters | 0.025 m | 0.0254 | m | 3
+[Imperial]
+  Inches | 1.000 inch | 1.0 | inch | 3
+  Feet | 0.083 ft | 0.08333333333333333 | ft | 3
+  Yards | 0.028 yd | 0.027777777777777776 | yd | 3
+constraints centimeter: 0.0 .. 25397.46 step 0.254 unit centimeter acc 1
+constraints meter: 0.0 .. 253.97459999999998 step 0.00254 unit meter acc 3
+constraints inch: 0.0 .. 9999.0 step 0.1 unit inch acc 3
+constraints foot: 0.0 .. 833.25 step 0.008333333333333333 unit foot acc 3
+constraints yard: 0.0 .. 277.75 step 0.002777777777777778 unit yard acc 3
+saved: length=2.952755905511811, length=null, lengthUnit=yard
+--- base=123.456 input=meter
+rawValue=3.1357824 inputUnit=meter
+[Metric]
+  Centimeters | 313.6 cm | 313.57824 | cm | 1
+  Meters | 3.136 m | 3.1357824 | m | 3
+[Imperial]
+  Inches | 123.456 inch | 123.456 | inch | 3
+  Feet | 10.288 ft | 10.288 | ft | 3
+  Yards | 3.429 yd | 3.4293333333333336 | yd | 3
+constraints centimeter: 0.0 .. 25397.46 step 0.254 unit centimeter acc 1
+constraints meter: 0.0 .. 253.97459999999998 step 0.00254 unit meter acc 3
+constraints inch: 0.0 .. 9999.0 step 0.1 unit inch acc 3
+constraints foot: 0.0 .. 833.25 step 0.008333333333333333 unit foot acc 3
+constraints yard: 0.0 .. 277.75 step 0.002777777777777778 unit yard acc 3
+saved: length=295.2755905511811, length=null, lengthUnit=yard
+--- base=0.0 input=yard
+rawValue=0.0 inputUnit=yard
+[Metric]
+  Centimeters | 0.0 cm | 0.0 | cm | 1
+  Meters | 0.000 m | 0.0 | m | 3
+[Imperial]
+  Inches | 0.000 inch | 0.0 | inch | 3
+  Feet | 0.000 ft | 0.0 | ft | 3
+  Yards | 0.000 yd | 0.0 | yd | 3
+constraints centimeter: 0.0 .. 25397.46 step 0.254 unit centimeter acc 1
+constraints meter: 0.0 .. 253.97459999999998 step 0.00254 unit meter acc 3
+constraints inch: 0.0 .. 9999.0 step 0.1 unit inch acc 3
+constraints foot: 0.0 .. 833.25 step 0.008333333333333333 unit foot acc 3
+constraints yard: 0.0 .. 277.75 step 0.002777777777777778 unit yard acc 3
+saved: length=270.0, length=null, lengthUnit=yard
+--- screen
+  Enter length
+  cm
+  METRIC
+  Centimeters
+  31.7 cm
+  Meters
+  0.318 m
+  IMPERIAL
+  Inches
+  12.500 inch
+  Feet
+  1.042 ft
+  Yards
+  0.347 yd
+  Length Converter
+  field: 31.7 hint: Enter length
+##### weight
+--- base=1.0 input=gram
+rawValue=0.06479890980240584 inputUnit=gram
+[Metric]
+  Grams | 0.065 g | 0.06479890980240584 | g | 3
+  Kilograms | 0.000065 kg | 0.00006479890980240584 | kg | 6
+[Imperial]
+  Grains | 1.0 gr | 1.0 | gr | 1
+  Pounds | 0.00014 lb | 0.00014285714285714287 | lb | 5
+  Ounces | 0.0023 oz | 0.002285714285714286 | oz | 4
+constraints gram: 0.0 .. 647.924299114256 step 0.0064798909802405835 unit gram acc 3
+constraints kilogram: 0.0 .. 0.647924299114256 step 0.000006479890980240584 unit kilogram acc 6
+constraints grain: 0.0 .. 9999.0 step 0.1 unit grain acc 1
+constraints pound: 0.0 .. 1.4284285714285714 step 0.000014285714285714287 unit pound acc 5
+constraints ounce: 0.0 .. 22.854857142857142 step 0.0002285714285714286 unit ounce acc 4
+saved: weight=115.742688, weight=null, weightUnit=ounce
+--- base=123.456 input=kilogram
+rawValue=0.007999814208565815 inputUnit=kilogram
+[Metric]
+  Grams | 8.000 g | 7.999814208565815 | g | 3
+  Kilograms | 0.008000 kg | 0.007999814208565815 | kg | 6
+[Imperial]
+  Grains | 123.5 gr | 123.456 | gr | 1
+  Pounds | 0.01764 lb | 0.01763657142857143 | lb | 5
+  Ounces | 0.2822 oz | 0.28218514285714286 | oz | 4
+constraints gram: 0.0 .. 647.924299114256 step 0.0064798909802405835 unit gram acc 3
+constraints kilogram: 0.0 .. 0.647924299114256 step 0.000006479890980240584 unit kilogram acc 6
+constraints grain: 0.0 .. 9999.0 step 0.1 unit grain acc 1
+constraints pound: 0.0 .. 1.4284285714285714 step 0.000014285714285714287 unit pound acc 5
+constraints ounce: 0.0 .. 22.854857142857142 step 0.0002285714285714286 unit ounce acc 4
+saved: weight=115742.688, weight=null, weightUnit=ounce
+--- base=0.0 input=ounce
+rawValue=0.0 inputUnit=ounce
+[Metric]
+  Grams | 0.000 g | 0.0 | g | 3
+  Kilograms | 0.000000 kg | 0.0 | kg | 6
+[Imperial]
+  Grains | 0.0 gr | 0.0 | gr | 1
+  Pounds | 0.00000 lb | 0.0 | lb | 5
+  Ounces | 0.0000 oz | 0.0 | oz | 4
+constraints gram: 0.0 .. 647.924299114256 step 0.0064798909802405835 unit gram acc 3
+constraints kilogram: 0.0 .. 0.647924299114256 step 0.000006479890980240584 unit kilogram acc 6
+constraints grain: 0.0 .. 9999.0 step 0.1 unit grain acc 1
+constraints pound: 0.0 .. 1.4284285714285714 step 0.000014285714285714287 unit pound acc 5
+constraints ounce: 0.0 .. 22.854857142857142 step 0.0002285714285714286 unit ounce acc 4
+saved: weight=3281.25, weight=null, weightUnit=ounce
+--- screen
+  Enter weight
+  g
+  METRIC
+  Grams
+  0.810 g
+  Kilograms
+  0.000810 kg
+  IMPERIAL
+  Grains
+  12.5 gr
+  Pounds
+  0.00179 lb
+  Ounces
+  0.0286 oz
+  Weight Converter
+  field: 0.810 hint: Enter weight
+##### pressure
+--- base=1.0 input=mmHg
+rawValue=1.0 inputUnit=mmHg
+[Common]
+  Atmosphere | 0.0013 atm | 0.0013157894736842105 | atm | 4
+  hPa | 1 hPa | 1.3332236836846925 | hPa | 0
+  Bar | 0.001 bar | 0.0013332236836846923 | bar | 3
+[Imperial]
+  PSI | 0.02 psi | 0.01933677787131605 | psi | 2
+  inHg | 0.04 inHg | 0.03937007874015748 | inHg | 2
+  mmHg | 1.0 mmHg | 1.0 | mmHg | 1
+constraints mmHg: 0.0 .. 2000.0 step 1.0 unit mmHg acc 1
+constraints inHg: 0.0 .. 78.74015748031496 step 0.03937007874015748 unit inHg acc 2
+constraints bar: 0.0 .. 2.6664473673693845 step 0.0013332236836846923 unit bar acc 3
+constraints hPa: 0.0 .. 2666.4473673693847 step 1.3332236836846925 unit hPa acc 0
+constraints psi: 0.0 .. 38.673555742632104 step 0.01933677787131605 unit psi acc 2
+constraints atm: 0.0 .. 2.6315789473684212 step 0.0013157894736842105 unit atm acc 4
+saved: pressure=7.5, pressure=null, pressureUnit=atm
+--- base=123.456 input=inHg
+rawValue=4.860472440944882 inputUnit=inHg
+[Common]
+  Atmosphere | 0.1624 atm | 0.1624421052631579 | atm | 4
+  hPa | 165 hPa | 164.59446309297738 | hPa | 0
+  Bar | 0.165 bar | 0.16459446309297737 | bar | 3
+[Imperial]
+  PSI | 2.39 psi | 2.3872412488811943 | psi | 2
+  inHg | 4.86 inHg | 4.860472440944882 | inHg | 2
+  mmHg | 123.5 mmHg | 123.456 | mmHg | 1
+constraints mmHg: 0.0 .. 2000.0 step 1.0 unit mmHg acc 1
+constraints inHg: 0.0 .. 78.74015748031496 step 0.03937007874015748 unit inHg acc 2
+constraints bar: 0.0 .. 2.6664473673693845 step 0.0013332236836846923 unit bar acc 3
+constraints hPa: 0.0 .. 2666.4473673693847 step 1.3332236836846925 unit hPa acc 0
+constraints psi: 0.0 .. 38.673555742632104 step 0.01933677787131605 unit psi acc 2
+constraints atm: 0.0 .. 2.6315789473684212 step 0.0013157894736842105 unit atm acc 4
+saved: pressure=190.5, pressure=null, pressureUnit=atm
+--- base=0.0 input=atm
+rawValue=0.0 inputUnit=atm
+[Common]
+  Atmosphere | 0.0000 atm | 0.0 | atm | 4
+  hPa | 0 hPa | 0.0 | hPa | 0
+  Bar | 0.000 bar | 0.0 | bar | 3
+[Imperial]
+  PSI | 0.00 psi | 0.0 | psi | 2
+  inHg | 0.00 inHg | 0.0 | inHg | 2
+  mmHg | 0.0 mmHg | 0.0 | mmHg | 1
+constraints mmHg: 0.0 .. 2000.0 step 1.0 unit mmHg acc 1
+constraints inHg: 0.0 .. 78.74015748031496 step 0.03937007874015748 unit inHg acc 2
+constraints bar: 0.0 .. 2.6664473673693845 step 0.0013332236836846923 unit bar acc 3
+constraints hPa: 0.0 .. 2666.4473673693847 step 1.3332236836846925 unit hPa acc 0
+constraints psi: 0.0 .. 38.673555742632104 step 0.01933677787131605 unit psi acc 2
+constraints atm: 0.0 .. 2.6315789473684212 step 0.0013157894736842105 unit atm acc 4
+saved: pressure=5700.0, pressure=null, pressureUnit=atm
+--- screen
+  Enter pressure
+  mmHg
+  COMMON
+  Atmosphere
+  0.0164 atm
+  hPa
+  17 hPa
+  Bar
+  0.017 bar
+  IMPERIAL
+  PSI
+  0.24 psi
+  inHg
+  0.49 inHg
+  mmHg
+  12.5 mmHg
+  Pressure Converter
+  field: 12.5 hint: Enter pressure
+##### temperature
+--- base=1.0 input=celsius
+rawValue=-17.22222222222222 inputUnit=celsius
+[Metric]
+  Celsius | -17.2 °C | -17.22222222222222 | °C | 1
+[Imperial]
+  Fahrenheit | 1.0 °F | 1.0 | °F | 1
+constraints celsius: -273.15 .. 5537.777777777777 step -17.72222222222222 unit celsius acc 1
+constraints fahrenheit: -459.67 .. 10000.0 step 0.1 unit fahrenheit acc 1
+saved: temperature=45.5, temperature=null, temperatureUnit=fahrenheit
+--- base=123.456 input=fahrenheit
+rawValue=123.456 inputUnit=fahrenheit
+[Metric]
+  Celsius | 50.8 °C | 50.808888888888895 | °C | 1
+[Imperial]
+  Fahrenheit | 123.5 °F | 123.456 | °F | 1
+constraints celsius: -273.15 .. 5537.777777777777 step -17.72222222222222 unit celsius acc 1
+constraints fahrenheit: -459.67 .. 10000.0 step 0.1 unit fahrenheit acc 1
+saved: temperature=7.5, temperature=null, temperatureUnit=fahrenheit
+--- base=0.0 input=fahrenheit
+rawValue=0.0 inputUnit=fahrenheit
+[Metric]
+  Celsius | -17.8 °C | -17.77777777777778 | °C | 1
+[Imperial]
+  Fahrenheit | 0.0 °F | 0.0 | °F | 1
+constraints celsius: -273.15 .. 5537.777777777777 step -17.72222222222222 unit celsius acc 1
+constraints fahrenheit: -459.67 .. 10000.0 step 0.1 unit fahrenheit acc 1
+saved: temperature=7.5, temperature=null, temperatureUnit=fahrenheit
+--- screen
+  Enter temperature
+  °C
+  METRIC
+  Celsius
+  -10.8 °C
+  IMPERIAL
+  Fahrenheit
+  12.5 °F
+  Temperature Converter
+  field: -10.8 hint: Enter temperature
+##### torque
+--- base=1.0 input=newtonMeter
+rawValue=1.0 inputUnit=newtonMeter
+[Metric]
+  Newton-meter | 1 N·m | 1.0 | N·m | 0
+[Imperial]
+  Foot-pound | 1 ft·lb | 1.3558179483314 | ft·lb | 0
+  Inch-pound | 0.1 in·lb | 0.112984829 | in·lb | 1
+constraints newtonMeter: 300.0 .. 1500.0 step 1.0 unit newtonMeter acc 0
+constraints footPoundTorque: 406.74538449941997 .. 2033.7269224970998 step 1.3558179483314 unit footPoundTorque acc 0
+constraints inchPound: 33.895448699999996 .. 169.4772435 step 0.112984829 unit inchPound acc 1
+saved: torque=7.5, torque=null, torqueUnit=inchPound
+--- base=123.456 input=footPoundTorque
+rawValue=167.3838606292013 inputUnit=footPoundTorque
+[Metric]
+  Newton-meter | 123 N·m | 123.456 | N·m | 0
+[Imperial]
+  Foot-pound | 167 ft·lb | 167.3838606292013 | ft·lb | 0
+  Inch-pound | 13.9 in·lb | 13.948655049024 | in·lb | 1
+constraints newtonMeter: 300.0 .. 1500.0 step 1.0 unit newtonMeter acc 0
+constraints footPoundTorque: 406.74538449941997 .. 2033.7269224970998 step 1.3558179483314 unit footPoundTorque acc 0
+constraints inchPound: 33.895448699999996 .. 169.4772435 step 0.112984829 unit inchPound acc 1
+saved: torque=5.531716119579492, torque=null, torqueUnit=inchPound
+--- base=0.0 input=inchPound
+rawValue=0.0 inputUnit=inchPound
+[Metric]
+  Newton-meter | 0 N·m | 0.0 | N·m | 0
+[Imperial]
+  Foot-pound | 0 ft·lb | 0.0 | ft·lb | 0
+  Inch-pound | 0.0 in·lb | 0.0 | in·lb | 1
+constraints newtonMeter: 300.0 .. 1500.0 step 1.0 unit newtonMeter acc 0
+constraints footPoundTorque: 406.74538449941997 .. 2033.7269224970998 step 1.3558179483314 unit footPoundTorque acc 0
+constraints inchPound: 33.895448699999996 .. 169.4772435 step 0.112984829 unit inchPound acc 1
+saved: torque=66.3805934511792, torque=null, torqueUnit=inchPound
+--- screen
+  Enter torque
+  N·m
+  METRIC
+  Newton-meter
+  13 N·m
+  IMPERIAL
+  Foot-pound
+  17 ft·lb
+  Inch-pound
+  1.4 in·lb
+  Torque Converter
+  field: 13 hint: Enter torque
