@@ -5,6 +5,7 @@ import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebc_db/ebc_db.dart';
+import 'package:ebalistyka/features/home/sub_screens/weapon_chosen_callback.dart';
 import 'package:ebalistyka/features/home/sub_screens/weapon_wizard_screen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -133,11 +134,15 @@ final appRouter = GoRouter(
                     // ── Profile add ─────────────────────────────────────────
                     GoRoute(
                       path: 'weapon-create',
-                      builder: (_, _) => const WeaponWizardScreen(),
+                      builder: (_, state) => WeaponWizardScreen(
+                        onChosen: state.extra as WeaponChosenCallback?,
+                      ),
                     ),
                     GoRoute(
                       path: 'weapon-collection',
-                      builder: (_, _) => const WeaponCollectionScreen(),
+                      builder: (_, state) => WeaponCollectionScreen(
+                        onChosen: state.extra as WeaponChosenCallback?,
+                      ),
                     ),
                     // ── Ammo replace ─────────────────────────────────────────
                     GoRoute(

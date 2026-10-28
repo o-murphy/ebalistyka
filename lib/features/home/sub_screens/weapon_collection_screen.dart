@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:ebalistyka/core/models/collection_item.dart';
 import 'package:ebalistyka/core/providers/builtin_collection_provider.dart';
 import 'package:ebalistyka/core/providers/filter_providers.dart';
+import 'package:ebalistyka/features/home/sub_screens/weapon_chosen_callback.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/collection_body.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/collection_item_tile.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/collection_weapon_tile_body.dart';
@@ -18,7 +19,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class WeaponCollectionScreen extends ConsumerWidget {
-  const WeaponCollectionScreen({super.key});
+  const WeaponCollectionScreen({this.onChosen, super.key});
+
+  /// Set when the collection starts a new profile: runs after a weapon is
+  /// picked and can keep the screen open (see [WeaponChosenCallback]).
+  final WeaponChosenCallback? onChosen;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -64,8 +69,12 @@ class WeaponCollectionScreen extends ConsumerWidget {
                     body: CollectionWeaponTileBody(weapon: weapon),
                     item: WeaponCollectionItem(ref: weapon),
                     searchText: [weapon.name, weapon.vendor].join(' '),
-                    onSelect: () {
-                      context.pop<Weapon>(weapon.deepCopy());
+                    onSelect: () async {
+                      final copy = weapon.deepCopy();
+                      if (onChosen != null && !await onChosen!(context, copy)) {
+                        return;
+                      }
+                      if (context.mounted) context.pop<Weapon>(copy);
                     },
                   ),
                 )

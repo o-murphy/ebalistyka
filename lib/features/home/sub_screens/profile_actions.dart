@@ -83,15 +83,37 @@ Future<void> importProfileFromFile(BuildContext context, WidgetRef ref) async {
   }
 }
 
-Future<String?> askProfileName(BuildContext context, {String? initial}) {
+Future<String?> askProfileName(
+  BuildContext context, {
+  String? initial,
+  String? confirmLabel,
+}) {
   final l10n = AppLocalizations.of(context)!;
   return showTextInputDialog(
     context,
     title: l10n.newProfile,
     initialValue: initial,
     labelText: l10n.profileName,
-    confirmLabel: l10n.nextButton,
+    confirmLabel: confirmLabel ?? l10n.nextButton,
   );
+}
+
+/// Last step of "new profile": asks for the name (pre-filled with the weapon's
+/// name) once the weapon is set up, then creates the profile. Returns false
+/// when the dialog was cancelled, so the weapon screen stays open.
+Future<bool> _createProfileForWeapon(
+  BuildContext context,
+  WidgetRef ref,
+  Weapon weapon,
+) async {
+  final name = await askProfileName(
+    context,
+    initial: weapon.name,
+    confirmLabel: AppLocalizations.of(context)!.createAction,
+  );
+  if (name == null) return false;
+  await ref.read(profilesActionsProvider.notifier).createProfile(name, weapon);
+  return true;
 }
 
 Future<void> showAddProfileSheet(BuildContext context, WidgetRef ref) {
@@ -103,34 +125,20 @@ Future<void> showAddProfileSheet(BuildContext context, WidgetRef ref) {
       ActionSheetItem(
         icon: IconDef.addCircle,
         title: l10n.createNewAction,
-        onTap: () async {
-          final name = await askProfileName(context);
-          if (name == null || !context.mounted) return;
-          final weapon = await context.push<Weapon?>(
-            Routes.profileAddWeaponCreate,
-          );
-          if (weapon != null && context.mounted) {
-            await ref
-                .read(profilesActionsProvider.notifier)
-                .createProfile(name, weapon);
-          }
-        },
+        onTap: () => context.push<Weapon?>(
+          Routes.profileAddWeaponCreate,
+          extra: (BuildContext ctx, Weapon weapon) =>
+              _createProfileForWeapon(ctx, ref, weapon),
+        ),
       ),
       ActionSheetItem(
         icon: IconDef.openCollection,
         title: l10n.fromCollectionAction,
-        onTap: () async {
-          final name = await askProfileName(context);
-          if (name == null || !context.mounted) return;
-          final weapon = await context.push<Weapon?>(
-            Routes.profileAddWeaponCollection,
-          );
-          if (weapon != null && context.mounted) {
-            await ref
-                .read(profilesActionsProvider.notifier)
-                .createProfile(name, weapon);
-          }
-        },
+        onTap: () => context.push<Weapon?>(
+          Routes.profileAddWeaponCollection,
+          extra: (BuildContext ctx, Weapon weapon) =>
+              _createProfileForWeapon(ctx, ref, weapon),
+        ),
       ),
       ActionSheetItem(
         icon: IconDef.import,
