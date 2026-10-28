@@ -155,43 +155,11 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
     );
   }
 
-  FieldConstraints getDistanceConstraintsForUnit(Unit unit) {
-    return FieldConstraints(
-      minRaw: FC.convertorDistance.minRaw.convert(
-        FC.convertorDistance.rawUnit,
-        unit,
-      ),
-      maxRaw: FC.convertorDistance.maxRaw.convert(
-        FC.convertorDistance.rawUnit,
-        unit,
-      ),
-      stepRaw: FC.convertorDistance.stepRaw.convert(
-        FC.convertorDistance.rawUnit,
-        unit,
-      ),
-      rawUnit: unit,
-      accuracy: FC.convertorDistance.accuracyFor(unit),
-    );
-  }
+  FieldConstraints getDistanceConstraintsForUnit(Unit unit) =>
+      FC.convertorDistance.inUnit(unit);
 
-  FieldConstraints getAngularConstraintsForUnit(Unit unit) {
-    return FieldConstraints(
-      minRaw: FC.convertorAngular.minRaw.convert(
-        FC.convertorAngular.rawUnit,
-        unit,
-      ),
-      maxRaw: FC.convertorAngular.maxRaw.convert(
-        FC.convertorAngular.rawUnit,
-        unit,
-      ),
-      stepRaw: FC.convertorAngular.stepRaw.convert(
-        FC.convertorAngular.rawUnit,
-        unit,
-      ),
-      rawUnit: unit,
-      accuracy: FC.convertorAngular.accuracyFor(unit),
-    );
-  }
+  FieldConstraints getAngularConstraintsForUnit(Unit unit) =>
+      FC.convertorAngular.inUnit(unit);
 
   FieldConstraints getOutputConstraintsForUnit(Unit unit) {
     return FieldConstraints(

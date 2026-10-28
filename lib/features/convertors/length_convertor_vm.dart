@@ -28,13 +28,8 @@ class LengthConvertorViewModel extends SimpleConvertorVm {
       ref.read(convertorsProvider.notifier).updateLengthUnit(unit);
 
   @override
-  FieldConstraints getConstraintsForUnit(Unit unit) => FieldConstraints(
-    minRaw: FC.convertorLength.minRaw.convert(Unit.inch, unit),
-    maxRaw: FC.convertorLength.maxRaw.convert(Unit.inch, unit),
-    stepRaw: FC.convertorLength.stepRaw.convert(Unit.inch, unit),
-    rawUnit: unit,
-    accuracy: FC.convertorLength.accuracyFor(unit),
-  );
+  FieldConstraints getConstraintsForUnit(Unit unit) =>
+      FC.convertorLength.inUnit(unit);
 
   @override
   List<ConvertorSection> buildSections(double rawInch, AppLocalizations l10n) =>

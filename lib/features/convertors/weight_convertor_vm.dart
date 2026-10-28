@@ -28,13 +28,8 @@ class WeightConvertorViewModel extends SimpleConvertorVm {
       ref.read(convertorsProvider.notifier).updateWeightUnit(unit);
 
   @override
-  FieldConstraints getConstraintsForUnit(Unit unit) => FieldConstraints(
-    minRaw: FC.convertorWeight.minRaw.convert(Unit.grain, unit),
-    maxRaw: FC.convertorWeight.maxRaw.convert(Unit.grain, unit),
-    stepRaw: FC.convertorWeight.stepRaw.convert(Unit.grain, unit),
-    rawUnit: unit,
-    accuracy: FC.convertorWeight.accuracyFor(unit),
-  );
+  FieldConstraints getConstraintsForUnit(Unit unit) =>
+      FC.convertorWeight.inUnit(unit);
 
   @override
   List<ConvertorSection> buildSections(

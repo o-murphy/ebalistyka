@@ -28,13 +28,8 @@ class TorqueConvertorViewModel extends SimpleConvertorVm {
       ref.read(convertorsProvider.notifier).updateTorqueUnit(unit);
 
   @override
-  FieldConstraints getConstraintsForUnit(Unit unit) => FieldConstraints(
-    minRaw: FC.convertorTorque.minRaw.convert(Unit.newtonMeter, unit),
-    maxRaw: FC.convertorTorque.maxRaw.convert(Unit.newtonMeter, unit),
-    stepRaw: FC.convertorTorque.stepRaw.convert(Unit.newtonMeter, unit),
-    rawUnit: unit,
-    accuracy: FC.convertorTorque.accuracyFor(unit),
-  );
+  FieldConstraints getConstraintsForUnit(Unit unit) =>
+      FC.convertorTorque.inUnit(unit);
 
   @override
   List<ConvertorSection> buildSections(double rawNm, AppLocalizations l10n) => [

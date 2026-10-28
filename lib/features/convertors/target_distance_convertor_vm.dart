@@ -128,25 +128,11 @@ class TargetAtDistanceConvertorViewModel
     );
   }
 
-  FieldConstraints getSizeConstraintsForUnit(Unit unit) {
-    return FieldConstraints(
-      minRaw: FC.convertorTargetPhysicalSize.minRaw.convert(Unit.inch, unit),
-      maxRaw: FC.convertorTargetPhysicalSize.maxRaw.convert(Unit.inch, unit),
-      stepRaw: FC.convertorTargetPhysicalSize.stepRaw.convert(Unit.inch, unit),
-      rawUnit: unit,
-      accuracy: FC.convertorTargetPhysicalSize.accuracyFor(unit),
-    );
-  }
+  FieldConstraints getSizeConstraintsForUnit(Unit unit) =>
+      FC.convertorTargetPhysicalSize.inUnit(unit);
 
-  FieldConstraints getAngularConstraintsForUnit(Unit unit) {
-    return FieldConstraints(
-      minRaw: FC.targetSize.minRaw.convert(Unit.mil, unit),
-      maxRaw: FC.targetSize.maxRaw.convert(Unit.mil, unit),
-      stepRaw: FC.targetSize.stepRaw.convert(Unit.mil, unit),
-      rawUnit: unit,
-      accuracy: FC.targetSize.accuracyFor(unit),
-    );
-  }
+  FieldConstraints getAngularConstraintsForUnit(Unit unit) =>
+      FC.targetSize.inUnit(unit);
 
   String _fmt(double value, int decimals, String symbol) {
     if (value.isNaN || value.isInfinite || value <= 0) return '— $symbol';

@@ -58,6 +58,17 @@ class FieldConstraints implements Constraints {
 
   @override
   double clamp(double raw) => raw.clamp(minRaw, maxRaw);
+
+  /// This role's range and step converted from [rawUnit] to [unit], with the
+  /// decimals picked by [accuracyFor] — for pickers that edit in a unit
+  /// other than the storage one.
+  FieldConstraints inUnit(Unit unit) => FieldConstraints(
+    rawUnit: unit,
+    minRaw: minRaw.convert(rawUnit, unit),
+    maxRaw: maxRaw.convert(rawUnit, unit),
+    stepRaw: stepRaw.convert(rawUnit, unit),
+    accuracy: accuracyFor(unit),
+  );
 }
 
 /// Extension of [FieldConstraints] with ruler/graph tick configuration.

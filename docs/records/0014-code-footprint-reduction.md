@@ -62,9 +62,12 @@ beyond the first check). Not read in depth: `router.dart`, `home_vm.dart`,
   `profile_ebcp_actions.dart`) as plain `(context, ref, Profile)` functions;
   net −169 lines. Rename and the hot-swap flows were left in the screens: the
   two copies of rename differ, hot-swap is item C.
-- `FieldConstraints.inUnit(Unit)` replaces ~14 hand-written conversion blocks
-  in the convertor VMs (~120); `fromLimits(...)` for the ~39 near-identical
-  roles in `field_constraints.dart` (~150).
+- **Done** — `FieldConstraints.inUnit(Unit)` replaces 8 hand-written
+  conversion blocks in the convertor VMs (length, weight, torque, velocity,
+  target-distance ×2, angular ×2), with a test. Pressure and temperature keep
+  their own bounds. **Dropped:** `fromLimits(...)` for the ~39 roles in
+  `field_constraints.dart` — each role is already a short declarative block,
+  and positional factory args would read worse than the named ones.
 - `filter_sheet.dart`: shared `toggleIn<T>`, vendor-section builder and
   `showModalBottomSheet` wrapper (~90-110).
 - Details-section labels written three times (`details_table_mv.dart`,
