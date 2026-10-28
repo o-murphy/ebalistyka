@@ -11,6 +11,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+## v0.2.1-dev (2026-10-28)
+
+### Added
+- **Web build and publish workflows** — `Build Web` (also runs on pull requests) and `Publish Web` (a manual run, or from a stable release behind the `publish` environment); the web bundle is attached to releases as `ebalistyka_web.zip`.
+- **Labelled "Edit" button** in the Weapon / Ammo / Sight section headers of the profile screen, instead of a small pencil icon.
+
+### Changed
+- **New profile asks for the name last** — after the weapon is created or picked, pre-filled with the weapon's name; cancelling the name dialog keeps you in the wizard or the collection.
+- **Torque convertor range** is 0–9999 N·m with one decimal (it was 300–1500 N·m with none, copied from the pressure convertor).
+- **Flutter** updated to 3.47.8.
+- **Internal cleanup** — the length / weight / pressure / temperature / torque convertors share one view model and screen, the weapon / sight / ammo collections share one screen frame, profile actions and filter-sheet code are shared, and code nothing used was removed; behaviour is unchanged.
+
+### Fixed
+- **Settings → Units → "Drop / Windage angle"** did nothing — the choice is now saved.
+- **Hard-coded English** in the Home reticle messages ("Zero offset", "vertical", "horizontal", "click") and in the custom drag table's point count — now localized (English and Ukrainian).
+- **Sight click size** must be positive: a zero click used to leave *Confirm* silently disabled, now the field shows an error.
+- **Mouse wheel on value pickers** moved two values per notch, now one.
+- **Powder-sensitivity preview** was 1.8× too small with °F; it now matches the saved value.
+- **Long names** on a profile card in the My Profiles list overflowed; they are now ellipsized.
+- **Home recalculation** no longer blanks the pages under the spinner overlay.
+
 ## v0.2.0-dev (2026-10-28)
 
 ### Added
@@ -641,7 +662,8 @@ Initial alpha release — first functional build of the ballistic trajectory cal
 - `OBJECTBOX_MIGRATION.md`: migration details
 
 
-[Unreleased]: https://github.com/o-murphy/ebalistyka/compare/v0.2.0-dev..HEAD
+[Unreleased]: https://github.com/o-murphy/ebalistyka/compare/v0.2.1-dev..HEAD
+[v0.2.1-dev]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.2.1-dev
 [v0.2.0-dev]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.2.0-dev
 [v0.1.22]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.22
 [v0.1.21]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.21

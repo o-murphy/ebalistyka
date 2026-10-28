@@ -63,6 +63,9 @@
    <display_length compare="ge">360</display_length>
  </requires>
  <releases>
+   <release version="0.2.1-dev" date="2026-10-28" type="development">
+     <url type="details">https://github.com/o-murphy/ebalistyka/releases/tag/v0.2.1-dev</url>
+   </release>
    <release version="0.2.0-dev" date="2026-10-28" type="development">
      <url type="details">https://github.com/o-murphy/ebalistyka/releases/tag/v0.2.0-dev</url>
    </release>
