@@ -96,8 +96,13 @@ beyond the first check). Not read in depth: `router.dart`, `home_vm.dart`,
 
 ### C. Abstractions worth building (medium risk, ~600-800 lines)
 
-- Generic `CollectionPickerScreen<T>` for the three collection screens, with
-  `matches(item)` on each filter state (~100-120).
+- **Done** — `CollectionPickerScreen<T>` (`widgets/collection_picker_screen.dart`)
+  holds the app bar, filter button + badge, help, loading/error and the
+  filtered tile list; weapon, sight and ammo screens now only supply items,
+  filter predicate, filter sheet and tile (−56 lines in `lib/`, estimate was
+  100-120 — the predicates stayed in the screens, not moved onto the filter
+  states). Covered by new characterization tests
+  (`test/features/collections/`, written and passing *before* the change).
 - Data-driven simple convertors: one `SimpleConvertorSpec` + generic VM and
   screen instead of 5 VMs + 5 screens (~250-300). Existing tests reference the
   per-unit providers.
