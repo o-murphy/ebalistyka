@@ -73,8 +73,8 @@ Every profile is a card showing its weapon, caliber, cartridge and scope. The ac
 
 Tap **+** (on the My Profiles tab) to open the add sheet:
 
-- **Create new** — enter a name, then set up a new weapon from scratch
-- **From collection** — enter a name, then pick a weapon from the built-in collection
+- **Create new** — set up a new weapon from scratch, then name the profile (suggested: the weapon's name)
+- **From collection** — pick a weapon from the built-in collection, then name the profile (suggested: the weapon's name)
 - **Import from file** — load a `.ebcp` or `.a7p` file
 
 ---

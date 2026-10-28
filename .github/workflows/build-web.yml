@@ -1,0 +1,122 @@
+name: Build Web
+
+on:
+  pull_request:
+    paths:
+      - "lib/**"
+      - "web/**"
+      - "packages/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - ".flutter-version"
+      - "scripts/ci-common.sh"
+      - "scripts/build-web.sh"
+      - ".github/workflows/build-web.yml"
+      - ".github/actions/flutter/**"
+  workflow_call:
+    inputs:
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        type: string
+        default: ""
+      retention_days:
+        description: "Artifact retention in days"
+        required: false
+        type: number
+        default: 2
+    outputs:
+      artifact_name:
+        description: "Name of the uploaded artifact (holds ebalistyka_web.zip)"
+        value: ${{ jobs.build.outputs.artifact_name }}
+      artifact_url:
+        description: "URL to download the artifact"
+        value: ${{ jobs.build.outputs.artifact_url }}
+  workflow_dispatch:
+    inputs:
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        default: ""
+        type: string
+
+concurrency:
+  group: build-web-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: web
+    runs-on: ubuntu-latest
+    outputs:
+      artifact_name: ${{ steps.meta.outputs.artifact_name }}
+      artifact_url: ${{ steps.upload.outputs.artifact-url }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          source scripts/ci-common.sh
+          resolve_version "${{ github.ref_type }}" "${{ github.ref_name }}"
+
+      - name: Setup Flutter
+        uses: ./.github/actions/flutter
+        with:
+          flutter-version-file: .flutter-version
+          cache: true
+
+      - name: Set build metadata
+        id: meta
+        shell: bash
+        env:
+          INPUT_BUILD_NAME: ${{ inputs.build_name }}
+          VERSION: ${{ steps.version.outputs.version }}
+          PR_NUMBER: ${{ github.event.number }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          source scripts/ci-common.sh
+          set_build_metadata "ebalistyka-web"
+          # The web bundle is platform-independent: drop the arch part of the name.
+          source <(grep -E '^(safe_build_name|build_number)=' "$GITHUB_OUTPUT" | tail -2)
+          echo "artifact_name=ebalistyka-web-${safe_build_name}-${build_number}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache pub packages
+        uses: actions/cache@v6
+        with:
+          path: ${{ runner.temp }}/pub-cache
+          key: pub-web-${{ hashFiles('pubspec.lock') }}
+          restore-keys: pub-web-
+
+      - name: Set pubspec version
+        run: |
+          source scripts/ci-common.sh
+          set_pubspec_version "${{ steps.meta.outputs.build_name }}" "${{ steps.meta.outputs.build_number }}"
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      - name: Build web bundle
+        run: scripts/build-web.sh
+
+      # zip -r . keeps the dot files (.nojekyll) that upload-artifact would skip
+      - name: Package web bundle
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          (cd build/web && zip -qr "$GITHUB_WORKSPACE/artifacts/ebalistyka_web.zip" .)
+          ls -lh artifacts/
+
+      - name: Upload artifact
+        id: upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.meta.outputs.artifact_name }}
+          path: artifacts/ebalistyka_web.zip
+          retention-days: ${{ inputs.retention_days || 2 }}
+          if-no-files-found: error

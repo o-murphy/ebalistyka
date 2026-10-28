@@ -4,7 +4,7 @@ import 'package:material_ui/material_ui.dart';
 
 /// Checkbox bottom sheet letting the user pick a subset of [profiles] to
 /// import — shared by the Profiles-screen single-profile import flow
-/// (`profile_ebcp_actions.dart`) and the Settings/Backup screen's
+/// (`profile_actions.dart`) and the Settings/Backup screen's
 /// "all profiles"/"everything" import scope (`settings_screen.dart`), both
 /// of which need "pick which of these profiles to bring in," just from
 /// files that usually carry one profile vs. many.

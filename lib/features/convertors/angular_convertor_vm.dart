@@ -155,53 +155,11 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
     );
   }
 
-  FieldConstraints getDistanceConstraintsForUnit(Unit unit) {
-    return FieldConstraints(
-      minRaw: FC.convertorDistance.minRaw.convert(
-        FC.convertorDistance.rawUnit,
-        unit,
-      ),
-      maxRaw: FC.convertorDistance.maxRaw.convert(
-        FC.convertorDistance.rawUnit,
-        unit,
-      ),
-      stepRaw: FC.convertorDistance.stepRaw.convert(
-        FC.convertorDistance.rawUnit,
-        unit,
-      ),
-      rawUnit: unit,
-      accuracy: FC.convertorDistance.accuracyFor(unit),
-    );
-  }
+  FieldConstraints getDistanceConstraintsForUnit(Unit unit) =>
+      FC.convertorDistance.inUnit(unit);
 
-  FieldConstraints getAngularConstraintsForUnit(Unit unit) {
-    return FieldConstraints(
-      minRaw: FC.convertorAngular.minRaw.convert(
-        FC.convertorAngular.rawUnit,
-        unit,
-      ),
-      maxRaw: FC.convertorAngular.maxRaw.convert(
-        FC.convertorAngular.rawUnit,
-        unit,
-      ),
-      stepRaw: FC.convertorAngular.stepRaw.convert(
-        FC.convertorAngular.rawUnit,
-        unit,
-      ),
-      rawUnit: unit,
-      accuracy: FC.convertorAngular.accuracyFor(unit),
-    );
-  }
-
-  FieldConstraints getOutputConstraintsForUnit(Unit unit) {
-    return FieldConstraints(
-      minRaw: 0.0,
-      maxRaw: 100000.0,
-      stepRaw: 1.0,
-      rawUnit: unit,
-      accuracy: 1,
-    );
-  }
+  FieldConstraints getAngularConstraintsForUnit(Unit unit) =>
+      FC.convertorAngular.inUnit(unit);
 
   String _formatValue(double value, int decimals, String symbol) {
     if (value.isNaN || value.isInfinite) return '— $symbol';

@@ -151,10 +151,6 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     await ref.read(shotConditionsProvider.notifier).updateLookAngle(degrees);
   }
 
-  Future<void> updateTargetDistance(double meters) async {
-    await ref.read(shotConditionsProvider.notifier).updateDistance(meters);
-  }
-
   Future<void> updateReticleAdjustments({
     required double vRaw,
     required Unit? vUnit,
@@ -291,6 +287,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       zeroOffsetXMil: zeroOffsetXMil,
       zeroOffsetYUnit: ammo.zeroOffsetYUnitValue,
       zeroOffsetXUnit: ammo.zeroOffsetXUnitValue,
+      l10n: l10n,
     );
 
     final elevMil =

@@ -28,8 +28,6 @@ mixin WizardFormMixin<W extends ConsumerStatefulWidget> on ConsumerState<W> {
     super.dispose();
   }
 
-  bool get isNameValid => nameController.text.trim().isNotEmpty;
-
   /// Returns the trimmed name, or [fallback] when the field is empty.
   String wizardTitle(String fallback) {
     final n = nameController.text.trim();

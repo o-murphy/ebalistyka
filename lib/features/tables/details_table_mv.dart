@@ -1,6 +1,7 @@
 import 'package:bclibc/bclibc.dart' as bclibc;
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,6 +16,14 @@ import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:bclibc/unit.dart';
 
 // ── Spoiler data ─────────────────────────────────────────────────────────────
+
+/// A titled group of label/value rows; a null value means "no data".
+class DetailsSection {
+  const DetailsSection(this.title, this.rows);
+
+  final String title;
+  final List<(String label, String? value)> rows;
+}
 
 class DetailsTableData {
   final String weaponName;
@@ -58,6 +67,38 @@ class DetailsTableData {
     this.windSpeed,
     this.windDir,
   });
+
+  /// The details grouped as shown on screen and in the HTML report — the one
+  /// place that says which value goes under which label and heading.
+  List<DetailsSection> sections(AppLocalizations l10n) => [
+    DetailsSection(l10n.weapon, [
+      (l10n.weaponName, weaponName),
+      (l10n.caliber, caliber),
+      (l10n.twistRate, twist),
+      (l10n.zeroDistance, zeroDist),
+    ]),
+    DetailsSection(l10n.cartridge, [
+      (l10n.zeroMv, zeroMv),
+      (l10n.currentMv, currentMv),
+    ]),
+    DetailsSection(l10n.projectile, [
+      (l10n.dragModel, dragModel),
+      (l10n.bc, bc),
+      (l10n.length, bulletLen),
+      (l10n.caliber, bulletDiam),
+      (l10n.weight, bulletWeight),
+      (l10n.formFactor, formFactor),
+      (l10n.sectionalDensity, sectionalDensity),
+      (l10n.gyrostabilitySg, gyroStability),
+    ]),
+    DetailsSection(l10n.conditions, [
+      (l10n.temperature, temperature),
+      (l10n.humidity, humidity),
+      (l10n.pressure, pressure),
+      (l10n.windSpeed, windSpeed),
+      (l10n.windDirection, windDir),
+    ]),
+  ];
 }
 
 // ── Private builder ──────────────────────────────────────────────────────────

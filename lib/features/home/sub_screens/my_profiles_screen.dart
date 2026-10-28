@@ -1,8 +1,7 @@
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
-import 'package:ebalistyka/core/services/a7p_converter.dart';
 import 'package:ebalistyka/core/services/a7p_service.dart';
 import 'package:ebalistyka/features/home/profiles_vm.dart';
-import 'package:ebalistyka/features/home/sub_screens/profile_ebcp_actions.dart';
+import 'package:ebalistyka/features/home/sub_screens/profile_actions.dart';
 import 'package:ebalistyka/features/home/sub_screens/profiles_list_screen.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/profile_control_tile.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/profile_sections.dart';
@@ -15,7 +14,6 @@ import 'package:ebalistyka/shared/widgets/confirm_dialog.dart';
 import 'package:ebalistyka/shared/widgets/error_display.dart';
 import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebalistyka/shared/widgets/snackbars.dart';
-import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
 import 'package:bclibc/unit.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebc_db/ebc_db.dart';
@@ -25,17 +23,6 @@ import 'package:go_router/go_router.dart';
 
 class ProfilesScreen extends ConsumerWidget {
   const ProfilesScreen({super.key});
-
-  Future<String?> _askProfileName(BuildContext context, {String? initial}) {
-    final l10n = AppLocalizations.of(context)!;
-    return showTextInputDialog(
-      context,
-      title: l10n.newProfile,
-      initialValue: initial,
-      labelText: l10n.profileName,
-      confirmLabel: l10n.nextButton,
-    );
-  }
 
   /// Warns that swapping in a new weapon/ammo/sight discards whatever is
   /// currently there, and offers a way out: duplicate the profile first
@@ -89,53 +76,6 @@ class ProfilesScreen extends ConsumerWidget {
       ],
     );
     return targetUuid;
-  }
-
-  Future<void> _onAddTap(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    return showActionSheet(
-      context,
-      title: l10n.addProfileDialogTitle,
-      entries: [
-        ActionSheetItem(
-          icon: IconDef.addCircle,
-          title: l10n.createNewAction,
-          onTap: () async {
-            final name = await _askProfileName(context);
-            if (name == null || !context.mounted) return;
-            final weapon = await context.push<Weapon?>(
-              Routes.profileAddWeaponCreate,
-            );
-            if (weapon != null && context.mounted) {
-              await ref
-                  .read(profilesActionsProvider.notifier)
-                  .createProfile(name, weapon);
-            }
-          },
-        ),
-        ActionSheetItem(
-          icon: IconDef.openCollection,
-          title: l10n.fromCollectionAction,
-          onTap: () async {
-            final name = await _askProfileName(context);
-            if (name == null || !context.mounted) return;
-            final weapon = await context.push<Weapon?>(
-              Routes.profileAddWeaponCollection,
-            );
-            if (weapon != null && context.mounted) {
-              await ref
-                  .read(profilesActionsProvider.notifier)
-                  .createProfile(name, weapon);
-            }
-          },
-        ),
-        ActionSheetItem(
-          icon: IconDef.import,
-          title: l10n.actionImportFromFile,
-          onTap: () => importProfileFromFile(context, ref),
-        ),
-      ],
-    );
   }
 
   Future<void> _onEditWeapon(
@@ -459,41 +399,6 @@ class ProfilesScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _onDuplicate(
-    BuildContext context,
-    WidgetRef ref,
-    Profile profile,
-  ) async {
-    final name = await _askProfileName(
-      context,
-      initial: '[COPY] ${profile.name}',
-    );
-    if (name == null) return;
-    await ref
-        .read(profilesActionsProvider.notifier)
-        .duplicateProfile(profile.uuid, name);
-  }
-
-  Future<void> _onRemove(
-    BuildContext context,
-    WidgetRef ref,
-    Profile profile,
-  ) async {
-    final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showConfirmDialog(
-      context,
-      title: l10n.removeProfile,
-      content: l10n.removeProfileContent(profile.name),
-      confirmLabel: l10n.removeAction,
-      isDestructive: true,
-    );
-    if (confirmed) {
-      await ref
-          .read(profilesActionsProvider.notifier)
-          .removeProfile(profile.uuid);
-    }
-  }
-
   Future<void> _onRemoveAmmo(
     BuildContext context,
     WidgetRef ref,
@@ -512,74 +417,6 @@ class ProfilesScreen extends ConsumerWidget {
           .read(profilesActionsProvider.notifier)
           .removeProfileAmmo(profile.uuid);
     }
-  }
-
-  Future<void> _shareA7p(
-    BuildContext context,
-    Profile profile,
-    A7pRange range,
-  ) async {
-    try {
-      await A7pService.shareFile(profile, range);
-    } catch (e) {
-      if (!context.mounted) return;
-      showFeedback(context, e.toString(), isError: true);
-    }
-  }
-
-  Future<void> _onExport(BuildContext context, Profile profile) async {
-    final l10n = AppLocalizations.of(context)!;
-    await showActionSheet(
-      context,
-      title: l10n.exportFormatDialogTitle,
-      entries: [
-        ActionSheetItem(
-          icon: IconDef.export,
-          title: '.ebcp (eBalistyka)',
-          onTap: () => shareProfileAsEbcp(context, profile),
-        ),
-        ActionSheetItem(
-          icon: IconDef.export,
-          title: '.a7p (Archer Ballistic Profile)',
-          onTap: () => _onExportA7p(context, profile),
-        ),
-      ],
-    );
-  }
-
-  Future<void> _onExportA7p(BuildContext context, Profile profile) async {
-    final l10n = AppLocalizations.of(context)!;
-    await showActionSheet(
-      context,
-      title: l10n.selectRangeDialogTitle,
-      entries: [
-        ActionSheetItem(
-          title: l10n.rangeSubsonic,
-          subtitle: '25-400m',
-          onTap: () => _shareA7p(context, profile, A7pRange.subsonic),
-        ),
-        ActionSheetItem(
-          title: l10n.rangeLow,
-          subtitle: '100-700m',
-          onTap: () => _shareA7p(context, profile, A7pRange.low),
-        ),
-        ActionSheetItem(
-          title: l10n.rangeMiddle,
-          subtitle: '100-1000m',
-          onTap: () => _shareA7p(context, profile, A7pRange.medium),
-        ),
-        ActionSheetItem(
-          title: l10n.rangeLong,
-          subtitle: '100-1700m',
-          onTap: () => _shareA7p(context, profile, A7pRange.long),
-        ),
-        ActionSheetItem(
-          title: l10n.rangeUltraLong,
-          subtitle: '100-2000m',
-          onTap: () => _shareA7p(context, profile, A7pRange.ultra),
-        ),
-      ],
-    );
   }
 
   Future<void> _onRename(
@@ -633,7 +470,7 @@ class ProfilesScreen extends ConsumerWidget {
     if (!(appStateAsync.value?.profiles.isEmpty ?? false)) return null;
     return FloatingActionButton(
       heroTag: 'generalFab',
-      onPressed: () => _onAddTap(context, ref),
+      onPressed: () => showAddProfileSheet(context, ref),
       backgroundColor: cs.primary,
       foregroundColor: cs.onPrimary,
       elevation: 6,
@@ -672,14 +509,16 @@ class ProfilesScreen extends ConsumerWidget {
                     hasWeapon: profile.weapon.name.isNotEmpty,
                     hasAmmo: profile.hasAmmo(),
                     hasSight: profile.sight.name.isNotEmpty,
-                    onDuplicate: () => _onDuplicate(context, ref, profile),
-                    onExport: () => _onExport(context, profile),
+                    onDuplicate: () =>
+                        duplicateProfileWithPrompt(context, ref, profile),
+                    onExport: () => showExportProfileSheet(context, profile),
                     onSelectWeapon: () =>
                         _onReplaceWeapon(context, ref, profile),
                     onSelectAmmo: () => _onReplaceAmmo(context, ref, profile),
                     onSelectSight: () =>
                         _onReplaceSight(context, ref, profile),
-                    onRemove: () => _onRemove(context, ref, profile),
+                    onRemove: () =>
+                        removeProfileWithConfirm(context, ref, profile),
                     onRemoveAmmo: () => _onRemoveAmmo(context, ref, profile),
                     onRename: (name) =>
                         _onRename(context, ref, profile, name),

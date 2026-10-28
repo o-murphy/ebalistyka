@@ -25,6 +25,7 @@ class OffsetsTiles extends StatelessWidget {
     required this.onXChanged,
     required this.onYUnitChanged,
     required this.onXUnitChanged,
+    this.constraints = FC.adjustment,
     super.key,
   });
 
@@ -40,6 +41,9 @@ class OffsetsTiles extends StatelessWidget {
   final void Function(Unit) onYUnitChanged;
   final void Function(Unit) onXUnitChanged;
 
+  /// Allowed range; defaults to [FC.adjustment] (offsets, may be 0 or negative).
+  final FieldConstraints constraints;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -49,7 +53,7 @@ class OffsetsTiles extends StatelessWidget {
         listInputLabel(context, yLabel),
         UnitInputWithPicker(
           value: yRaw,
-          constraints: FC.adjustment,
+          constraints: constraints,
           displayUnit: yUnits,
           options: offsetUnits,
           unitLabel: unitLabel,
@@ -61,7 +65,7 @@ class OffsetsTiles extends StatelessWidget {
         listInputLabel(context, xLabel),
         UnitInputWithPicker(
           value: xRaw,
-          constraints: FC.adjustment,
+          constraints: constraints,
           displayUnit: xUnits,
           options: offsetUnits,
           unitLabel: unitLabel,

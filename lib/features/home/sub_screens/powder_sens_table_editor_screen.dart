@@ -53,24 +53,42 @@ class _PowderSensTableEditorScreenState
   // ── Live preview ──────────────────────────────────────────────────────────
 
   void _onRowsChanged(List<(double, double)> rows) {
-    setState(() => _preview = _computePreview(rows));
+    final units = ref.read(unitSettingsProvider);
+    final table = _toTable(rows, units.temperatureUnit, units.velocityUnit);
+    setState(() => _preview = _averageSensitivity(table));
   }
 
-  /// Computes averaged pairwise powder-sensitivity coefficient from display-unit
-  /// pairs (tempDisplay, vDisplay). Unit-agnostic: [calcPowderSensCoeff] uses
-  /// only ratios and differences.
-  static double? _computePreview(List<(double, double)> rows) {
-    if (rows.isEmpty) return null;
-    if (rows.length == 1) return 0.0;
+  /// Display-unit rows (temperature, velocity) → °C / m/s measurements.
+  static List<({double tempC, double vMps})> _toTable(
+    List<(double, double)> rows,
+    Unit tUnit,
+    Unit vUnit,
+  ) => [
+    for (final r in rows)
+      (
+        tempC: Temperature(r.$1, tUnit).in_(Unit.celsius),
+        vMps: Velocity(r.$2, vUnit).in_(Unit.mps),
+      ),
+  ];
 
-    final sorted = [...rows]..sort((a, b) => a.$1.compareTo(b.$1));
+  /// Arithmetic mean of [calcPowderSensCoeff] over adjacent pairs sorted by
+  /// temperature: `null` for an empty table, `0` for a single row or when no
+  /// pair is valid. The coefficient depends on the temperature difference in
+  /// °C, so the rows must already be converted (see [_toTable]).
+  static double? _averageSensitivity(
+    List<({double tempC, double vMps})> table,
+  ) {
+    if (table.isEmpty) return null;
+    if (table.length == 1) return 0.0;
+
+    final sorted = [...table]..sort((a, b) => a.tempC.compareTo(b.tempC));
     final coeffs = <double>[];
     for (var i = 0; i < sorted.length - 1; i++) {
       final c = calcPowderSensCoeff(
-        sorted[i].$2,
-        sorted[i].$1,
-        sorted[i + 1].$2,
-        sorted[i + 1].$1,
+        sorted[i].vMps,
+        sorted[i].tempC,
+        sorted[i + 1].vMps,
+        sorted[i + 1].tempC,
       );
       if (c != null) coeffs.add(c);
     }
@@ -128,34 +146,8 @@ class _PowderSensTableEditorScreenState
       footerText: l10n.nonPositiveRowsHint,
       actions: [HelpAction(HelpData.powderSensEditor)],
       onSave: (rawRows) {
-        final table = rawRows
-            .map(
-              (r) => (
-                tempC: Temperature(r.$1, tUnit).in_(Unit.celsius),
-                vMps: Velocity(r.$2, vUnit).in_(Unit.mps),
-              ),
-            )
-            .toList();
-
-        double? sensitivity;
-        if (table.length == 1) {
-          sensitivity = 0.0;
-        } else if (table.length >= 2) {
-          final sorted = [...table]..sort((a, b) => a.tempC.compareTo(b.tempC));
-          final coeffs = <double>[];
-          for (var i = 0; i < sorted.length - 1; i++) {
-            final c = calcPowderSensCoeff(
-              sorted[i].vMps,
-              sorted[i].tempC,
-              sorted[i + 1].vMps,
-              sorted[i + 1].tempC,
-            );
-            if (c != null) coeffs.add(c);
-          }
-          sensitivity = coeffs.isEmpty
-              ? 0.0
-              : coeffs.reduce((a, b) => a + b) / coeffs.length;
-        }
+        final table = _toTable(rawRows, tUnit, vUnit);
+        final sensitivity = _averageSensitivity(table);
 
         context.pop<PowderSensTableResult>((
           table: table,

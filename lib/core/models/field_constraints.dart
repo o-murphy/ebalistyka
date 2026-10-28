@@ -58,6 +58,17 @@ class FieldConstraints implements Constraints {
 
   @override
   double clamp(double raw) => raw.clamp(minRaw, maxRaw);
+
+  /// This role's range and step converted from [rawUnit] to [unit], with the
+  /// decimals picked by [accuracyFor] — for pickers that edit in a unit
+  /// other than the storage one.
+  FieldConstraints inUnit(Unit unit) => FieldConstraints(
+    rawUnit: unit,
+    minRaw: minRaw.convert(rawUnit, unit),
+    maxRaw: maxRaw.convert(rawUnit, unit),
+    stepRaw: stepRaw.convert(rawUnit, unit),
+    accuracy: accuracyFor(unit),
+  );
 }
 
 /// Extension of [FieldConstraints] with ruler/graph tick configuration.
@@ -311,6 +322,16 @@ abstract final class FC {
     accuracy: 2, // suitable for MIL / MOA / MRAD (default unit)
   );
 
+  /// Size of one scope click: unlike [adjustment] (an offset that may be 0 or
+  /// negative) it must be positive, otherwise the sight wizard cannot be saved.
+  static const sightClick = FieldConstraints(
+    rawUnit: Unit.mil,
+    minRaw: 0.01,
+    maxRaw: 30,
+    stepRaw: 0.001,
+    accuracy: 2,
+  );
+
   static const velocity = FieldConstraints(
     rawUnit: Unit.mps,
     minRaw: 0.0,
@@ -367,12 +388,14 @@ abstract final class FC {
     accuracy: 0,
   );
 
+  /// 0–9999 N·m covers scope screws (a few N·m) up to wheel nuts and beyond.
+  /// One decimal, so a 1.5 N·m screw is not shown as "2 N·m".
   static const torque = FieldConstraints(
     rawUnit: Unit.newtonMeter,
-    minRaw: 300.0,
-    maxRaw: 1500.0,
-    stepRaw: 1.0,
-    accuracy: 0,
+    minRaw: 0.0,
+    maxRaw: 9999.0,
+    stepRaw: 0.1,
+    accuracy: 1,
   );
 
   static final convertorDistance = FieldConstraints(

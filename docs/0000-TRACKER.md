@@ -18,10 +18,12 @@ that's also where new decisions get logged as they're made.
 
 - [ ] [0001] Beta UX — remaining work
 - [ ] [0002] Field constraints / web UX follow-ups
-      Profiles UX and fonts done; open: auto-deploy, bundle size, untested browsers
+      Profiles UX, fonts and auto-deploy workflows done (untested in CI); open: bundle size, untested browsers
 - [ ] [0004] Reticles — wizard placeholders & remaining SVG generation
-- [ ] [0013] AppStream metainfo screenshots point at the v0.1.16 tag
-      waits for the next release tag; `tables_details.png` still to retake
+- [ ] [0014] Code footprint reduction — less duplication, tighter abstractions
+      audited 2026-10-28: ~1k lines low-risk, ~700 medium, ob_migrate (3.2k) is an owner decision
+- [ ] [0015] Collection filters — usability rework
+      UX/usefulness of the filters, not their logic; problems still to be listed
 - [ ] [0005] Home Note / Help / More buttons
       deferred — not scheduled
 - [ ] [0007] Open question — Weapon/Sight/Ammo `image` field format
@@ -60,6 +62,10 @@ that's also where new decisions get logged as they're made.
 - [x] [0011] Web IndexedDB backend — cross-tab write coordination
       web: single active tab + fencing; desktop: single app instance;
       multi-window mode deferred until users ask
+- [x] [0013] AppStream metainfo screenshots point at the v0.1.16 tag
+      URLs moved to the v0.2.0-dev tag
+- [x] [0016] Torque convertor range fix — 0–9999 N·m, one decimal
+      FC.torque was copied from pressure (300–1500); schema discrepancy note left as is
 - [x] [0012] In-app help docs — refresh before beta
 - [x] [0009] ebc_db migration residue — app-close hang & Tables spinner
       root cause

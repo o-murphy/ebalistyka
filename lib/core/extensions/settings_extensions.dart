@@ -1,3 +1,4 @@
+import 'package:ebalistyka/core/extensions/name_lookup.dart';
 import 'package:bclibc/unit.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:material_ui/material_ui.dart';
@@ -28,10 +29,7 @@ extension GeneralSettingsExtension on GeneralSettings {
   // ── Enum ─────────────────────────────────────────────────────────────────────
 
   AdjustmentDisplayFormat get adjustmentDisplayFormat =>
-      AdjustmentDisplayFormat.values.firstWhere(
-        (e) => e.name == adjustmentDisplayFormatValue,
-        orElse: () => AdjustmentDisplayFormat.arrows,
-      );
+      enumByName(AdjustmentDisplayFormat.values, adjustmentDisplayFormatValue, AdjustmentDisplayFormat.arrows);
   set adjustmentDisplayFormat(AdjustmentDisplayFormat v) =>
       adjustmentDisplayFormatValue = v.name;
 
@@ -49,58 +47,37 @@ extension GeneralSettingsExtension on GeneralSettings {
 }
 
 extension UnitSettingsExtension on UnitSettings {
-  Unit get angularUnit =>
-      Unit.values.firstWhere((u) => u.name == angular, orElse: () => Unit.mil);
+  Unit get angularUnit => unitNamed(angular, Unit.mil);
   set angularUnit(Unit v) => angular = v.name;
 
-  Unit get distanceUnit => Unit.values.firstWhere(
-    (u) => u.name == distance,
-    orElse: () => Unit.meter,
-  );
+  Unit get distanceUnit => unitNamed(distance, Unit.meter);
   set distanceUnit(Unit v) => distance = v.name;
 
-  Unit get velocityUnit =>
-      Unit.values.firstWhere((u) => u.name == velocity, orElse: () => Unit.mps);
+  Unit get velocityUnit => unitNamed(velocity, Unit.mps);
   set velocityUnit(Unit v) => velocity = v.name;
 
-  Unit get pressureUnit =>
-      Unit.values.firstWhere((u) => u.name == pressure, orElse: () => Unit.hPa);
+  Unit get pressureUnit => unitNamed(pressure, Unit.hPa);
   set pressureUnit(Unit v) => pressure = v.name;
 
-  Unit get temperatureUnit => Unit.values.firstWhere(
-    (u) => u.name == temperature,
-    orElse: () => Unit.celsius,
-  );
+  Unit get temperatureUnit => unitNamed(temperature, Unit.celsius);
   set temperatureUnit(Unit v) => temperature = v.name;
 
-  Unit get diameterUnit => Unit.values.firstWhere(
-    (u) => u.name == diameter,
-    orElse: () => Unit.inch,
-  );
+  Unit get diameterUnit => unitNamed(diameter, Unit.inch);
   set diameterUnit(Unit v) => diameter = v.name;
 
-  Unit get lengthUnit =>
-      Unit.values.firstWhere((u) => u.name == length, orElse: () => Unit.inch);
+  Unit get lengthUnit => unitNamed(length, Unit.inch);
   set lengthUnit(Unit v) => length = v.name;
 
-  Unit get weightUnit =>
-      Unit.values.firstWhere((u) => u.name == weight, orElse: () => Unit.grain);
+  Unit get weightUnit => unitNamed(weight, Unit.grain);
   set weightUnit(Unit v) => weight = v.name;
 
-  Unit get dropUnit => Unit.values.firstWhere(
-    (u) => u.name == drop,
-    orElse: () => Unit.centimeter,
-  );
+  Unit get dropUnit => unitNamed(drop, Unit.centimeter);
   set dropUnit(Unit v) => drop = v.name;
 
-  Unit get energyUnit =>
-      Unit.values.firstWhere((u) => u.name == energy, orElse: () => Unit.joule);
+  Unit get energyUnit => unitNamed(energy, Unit.joule);
   set energyUnit(Unit v) => energy = v.name;
 
-  Unit get targetSizeUnit => Unit.values.firstWhere(
-    (u) => u.name == targetSize,
-    orElse: () => Unit.mil,
-  );
+  Unit get targetSizeUnit => unitNamed(targetSize, Unit.mil);
   set targetSizeUnit(Unit v) => targetSize = v.name;
 }
 
@@ -115,46 +92,29 @@ extension TablesSettingsExtension on TablesSettings {
 }
 
 extension UnitSettingsFullExtension on UnitSettings {
-  Unit get adjustmentUnit => Unit.values.firstWhere(
-    (u) => u.name == adjustment,
-    orElse: () => Unit.mil,
-  );
+  Unit get adjustmentUnit => unitNamed(adjustment, Unit.mil);
   set adjustmentUnit(Unit v) => adjustment = v.name;
 
-  Unit get sightHeightUnit => Unit.values.firstWhere(
-    (u) => u.name == sightHeight,
-    orElse: () => Unit.millimeter,
-  );
+  Unit get sightHeightUnit => unitNamed(sightHeight, Unit.millimeter);
   set sightHeightUnit(Unit v) => sightHeight = v.name;
 
-  Unit get twistUnit =>
-      Unit.values.firstWhere((u) => u.name == twist, orElse: () => Unit.inch);
+  Unit get twistUnit => unitNamed(twist, Unit.inch);
   set twistUnit(Unit v) => twist = v.name;
 
-  Unit get barrelLengthUnit => Unit.values.firstWhere(
-    (u) => u.name == barrelLength,
-    orElse: () => Unit.inch,
-  );
+  Unit get barrelLengthUnit => unitNamed(barrelLength, Unit.inch);
   set barrelLengthUnit(Unit v) => barrelLength = v.name;
 
-  Unit get torqueUnit => Unit.values.firstWhere(
-    (u) => u.name == torque,
-    orElse: () => Unit.newtonMeter,
-  );
+  Unit get torqueUnit => unitNamed(torque, Unit.newtonMeter);
   set torqueUnit(Unit v) => torque = v.name;
 }
 
 extension ReticleSettingsExtension on ReticleSettings {
-  Unit get verticalAdjustmentUnitValue => Unit.values.firstWhere(
-    (u) => u.name == verticalAdjustmentUnit,
-    orElse: () => Unit.mil,
-  );
+  Unit get verticalAdjustmentUnitValue =>
+      unitNamed(verticalAdjustmentUnit, Unit.mil);
   set verticalAdjustmentUnitValue(Unit v) => verticalAdjustmentUnit = v.name;
 
-  Unit get horizontalAdjustmentUnitValue => Unit.values.firstWhere(
-    (u) => u.name == horizontalAdjustmentUnit,
-    orElse: () => Unit.mil,
-  );
+  Unit get horizontalAdjustmentUnitValue =>
+      unitNamed(horizontalAdjustmentUnit, Unit.mil);
   set horizontalAdjustmentUnitValue(Unit v) =>
       horizontalAdjustmentUnit = v.name;
 

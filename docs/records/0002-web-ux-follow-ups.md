@@ -112,7 +112,20 @@ topic ([0012]).
 Still open on web:
 
 - Profiles UX (deferred, see above) and the help docs — [0012].
-- An auto-deploy workflow (`gh-pages` on push/tag) when wanted.
+- ~~An auto-deploy workflow (`gh-pages` on push/tag) when wanted.~~ **Done
+  (2026-10-28, not yet run in CI):**
+  - `build-web.yml` — reusable build like the other targets (also on pull
+    requests touching `lib/`, `web/`, `packages/`, `pubspec.*`, so a broken web
+    build shows up on the PR); uploads `ebalistyka_web.zip`.
+  - `publish-web.yml` — `workflow_dispatch` (builds first, **unprotected**: no
+    environment, no approval) and `workflow_call` (from `release.yml`, behind
+    the protected `publish` environment, publishes the bundle `release.yml`
+    already built). The publish step only runs for a tag or a manual run and
+    reuses `scripts/deploy-web.sh --yes` (force-push of one commit to
+    `gh-pages`).
+  - `release.yml` — `build-web` job (its zip also becomes a release asset) and
+    `publish-web` for **stable** tags only (`!contains(ref_name, '-')`, like AUR
+    and winget), so a `-dev` tag does not replace the live site.
 - Bundle is ~59 MB on disk, mostly unused CanvasKit variants; a client
   downloads only what it uses (~5 MB wasm + ~4.6 MB `main.dart.js` +
   assets). Pruning is optional for Pages.

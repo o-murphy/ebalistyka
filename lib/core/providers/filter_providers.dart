@@ -52,30 +52,6 @@ class AmmoFilterNotifier extends Notifier<AmmoFilterState> {
     calibers: _defaultCaliberInch != null ? {_defaultCaliberInch} : {},
   );
 
-  void toggleVendor(String vendor) {
-    final s = Set<String>.from(state.vendors);
-    if (s.contains(vendor)) {
-      s.remove(vendor);
-    } else {
-      s.add(vendor);
-    }
-    state = state.copyWith(vendors: s);
-  }
-
-  void toggleCaliber(double caliberInch) {
-    final s = Set<double>.from(state.calibers);
-    if (s.contains(caliberInch)) {
-      s.remove(caliberInch);
-    } else {
-      s.add(caliberInch);
-    }
-    state = state.copyWith(calibers: s);
-  }
-
-  void setMinWeight(double? v) => state = state.copyWith(minWeightGrain: v);
-
-  void setMaxWeight(double? v) => state = state.copyWith(maxWeightGrain: v);
-
   void apply({
     required Set<String> vendors,
     required Set<double> calibers,
@@ -87,16 +63,7 @@ class AmmoFilterNotifier extends Notifier<AmmoFilterState> {
     minWeightGrain: minWeightGrain,
     maxWeightGrain: maxWeightGrain,
   );
-
-  void reset() => state = AmmoFilterState(
-    calibers: _defaultCaliberInch != null ? {_defaultCaliberInch} : {},
-  );
 }
-
-final ammoFilterProvider = NotifierProvider.autoDispose
-    .family<AmmoFilterNotifier, AmmoFilterState, double?>(
-      (arg) => AmmoFilterNotifier(arg),
-    );
 
 final ammoCollectionFilterProvider = NotifierProvider.autoDispose
     .family<AmmoFilterNotifier, AmmoFilterState, double?>(
@@ -130,38 +97,11 @@ class SightFilterNotifier extends Notifier<SightFilterState> {
   @override
   SightFilterState build() => const SightFilterState();
 
-  void toggleVendor(String vendor) {
-    final s = Set<String>.from(state.vendors);
-    if (s.contains(vendor)) {
-      s.remove(vendor);
-    } else {
-      s.add(vendor);
-    }
-    state = state.copyWith(vendors: s);
-  }
-
-  void toggleFocalPlane(FocalPlane fp) {
-    final s = Set<FocalPlane>.from(state.focalPlanes);
-    if (s.contains(fp)) {
-      s.remove(fp);
-    } else {
-      s.add(fp);
-    }
-    state = state.copyWith(focalPlanes: s);
-  }
-
   void apply({
     required Set<String> vendors,
     required Set<FocalPlane> focalPlanes,
   }) => state = state.copyWith(vendors: vendors, focalPlanes: focalPlanes);
-
-  void reset() => state = const SightFilterState();
 }
-
-final sightFilterProvider =
-    NotifierProvider.autoDispose<SightFilterNotifier, SightFilterState>(
-      SightFilterNotifier.new,
-    );
 
 final sightCollectionFilterProvider =
     NotifierProvider.autoDispose<SightFilterNotifier, SightFilterState>(
@@ -195,32 +135,8 @@ class WeaponFilterNotifier extends Notifier<WeaponFilterState> {
     calibers: _defaultCaliberInch != null ? {_defaultCaliberInch} : {},
   );
 
-  void toggleVendor(String vendor) {
-    final s = Set<String>.from(state.vendors);
-    if (s.contains(vendor)) {
-      s.remove(vendor);
-    } else {
-      s.add(vendor);
-    }
-    state = state.copyWith(vendors: s);
-  }
-
-  void toggleCaliber(double caliberInch) {
-    final s = Set<double>.from(state.calibers);
-    if (s.contains(caliberInch)) {
-      s.remove(caliberInch);
-    } else {
-      s.add(caliberInch);
-    }
-    state = state.copyWith(calibers: s);
-  }
-
   void apply({required Set<String> vendors, required Set<double> calibers}) =>
       state = state.copyWith(vendors: vendors, calibers: calibers);
-
-  void reset() => state = WeaponFilterState(
-    calibers: _defaultCaliberInch != null ? {_defaultCaliberInch} : {},
-  );
 }
 
 final weaponCollectionFilterProvider = NotifierProvider.autoDispose

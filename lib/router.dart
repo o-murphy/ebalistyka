@@ -1,10 +1,12 @@
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
+import 'package:ebalistyka/features/convertors/simple_convertor_specs.dart';
 import 'package:ebalistyka/features/convertors/sub_screens/convertors_sub_screens.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebc_db/ebc_db.dart';
+import 'package:ebalistyka/features/home/sub_screens/weapon_chosen_callback.dart';
 import 'package:ebalistyka/features/home/sub_screens/weapon_wizard_screen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -133,11 +135,15 @@ final appRouter = GoRouter(
                     // ── Profile add ─────────────────────────────────────────
                     GoRoute(
                       path: 'weapon-create',
-                      builder: (_, _) => const WeaponWizardScreen(),
+                      builder: (_, state) => WeaponWizardScreen(
+                        onChosen: state.extra as WeaponChosenCallback?,
+                      ),
                     ),
                     GoRoute(
                       path: 'weapon-collection',
-                      builder: (_, _) => const WeaponCollectionScreen(),
+                      builder: (_, state) => WeaponCollectionScreen(
+                        onChosen: state.extra as WeaponChosenCallback?,
+                      ),
                     ),
                     // ── Ammo replace ─────────────────────────────────────────
                     GoRoute(
@@ -323,19 +329,27 @@ final appRouter = GoRouter(
                 ),
                 GoRoute(
                   path: 'length',
-                  builder: (_, _) => const LengthConvertorScreen(),
+                  builder: (_, _) => SimpleConvertorScreen(
+                    provider: lengthConvertorVmProvider,
+                  ),
                 ),
                 GoRoute(
                   path: 'weight',
-                  builder: (_, _) => const WeightConvertorScreen(),
+                  builder: (_, _) => SimpleConvertorScreen(
+                    provider: weightConvertorVmProvider,
+                  ),
                 ),
                 GoRoute(
                   path: 'pressure',
-                  builder: (_, _) => const PressureConvertorScreen(),
+                  builder: (_, _) => SimpleConvertorScreen(
+                    provider: pressureConvertorVmProvider,
+                  ),
                 ),
                 GoRoute(
                   path: 'temperature',
-                  builder: (_, _) => const TemperatureConvertorScreen(),
+                  builder: (_, _) => SimpleConvertorScreen(
+                    provider: temperatureConvertorVmProvider,
+                  ),
                 ),
                 GoRoute(
                   path: 'angular',
@@ -343,7 +357,9 @@ final appRouter = GoRouter(
                 ),
                 GoRoute(
                   path: 'torque',
-                  builder: (_, _) => const TorqueConvertorScreen(),
+                  builder: (_, _) => SimpleConvertorScreen(
+                    provider: torqueConvertorVmProvider,
+                  ),
                 ),
               ],
             ),

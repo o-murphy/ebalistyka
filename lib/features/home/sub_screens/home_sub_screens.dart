@@ -4,7 +4,6 @@ export 'profiles_list_screen.dart';
 export 'sight_wizard_screen.dart';
 export 'ammo_wizard_screen.dart';
 export 'multi_bc_editor_screen.dart';
-export 'custom_drag_table_editor_screen.dart';
 export 'powder_sens_table_editor_screen.dart';
 export 'sight_collection_screen.dart';
 export 'weapon_collection_screen.dart';

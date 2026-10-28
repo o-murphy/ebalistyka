@@ -1,3 +1,4 @@
+import 'package:ebalistyka/core/extensions/name_lookup.dart';
 import 'package:bclibc/unit.dart';
 import 'package:ebc_db/ebc_db.dart';
 
@@ -6,13 +7,9 @@ enum FocalPlane { ffp, sfp, lwir }
 extension SightExtension on Sight {
   // ── Enum ─────────────────────────────────────────────────────────────────────
 
-  FocalPlane get focalPlane => FocalPlane.values.firstWhere(
-    (e) => e.name == focalPlaneValue,
-    orElse: () => FocalPlane.ffp,
-  );
+  FocalPlane get focalPlane =>
+      enumByName(FocalPlane.values, focalPlaneValue, FocalPlane.ffp);
   set focalPlane(FocalPlane v) => focalPlaneValue = v.name;
-
-  bool get isFFP => focalPlane == FocalPlane.ffp;
 
   // ── Physical unit getters/setters ────────────────────────────────────────────
 
@@ -35,15 +32,9 @@ extension SightExtension on Sight {
 
   // ── Click units ──────────────────────────────────────────────────────────────
 
-  Unit get verticalClickUnitValue => Unit.values.firstWhere(
-    (u) => u.name == verticalClickUnit,
-    orElse: () => Unit.mil,
-  );
+  Unit get verticalClickUnitValue => unitNamed(verticalClickUnit, Unit.mil);
   set verticalClickUnitValue(Unit v) => verticalClickUnit = v.name;
 
-  Unit get horizontalClickUnitValue => Unit.values.firstWhere(
-    (u) => u.name == horizontalClickUnit,
-    orElse: () => Unit.mil,
-  );
+  Unit get horizontalClickUnitValue => unitNamed(horizontalClickUnit, Unit.mil);
   set horizontalClickUnitValue(Unit v) => horizontalClickUnit = v.name;
 }

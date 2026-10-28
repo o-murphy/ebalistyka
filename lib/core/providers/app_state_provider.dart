@@ -17,9 +17,6 @@ class AppState {
   factory AppState.empty() => const AppState(profiles: []);
 
   Profile? get activeProfile => activeProfileOf(profiles);
-  List<Weapon> get weapons => profiles.map((p) => p.weapon).toList();
-  List<Ammo> get ammo => profiles.map((p) => p.ammo).toList();
-  List<Sight> get sights => profiles.map((p) => p.sight).toList();
 }
 
 // ── AppStateNotifier ──────────────────────────────────────────────────────────

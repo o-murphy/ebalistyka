@@ -1196,6 +1196,31 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
+  String nPoints(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count точки',
+      many: '$count точок',
+      few: '$count точки',
+      one: '$count точка',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get zeroOffsetLine => 'Зміщення нуля';
+
+  @override
+  String get directionVertical => 'вертикаль';
+
+  @override
+  String get directionHorizontal => 'горизонталь';
+
+  @override
+  String get clickWord => 'клік';
+
+  @override
   String get calculateFromMeasurementsAction => 'Розрахувати з вимірювань';
 
   @override

@@ -51,47 +51,15 @@ class DetailsTableContent extends StatelessWidget {
       ),
     );
 
-    Widget section(String title) => ListSectionTile(title);
-
     String v(String? s) => s?.isNotEmpty == true ? s! : nullStr;
 
+    final sections = details.sections(l10n);
     final items = <Widget>[
-      // Rifle
-      section(l10n.weapon),
-      row(
-        l10n.weaponName,
-        v(details.weaponName.isNotEmpty ? details.weaponName : null),
-      ),
-      row(l10n.caliber, v(details.caliber)),
-      row(l10n.twistRate, v(details.twist)),
-      row(l10n.zeroDistance, v(details.zeroDist)),
-      const TileDivider(),
-
-      // Cartridge
-      section(l10n.cartridge),
-      row(l10n.zeroMv, v(details.zeroMv)),
-      row(l10n.currentMv, v(details.currentMv)),
-      const TileDivider(),
-
-      // Projectile
-      section(l10n.projectile),
-      row(l10n.dragModel, v(details.dragModel)),
-      row(l10n.bc, v(details.bc)),
-      row(l10n.length, v(details.bulletLen)),
-      row(l10n.caliber, v(details.bulletDiam)),
-      row(l10n.weight, v(details.bulletWeight)),
-      row(l10n.formFactor, v(details.formFactor)),
-      row(l10n.sectionalDensity, v(details.sectionalDensity)),
-      row(l10n.gyrostabilitySg, v(details.gyroStability)),
-      const TileDivider(),
-
-      // Conditions
-      section(l10n.conditions),
-      row(l10n.temperature, v(details.temperature)),
-      row(l10n.humidity, v(details.humidity)),
-      row(l10n.pressure, v(details.pressure)),
-      row(l10n.windSpeed, v(details.windSpeed)),
-      row(l10n.windDirection, v(details.windDir)),
+      for (final (i, section) in sections.indexed) ...[
+        if (i > 0) const TileDivider(),
+        ListSectionTile(section.title),
+        for (final (label, value) in section.rows) row(label, v(value)),
+      ],
     ];
 
     return ListView(children: items);

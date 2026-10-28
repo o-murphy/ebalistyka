@@ -1,6 +1,7 @@
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/features/home/sub_screens/weapon_chosen_callback.dart';
 import 'package:ebalistyka/features/home/sub_screens/weapon_wizard_notifier.dart';
 import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
@@ -15,16 +16,20 @@ import 'package:ebalistyka/shared/widgets/wizard_name_field.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 
 class WeaponWizardScreen extends ConsumerStatefulWidget {
-  const WeaponWizardScreen({this.initial, super.key});
+  const WeaponWizardScreen({this.initial, this.onChosen, super.key});
 
   /// Pre-fill the form with an existing weapon (edit mode).
   /// null = new empty weapon.
   final Weapon? initial;
 
+  /// Set when the wizard starts a new profile: runs after Save and can keep
+  /// the wizard open (see [WeaponChosenCallback]).
+  final WeaponChosenCallback? onChosen;
 
   @override
   ConsumerState<WeaponWizardScreen> createState() => _WeaponWizardScreenState();
@@ -63,11 +68,14 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
     super.onNameChanged();
   }
 
-  void _onSave() {
+  Future<void> _onSave() async {
     final notifier = ref.read(_provider.notifier);
     notifier.updateVendor(vendorController.text);
     notifier.updateCaliberName(_caliberNameController.text);
-    commitSave(ref.read(_provider).buildWeapon);
+    final weapon = ref.read(_provider).buildWeapon();
+    final onChosen = widget.onChosen;
+    if (onChosen != null && !await onChosen(context, weapon)) return;
+    if (mounted) context.pop(weapon);
   }
 
   @override

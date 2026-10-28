@@ -161,15 +161,8 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
         )
       : Atmo.icao();
 
-  FieldConstraints getConstraintsForUnit(Unit unit) {
-    return FieldConstraints(
-      minRaw: FC.convertorVelocity.minRaw.convert(Unit.mps, unit),
-      maxRaw: FC.convertorVelocity.maxRaw.convert(Unit.mps, unit),
-      stepRaw: FC.convertorVelocity.stepRaw.convert(Unit.mps, unit),
-      rawUnit: unit,
-      accuracy: FC.convertorVelocity.accuracyFor(unit),
-    );
-  }
+  FieldConstraints getConstraintsForUnit(Unit unit) =>
+      FC.convertorVelocity.inUnit(unit);
 
   String _formatValue(double value, int decimals, String symbol) {
     if (value.isNaN || value.isInfinite) return '— $symbol';

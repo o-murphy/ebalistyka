@@ -2384,6 +2384,36 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 breakpoint} other{{count} breakpoints}}'**
   String nBreakpoints(int count);
 
+  /// Subtitle of the custom drag table tile: how many points it holds
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 point} other{{count} points}}'**
+  String nPoints(int count);
+
+  /// Prefix of the Home reticle message that lists the ammo's non-zero zero-offset (followed by the vertical / horizontal parts)
+  ///
+  /// In en, this message translates to:
+  /// **'Zero offset'**
+  String get zeroOffsetLine;
+
+  /// Lower-case word after a vertical adjustment or offset value in the Home reticle messages, e.g. '+0.5 MIL vertical'
+  ///
+  /// In en, this message translates to:
+  /// **'vertical'**
+  String get directionVertical;
+
+  /// Lower-case word after a horizontal adjustment or offset value in the Home reticle messages, e.g. '-0.3 MIL horizontal'
+  ///
+  /// In en, this message translates to:
+  /// **'horizontal'**
+  String get directionHorizontal;
+
+  /// Lower-case unit word after a click count in the Home reticle messages, e.g. '+3 click vertical'
+  ///
+  /// In en, this message translates to:
+  /// **'click'**
+  String get clickWord;
+
   /// Action label to calculate powder sensitivity from the measurement table
   ///
   /// In en, this message translates to:

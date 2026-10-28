@@ -1,16 +1,11 @@
-import 'dart:async';
-
 import 'package:ebalistyka/core/models/collection_item.dart';
-import 'package:ebalistyka/core/providers/builtin_collection_provider.dart';
 import 'package:ebalistyka/core/providers/filter_providers.dart';
-import 'package:ebalistyka/features/home/sub_screens/widgets/collection_body.dart';
+import 'package:ebalistyka/features/home/sub_screens/weapon_chosen_callback.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/collection_item_tile.dart';
+import 'package:ebalistyka/features/home/sub_screens/widgets/collection_picker_screen.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/collection_weapon_tile_body.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/filter_sheet.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
-import 'package:ebalistyka/shared/icons_definitions.dart';
-import 'package:ebalistyka/shared/widgets/base_screen.dart';
-import 'package:ebalistyka/shared/widgets/error_display.dart';
 import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebc_db/ebc_db.dart';
 import 'package:material_ui/material_ui.dart';
@@ -18,59 +13,34 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class WeaponCollectionScreen extends ConsumerWidget {
-  const WeaponCollectionScreen({super.key});
+  const WeaponCollectionScreen({this.onChosen, super.key});
+
+  /// Set when the collection starts a new profile: runs after a weapon is
+  /// picked and can keep the screen open (see [WeaponChosenCallback]).
+  final WeaponChosenCallback? onChosen;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionAsync = ref.watch(builtinCollectionProvider);
     final l10n = AppLocalizations.of(context)!;
     final filter = ref.watch(weaponCollectionFilterProvider(null));
 
-    return BaseScreen(
+    return CollectionPickerScreen<Weapon>(
       title: l10n.weaponCollectionScreenTitle,
-      isSubscreen: true,
-      actions: [
-        Builder(
-          builder: (ctx) => IconButton(
-            onPressed: () {
-              final weapons = collectionAsync.value?.weapons ?? [];
-              unawaited(showWeaponFilterSheet(ctx, allItems: weapons));
-            },
-            icon: Badge(
-              isLabelVisible: filter.isActive,
-              child: const Icon(IconDef.filter),
-            ),
-          ),
-        ),
-        HelpAction(HelpData.weaponCollectionScreen),
-      ],
-      body: collectionAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => ErrorDisplay(error: error),
-        data: (collection) {
-          final items = collection.weapons.where((w) {
-            if (filter.vendors.isNotEmpty &&
-                !filter.vendors.contains(w.vendor)) {
-              return false;
-            }
-            return true;
-          }).toList();
-
-          return BaseCollectionBody(
-            tiles: items
-                .map(
-                  (weapon) => CollectionItemTile(
-                    key: ValueKey(weapon.name),
-                    body: CollectionWeaponTileBody(weapon: weapon),
-                    item: WeaponCollectionItem(ref: weapon),
-                    searchText: [weapon.name, weapon.vendor].join(' '),
-                    onSelect: () {
-                      context.pop<Weapon>(weapon.deepCopy());
-                    },
-                  ),
-                )
-                .toList(),
-          );
+      helpId: HelpData.weaponCollectionScreen,
+      itemsOf: (collection) => collection.weapons,
+      isFilterActive: filter.isActive,
+      matches: (w) =>
+          filter.vendors.isEmpty || filter.vendors.contains(w.vendor),
+      openFilter: (ctx, all) => showWeaponFilterSheet(ctx, allItems: all),
+      tileFor: (weapon) => CollectionItemTile(
+        key: ValueKey(weapon.name),
+        body: CollectionWeaponTileBody(weapon: weapon),
+        item: WeaponCollectionItem(ref: weapon),
+        searchText: [weapon.name, weapon.vendor].join(' '),
+        onSelect: () async {
+          final copy = weapon.deepCopy();
+          if (onChosen != null && !await onChosen!(context, copy)) return;
+          if (context.mounted) context.pop<Weapon>(copy);
         },
       ),
     );

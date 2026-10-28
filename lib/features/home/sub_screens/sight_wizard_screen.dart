@@ -180,6 +180,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
             yLabel: l10n.verticalClick,
             xLabel: l10n.horizontalClick,
             unitLabel: l10n.clickUnit,
+            constraints: FC.sightClick,
             yRaw: st.vClickRaw,
             xRaw: st.hClickRaw,
             yUnits: st.vClickUnit,
