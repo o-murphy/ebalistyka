@@ -37,7 +37,7 @@ beyond the first check). Not read in depth: `router.dart`, `home_vm.dart`,
 `unit_formatter_impl.dart`, the ammo wizard screen's save/validation,
 `table_html_exporter.dart` CSS/JS, `home_builders.dart`.
 
-### A. Delete (no behaviour change, ~560 lines)
+### A. Delete — done in `18b8bcf` (1,228 lines removed incl. a 586-line test)
 
 - `home/sub_screens/ammo_wizard_form_state.dart` (360) — twin of
   `AmmoWizardState`; only its own test imports it. Delete with the test.
