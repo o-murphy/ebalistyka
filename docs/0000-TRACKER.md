@@ -21,7 +21,7 @@ that's also where new decisions get logged as they're made.
       Profiles UX and fonts done; open: auto-deploy, bundle size, untested browsers
 - [ ] [0004] Reticles — wizard placeholders & remaining SVG generation
 - [ ] [0014] Code footprint reduction — less duplication, tighter abstractions
-      not audited yet; baseline numbers and open questions in the record
+      audited 2026-10-28: ~1k lines low-risk, ~700 medium, ob_migrate (3.2k) is an owner decision
 - [ ] [0005] Home Note / Help / More buttons
       deferred — not scheduled
 - [ ] [0007] Open question — Weapon/Sight/Ammo `image` field format
