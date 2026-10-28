@@ -687,7 +687,7 @@ class _DragModelSection extends StatelessWidget {
                 subtitle: Text(
                   isEmpty
                       ? l10n.requiredFieldError
-                      : '$count point${count == 1 ? '' : 's'}',
+                      : l10n.nPoints(count),
                   style: isEmpty ? TextStyle(color: cs.error) : null,
                 ),
                 trailing: const Icon(IconDef.chevronRight),

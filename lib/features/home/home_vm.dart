@@ -291,6 +291,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       zeroOffsetXMil: zeroOffsetXMil,
       zeroOffsetYUnit: ammo.zeroOffsetYUnitValue,
       zeroOffsetXUnit: ammo.zeroOffsetXUnitValue,
+      l10n: l10n,
     );
 
     final elevMil =

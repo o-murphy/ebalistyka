@@ -46,19 +46,24 @@ String? buildZeroOffsetMessageLine({
   required Unit zeroOffsetXUnit,
   required double zeroOffsetYMil,
   required double zeroOffsetXMil,
+  required AppLocalizations l10n,
 }) {
   if (zeroOffsetYMil == 0.0 && zeroOffsetXMil == 0.0) return null;
 
   final parts = <String>[];
 
   if (zeroOffsetYMil != 0.0) {
-    parts.add(_angularPart(zeroOffsetYMil, zeroOffsetYUnit, 'vertical'));
+    parts.add(
+      _angularPart(zeroOffsetYMil, zeroOffsetYUnit, l10n.directionVertical),
+    );
   }
   if (zeroOffsetXMil != 0.0) {
-    parts.add(_angularPart(zeroOffsetXMil, zeroOffsetXUnit, 'horizontal'));
+    parts.add(
+      _angularPart(zeroOffsetXMil, zeroOffsetXUnit, l10n.directionHorizontal),
+    );
   }
 
-  return 'Zero offset: ${parts.join(' / ')}';
+  return '${l10n.zeroOffsetLine}: ${parts.join(' / ')}';
 }
 
 String? buildAdjustedMessageLine(
@@ -76,17 +81,21 @@ String? buildAdjustedMessageLine(
 
   if (vAdj != 0.0) {
     final part = reticle.verticalAdjInClicks && vClickSizeMil > 0
-        ? _clicksPart(vAdj, vClickSizeMil, 'vertical')
-        : _angularPart(vAdj, reticle.verticalAdjustmentUnitValue, 'vertical');
+        ? _clicksPart(vAdj, vClickSizeMil, l10n.directionVertical, l10n)
+        : _angularPart(
+            vAdj,
+            reticle.verticalAdjustmentUnitValue,
+            l10n.directionVertical,
+          );
     parts.add(part);
   }
   if (hAdj != 0.0) {
     final part = reticle.horizontalAdjInClicks && hClickSizeMil > 0
-        ? _clicksPart(hAdj, hClickSizeMil, 'horizontal')
+        ? _clicksPart(hAdj, hClickSizeMil, l10n.directionHorizontal, l10n)
         : _angularPart(
             hAdj,
             reticle.horizontalAdjustmentUnitValue,
-            'horizontal',
+            l10n.directionHorizontal,
           );
     parts.add(part);
   }
@@ -395,10 +404,15 @@ HomeChartPointInfo buildPointInfo(ChartPoint point, UnitFormatter formatter) {
 
 // ── Private helpers ───────────────────────────────────────────────────────────
 
-String _clicksPart(double rawMil, double clickSizeMil, String dir) {
+String _clicksPart(
+  double rawMil,
+  double clickSizeMil,
+  String dir,
+  AppLocalizations l10n,
+) {
   final clicks = rawMil / clickSizeMil;
   final v = clicks.toFixedSafe(0);
-  return '${clicks > 0 ? '+' : ''}$v click $dir';
+  return '${clicks > 0 ? '+' : ''}$v ${l10n.clickWord} $dir';
 }
 
 String _angularPart(double adjInUnit, Unit unit, String dir) {

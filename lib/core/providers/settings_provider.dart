@@ -109,6 +109,8 @@ class UnitSettingsNotifier extends AsyncNotifier<UnitSettings> {
           u.weightUnit = unit;
         case 'drop':
           u.dropUnit = unit;
+        case 'adjustment':
+          u.adjustmentUnit = unit;
         case 'energy':
           u.energyUnit = unit;
         case 'torque':

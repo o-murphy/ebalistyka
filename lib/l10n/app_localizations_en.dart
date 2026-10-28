@@ -1189,6 +1189,29 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String nPoints(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count points',
+      one: '1 point',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get zeroOffsetLine => 'Zero offset';
+
+  @override
+  String get directionVertical => 'vertical';
+
+  @override
+  String get directionHorizontal => 'horizontal';
+
+  @override
+  String get clickWord => 'click';
+
+  @override
   String get calculateFromMeasurementsAction => 'Calculate from measurements';
 
   @override
