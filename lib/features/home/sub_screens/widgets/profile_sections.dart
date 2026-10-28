@@ -7,6 +7,29 @@ import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:material_ui/material_ui.dart';
 
+/// "Edit" button in a section header — a labelled button, so the edit action
+/// is not mistaken for a decorative icon.
+class _EditButton extends StatelessWidget {
+  const _EditButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton.icon(
+      onPressed: onPressed,
+      icon: const Icon(IconDef.edit, size: 14),
+      label: Text(AppLocalizations.of(context)!.editAction),
+      style: TextButton.styleFrom(
+        visualDensity: VisualDensity.compact,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+    );
+  }
+}
+
 class ProfileWeaponSection extends StatelessWidget {
   const ProfileWeaponSection({
     required this.data,
@@ -19,7 +42,6 @@ class ProfileWeaponSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
     final twistDirIcon = data.rightHanded ? IconDef.twistR : IconDef.twistL;
 
@@ -28,7 +50,7 @@ class ProfileWeaponSection extends StatelessWidget {
         ListSectionTile(
           l10n.weapon,
           onTap: onEdit,
-          trailing: Icon(IconDef.edit, size: 16, color: cs.primary),
+          trailing: _EditButton(onPressed: onEdit),
         ),
         ListTile(
           leading: const Icon(IconDef.weapon),
@@ -68,7 +90,6 @@ class ProfileAmmoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
     return Column(
@@ -77,7 +98,7 @@ class ProfileAmmoSection extends StatelessWidget {
         ListSectionTile(
           l10n.ammo,
           onTap: onEdit,
-          trailing: Icon(IconDef.edit, size: 16, color: cs.primary),
+          trailing: _EditButton(onPressed: onEdit),
         ),
         ListTile(
           leading: const Icon(IconDef.grain),
@@ -128,7 +149,6 @@ class ProfileSightSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
     final fpIcon = switch (data.focalPlane) {
@@ -143,7 +163,7 @@ class ProfileSightSection extends StatelessWidget {
         ListSectionTile(
           l10n.sight,
           onTap: onEdit,
-          trailing: Icon(IconDef.edit, size: 16, color: cs.primary),
+          trailing: _EditButton(onPressed: onEdit),
         ),
         ListTile(
           leading: const Icon(IconDef.sight),
