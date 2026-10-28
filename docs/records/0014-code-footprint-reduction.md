@@ -78,10 +78,21 @@ beyond the first check). Not read in depth: `router.dart`, `home_vm.dart`,
   +61 of tests. The widget's and the HTML report's output were captured
   before the change and are byte-identical after (full, empty and partial
   data).
-- `ValueInputWithUnitPicker` and `UnitInputWithPicker` are the same widget (~45).
-- `weapon_svg_provider`/`ammo_svg_provider` are copies (~20); platform-stub
-  forwarders (~40); `AnglesConvertorField` duplicates `GenericConvertorField`
-  (~15); powder-sens coefficient averaging written twice (~20).
+- ~~`ValueInputWithUnitPicker` and `UnitInputWithPicker` are the same widget~~
+  — **wrong, do not merge.** `UnitInputWithPicker` puts the input full-width in
+  the tile title with the unit picker trailing; `ValueInputWithUnitPicker` is a
+  label (+ optional icon) on the left with a fixed 120 px input and the picker
+  on the right. Different layouts, not a superset.
+- **Done** — powder-sens coefficient averaging was written twice in
+  `powder_sens_table_editor_screen.dart` (live preview and save); now one
+  `_averageSensitivity` over °C / m/s rows. This also fixes a bug: the preview
+  averaged *display-unit* rows, so with °F the preview was 1.8× too small
+  compared with the saved value.
+- **Left alone** (gain too small or not equivalent):
+  `weapon_svg_provider`/`ammo_svg_provider` (two 14-line loaders that differ
+  only by prefix); `AnglesConvertorField` vs `GenericConvertorField` (a
+  resolved label vs a label builder — different consumers); platform-stub
+  forwarders (~40 lines, touches conditional-import wiring).
 
 ### C. Abstractions worth building (medium risk, ~600-800 lines)
 
