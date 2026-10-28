@@ -202,7 +202,11 @@ read-only passes over what the first one skimmed. Each claim below marked
   net incl. the helper). A golden test generated from the old code
   (`test/core/extensions/enum_name_getters_*`) covers every getter's fallback
   and its setter round trip, and is identical after.
-- `UnitFormatterImpl.inputToRaw`/`rawToInput` mirror switches (~70).
+- **Done** — `UnitFormatterImpl.inputToRaw`/`rawToInput` were two mirror-image
+  17-case switches; now one `_unitsOf(field)` table plus a shared converter
+  (−68 lines). A golden test generated from the old code
+  (`test/core/formatting/input_conversion_*`: every field × 3 unit setups × 5
+  values, both directions) is identical after.
 - Home-state gate (NoData / Error / `!Ready`) repeated in 4 screens (~40);
   `buildAdjustment` elevation/wind copy (~28); wind degrees/clock formula
   written 3× in `wind_indicator.dart` (~25).
