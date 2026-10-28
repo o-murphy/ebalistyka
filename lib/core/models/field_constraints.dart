@@ -322,6 +322,16 @@ abstract final class FC {
     accuracy: 2, // suitable for MIL / MOA / MRAD (default unit)
   );
 
+  /// Size of one scope click: unlike [adjustment] (an offset that may be 0 or
+  /// negative) it must be positive, otherwise the sight wizard cannot be saved.
+  static const sightClick = FieldConstraints(
+    rawUnit: Unit.mil,
+    minRaw: 0.01,
+    maxRaw: 30,
+    stepRaw: 0.001,
+    accuracy: 2,
+  );
+
   static const velocity = FieldConstraints(
     rawUnit: Unit.mps,
     minRaw: 0.0,
