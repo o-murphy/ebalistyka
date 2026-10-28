@@ -93,3 +93,6 @@ download/objectbox*
 
 # packages pubspec.lock
 packages/**/pubspec.lock
+
+# LMDB lock file, rewritten by the ob_migrate tests
+test/ob_migrate/fixtures/lock.mdb
