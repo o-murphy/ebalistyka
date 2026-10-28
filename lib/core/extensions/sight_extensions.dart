@@ -11,8 +11,6 @@ extension SightExtension on Sight {
       enumByName(FocalPlane.values, focalPlaneValue, FocalPlane.ffp);
   set focalPlane(FocalPlane v) => focalPlaneValue = v.name;
 
-  bool get isFFP => focalPlane == FocalPlane.ffp;
-
   // ── Physical unit getters/setters ────────────────────────────────────────────
 
   Distance get sightHeight => Distance.inch(sightHeightInch);

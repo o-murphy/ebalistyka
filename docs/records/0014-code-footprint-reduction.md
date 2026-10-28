@@ -220,6 +220,14 @@ read-only passes over what the first one skimmed. Each claim below marked
 - `ebc_db` three validators + three `*_file` wrappers → one generic (~150).
 - Router: Multi-BC G1/G7 routes, `ReticlePickerScreen` builder ×3 (~30).
 
+**Dead code removed by a "referenced only at its definition" scan** (−153
+lines, compiler- and test-verified): `profile_readiness_provider.dart` (the
+Tables-tab gating is done in `router.dart` from the Home VM instead),
+`showNullableUnitHybridDialog`, the unused `toggle*` / `setMin|MaxWeight` /
+`reset` methods of the three filter notifiers (the filter sheet keeps its own
+draft and only calls `apply`), `capitalizeWords`, `SightExtension.isFFP`,
+`WizardFormMixin.isNameValid`, `AnglesConvertorViewModel.getOutputConstraintsForUnit`.
+
 **Medium risk, needs visual check:** `trajectory_table.dart` main vs zero table
 (~70, also a stateless-StatefulWidget); `reticle_view_screen.dart` state kept
 both locally and in the VM (~50); `home_screen.dart` 365-line `build` split.

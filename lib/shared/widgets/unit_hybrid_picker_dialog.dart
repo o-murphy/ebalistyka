@@ -1,9 +1,7 @@
 import 'dart:async';
 
-import 'package:bclibc/unit.dart';
 import 'package:ebalistyka/shared/helpers/is_desktop.dart';
 import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
-import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
@@ -272,36 +270,6 @@ void showUnitHybridPickerDialog(UnitPickerContext pickerContext) {
           initialRawValue: pickerContext.rawValue,
         ),
       ),
-    ),
-  );
-}
-
-Future<void> showNullableUnitHybridDialog(
-  BuildContext context, {
-  required String label,
-  required double? rawValue,
-  required FieldConstraints constraints,
-  required Unit displayUnit,
-  String? symbol,
-  required ValueChanged<double?> onChanged,
-}) async {
-  final ctx = UnitPickerContext(
-    context,
-    label: label,
-    rawValue: rawValue ?? constraints.minRaw,
-    constraints: constraints,
-    displayUnit: displayUnit,
-    onChanged: onChanged,
-    symbol: symbol,
-    allowNull: true,
-  );
-
-  showDialog(
-    context: context,
-    builder: (context) => Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 40),
-      child: UnitHybridPicker(pickerContext: ctx, initialRawValue: rawValue),
     ),
   );
 }

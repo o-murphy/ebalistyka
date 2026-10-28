@@ -161,16 +161,6 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
   FieldConstraints getAngularConstraintsForUnit(Unit unit) =>
       FC.convertorAngular.inUnit(unit);
 
-  FieldConstraints getOutputConstraintsForUnit(Unit unit) {
-    return FieldConstraints(
-      minRaw: 0.0,
-      maxRaw: 100000.0,
-      stepRaw: 1.0,
-      rawUnit: unit,
-      accuracy: 1,
-    );
-  }
-
   String _formatValue(double value, int decimals, String symbol) {
     if (value.isNaN || value.isInfinite) return '— $symbol';
     return '${value.toFixedSafe(decimals)} $symbol';
