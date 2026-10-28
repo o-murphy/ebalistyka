@@ -4,6 +4,7 @@ import 'package:bclibc/unit.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart' as fc;
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 
 /// Reusable wheel picker widget
@@ -39,6 +40,10 @@ class _UnitWheelPickerWidgetState extends State<UnitWheelPickerWidget> {
   // through widget.onChanged and overwrite what was being typed with the
   // nearest wheel step.
   bool _isUpdatingFromWidget = false;
+
+  // Mouse-wheel input, see [_onPointerSignal].
+  static const _wheelStepPx = 40.0;
+  double _wheelPx = 0;
 
   @override
   void initState() {
@@ -159,6 +164,40 @@ class _UnitWheelPickerWidgetState extends State<UnitWheelPickerWidget> {
     unawaited(HapticFeedback.selectionClick());
   }
 
+  /// One mouse-wheel notch moves the wheel one value. By default the scroll
+  /// view moves by the event's pixel delta (100-120 px per notch on most
+  /// platforms, ~2.5 items of 44 px), which skipped values. Small deltas
+  /// (touchpads, high-resolution wheels) still add up to a step per
+  /// [_wheelStepPx].
+  ///
+  /// Registered from the items, which sit below the scroll view in the hit
+  /// test, so this runs before — and instead of — the scroll view's own
+  /// handler (the resolver keeps only the first registered callback).
+  void _onPointerSignal(PointerSignalEvent event) {
+    if (event is! PointerScrollEvent) return;
+    GestureBinding.instance.pointerSignalResolver.register(event, (e) {
+      final dy = (e as PointerScrollEvent).scrollDelta.dy;
+      if (dy == 0 || !_controller.hasClients) return;
+      if (_wheelPx.sign != dy.sign) _wheelPx = 0;
+      _wheelPx += dy;
+      if (_wheelPx.abs() < _wheelStepPx) return;
+      final direction = _wheelPx.sign.toInt();
+      _wheelPx = 0;
+      final target = (_currentIndex + direction).clamp(
+        0,
+        _displayValues.length - 1,
+      );
+      if (target == _currentIndex) return;
+      unawaited(
+        _controller.animateToItem(
+          target,
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.easeOut,
+        ),
+      );
+    });
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -193,16 +232,19 @@ class _UnitWheelPickerWidgetState extends State<UnitWheelPickerWidget> {
               childCount: _displayValues.length,
               builder: (context, index) {
                 final isSelected = _currentIndex == index;
-                return Center(
-                  child: Text(
-                    _helper.formatDisplayValue(_displayValues[index]),
-                    style: tt.titleLarge?.copyWith(
-                      color: isSelected
-                          ? cs.primary
-                          : cs.onSurface.withAlpha(100),
-                      fontWeight: isSelected
-                          ? FontWeight.bold
-                          : FontWeight.normal,
+                return Listener(
+                  onPointerSignal: _onPointerSignal,
+                  child: Center(
+                    child: Text(
+                      _helper.formatDisplayValue(_displayValues[index]),
+                      style: tt.titleLarge?.copyWith(
+                        color: isSelected
+                            ? cs.primary
+                            : cs.onSurface.withAlpha(100),
+                        fontWeight: isSelected
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
                     ),
                   ),
                 );
