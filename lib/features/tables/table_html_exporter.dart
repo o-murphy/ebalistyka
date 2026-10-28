@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/helpers/is_mobile.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -106,7 +106,7 @@ class TableHtmlExporter {
       ..writeln('  </div>')
       ..writeln('</div>');
 
-    if (details != null) sb.write(_buildDetails(details, l10n: l10n));
+    if (details != null) sb.write(buildDetailsHtml(details, l10n: l10n));
 
     final zeros = tables.zeroCrossings;
     if (zeros != null && zeros.distanceHeaders.isNotEmpty) {
@@ -133,7 +133,8 @@ class TableHtmlExporter {
 
   // ── Details section ────────────────────────────────────────────────────────
 
-  static String _buildDetails(
+  @visibleForTesting
+  static String buildDetailsHtml(
     DetailsTableData d, {
     required AppLocalizations l10n,
   }) {
@@ -141,69 +142,15 @@ class TableHtmlExporter {
       ..writeln('<section class="details">')
       ..writeln('<h1>${_esc(d.weaponName)}</h1>');
 
-    // Rifle
-    sb.writeln('<div class="card">');
-    sb.writeln('<h2>${l10n.weapon}</h2><table class="info">');
-    sb.write(_row(l10n.weaponName, d.weaponName));
-    if (d.caliber != null) sb.write(_row(l10n.caliber, d.caliber!));
-    if (d.twist != null) sb.write(_row(l10n.twistRate, d.twist!));
-    if (d.zeroDist != null) sb.write(_row(l10n.zeroDistance, d.zeroDist!));
-    sb.writeln('</table></div>');
-
-    // Cartridge
-    if (d.zeroMv != null || d.currentMv != null) {
+    for (final section in d.sections(l10n)) {
+      final rows = [
+        for (final (label, value) in section.rows)
+          if (value != null) _row(label, value),
+      ];
+      if (rows.isEmpty) continue;
       sb.writeln('<div class="card">');
-      sb.writeln('<h2>${l10n.cartridge}</h2><table class="info">');
-      if (d.zeroMv != null) sb.write(_row(l10n.zeroMv, d.zeroMv!));
-      if (d.currentMv != null) sb.write(_row(l10n.currentMv, d.currentMv!));
-      sb.writeln('</table></div>');
-    }
-
-    // Projectile
-    final hasProj =
-        d.dragModel != null ||
-        d.bc != null ||
-        d.bulletLen != null ||
-        d.bulletDiam != null ||
-        d.bulletWeight != null ||
-        d.formFactor != null ||
-        d.sectionalDensity != null ||
-        d.gyroStability != null;
-    if (hasProj) {
-      sb.writeln('<div class="card">');
-      sb.writeln('<h2>${l10n.projectile}</h2><table class="info">');
-      if (d.dragModel != null) sb.write(_row(l10n.dragModel, d.dragModel!));
-      if (d.bc != null) sb.write(_row(l10n.bc, d.bc!));
-      if (d.bulletLen != null) sb.write(_row(l10n.length, d.bulletLen!));
-      if (d.bulletDiam != null) sb.write(_row(l10n.caliber, d.bulletDiam!));
-      if (d.bulletWeight != null) sb.write(_row(l10n.weight, d.bulletWeight!));
-      if (d.formFactor != null) sb.write(_row(l10n.formFactor, d.formFactor!));
-      if (d.sectionalDensity != null) {
-        sb.write(_row(l10n.sectionalDensity, d.sectionalDensity!));
-      }
-      if (d.gyroStability != null) {
-        sb.write(_row(l10n.gyrostabilitySg, d.gyroStability!));
-      }
-      sb.writeln('</table></div>');
-    }
-
-    // Conditions
-    final hasCond =
-        d.temperature != null ||
-        d.humidity != null ||
-        d.pressure != null ||
-        d.windSpeed != null ||
-        d.windDir != null;
-    if (hasCond) {
-      sb.writeln('<div class="card">');
-      sb.writeln('<h2>${l10n.conditions}</h2><table class="info">');
-      if (d.temperature != null) {
-        sb.write(_row(l10n.temperature, d.temperature!));
-      }
-      if (d.humidity != null) sb.write(_row(l10n.humidity, d.humidity!));
-      if (d.pressure != null) sb.write(_row(l10n.pressure, d.pressure!));
-      if (d.windSpeed != null) sb.write(_row(l10n.windSpeed, d.windSpeed!));
-      if (d.windDir != null) sb.write(_row(l10n.windDirection, d.windDir!));
+      sb.writeln('<h2>${section.title}</h2><table class="info">');
+      rows.forEach(sb.write);
       sb.writeln('</table></div>');
     }
 

@@ -72,9 +72,12 @@ beyond the first check). Not read in depth: `router.dart`, `home_vm.dart`,
   `_showFilterSheet` replace the three copies of each (−49 lines). A generic
   `FilterSheet<T>` was not attempted: the ammo sheet's weight range and
   default-caliber reset would make it harder to read than three plain sheets.
-- Details-section labels written three times (`details_table_mv.dart`,
-  `details_table.dart`, `table_html_exporter.dart`): one
-  `DetailsTableData.sections(l10n)` (~60-90).
+- **Done** — details-section labels were written three times
+  (`details_table_mv.dart`, `details_table.dart`, `table_html_exporter.dart`);
+  now `DetailsTableData.sections(l10n)` is the one place. −80 lines in `lib/`,
+  +61 of tests. The widget's and the HTML report's output were captured
+  before the change and are byte-identical after (full, empty and partial
+  data).
 - `ValueInputWithUnitPicker` and `UnitInputWithPicker` are the same widget (~45).
 - `weapon_svg_provider`/`ammo_svg_provider` are copies (~20); platform-stub
   forwarders (~40); `AnglesConvertorField` duplicates `GenericConvertorField`
