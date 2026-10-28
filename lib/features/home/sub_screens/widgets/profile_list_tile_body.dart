@@ -89,7 +89,14 @@ class _InfoRow extends StatelessWidget {
       children: [
         SizedBox(width: 16, child: Icon(icon, size: 14)),
         const SizedBox(width: 6),
-        Text(value, style: const TextStyle(fontSize: 12)),
+        Flexible(
+          child: Text(
+            value,
+            style: const TextStyle(fontSize: 12),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
       ],
     );
   }
