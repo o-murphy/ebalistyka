@@ -18,7 +18,7 @@ that's also where new decisions get logged as they're made.
 
 - [ ] [0001] Beta UX — remaining work
 - [ ] [0002] Field constraints / web UX follow-ups
-      Profiles UX and fonts done; open: auto-deploy, bundle size, untested browsers
+      Profiles UX, fonts and auto-deploy workflows done (untested in CI); open: bundle size, untested browsers
 - [ ] [0004] Reticles — wizard placeholders & remaining SVG generation
 - [ ] [0014] Code footprint reduction — less duplication, tighter abstractions
       audited 2026-10-28: ~1k lines low-risk, ~700 medium, ob_migrate (3.2k) is an owner decision

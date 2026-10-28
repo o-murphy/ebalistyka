@@ -1,0 +1,75 @@
+name: Publish Web
+
+# Publishes the web bundle to GitHub Pages (the gh-pages branch, one fresh
+# commit per deploy — see scripts/deploy-web.sh).
+#
+#   workflow_dispatch — manual, any ref, builds first. NOT protected: it does
+#                       not use the `publish` environment, so it needs no
+#                       approval.
+#   workflow_call     — from release.yml for a stable tag, behind the protected
+#                       `publish` environment. Pass `artifact_name` to publish
+#                       the bundle release.yml already built instead of
+#                       building it again.
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      artifact_name:
+        description: "Artifact (from build-web.yml) to publish; empty = build now"
+        required: false
+        type: string
+        default: ""
+
+concurrency:
+  group: publish-web
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: inputs.artifact_name == ''
+    uses: ./.github/workflows/build-web.yml
+    with:
+      retention_days: 2
+
+  publish:
+    needs: build
+    # The build job is skipped when the caller already built the bundle.
+    if: ${{ !cancelled() && (needs.build.result == 'success' || needs.build.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    # Manual runs are unprotected (empty name = no environment); release runs
+    # go through the protected `publish` environment.
+    environment: ${{ github.event_name != 'workflow_dispatch' && 'publish' || '' }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Download web bundle
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ inputs.artifact_name || needs.build.outputs.artifact_name }}
+          path: dl
+
+      - name: Unpack
+        run: |
+          set -euo pipefail
+          mkdir -p build/web
+          unzip -q dl/ebalistyka_web.zip -d build/web
+          ls -A build/web | head -20
+
+      - name: Publish to GitHub Pages
+        # Only a tagged release or an explicit manual run publishes.
+        if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # deploy-web.sh pushes from a temp repo, which does not inherit the
+          # checkout's credentials — give the remote URL the token (masked in logs).
+          git remote set-url origin \
+            "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          scripts/deploy-web.sh --yes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

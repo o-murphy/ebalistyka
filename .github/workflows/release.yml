@@ -222,6 +222,13 @@ jobs:
       retention_days: 2
       bundle_artifact_name: ${{ needs.build-portable-arm64.outputs.artifact_name }}
 
+  build-web:
+    needs: prepare-version
+    uses: ./.github/workflows/build-web.yml
+    with:
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 2
+
   release:
     needs: [
         prepare-version,
@@ -240,6 +247,7 @@ jobs:
         build-deb-arm64,
         build-rpm-amd64,
         build-rpm-arm64,
+        build-web,
       ]
     runs-on: ubuntu-latest
     permissions:
@@ -361,4 +369,12 @@ jobs:
     with:
       tag_name: ${{ github.ref_name }}
       track: internal
+    secrets: inherit
+
+  publish-web:
+    if: github.ref_type == 'tag' && !contains(github.ref_name, '-')
+    needs: [prepare-version, release, build-web]
+    uses: ./.github/workflows/publish-web.yml
+    with:
+      artifact_name: ${{ needs.build-web.outputs.artifact_name }}
     secrets: inherit
