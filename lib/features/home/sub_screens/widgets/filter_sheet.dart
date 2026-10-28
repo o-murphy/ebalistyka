@@ -17,11 +17,9 @@ Future<void> showAmmoCollectionFilterSheet(
   BuildContext context, {
   required List<Ammo> allItems,
   required double? defaultCaliberInch,
-}) => showModalBottomSheet<void>(
-  context: context,
-  isScrollControlled: true,
-  useSafeArea: true,
-  builder: (_) => _AmmoFilterSheet(
+}) => _showFilterSheet(
+  context,
+  _AmmoFilterSheet(
     allItems: allItems,
     defaultCaliberInch: defaultCaliberInch,
   ),
@@ -30,22 +28,27 @@ Future<void> showAmmoCollectionFilterSheet(
 Future<void> showSightFilterSheet(
   BuildContext context, {
   required List<Sight> allItems,
-}) => showModalBottomSheet<void>(
-  context: context,
-  isScrollControlled: true,
-  useSafeArea: true,
-  builder: (_) => _SightFilterSheet(allItems: allItems),
-);
+}) => _showFilterSheet(context, _SightFilterSheet(allItems: allItems));
 
 Future<void> showWeaponFilterSheet(
   BuildContext context, {
   required List<Weapon> allItems,
-}) => showModalBottomSheet<void>(
-  context: context,
-  isScrollControlled: true,
-  useSafeArea: true,
-  builder: (_) => _WeaponFilterSheet(allItems: allItems),
-);
+}) => _showFilterSheet(context, _WeaponFilterSheet(allItems: allItems));
+
+Future<void> _showFilterSheet(BuildContext context, Widget sheet) =>
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (_) => sheet,
+    );
+
+/// A copy of [items] with [item] added, or removed if it was already there.
+Set<T> _toggled<T>(Set<T> items, T item) {
+  final copy = Set<T>.from(items);
+  if (!copy.remove(item)) copy.add(item);
+  return copy;
+}
 
 // ── Ammo filter sheet ─────────────────────────────────────────────────────────
 
@@ -107,37 +110,16 @@ class _AmmoFilterSheetState extends ConsumerState<_AmmoFilterSheet> {
     Navigator.of(context).pop();
   }
 
-  void _toggleVendor(String v) => setState(() {
-    final s = Set<String>.from(_vendors);
-    if (s.contains(v)) {
-      s.remove(v);
-    } else {
-      s.add(v);
-    }
-    _vendors = s;
-  });
+  void _toggleVendor(String v) =>
+      setState(() => _vendors = _toggled(_vendors, v));
 
-  void _toggleCaliber(double c) => setState(() {
-    final s = Set<double>.from(_calibers);
-    if (s.contains(c)) {
-      s.remove(c);
-    } else {
-      s.add(c);
-    }
-    _calibers = s;
-  });
+  void _toggleCaliber(double c) =>
+      setState(() => _calibers = _toggled(_calibers, c));
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final units = ref.watch(unitSettingsProvider);
-
-    final vendorCounts = <String, int>{};
-    for (final a in widget.allItems) {
-      final v = a.vendor;
-      if (v.isNotEmpty) vendorCounts[v] = (vendorCounts[v] ?? 0) + 1;
-    }
-    final vendors = vendorCounts.keys.toList()..sort();
 
     final caliberCounts = <double, int>{};
     for (final a in widget.allItems) {
@@ -164,20 +146,12 @@ class _AmmoFilterSheetState extends ConsumerState<_AmmoFilterSheet> {
       onReset: _reset,
       onApply: _apply,
       sections: [
-        if (vendors.isNotEmpty)
-          _CheckboxSection(
-            title: l10n.vendor,
-            initiallyExpanded: _vendors.isNotEmpty,
-            children: [
-              for (final vendor in vendors)
-                _CheckboxTile(
-                  label: vendor,
-                  count: vendorCounts[vendor]!,
-                  checked: _vendors.contains(vendor),
-                  onChanged: (_) => _toggleVendor(vendor),
-                ),
-            ],
-          ),
+        ?_vendorSection(
+          l10n,
+          widget.allItems.map((i) => i.vendor),
+          _vendors,
+          _toggleVendor,
+        ),
         if (calibers.isNotEmpty)
           _CheckboxSection(
             title: l10n.caliber,
@@ -245,36 +219,15 @@ class _SightFilterSheetState extends ConsumerState<_SightFilterSheet> {
     Navigator.of(context).pop();
   }
 
-  void _toggleVendor(String v) => setState(() {
-    final s = Set<String>.from(_vendors);
-    if (s.contains(v)) {
-      s.remove(v);
-    } else {
-      s.add(v);
-    }
-    _vendors = s;
-  });
+  void _toggleVendor(String v) =>
+      setState(() => _vendors = _toggled(_vendors, v));
 
-  void _toggleFocalPlane(FocalPlane fp) => setState(() {
-    final s = Set<FocalPlane>.from(_focalPlanes);
-    if (s.contains(fp)) {
-      s.remove(fp);
-    } else {
-      s.add(fp);
-    }
-    _focalPlanes = s;
-  });
+  void _toggleFocalPlane(FocalPlane fp) =>
+      setState(() => _focalPlanes = _toggled(_focalPlanes, fp));
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-
-    final vendorCounts = <String, int>{};
-    for (final s in widget.allItems) {
-      final v = s.vendor;
-      if (v.isNotEmpty) vendorCounts[v] = (vendorCounts[v] ?? 0) + 1;
-    }
-    final vendors = vendorCounts.keys.toList()..sort();
 
     final fpCounts = <FocalPlane, int>{};
     for (final s in widget.allItems) {
@@ -287,20 +240,12 @@ class _SightFilterSheetState extends ConsumerState<_SightFilterSheet> {
       onReset: _reset,
       onApply: _apply,
       sections: [
-        if (vendors.isNotEmpty)
-          _CheckboxSection(
-            title: l10n.vendor,
-            initiallyExpanded: _vendors.isNotEmpty,
-            children: [
-              for (final vendor in vendors)
-                _CheckboxTile(
-                  label: vendor,
-                  count: vendorCounts[vendor]!,
-                  checked: _vendors.contains(vendor),
-                  onChanged: (_) => _toggleVendor(vendor),
-                ),
-            ],
-          ),
+        ?_vendorSection(
+          l10n,
+          widget.allItems.map((i) => i.vendor),
+          _vendors,
+          _toggleVendor,
+        ),
         _CheckboxSection(
           title: l10n.focalPlane,
           initiallyExpanded: _focalPlanes.isNotEmpty,
@@ -354,26 +299,12 @@ class _WeaponFilterSheetState extends ConsumerState<_WeaponFilterSheet> {
     Navigator.of(context).pop();
   }
 
-  void _toggleVendor(String v) => setState(() {
-    final s = Set<String>.from(_vendors);
-    if (s.contains(v)) {
-      s.remove(v);
-    } else {
-      s.add(v);
-    }
-    _vendors = s;
-  });
+  void _toggleVendor(String v) =>
+      setState(() => _vendors = _toggled(_vendors, v));
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-
-    final vendorCounts = <String, int>{};
-    for (final w in widget.allItems) {
-      final v = w.vendor;
-      if (v.isNotEmpty) vendorCounts[v] = (vendorCounts[v] ?? 0) + 1;
-    }
-    final vendors = vendorCounts.keys.toList()..sort();
 
     return _FilterSheetLayout(
       title: l10n.filterTitle,
@@ -381,20 +312,12 @@ class _WeaponFilterSheetState extends ConsumerState<_WeaponFilterSheet> {
       onReset: _reset,
       onApply: _apply,
       sections: [
-        if (vendors.isNotEmpty)
-          _CheckboxSection(
-            title: l10n.vendor,
-            initiallyExpanded: _vendors.isNotEmpty,
-            children: [
-              for (final vendor in vendors)
-                _CheckboxTile(
-                  label: vendor,
-                  count: vendorCounts[vendor]!,
-                  checked: _vendors.contains(vendor),
-                  onChanged: (_) => _toggleVendor(vendor),
-                ),
-            ],
-          ),
+        ?_vendorSection(
+          l10n,
+          widget.allItems.map((i) => i.vendor),
+          _vendors,
+          _toggleVendor,
+        ),
       ],
     );
   }
@@ -468,6 +391,34 @@ class _FilterSheetLayout extends StatelessWidget {
       ],
     );
   }
+}
+
+/// The "Vendor" checkbox section with per-vendor item counts, or null when
+/// no item has a vendor.
+Widget? _vendorSection(
+  AppLocalizations l10n,
+  Iterable<String> itemVendors,
+  Set<String> selected,
+  void Function(String) onToggle,
+) {
+  final counts = <String, int>{};
+  for (final v in itemVendors) {
+    if (v.isNotEmpty) counts[v] = (counts[v] ?? 0) + 1;
+  }
+  if (counts.isEmpty) return null;
+  return _CheckboxSection(
+    title: l10n.vendor,
+    initiallyExpanded: selected.isNotEmpty,
+    children: [
+      for (final vendor in counts.keys.toList()..sort())
+        _CheckboxTile(
+          label: vendor,
+          count: counts[vendor]!,
+          checked: selected.contains(vendor),
+          onChanged: (_) => onToggle(vendor),
+        ),
+    ],
+  );
 }
 
 class _CheckboxSection extends StatelessWidget {

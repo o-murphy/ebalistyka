@@ -68,8 +68,10 @@ beyond the first check). Not read in depth: `router.dart`, `home_vm.dart`,
   their own bounds. **Dropped:** `fromLimits(...)` for the ~39 roles in
   `field_constraints.dart` — each role is already a short declarative block,
   and positional factory args would read worse than the named ones.
-- `filter_sheet.dart`: shared `toggleIn<T>`, vendor-section builder and
-  `showModalBottomSheet` wrapper (~90-110).
+- **Done** — `filter_sheet.dart`: `_toggled<T>`, `_vendorSection` and
+  `_showFilterSheet` replace the three copies of each (−49 lines). A generic
+  `FilterSheet<T>` was not attempted: the ammo sheet's weight range and
+  default-caliber reset would make it harder to read than three plain sheets.
 - Details-section labels written three times (`details_table_mv.dart`,
   `details_table.dart`, `table_html_exporter.dart`): one
   `DetailsTableData.sections(l10n)` (~60-90).
