@@ -388,12 +388,14 @@ abstract final class FC {
     accuracy: 0,
   );
 
+  /// 0–9999 N·m covers scope screws (a few N·m) up to wheel nuts and beyond.
+  /// One decimal, so a 1.5 N·m screw is not shown as "2 N·m".
   static const torque = FieldConstraints(
     rawUnit: Unit.newtonMeter,
-    minRaw: 300.0,
-    maxRaw: 1500.0,
-    stepRaw: 1.0,
-    accuracy: 0,
+    minRaw: 0.0,
+    maxRaw: 9999.0,
+    stepRaw: 0.1,
+    accuracy: 1,
   );
 
   static final convertorDistance = FieldConstraints(

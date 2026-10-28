@@ -238,46 +238,46 @@ saved: temperature=7.5, temperature=null, temperatureUnit=fahrenheit
 --- base=1.0 input=newtonMeter
 rawValue=1.0 inputUnit=newtonMeter
 [Metric]
-  Newton-meter | 1 N·m | 1.0 | N·m | 0
+  Newton-meter | 1.0 N·m | 1.0 | N·m | 1
 [Imperial]
-  Foot-pound | 1 ft·lb | 1.3558179483314 | ft·lb | 0
-  Inch-pound | 0.1 in·lb | 0.112984829 | in·lb | 1
-constraints newtonMeter: 300.0 .. 1500.0 step 1.0 unit newtonMeter acc 0
-constraints footPoundTorque: 406.74538449941997 .. 2033.7269224970998 step 1.3558179483314 unit footPoundTorque acc 0
-constraints inchPound: 33.895448699999996 .. 169.4772435 step 0.112984829 unit inchPound acc 1
+  Foot-pound | 1.4 ft·lb | 1.3558179483314 | ft·lb | 1
+  Inch-pound | 0.11 in·lb | 0.112984829 | in·lb | 2
+constraints newtonMeter: 0.0 .. 9999.0 step 0.1 unit newtonMeter acc 1
+constraints footPoundTorque: 0.0 .. 13556.823665365668 step 0.13558179483314 unit footPoundTorque acc 1
+constraints inchPound: 0.0 .. 1129.735305171 step 0.0112984829 unit inchPound acc 2
 saved: torque=7.5, torque=null, torqueUnit=inchPound
 --- base=123.456 input=footPoundTorque
 rawValue=167.3838606292013 inputUnit=footPoundTorque
 [Metric]
-  Newton-meter | 123 N·m | 123.456 | N·m | 0
+  Newton-meter | 123.5 N·m | 123.456 | N·m | 1
 [Imperial]
-  Foot-pound | 167 ft·lb | 167.3838606292013 | ft·lb | 0
-  Inch-pound | 13.9 in·lb | 13.948655049024 | in·lb | 1
-constraints newtonMeter: 300.0 .. 1500.0 step 1.0 unit newtonMeter acc 0
-constraints footPoundTorque: 406.74538449941997 .. 2033.7269224970998 step 1.3558179483314 unit footPoundTorque acc 0
-constraints inchPound: 33.895448699999996 .. 169.4772435 step 0.112984829 unit inchPound acc 1
+  Foot-pound | 167.4 ft·lb | 167.3838606292013 | ft·lb | 1
+  Inch-pound | 13.95 in·lb | 13.948655049024 | in·lb | 2
+constraints newtonMeter: 0.0 .. 9999.0 step 0.1 unit newtonMeter acc 1
+constraints footPoundTorque: 0.0 .. 13556.823665365668 step 0.13558179483314 unit footPoundTorque acc 1
+constraints inchPound: 0.0 .. 1129.735305171 step 0.0112984829 unit inchPound acc 2
 saved: torque=5.531716119579492, torque=null, torqueUnit=inchPound
 --- base=0.0 input=inchPound
 rawValue=0.0 inputUnit=inchPound
 [Metric]
-  Newton-meter | 0 N·m | 0.0 | N·m | 0
+  Newton-meter | 0.0 N·m | 0.0 | N·m | 1
 [Imperial]
-  Foot-pound | 0 ft·lb | 0.0 | ft·lb | 0
-  Inch-pound | 0.0 in·lb | 0.0 | in·lb | 1
-constraints newtonMeter: 300.0 .. 1500.0 step 1.0 unit newtonMeter acc 0
-constraints footPoundTorque: 406.74538449941997 .. 2033.7269224970998 step 1.3558179483314 unit footPoundTorque acc 0
-constraints inchPound: 33.895448699999996 .. 169.4772435 step 0.112984829 unit inchPound acc 1
+  Foot-pound | 0.0 ft·lb | 0.0 | ft·lb | 1
+  Inch-pound | 0.00 in·lb | 0.0 | in·lb | 2
+constraints newtonMeter: 0.0 .. 9999.0 step 0.1 unit newtonMeter acc 1
+constraints footPoundTorque: 0.0 .. 13556.823665365668 step 0.13558179483314 unit footPoundTorque acc 1
+constraints inchPound: 0.0 .. 1129.735305171 step 0.0112984829 unit inchPound acc 2
 saved: torque=66.3805934511792, torque=null, torqueUnit=inchPound
 --- screen
   Enter torque
   N·m
   METRIC
   Newton-meter
-  13 N·m
+  12.5 N·m
   IMPERIAL
   Foot-pound
-  17 ft·lb
+  16.9 ft·lb
   Inch-pound
-  1.4 in·lb
+  1.41 in·lb
   Torque Converter
-  field: 13 hint: Enter torque
+  field: 12.5 hint: Enter torque

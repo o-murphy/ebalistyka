@@ -64,6 +64,8 @@ that's also where new decisions get logged as they're made.
       multi-window mode deferred until users ask
 - [x] [0013] AppStream metainfo screenshots point at the v0.1.16 tag
       URLs moved to the v0.2.0-dev tag
+- [x] [0016] Torque convertor range fix — 0–9999 N·m, one decimal
+      FC.torque was copied from pressure (300–1500); schema discrepancy note left as is
 - [x] [0012] In-app help docs — refresh before beta
 - [x] [0009] ebc_db migration residue — app-close hang & Tables spinner
       root cause

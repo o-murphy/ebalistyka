@@ -111,8 +111,8 @@ beyond the first check). Not read in depth: `router.dart`, `home_vm.dart`,
   generated from the old code before the change) covers every section, value,
   constraint, saved value and screen text, and is identical after.
   Velocity, angular and target-distance convertors are bespoke and untouched.
-  *Noticed, not changed:* `FC.torque` / `convertorTorque` is 300–1500 N·m with
-  the same step as pressure — it looks copied from pressure.
+  Found while doing this: `FC.torque` was copied from pressure (300–1500 N·m)
+  — fixed separately in [0016].
 - Wizard states: a generic `update((s) => s.copyWith(..))` on the notifier
   drops ~55 `updateX` one-liners (~60); `freezed`/`dart_mappable` would save
   ~120-150 but is a codegen decision.
