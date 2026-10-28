@@ -1,3 +1,4 @@
+import 'package:ebalistyka/core/extensions/name_lookup.dart';
 import 'dart:io';
 
 import 'package:a7p/a7p.dart' hide Profile;
@@ -11,8 +12,7 @@ import 'package:share_plus/share_plus.dart';
 import 'a7p_converter.dart';
 import 'ebcp_service.dart';
 
-Unit _offsetUnitValue(String value) =>
-    Unit.values.firstWhere((u) => u.name == value, orElse: () => Unit.mil);
+Unit _offsetUnitValue(String value) => unitNamed(value, Unit.mil);
 
 /// Converts the ammo angular zero offset to dimensionless click counts and
 /// writes them into the a7p payload (a7p has no concept of click size).

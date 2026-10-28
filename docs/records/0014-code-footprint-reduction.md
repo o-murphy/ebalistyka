@@ -196,8 +196,12 @@ read-only passes over what the first one skimmed. Each claim below marked
   (~250 lines) are used only by the package's own tests, not by the app.
 
 **Mechanical dedupe, low risk (~600 lines)**
-- `Unit.values.firstWhere((u) => u.name == x, orElse: …)` written 34 times in
-  the extensions → one `unitNamed(name, fallback)` (~60-70).
+- **Done** — `Unit.values.firstWhere((u) => u.name == x, orElse: …)` was
+  written 37 times (36 getters in the extensions + `a7p_service`); now
+  `unitNamed` / `enumByName` in `core/extensions/name_lookup.dart` (−69 lines
+  net incl. the helper). A golden test generated from the old code
+  (`test/core/extensions/enum_name_getters_*`) covers every getter's fallback
+  and its setter round trip, and is identical after.
 - `UnitFormatterImpl.inputToRaw`/`rawToInput` mirror switches (~70).
 - Home-state gate (NoData / Error / `!Ready`) repeated in 4 screens (~40);
   `buildAdjustment` elevation/wind copy (~28); wind degrees/clock formula

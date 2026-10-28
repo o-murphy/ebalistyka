@@ -1,3 +1,4 @@
+import 'package:ebalistyka/core/extensions/name_lookup.dart';
 import 'package:bclibc/bclibc.dart' as bclibc;
 import 'package:bclibc/unit.dart';
 import 'package:ebc_db/ebc_db.dart';
@@ -7,10 +8,8 @@ enum DragType { g1, g7, custom }
 extension AmmoExtension on Ammo {
   // ── Enum ─────────────────────────────────────────────────────────────────────
 
-  DragType get dragType => DragType.values.firstWhere(
-    (e) => e.name == dragTypeValue,
-    orElse: () => DragType.g1,
-  );
+  DragType get dragType =>
+      enumByName(DragType.values, dragTypeValue, DragType.g1);
   set dragType(DragType v) => dragTypeValue = v.name;
 
   // ── Physical unit getters/setters ────────────────────────────────────────────
@@ -130,16 +129,10 @@ extension AmmoExtension on Ammo {
   set zeroAzimuth(Angular v) =>
       ensureZero().azimuthDeg = ((v.in_(Unit.degree) % 360) + 360) % 360;
 
-  Unit get zeroOffsetXUnitValue => Unit.values.firstWhere(
-    (u) => u.name == zero.offsetXUnit,
-    orElse: () => Unit.mil,
-  );
+  Unit get zeroOffsetXUnitValue => unitNamed(zero.offsetXUnit, Unit.mil);
   set zeroOffsetXUnitValue(Unit v) => ensureZero().offsetXUnit = v.name;
 
-  Unit get zeroOffsetYUnitValue => Unit.values.firstWhere(
-    (u) => u.name == zero.offsetYUnit,
-    orElse: () => Unit.mil,
-  );
+  Unit get zeroOffsetYUnitValue => unitNamed(zero.offsetYUnit, Unit.mil);
   set zeroOffsetYUnitValue(Unit v) => ensureZero().offsetYUnit = v.name;
 
   // ── Drag model helpers ────────────────────────────────────────────────────────
