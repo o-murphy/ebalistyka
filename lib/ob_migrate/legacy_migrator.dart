@@ -1,6 +1,6 @@
 import 'package:ebalistyka/core/providers/db_seed.dart' show seedSettings;
 import 'package:ebc_db/ebc_db.dart';
-import 'package:ob_dump_reader_flutter/ob_dump_reader_flutter.dart';
+import 'package:ob_dump_reader/ob_dump_reader.dart';
 import 'package:uuid/uuid.dart';
 
 import 'generated/schema.g.dart' as legacy;

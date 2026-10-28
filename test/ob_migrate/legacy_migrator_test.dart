@@ -5,7 +5,7 @@
 // the old app only created them lazily — which is exactly the case that used
 // to migrate as all-zero data.
 //
-// Needs liblmdb: `dart run ob_dump_reader:build` (`make build-lmdb`).
+// liblmdb is compiled by ob_dump_reader's build hook.
 //   flutter test test/ob_migrate/legacy_migrator_test.dart
 
 import 'package:ebalistyka/ob_migrate/legacy_migrator.dart';
