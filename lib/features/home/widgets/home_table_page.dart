@@ -24,7 +24,9 @@ class HomeTablePage extends ConsumerWidget {
     if (vmState is HomeUiError) {
       return ErrorDisplay(error: vmState.message);
     }
-    if (vmAsync.isLoading || vmState is! HomeUiReady) {
+    // Keep showing the previous result while recalculating (AsyncValue keeps
+    // its last data); the Home overlay covers the transition.
+    if (vmState is! HomeUiReady) {
       return const Center(child: CircularProgressIndicator());
     }
 
