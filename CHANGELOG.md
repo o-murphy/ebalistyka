@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+## v0.2.0-dev (2026-10-28)
+
 ### Added
 - **Profiles screen: swipeable tabs** — "Profile" and "My Profiles" are now two tabs (swipe or tap) on a single screen, instead of the profiles list being hidden behind a small toolbar icon.
 - **In-app help refreshed** — every help topic was rewritten against the current screens, in English and Ukrainian, with new screenshots (Profiles tabs, Settings, Tables, Home, Conditions, Reticle, the weapon/ammo/sight editors, the collections and the table editors); the first-run topic now covers the web version.
@@ -639,7 +641,8 @@ Initial alpha release — first functional build of the ballistic trajectory cal
 - `OBJECTBOX_MIGRATION.md`: migration details
 
 
-[Unreleased]: https://github.com/o-murphy/ebalistyka/compare/v0.1.22..HEAD
+[Unreleased]: https://github.com/o-murphy/ebalistyka/compare/v0.2.0-dev..HEAD
+[v0.2.0-dev]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.2.0-dev
 [v0.1.22]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.22
 [v0.1.21]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.21
 [v0.1.20]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.20
