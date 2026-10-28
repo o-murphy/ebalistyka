@@ -20,8 +20,8 @@ that's also where new decisions get logged as they're made.
 - [ ] [0002] Field constraints / web UX follow-ups
       Profiles UX and fonts done; open: auto-deploy, bundle size, untested browsers
 - [ ] [0004] Reticles — wizard placeholders & remaining SVG generation
-- [ ] [0013] AppStream metainfo screenshots point at the v0.1.16 tag
-      waits for the next release tag; `tables_details.png` still to retake
+- [ ] [0014] Code footprint reduction — less duplication, tighter abstractions
+      not audited yet; baseline numbers and open questions in the record
 - [ ] [0005] Home Note / Help / More buttons
       deferred — not scheduled
 - [ ] [0007] Open question — Weapon/Sight/Ammo `image` field format
@@ -60,6 +60,8 @@ that's also where new decisions get logged as they're made.
 - [x] [0011] Web IndexedDB backend — cross-tab write coordination
       web: single active tab + fencing; desktop: single app instance;
       multi-window mode deferred until users ask
+- [x] [0013] AppStream metainfo screenshots point at the v0.1.16 tag
+      URLs moved to the v0.2.0-dev tag
 - [x] [0012] In-app help docs — refresh before beta
 - [x] [0009] ebc_db migration residue — app-close hang & Tables spinner
       root cause

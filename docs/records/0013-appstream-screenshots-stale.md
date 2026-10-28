@@ -1,6 +1,6 @@
 # AppStream metainfo screenshots point at the v0.1.16 tag
 
-**Status:** Proposed
+**Status:** Implemented — the five `<image>` URLs now point at `v0.2.0-dev` (2026-10-28). `tables_details.png` was not retaken; the owner confirmed the UI it shows is unchanged.
 
 `app/share/metainfo/io.github.o_murphy.ebalistyka.metainfo.xml` lists five
 screenshots as `https://raw.githubusercontent.com/o-murphy/ebalistyka/v0.1.16/docs/screenshots/<name>.png`
