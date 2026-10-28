@@ -155,6 +155,77 @@ beyond the first check). Not read in depth: `router.dart`, `home_vm.dart`,
 - `unit_formatter_impl.dart` (235): ~30 methods that each map to one unit /
   symbol; probably table-driven. Unverified, only the interface was read.
 
+### F. Second audit (2026-10-28, after A–C1/C2 landed)
+
+Hand-written `lib/` is ~22k lines (cloc's 41.8k for Dart includes `test/`,
+`packages/ebc_db` and ~8.5k of generated / localization code). Three more
+read-only passes over what the first one skimmed. Each claim below marked
+**checked** was re-verified by hand; the rest are agents' estimates.
+
+**Bugs found (fix first, they are not about size)** — both **fixed**, with tests
+- **Fixed — the "drop / windage angle" unit picker in Settings → Units did
+  nothing.** `UnitSettingsNotifier.setUnit` (`settings_provider.dart:91`) has
+  no `'adjustment'` case; `settings_units_screen.dart:89` calls
+  `set('adjustment', u)`. It is the only key the screen uses that the switch
+  does not handle. (The switch has `'angular'` and `'torque'` cases the screen
+  never calls.) Added the case; `unit_settings_set_unit_test.dart` checks every
+  key the screen uses (it failed for `adjustment` before the fix).
+- **Fixed — hard-coded English** in `home_builders.dart` (`'Zero offset: '`,
+  `'vertical'`, `'click'`, `'horizontal'`) and `'$count point(s)'` in
+  `ammo_wizard_screen.dart`: new l10n keys `zeroOffsetLine`,
+  `directionVertical`, `directionHorizontal`, `clickWord`, `nPoints` (EN + UK),
+  tests in `home_message_lines_l10n_test.dart`. `_unitLabel` (MIL / MOA /
+  cm/100m …) was left as is — unit symbols.
+- *Not a bug (agent was wrong):* `profiles_ops.dart` clamps
+  `sightHorizontalOffsetInch` with `FieldLimits.sightHeightInch` — the schema
+  states that bound is shared by both fields.
+
+**Dead / stale, safe to delete**
+- **Done:** `shared/helpers/debug_highlight.dart` (42 lines, never imported);
+  Makefile `objectbox-*` targets (pointed at the removed
+  `packages/ebalistyka_db`; `make generate` also depended on one of them and
+  now works); `AppState.weapons/ammo/sights` and
+  `HomeViewModel.updateTargetDistance` (no callers).
+- **Audit was wrong / not done:** `lib/l10n/desired.txt` is referenced by
+  `l10n.yaml` (`untranslated-messages-file`) — keep. `cupertino_icons` has no
+  reference in the code but stays on purpose (iOS/macOS icon font risk, not
+  worth the few KB). The nine `UnitFormatter.*Symbol` getters are unused by the
+  app but `unit_formatter_test.dart` tests them — kept. `ebcpDataToJson` is a
+  private helper in the package, nothing to remove.
+- `ebc_db`: `ProfilesValidator`/`SettingsValidator` and their `*_json.dart`
+  (~250 lines) are used only by the package's own tests, not by the app.
+
+**Mechanical dedupe, low risk (~600 lines)**
+- `Unit.values.firstWhere((u) => u.name == x, orElse: …)` written 34 times in
+  the extensions → one `unitNamed(name, fallback)` (~60-70).
+- `UnitFormatterImpl.inputToRaw`/`rawToInput` mirror switches (~70).
+- Home-state gate (NoData / Error / `!Ready`) repeated in 4 screens (~40);
+  `buildAdjustment` elevation/wind copy (~28); wind degrees/clock formula
+  written 3× in `wind_indicator.dart` (~25).
+- `ammo_wizard_screen.dart` (~90: table tile ×2, `_DragModelSection` with 9
+  callbacks, mv conversion, G1/G7 navigation) and `ammo_wizard_notifier.dart`
+  (~35).
+- `a7p_converter.dart` G1/G7 branches, truncation ×5, name fallbacks (~45).
+- `my_profiles_screen.dart` import try/catch ×3 and `_onEditAmmo` copy (~35);
+  `AppStateNotifier` profile-edit helper (~25); settings providers
+  (~60, one generic slice notifier); settings screens (~95).
+- `ebc_db` three validators + three `*_file` wrappers → one generic (~150).
+- Router: Multi-BC G1/G7 routes, `ReticlePickerScreen` builder ×3 (~30).
+
+**Medium risk, needs visual check:** `trajectory_table.dart` main vs zero table
+(~70, also a stateless-StatefulWidget); `reticle_view_screen.dart` state kept
+both locally and in the VM (~50); `home_screen.dart` 365-line `build` split.
+
+**Tests (agent skimmed):** no tests for `a7p_converter`, `a7p_service`,
+`router`, `settings_screen`, `my_profiles_screen`, `ammo_wizard_screen`, angular
+/ velocity / target-distance convertor VMs. Home and tables tests probably
+overlap (~1k lines) — read before merging.
+
+**Repo clutter:** `assets/json/ammo_plus.json` 5.8 MB and `collection.json`
+5.7 MB (runtime data), `docs/screenshots/flathub.webm` 4.4 MB, an `.xcf` source
+beside its `.png`, 17 finished plans in `docs/backlogs/` (~9.6k lines with
+records).
+
 ### D. Decision for the owner: `ob_migrate/` (~3,200 lines)
 
 Self-contained legacy ObjectBox migration (`schema.g.dart` 2412,

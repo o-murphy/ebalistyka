@@ -3,8 +3,6 @@
 		generate-icons \
 		generate-a7p \
 		proto-setup \
-        objectbox-generate objectbox-setup objectbox-clean \
-		objectbox-get-sha \
 		generate-localization \
 		generate-collection \
 		reticle-gen-setup \
@@ -61,25 +59,6 @@ generate-reticles:
 generate-icons:
 	dart run flutter_launcher_icons:main && dart run flutter_native_splash:create
 
-objectbox-setup:
-	cd packages/ebalistyka_db && bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-dart/main/install.sh)
-
-objectbox-generate:
-	cd packages/ebalistyka_db && dart run build_runner build --delete-conflicting-outputs
-
-objectbox-clean:
-	cd packages/ebalistyka_db && dart run build_runner clean
-
-objectbox-admin:
-	cd packages/ebalistyka_db && ./admin.sh
-
-objectbox-get-sha:
-	wget https://github.com/objectbox/objectbox-c/releases/download/v5.3.2/objectbox-linux-x64.tar.gz
-	wget https://github.com/objectbox/objectbox-c/releases/download/v5.3.2/objectbox-linux-aarch64.tar.gz
-	sha256sum objectbox-linux-x64.tar.gz
-	sha256sum objectbox-linux-aarch64.tar.gz
-	rm objectbox-linux-*.tar.gz
-
 generate-collection:
 	python3 scripts/merge_collections.py \
 	assets/json/base.json assets/json/ammo_plus.json \
@@ -88,8 +67,7 @@ generate-collection:
 	--near-dupes \
 	--near-dupes-threshold 0.0
 
-generate: objectbox-generate \
-	generate-localization \
+generate: generate-localization \
 	generate-reticles generate-icons \
 	generate-collection
 
