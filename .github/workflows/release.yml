@@ -375,6 +375,10 @@ jobs:
     if: github.ref_type == 'tag' && !contains(github.ref_name, '-')
     needs: [prepare-version, release, build-web]
     uses: ./.github/workflows/publish-web.yml
+    # The repo's default token is read-only; the publish job pushes gh-pages,
+    # and a called workflow cannot be granted more than its caller has.
+    permissions:
+      contents: write
     with:
       artifact_name: ${{ needs.build-web.outputs.artifact_name }}
     secrets: inherit
