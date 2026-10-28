@@ -56,10 +56,12 @@ beyond the first check). Not read in depth: `router.dart`, `home_vm.dart`,
 
 ### B. Mechanical dedupe (low risk, ~450 lines)
 
-- Profile actions copied between `my_profiles_screen.dart` and
-  `profiles_list_screen.dart` (`_askProfileName`, `_onAddTap`, export, A7P
-  export/share, rename/duplicate/remove): move to `profile_ebcp_actions.dart`
-  as `(context, ref, Profile)` functions. ~150-180.
+- **Done** — profile actions copied between `my_profiles_screen.dart` and
+  `profiles_list_screen.dart` (ask-name, add sheet, export + A7P range sheet,
+  duplicate, remove) moved to `profile_actions.dart` (renamed from
+  `profile_ebcp_actions.dart`) as plain `(context, ref, Profile)` functions;
+  net −169 lines. Rename and the hot-swap flows were left in the screens: the
+  two copies of rename differ, hot-swap is item C.
 - `FieldConstraints.inUnit(Unit)` replaces ~14 hand-written conversion blocks
   in the convertor VMs (~120); `fromLimits(...)` for the ~39 near-identical
   roles in `field_constraints.dart` (~150).
