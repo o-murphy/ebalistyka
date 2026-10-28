@@ -93,11 +93,6 @@ class AmmoFilterNotifier extends Notifier<AmmoFilterState> {
   );
 }
 
-final ammoFilterProvider = NotifierProvider.autoDispose
-    .family<AmmoFilterNotifier, AmmoFilterState, double?>(
-      (arg) => AmmoFilterNotifier(arg),
-    );
-
 final ammoCollectionFilterProvider = NotifierProvider.autoDispose
     .family<AmmoFilterNotifier, AmmoFilterState, double?>(
       (arg) => AmmoFilterNotifier(arg),
@@ -157,11 +152,6 @@ class SightFilterNotifier extends Notifier<SightFilterState> {
 
   void reset() => state = const SightFilterState();
 }
-
-final sightFilterProvider =
-    NotifierProvider.autoDispose<SightFilterNotifier, SightFilterState>(
-      SightFilterNotifier.new,
-    );
 
 final sightCollectionFilterProvider =
     NotifierProvider.autoDispose<SightFilterNotifier, SightFilterState>(

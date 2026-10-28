@@ -35,13 +35,7 @@ class SightCollectionScreen extends ConsumerWidget {
           builder: (ctx) => IconButton(
             onPressed: () {
               final sights = collectionAsync.value?.sights ?? [];
-              unawaited(
-                showSightFilterSheet(
-                  ctx,
-                  allItems: sights,
-                  forCollection: true,
-                ),
-              );
+              unawaited(showSightFilterSheet(ctx, allItems: sights));
             },
             icon: Badge(
               isLabelVisible: filter.isActive,

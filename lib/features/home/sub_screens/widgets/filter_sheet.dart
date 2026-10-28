@@ -13,20 +13,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ── Public entry points ───────────────────────────────────────────────────────
 
-Future<void> showAmmoFilterSheet(
-  BuildContext context, {
-  required List<Ammo> allItems,
-  required double? defaultCaliberInch,
-}) => showModalBottomSheet<void>(
-  context: context,
-  isScrollControlled: true,
-  useSafeArea: true,
-  builder: (_) => _AmmoFilterSheet(
-    allItems: allItems,
-    defaultCaliberInch: defaultCaliberInch,
-  ),
-);
-
 Future<void> showAmmoCollectionFilterSheet(
   BuildContext context, {
   required List<Ammo> allItems,
@@ -38,20 +24,17 @@ Future<void> showAmmoCollectionFilterSheet(
   builder: (_) => _AmmoFilterSheet(
     allItems: allItems,
     defaultCaliberInch: defaultCaliberInch,
-    forCollection: true,
   ),
 );
 
 Future<void> showSightFilterSheet(
   BuildContext context, {
   required List<Sight> allItems,
-  bool forCollection = false,
 }) => showModalBottomSheet<void>(
   context: context,
   isScrollControlled: true,
   useSafeArea: true,
-  builder: (_) =>
-      _SightFilterSheet(allItems: allItems, forCollection: forCollection),
+  builder: (_) => _SightFilterSheet(allItems: allItems),
 );
 
 Future<void> showWeaponFilterSheet(
@@ -70,12 +53,10 @@ class _AmmoFilterSheet extends ConsumerStatefulWidget {
   const _AmmoFilterSheet({
     required this.allItems,
     required this.defaultCaliberInch,
-    this.forCollection = false,
   });
 
   final List<Ammo> allItems;
   final double? defaultCaliberInch;
-  final bool forCollection;
 
   @override
   ConsumerState<_AmmoFilterSheet> createState() => _AmmoFilterSheetState();
@@ -97,9 +78,7 @@ class _AmmoFilterSheetState extends ConsumerState<_AmmoFilterSheet> {
   void initState() {
     super.initState();
     final applied = ref.read(
-      widget.forCollection
-          ? ammoCollectionFilterProvider(widget.defaultCaliberInch)
-          : ammoFilterProvider(widget.defaultCaliberInch),
+      ammoCollectionFilterProvider(widget.defaultCaliberInch),
     );
     _vendors = Set.from(applied.vendors);
     _calibers = Set.from(applied.calibers);
@@ -117,9 +96,7 @@ class _AmmoFilterSheetState extends ConsumerState<_AmmoFilterSheet> {
 
   void _apply() {
     final notifier = ref.read(
-      widget.forCollection
-          ? ammoCollectionFilterProvider(widget.defaultCaliberInch).notifier
-          : ammoFilterProvider(widget.defaultCaliberInch).notifier,
+      ammoCollectionFilterProvider(widget.defaultCaliberInch).notifier,
     );
     notifier.apply(
       vendors: _vendors,
@@ -237,10 +214,9 @@ class _AmmoFilterSheetState extends ConsumerState<_AmmoFilterSheet> {
 // ── Sight filter sheet ────────────────────────────────────────────────────────
 
 class _SightFilterSheet extends ConsumerStatefulWidget {
-  const _SightFilterSheet({required this.allItems, this.forCollection = false});
+  const _SightFilterSheet({required this.allItems});
 
   final List<Sight> allItems;
-  final bool forCollection;
 
   @override
   ConsumerState<_SightFilterSheet> createState() => _SightFilterSheetState();
@@ -253,11 +229,7 @@ class _SightFilterSheetState extends ConsumerState<_SightFilterSheet> {
   @override
   void initState() {
     super.initState();
-    final applied = ref.read(
-      widget.forCollection
-          ? sightCollectionFilterProvider
-          : sightFilterProvider,
-    );
+    final applied = ref.read(sightCollectionFilterProvider);
     _vendors = Set.from(applied.vendors);
     _focalPlanes = Set.from(applied.focalPlanes);
   }
@@ -268,11 +240,7 @@ class _SightFilterSheetState extends ConsumerState<_SightFilterSheet> {
   });
 
   void _apply() {
-    final notifier = ref.read(
-      widget.forCollection
-          ? sightCollectionFilterProvider.notifier
-          : sightFilterProvider.notifier,
-    );
+    final notifier = ref.read(sightCollectionFilterProvider.notifier);
     notifier.apply(vendors: _vendors, focalPlanes: _focalPlanes);
     Navigator.of(context).pop();
   }
