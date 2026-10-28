@@ -22,6 +22,8 @@ that's also where new decisions get logged as they're made.
 - [ ] [0004] Reticles — wizard placeholders & remaining SVG generation
 - [ ] [0014] Code footprint reduction — less duplication, tighter abstractions
       audited 2026-10-28: ~1k lines low-risk, ~700 medium, ob_migrate (3.2k) is an owner decision
+- [ ] [0015] Collection filters — usability rework
+      UX/usefulness of the filters, not their logic; problems still to be listed
 - [ ] [0005] Home Note / Help / More buttons
       deferred — not scheduled
 - [ ] [0007] Open question — Weapon/Sight/Ammo `image` field format
