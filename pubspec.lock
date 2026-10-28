@@ -69,10 +69,10 @@ packages:
     dependency: "direct main"
     description:
       name: bclibc
-      sha256: "7bebfc676e1bab1ae5a6261afd17ac892cdb84393d0f4b781ea3c43e85dfe2fb"
+      sha256: a2783a9af73928bd1edb71b94ce5335d750b28b59df6a39f432c6373223fb023
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0-beta.1"
+    version: "2.0.0-rc.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -640,18 +640,10 @@ packages:
     dependency: "direct main"
     description:
       name: ob_dump_reader
-      sha256: a66b10cf2d993e939d7d9326b30afaa5dc4590d894d50c811be577aa5b604257
+      sha256: ab53bd247b16d383b0dca8b39b5e33717660950cdab59652cb0fda2537c5d330
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.0-beta.2"
-  ob_dump_reader_flutter:
-    dependency: "direct main"
-    description:
-      name: ob_dump_reader_flutter
-      sha256: b5d3501c4738ddcce2f9bb99b5c8836bd29a1a4d52a84274347e12a96d03c859
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.0-beta.2"
+    version: "0.1.0-beta.3"
   objective_c:
     dependency: transitive
     description:

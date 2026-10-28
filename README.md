@@ -486,7 +486,7 @@ On Android, `file_picker` cannot filter by custom extensions (`.ebcp`, `.a7p`) b
 | [path_provider](https://pub.dev/packages/path_provider)                 | App data directory (native)                          |
 | [http](https://pub.dev/packages/http)                                   | Update and collection checks                         |
 | [intl](https://pub.dev/packages/intl)                                   | Number / date formatting                             |
-| [ob_dump_reader_flutter](https://pub.dev/packages/ob_dump_reader_flutter) | Reads the old ObjectBox `data.mdb` for the one-time migration |
+| [ob_dump_reader](https://pub.dev/packages/ob_dump_reader)               | Reads the old ObjectBox `data.mdb` for the one-time migration |
 | [flutpak](https://pub.dev/packages/flutpak) (dev)                       | Manage flatpak/flathub manifest for sandboxed builds |
 
 ### `bclibc`

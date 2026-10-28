@@ -7,7 +7,6 @@
 		objectbox-get-sha \
 		generate-localization \
 		generate-collection \
-		build-lmdb \
 		reticle-gen-setup \
 		build-web deploy-web \
 		test format clean run run-clean
@@ -97,9 +96,7 @@ generate: objectbox-generate \
 # bclibc needs no build step here: its build hook compiles libbclibc_ffi from the
 # sources shipped in the package for `flutter test` and `flutter build` alike.
 
-# liblmdb (ob_dump_reader) is still built separately.
-build-lmdb:
-	dart run ob_dump_reader:build
+# ob_dump_reader likewise compiles its bundled LMDB through its build hook.
 
 # `tools/reticle_gen` is a standalone Dart package (not a pubspec dependency
 # of the app), so `flutter analyze` can't resolve its `package:reticle_gen`
@@ -107,7 +104,7 @@ build-lmdb:
 reticle-gen-setup:
 	cd tools/reticle_gen && dart pub get
 
-test: build-lmdb reticle-gen-setup
+test: reticle-gen-setup
 	flutter analyze && flutter test 2>&1
 
 format:
