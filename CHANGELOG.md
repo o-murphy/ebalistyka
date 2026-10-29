@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+## v0.2.2-dev (2026-10-29)
+
+### Changed
+- **bclibc** updated from 2.0.0-rc.1 to the stable 2.0.0.
+- **flutter_svg** updated to 2.3.2.
+
 ## v0.2.1-dev (2026-10-28)
 
 ### Added
@@ -662,7 +668,8 @@ Initial alpha release — first functional build of the ballistic trajectory cal
 - `OBJECTBOX_MIGRATION.md`: migration details
 
 
-[Unreleased]: https://github.com/o-murphy/ebalistyka/compare/v0.2.1-dev..HEAD
+[Unreleased]: https://github.com/o-murphy/ebalistyka/compare/v0.2.2-dev..HEAD
+[v0.2.2-dev]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.2.2-dev
 [v0.2.1-dev]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.2.1-dev
 [v0.2.0-dev]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.2.0-dev
 [v0.1.22]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.1.22
