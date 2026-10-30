@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+### Changed
+- **Flutter** updated to 3.47.8.
+
 ## v0.2.2-dev (2026-10-29)
 
 ### Changed
