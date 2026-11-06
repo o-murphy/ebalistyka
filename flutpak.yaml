@@ -2,7 +2,7 @@ flutter:
     ref: 3.47.9
 
 
-foreign-deps-ref: 9b8c194d9cea4143fecbc43e0622ba6dabbaf8b5
+foreign-deps-ref: 7d0fa42f2e556d87edf82c28d74fc2164837f725
 
 icons:
   - size: 16x16

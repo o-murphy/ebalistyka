@@ -34,9 +34,11 @@ const _windowInitialHeight = 812.0;
 // const _contentMaxHeight = _windowMaxHeight;
 
 Future<void> _raiseWindow() async {
-  if (await windowManager.isMinimized()) await windowManager.restore();
-  await windowManager.show();
-  await windowManager.focus();
+  final window = WindowManager.instance.getCurrent();
+  if (window == null) return;
+  if (window.isMinimized) window.restore();
+  window.show();
+  window.focus();
 }
 
 void main() async {
@@ -55,29 +57,21 @@ void main() async {
     // A second launch raises the running window and exits right here.
     await ensureSingleInstance(onActivate: _raiseWindow);
 
-    await windowManager.ensureInitialized();
-
     const size = Size(_windowInitialWidth, _windowInitialHeight);
     const minSize = Size(_windowMinWidth, _windowMinHeight);
 
-    WindowOptions windowOptions = WindowOptions(
-      size: size,
-      minimumSize: minSize,
-      center: true,
-      title: 'eBalistyka',
-      backgroundColor: Colors.transparent,
-      skipTaskbar: false,
-      titleBarStyle: TitleBarStyle.normal,
-    );
-
-    windowManager.waitUntilReadyToShow(windowOptions, () async {
-      await windowManager.show();
-      await windowManager.setIcon('assets/icon.png');
-      await windowManager.focus();
-
-      await windowManager.setMinimumSize(minSize);
-      await windowManager.setMaximizable(false);
-    });
+    final window = WindowManager.instance.getCurrent();
+    if (window != null) {
+      window.title = 'eBalistyka';
+      window.titleBarStyle = TitleBarStyle.normal;
+      window.isVisibleInTaskbar = true;
+      window.setSize(size.toNative(), false);
+      window.minimumSize = minSize.toNative();
+      window.isMaximizable = false;
+      window.center();
+      window.show();
+      window.focus();
+    }
   }
 
   final bootstrap = await bootstrapApp(

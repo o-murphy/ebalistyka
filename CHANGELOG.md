@@ -11,8 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+## v0.2.3-dev (2026-11-06)
+
 ### Changed
-- **Flutter** updated to 3.47.8.
+- **Flutter** updated to 3.47.9.
+- **window_manager** updated to 0.6.0 and moved to its native API (`WindowManager.instance`).
+- **file_picker** updated to 13.3.2.
+- **flutpak** updated to 0.8.8 — the Flatpak build works on Ubuntu 26.04 runners (`rofiles-fuse` is disabled).
+- **CI** — the light "glue" jobs (`changes`, `prepare-version`, `pr-summary`) run on the `ubuntu-slim` runner.
 
 ## v0.2.2-dev (2026-10-29)
 
@@ -671,7 +677,8 @@ Initial alpha release — first functional build of the ballistic trajectory cal
 - `OBJECTBOX_MIGRATION.md`: migration details
 
 
-[Unreleased]: https://github.com/o-murphy/ebalistyka/compare/v0.2.2-dev..HEAD
+[Unreleased]: https://github.com/o-murphy/ebalistyka/compare/v0.2.3-dev..HEAD
+[v0.2.3-dev]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.2.3-dev
 [v0.2.2-dev]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.2.2-dev
 [v0.2.1-dev]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.2.1-dev
 [v0.2.0-dev]: https://github.com/o-murphy/ebalistyka/releases/tag/v0.2.0-dev

@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   prepare-version:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       version: ${{ steps.v.outputs.version }}
       build_number: ${{ steps.bn.outputs.build_number }}
