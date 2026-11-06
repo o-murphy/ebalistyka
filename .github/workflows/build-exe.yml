@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   prepare-version:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       version: ${{ steps.v.outputs.version }}
     steps:
@@ -42,7 +42,7 @@ jobs:
   pr-summary:
     needs: [ build-amd64 ]
     if: always() && github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     permissions:
       pull-requests: write
       issues: write
