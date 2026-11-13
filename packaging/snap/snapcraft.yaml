@@ -28,6 +28,15 @@ parts:
     plugin: flutter
     flutter-target: lib/main.dart
     flutter-channel: stable
+    override-pull: |
+      craftctl default
+      # Pin the Flutter SDK to the project version from .flutter-version (the
+      # same file CI uses). The flutter plugin only clones a channel, and newer
+      # stable Flutter breaks nativeapi 0.5.10. The plugin skips its own clone
+      # when flutter-distro already exists.
+      FLUTTER_VERSION="$(tr -d '[:space:]' < "$CRAFT_PART_SRC/.flutter-version")"
+      git clone --depth 1 -b "$FLUTTER_VERSION" https://github.com/flutter/flutter.git "$CRAFT_PART_BUILD/flutter-distro"
+      "$CRAFT_PART_BUILD/flutter-distro/bin/flutter" precache --linux
     build-packages:
       - clang
       - cmake
