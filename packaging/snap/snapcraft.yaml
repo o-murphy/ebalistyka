@@ -25,13 +25,29 @@ apps:
 parts:
   ebalistyka:
     source: .
-    plugin: flutter
-    flutter-target: lib/main.dart
-    flutter-channel: stable
+    # Not the flutter plugin: it always clones a *channel* (stable = 3.50 now)
+    # when flutter-distro is missing at build-command time, and that clone
+    # ran anyway even after we pinned it in override-pull, breaking nativeapi
+    # 0.5.10 ('Member not found: Isolate.create'). Doing the SDK setup and the
+    # build ourselves keeps the SDK pinned to the project's .flutter-version
+    # (the same file CI uses).
+    plugin: nil
+    override-build: |
+      craftctl default
+      FLUTTER_VERSION="$(tr -d '[:space:]' < .flutter-version)"
+      git clone --depth 1 -b "$FLUTTER_VERSION" https://github.com/flutter/flutter.git "$CRAFT_PART_BUILD/flutter-distro"
+      export PATH="$CRAFT_PART_BUILD/flutter-distro/bin:$PATH"
+      flutter precache --linux
+      flutter pub get
+      flutter build linux --release --verbose --target lib/main.dart
+      cp -r build/linux/*/release/bundle/* "$CRAFT_PART_INSTALL/"
     build-packages:
       - clang
       - cmake
+      - curl
+      - git
       - ninja-build
+      - unzip
       - pkg-config
       - libgtk-3-dev
       - lld
