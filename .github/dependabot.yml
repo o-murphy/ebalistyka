@@ -26,6 +26,18 @@ updates:
     schedule:
       interval: "weekly"
 
+  # Android Gradle: AGP/Kotlin plugins in android/settings.gradle.kts and the
+  # Gradle wrapper in android/gradle/wrapper/gradle-wrapper.properties.
+  # Check the Flutter tooling's supported AGP/Gradle/KGP range before merging.
+  - package-ecosystem: "gradle"
+    directory: "/android"
+    schedule:
+      interval: "weekly"
+    groups:
+      gradle:
+        patterns:
+          - "*"
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
