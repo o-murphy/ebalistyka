@@ -1,11 +1,19 @@
 #include "my_application.h"
 
 #include <flutter_linux/flutter_linux.h>
-#ifdef GDK_WINDOWING_X11
-#include <gdk/gdkx.h>
-#endif
 
 #include "flutter/generated_plugin_registrant.h"
+
+#include <string.h>
+
+// Initial and minimum window size (logical pixels), replacing the
+// window_manager calls previously made from Dart.
+static const gint kWindowWidth = 375;
+static const gint kWindowHeight = 812;
+static const gint kWindowMinWidth = 320;
+static const gint kWindowMinHeight = 600;
+static const char kAppTitle[] = "eBalistyka";
+static const char kWindowChannel[] = "ebalistyka/window";
 
 struct _MyApplication {
   GtkApplication parent_instance;
@@ -19,40 +27,48 @@ static void first_frame_cb(MyApplication* self, FlView* view) {
   gtk_widget_show(gtk_widget_get_toplevel(GTK_WIDGET(view)));
 }
 
+// Handles calls on the "ebalistyka/window" channel. "raise" is sent by the
+// second launch (single-instance guard) to bring this window to the front.
+static void window_method_call_cb(FlMethodChannel* channel,
+                                  FlMethodCall* method_call,
+                                  gpointer user_data) {
+  GtkWindow* window = GTK_WINDOW(user_data);
+  const gchar* method = fl_method_call_get_name(method_call);
+
+  g_autoptr(FlMethodResponse) response = nullptr;
+  if (strcmp(method, "raise") == 0) {
+    gtk_window_deiconify(window);
+    gtk_window_present(window);
+    response =
+        FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+  } else {
+    response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
+  }
+
+  g_autoptr(GError) error = nullptr;
+  if (!fl_method_call_respond(method_call, response, &error)) {
+    g_warning("Failed to respond on window channel: %s", error->message);
+  }
+}
+
 // Implements GApplication::activate.
 static void my_application_activate(GApplication* application) {
   MyApplication* self = MY_APPLICATION(application);
   GtkWindow* window =
       GTK_WINDOW(gtk_application_window_new(GTK_APPLICATION(application)));
 
-  // Use a header bar when running in GNOME as this is the common style used
-  // by applications and is the setup most users will be using (e.g. Ubuntu
-  // desktop).
-  // If running on X and not using GNOME then just use a traditional title bar
-  // in case the window manager does more exotic layout, e.g. tiling.
-  // If running on Wayland assume the header bar will work (may need changing
-  // if future cases occur).
-  gboolean use_header_bar = TRUE;
-#ifdef GDK_WINDOWING_X11
-  GdkScreen* screen = gtk_window_get_screen(window);
-  if (GDK_IS_X11_SCREEN(screen)) {
-    const gchar* wm_name = gdk_x11_screen_get_window_manager_name(screen);
-    if (g_strcmp0(wm_name, "GNOME Shell") != 0) {
-      use_header_bar = FALSE;
-    }
-  }
-#endif
-  if (use_header_bar) {
-    GtkHeaderBar* header_bar = GTK_HEADER_BAR(gtk_header_bar_new());
-    gtk_widget_show(GTK_WIDGET(header_bar));
-    gtk_header_bar_set_title(header_bar, "test_app");
-    gtk_header_bar_set_show_close_button(header_bar, TRUE);
-    gtk_window_set_titlebar(window, GTK_WIDGET(header_bar));
-  } else {
-    gtk_window_set_title(window, "test_app");
-  }
+  // Plain system title bar, as before the window_manager removal (the
+  // window_manager TitleBarStyle.normal set it). A GTK header bar would add
+  // ~50 px of height on top of the 375x812 content size.
+  gtk_window_set_title(window, kAppTitle);
 
-  gtk_window_set_default_size(window, 1280, 720);
+  gtk_window_set_default_size(window, kWindowWidth, kWindowHeight);
+  GdkGeometry min_geometry;
+  min_geometry.min_width = kWindowMinWidth;
+  min_geometry.min_height = kWindowMinHeight;
+  gtk_window_set_geometry_hints(window, nullptr, &min_geometry,
+                                GDK_HINT_MIN_SIZE);
+  gtk_window_set_position(window, GTK_WIN_POS_CENTER);
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
   fl_dart_project_set_dart_entrypoint_arguments(
@@ -72,6 +88,18 @@ static void my_application_activate(GApplication* application) {
   g_signal_connect_swapped(view, "first-frame", G_CALLBACK(first_frame_cb),
                            self);
   gtk_widget_realize(GTK_WIDGET(view));
+
+  // Window channel. The channel object is kept alive as window data; the
+  // window outlives the app's Dart isolate, so the raw pointer stays valid.
+  g_autoptr(FlStandardMethodCodec) codec = fl_standard_method_codec_new();
+  FlMethodChannel* window_channel = fl_method_channel_new(
+      fl_engine_get_binary_messenger(fl_view_get_engine(view)), kWindowChannel,
+      FL_METHOD_CODEC(codec));
+  fl_method_channel_set_method_call_handler(window_channel,
+                                            window_method_call_cb, window,
+                                            nullptr);
+  g_object_set_data_full(G_OBJECT(window), "window-channel", window_channel,
+                         g_object_unref);
 
   fl_register_plugins(FL_PLUGIN_REGISTRY(view));
 

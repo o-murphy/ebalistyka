@@ -2,7 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart'
     show LicenseEntryWithLineBreaks, LicenseRegistry;
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart'
+    show MethodChannel, MissingPluginException, rootBundle;
 
 import 'package:ebalistyka/shared/constants/app_info.dart';
 import 'package:material_ui/material_ui.dart';
@@ -10,8 +11,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/shared/helpers/is_desktop.dart';
 import 'package:ebalistyka/shared/widgets/pwa_install_hint.dart';
 import 'package:ebalistyka/shared/widgets/tab_blocked_gate.dart';
-import 'package:window_manager/window_manager.dart';
-
 import 'package:ebalistyka/core/session/single_instance.dart';
 import 'core/app_bootstrap_io.dart'
     if (dart.library.js_interop) 'core/app_bootstrap_web.dart';
@@ -21,24 +20,17 @@ import 'core/providers/settings_provider.dart';
 import 'l10n/app_localizations.dart';
 import 'router.dart';
 
-// Constants for window sizes
-const _windowMinWidth = 320.0;
-const _windowMinHeight = 600.0;
-// const _windowMaxWidth = 1000.0;
-// const _windowMaxHeight = 1080.0;
-const _windowInitialWidth = 375.0;
-const _windowInitialHeight = 812.0;
-
-// Constants for content restrictions
-// const _contentMaxWidth = _windowMaxWidth;
-// const _contentMaxHeight = _windowMaxHeight;
+// Native window handling lives in linux/runner/my_application.cc. Size, title
+// and minimum size are set there; this channel only asks it to raise the
+// window (second launch).
+const _windowChannel = MethodChannel('ebalistyka/window');
 
 Future<void> _raiseWindow() async {
-  final window = WindowManager.instance.getCurrent();
-  if (window == null) return;
-  if (window.isMinimized) window.restore();
-  window.show();
-  window.focus();
+  try {
+    await _windowChannel.invokeMethod<void>('raise');
+  } on MissingPluginException {
+    // No native handler on this platform yet.
+  }
 }
 
 void main() async {
@@ -56,22 +48,6 @@ void main() async {
   if (isDesktop) {
     // A second launch raises the running window and exits right here.
     await ensureSingleInstance(onActivate: _raiseWindow);
-
-    const size = Size(_windowInitialWidth, _windowInitialHeight);
-    const minSize = Size(_windowMinWidth, _windowMinHeight);
-
-    final window = WindowManager.instance.getCurrent();
-    if (window != null) {
-      window.title = 'eBalistyka';
-      window.titleBarStyle = TitleBarStyle.normal;
-      window.isVisibleInTaskbar = true;
-      window.setSize(size.toNative(), false);
-      window.minimumSize = minSize.toNative();
-      window.isMaximizable = false;
-      window.center();
-      window.show();
-      window.focus();
-    }
   }
 
   final bootstrap = await bootstrapApp(
@@ -193,8 +169,7 @@ class MyApp extends ConsumerWidget {
       scrollBehavior: _AppScrollBehavior(),
       builder: (context, child) {
         // Bridges ThemeData/MaterialLocalizations for dependencies still on
-        // package:flutter/material.dart (flutter_markdown_plus, window_manager,
-        // sticky_headers). Drop once they migrate to material_ui.
+        // package:flutter/material.dart (flutter_markdown_plus, sticky_headers). Drop once they migrate to material_ui.
         // ignore: deprecated_member_use
         final inner = MaterialUiCompatibilityBridge(
           child: TabBlockedGate(
