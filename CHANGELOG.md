@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+### Changed
+- **window_manager removed.** The window title, initial size (375×812), minimum size and centring are set in the native runners (Linux GTK; Windows title and size). The second launch still raises the running window on Linux; Windows and macOS do not raise it yet. The GTK header bar on Linux is off, so the window uses the system title bar. See [0017].
+
 ## v0.2.3-dev (2026-11-06)
 
 ### Changed
