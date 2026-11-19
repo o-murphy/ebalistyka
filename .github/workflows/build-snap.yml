@@ -105,6 +105,26 @@ jobs:
           cp "app/share/icons/hicolor/512x512/apps/io.github.o_murphy.ebalistyka.png" "snap/gui/ebalistyka.png"
           echo "✓ snap version: ${VERSION} (grade: ${GRADE})"
 
+      # snapcore/action-build runs a bare `sudo snap install lxd` (which pulls core26) and a bare `snap install snapcraft`
+      # from the snap store: when the store refuses the connection ("dial tcp ...: connect: connection refused") the job
+      # dies in the action, on arm64 four times in a row (and once on amd64). Installed here first, with retries, both
+      # are there when the action looks, and it only refreshes what it finds (a refresh with nothing new is a short store
+      # query, not a download; for LXD it carries on even if the refresh fails).
+      - name: Install LXD and snapcraft (retried, the snap store drops connections)
+        shell: bash
+        run: |
+          retry() {
+            for attempt in 1 2 3 4 5; do
+              if "$@"; then return 0; fi
+              echo "'$*' failed (attempt ${attempt} of 5), retrying in 30 s"
+              sleep 30
+            done
+            echo "::error::'$*' failed 5 times"
+            return 1
+          }
+          retry sudo snap install lxd
+          retry sudo snap install --channel stable --classic snapcraft
+
       - name: Build snap
         uses: snapcore/action-build@v1
         id: snapcraft
