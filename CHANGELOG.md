@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
 ### Changed
-- **bclibc** updated from 2.0.0 to the 2.0.1.
+- **bclibc** updated from 2.0.0 to 2.1.0 (bclibc 2.2: typed errors, dense output).
 - **window_manager removed.** The window title, initial size (375×812), minimum size and centring are set in the native runners (Linux GTK; Windows title and size). The second launch still raises the running window on Linux; Windows and macOS do not raise it yet. The GTK header bar on Linux is off, so the window uses the system title bar. See [0017].
 
 ## v0.2.3-dev (2026-11-06)

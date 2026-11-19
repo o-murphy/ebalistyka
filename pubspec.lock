@@ -69,10 +69,10 @@ packages:
     dependency: "direct main"
     description:
       name: bclibc
-      sha256: "57110764fa9cb4a01b34b5e4866170bd32fab3a7b73d71d4005614affbcfeca9"
+      sha256: f434c668f2ccc5881a6bc544c379b7dea096291429b084276b7a2884dbdf545a
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.1"
+    version: "2.1.0"
   boolean_selector:
     dependency: transitive
     description:
