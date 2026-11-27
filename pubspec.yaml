@@ -46,23 +46,23 @@ dependencies:
   cupertino_icons: ^2.0.0
   flutter_riverpod: ^3.5.0
   uuid: ^4.6.0
-  package_info_plus: ^10.2.1
+  package_info_plus: ^10.2.2
   path_provider: ^2.1.6
   shared_preferences: ^2.5.6
-  share_plus: ^13.2.1
-  url_launcher: ^6.3.0
+  share_plus: ^13.3.1
+  url_launcher: ^6.3.3
   go_router: ^18.1.4
-  sticky_headers: ^0.3.0
+  sticky_headers: ^0.3.0+2
   data_table_2: ^3.0.0
   riverpod: ^3.5.0
-  flutter_svg: ^2.0.0
-  file_picker: ^13.4.0
-  intl: ^0.20.2
-  http: ^1.2.2
+  flutter_svg: ^2.5.1
+  file_picker: ^13.4.1
+  intl: ^0.20.3
+  http: ^1.6.0
   flutter_markdown_plus: ^1.0.12
   ota_update: ^7.1.0
 
-  material_ui: ^1.11.0
+  material_ui: ^1.11.1
   cupertino_ui: ^1.1.7
 dev_dependencies:
   flutter_test:
@@ -74,10 +74,10 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
-  test: ^1.30.0
+  test: ^1.31.1
 
   flutter_native_splash: ^2.4.8
-  flutter_launcher_icons: ^0.14.3
+  flutter_launcher_icons: ^0.14.4
   msix: ^3.18.0
 
 # For information on the generic Dart part of this file, see the
